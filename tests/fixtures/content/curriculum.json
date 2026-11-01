@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "title": "픽스처 교재",
+  "writtenAt": "2026-11",
+  "validation": { "minDayChars": 200 },
+  "projects": [
+    {
+      "id": "fa",
+      "order": 1,
+      "track": "main",
+      "title": "픽스처 프로젝트 A",
+      "subtitle": "처음 만나는 작은 프로젝트",
+      "folder": "C:\\dev\\fixture-a",
+      "stack": ["HTML", "CSS"],
+      "requires": [],
+      "summary": "테스트용 첫 번째 프로젝트예요.",
+      "outcome": "작은 웹 페이지 하나를 만들어요.",
+      "days": [
+        {
+          "title": "첫 번째 Day",
+          "minutes": 60,
+          "summary": "교재 화면 구성 요소를 확인해요.",
+          "keywords": ["코드", "체크리스트"]
+        },
+        {
+          "title": "두 번째 Day",
+          "minutes": 90,
+          "summary": "이전 Day를 복습해요.",
+          "keywords": ["복습"]
+        }
+      ]
+    },
+    {
+      "id": "fb",
+      "order": 2,
+      "track": "main",
+      "title": "픽스처 프로젝트 B",
+      "subtitle": "잠겨 있다가 열리는 프로젝트",
+      "folder": "C:\\dev\\fixture-b",
+      "stack": ["JavaScript"],
+      "requires": ["fa"],
+      "summary": "프로젝트 A를 끝내면 열려요.",
+      "outcome": "잠금 해제 흐름을 확인해요.",
+      "days": [
+        {
+          "title": "비밀 Day",
+          "minutes": 75,
+          "summary": "잠긴 프로젝트의 본문이에요.",
+          "keywords": ["잠금"]
+        }
+      ]
+    }
+  ],
+  "pages": [
+    { "id": "start", "title": "시작하기", "file": "start.md" },
+    { "id": "secret", "title": "비밀 페이지", "requires": ["fb"], "file": "secret.md" },
+    { "id": "glossary", "title": "용어 사전", "generated": "glossary" }
+  ]
+}

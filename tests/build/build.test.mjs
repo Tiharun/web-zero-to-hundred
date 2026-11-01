@@ -1,0 +1,395 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { cp, mkdir, mkdtemp, readFile, rm, stat, writeFile, readdir } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { build } from '../../textbook/build.mjs';
+
+const ROOT = fileURLToPath(new URL('../..', import.meta.url));
+const FIXTURE = path.join(ROOT, 'tests', 'fixtures', 'content');
+const BUILD = path.join(ROOT, 'textbook', 'build.mjs');
+
+/** 임시 폴더를 만들어 fn(tmp)을 실행하고 지운다 */
+async function withTmp(fn) {
+  const tmp = await mkdtemp(path.join(tmpdir(), 'wzh-build-'));
+  try {
+    return await fn(tmp);
+  } finally {
+    await rm(tmp, { recursive: true, force: true });
+  }
+}
+
+/** 픽스처 복사본에서 시작한다 */
+async function withContentCopy(fn) {
+  return withTmp(async (tmp) => {
+    const content = path.join(tmp, 'content');
+    await cp(FIXTURE, content, { recursive: true });
+    return fn({ tmp, content, out: path.join(tmp, 'out', 'index.html') });
+  });
+}
+
+function runBuild(args) {
+  const r = spawnSync(process.execPath, [BUILD, ...args], { cwd: path.join(ROOT, 'textbook'), encoding: 'utf8' });
+  return { status: r.status, stdout: r.stdout, stderr: r.stderr, output: `${r.stdout}\n${r.stderr}` };
+}
+
+function embeddedData(html) {
+  const m = /<script id="wzh-data" type="application\/json">([\s\S]*?)<\/script>/.exec(html);
+  assert.ok(m, 'wzh-data not found');
+  return JSON.parse(m[1]);
+}
+
+const template = (html, id) => {
+  const m = new RegExp(`<template id="${id}">([\\s\\S]*?)</template>`).exec(html);
+  assert.ok(m, `template ${id} not found`);
+  return m[1];
+};
+
+test('fixture builds to single file', async () => {
+  await withTmp(async (tmp) => {
+    const out = path.join(tmp, 'index.html');
+    const r = runBuild(['--content', FIXTURE, '--out', out]);
+    assert.equal(r.status, 0, r.output);
+    assert.ok(existsSync(out));
+    const html = await readFile(out, 'utf8');
+
+    // 단일 파일: 외부 자원 없음
+    assert.match(html, /<template id="t-day-fa-d01">/);
+    assert.match(html, /<script id="wzh-data" type="application\/json">/);
+    assert.ok(!html.includes('<script src='), 'external script');
+    assert.doesNotMatch(html, /<link rel="stylesheet" href=/);
+    assert.doesNotMatch(html, /<link[^>]+href=["']https?:/i);
+    assert.ok((await stat(out)).size < 16 * 1024 * 1024);
+    assert.doesNotMatch(html, /<!--WZH:/);
+
+    // 쉘
+    assert.match(html, /^<!doctype html>/i);
+    assert.match(html, /<html lang="ko">/);
+    assert.match(html, /<title>웹 제로 투 헌드레드<\/title>/);
+    assert.match(html, /<meta name="viewport"/);
+    for (const re of [
+      /<a class="skip-link" href="#main"/,
+      /<header class="topbar">/,
+      /<nav id="sidebar"/,
+      /<main id="main"[^>]*tabindex="-1"/,
+      /<div id="storage-banner"[^>]*\bhidden\b/,
+    ]) {
+      assert.match(html, re);
+    }
+
+    // 템플릿: Day 3개 + 페이지 3개
+    const ids = [...html.matchAll(/<template id="([^"]+)">/g)].map((m) => m[1]);
+    assert.deepEqual(ids, ['t-day-fa-d01', 't-day-fa-d02', 't-day-fb-d01', 't-page-start', 't-page-secret', 't-page-glossary']);
+
+    // 렌더 결과: 본문 속 HTML은 글자 그대로, 긴 코드 한 줄, 정답, 체크리스트, 용어 링크
+    const d1 = template(html, 't-day-fa-d01');
+    assert.match(d1, /&lt;b&gt;굵게아님&lt;\/b&gt;/);
+    assert.doesNotMatch(d1, /<b>/);
+    assert.match(d1, /<details class="answer" data-answer="fa-d01-a1">/);
+    assert.equal((d1.match(/data-check="/g) ?? []).length, 3);
+    assert.match(d1, /<a class="term" href="#\/page\/glossary\/term-픽스처용어">픽스처용어<\/a>/);
+    assert.match(d1, /<h2 id="fa-d01-따라하기">/);
+    assert.ok(/x{300,}/.test(d1));
+    assert.match(d1, /<figcaption>C:\\dev\\fixture-a\\index\.html<\/figcaption>/);
+    assert.match(template(html, 't-page-start'), /href="#\/day\/fa-d01"/);
+
+    // 용어 사전 페이지: 한글 사전순, 항목마다 term-<slug>
+    const glossary = template(html, 't-page-glossary');
+    const termIds = [...glossary.matchAll(/<section class="term-entry" id="([^"]+)"/g)].map((m) => m[1]);
+    assert.deepEqual(termIds, ['term-가나다-용어', 'term-픽스처용어']);
+
+    // 임베드 데이터
+    const data = embeddedData(html);
+    assert.equal(data.title, '픽스처 교재');
+    assert.equal(data.writtenAt, '2026-11');
+    assert.ok(!Number.isNaN(Date.parse(data.builtAt)));
+    assert.deepEqual(
+      data.projects.map((p) => p.id),
+      ['fa', 'fb'],
+    );
+    const fa = data.projects[0];
+    assert.deepEqual(
+      Object.keys(fa).sort(),
+      ['days', 'folder', 'id', 'order', 'outcome', 'requires', 'stack', 'subtitle', 'summary', 'title', 'track'].sort(),
+    );
+    assert.deepEqual(fa.days[0], {
+      id: 'fa-d01',
+      num: 1,
+      title: '첫 번째 Day',
+      minutes: 60,
+      summary: '교재 화면 구성 요소를 확인해요.',
+      checkCount: 3,
+    });
+    assert.deepEqual(data.projects[1].requires, ['fa']);
+    assert.deepEqual(data.pages, [
+      { id: 'start', title: '시작하기', requires: [] },
+      { id: 'secret', title: '비밀 페이지', requires: ['fb'] },
+      { id: 'glossary', title: '용어 사전', requires: [] },
+    ]);
+    assert.deepEqual(
+      data.search.map((s) => [s.id, s.kind, s.project]),
+      [
+        ['fa-d01', 'day', 'fa'],
+        ['fa-d02', 'day', 'fa'],
+        ['fb-d01', 'day', 'fb'],
+        ['start', 'page', null],
+        ['secret', 'page', null],
+        ['glossary', 'page', null],
+      ],
+    );
+    const secret = data.search.find((s) => s.id === 'fb-d01');
+    assert.equal(secret.title, '비밀 Day');
+    assert.match(secret.text, /비밀단어zz/);
+    assert.match(data.search.find((s) => s.id === 'secret').text, /비밀페이지zz/);
+    // 파일 경로는 임베드하지 않는다
+    assert.ok(!JSON.stringify(data).includes(FIXTURE), 'absolute path leaked into data');
+    assert.ok(!/day-0\d\.md/.test(JSON.stringify(data)), 'file names leaked into data');
+
+    // 성공 요약: Day 수와 결과 크기(MB)
+    assert.match(r.stdout, /Day 3/);
+    assert.match(r.stdout, /\d+\.\d+ ?MB/);
+  });
+});
+
+test('invalid content fails build', async () => {
+  await withContentCopy(async ({ content, out }) => {
+    const file = path.join(content, 'fa', 'day-01.md');
+    const src = await readFile(file, 'utf8');
+    await writeFile(file, src.replace('## ✅ 정답', ''));
+    const r = runBuild(['--content', content, '--out', out]);
+    assert.equal(r.status, 1, r.output);
+    assert.match(r.stdout, /E_SECTION_MISSING/);
+    assert.ok(!existsSync(out), 'must not write output on failure');
+  });
+});
+
+test('errors are printed as path:line CODE message from both validator and renderer', async () => {
+  await withContentCopy(async ({ content, out }) => {
+    const file = path.join(content, 'fa', 'day-01.md');
+    const src = await readFile(file, 'utf8');
+    await writeFile(file, src.replace('[[픽스처용어]]', '[[없는용어]]').replace('## 🧯 자주 막히는 곳', '## 🧯 자주 막히는 곳\n\nTODO 나중에 채워요.'));
+    const r = runBuild(['--content', content, '--out', out]);
+    assert.equal(r.status, 1, r.output);
+    const lines = r.stdout.split('\n');
+    const term = lines.find((l) => l.includes('E_TERM_UNKNOWN'));
+    const todo = lines.find((l) => l.includes('E_PLACEHOLDER'));
+    assert.ok(term, r.stdout);
+    assert.ok(todo, r.stdout);
+    assert.match(term, /fa[\\/]day-01\.md:\d+ E_TERM_UNKNOWN .*없는용어/);
+    assert.match(todo, /fa[\\/]day-01\.md:\d+ E_PLACEHOLDER /);
+    assert.ok(!path.isAbsolute(term.split(':')[0]), 'paths are printed relative');
+  });
+});
+
+test('check mode writes nothing', async () => {
+  await withTmp(async (tmp) => {
+    const out = path.join(tmp, 'out', 'index.html');
+    const r = runBuild(['--check', '--content', FIXTURE, '--out', out]);
+    assert.equal(r.status, 0, r.output);
+    assert.ok(!existsSync(out));
+    assert.ok(!existsSync(path.dirname(out)));
+    assert.deepEqual(await readdir(tmp), []);
+    assert.match(r.stdout, /Day 3/);
+  });
+});
+
+test('missing day file fails by default', async () => {
+  await withContentCopy(async ({ content, out }) => {
+    await rm(path.join(content, 'fa', 'day-02.md'));
+    const r = runBuild(['--content', content, '--out', out]);
+    assert.equal(r.status, 1, r.output);
+    assert.match(r.stdout, /fa[\\/]day-02\.md E_CUR_FILE_MISSING/);
+    assert.ok(!existsSync(out));
+  });
+});
+
+test('allow-missing builds with placeholder', async () => {
+  await withContentCopy(async ({ content, out }) => {
+    await rm(path.join(content, 'fa', 'day-02.md'));
+    const r = runBuild(['--allow-missing', '--content', content, '--out', out]);
+    assert.equal(r.status, 0, r.output);
+    assert.match(r.stdout, /E_CUR_FILE_MISSING/); // 경고로 출력한다
+    assert.match(r.stdout, /경고/);
+    const html = await readFile(out, 'utf8');
+    const body = template(html, 't-day-fa-d02');
+    assert.match(body, /이 Day는 아직 준비 중이에요\./);
+    assert.doesNotMatch(body, /data-check/);
+    const data = embeddedData(html);
+    const day = data.projects[0].days[1];
+    assert.equal(day.id, 'fa-d02');
+    assert.equal(day.checkCount, 0);
+    // 다른 Day는 그대로 렌더된다
+    assert.match(template(html, 't-day-fa-d01'), /data-check/);
+  });
+});
+
+test('allow-missing does not hide other errors', async () => {
+  await withContentCopy(async ({ content, out }) => {
+    await rm(path.join(content, 'fa', 'day-02.md'));
+    const file = path.join(content, 'fb', 'day-01.md');
+    await writeFile(file, (await readFile(file, 'utf8')).replace('## ✅ 정답', ''));
+    const r = runBuild(['--allow-missing', '--content', content, '--out', out]);
+    assert.equal(r.status, 1, r.output);
+    assert.match(r.stdout, /E_SECTION_MISSING/);
+  });
+});
+
+test('only mode ignores other missing days', async () => {
+  await withContentCopy(async ({ content, out }) => {
+    await rm(path.join(content, 'fa', 'day-02.md'));
+    // 나머지 Day가 깨져 있어도 지정하지 않았으면 보지 않는다
+    const broken = path.join(content, 'fb', 'day-01.md');
+    await writeFile(broken, '## 엉터리\n');
+    const r = runBuild(['--only', 'fa-d01', '--content', content, '--out', out]);
+    assert.equal(r.status, 0, r.output);
+    assert.doesNotMatch(r.stdout, /E_CUR_FILE_MISSING/);
+    const html = await readFile(out, 'utf8');
+    assert.match(template(html, 't-day-fa-d01'), /data-check/);
+    // 지정하지 않은 Day도 템플릿은 있어서 화면이 깨지지 않는다
+    assert.match(template(html, 't-day-fa-d02'), /아직 준비 중이에요/);
+    assert.match(template(html, 't-day-fb-d01'), /아직 준비 중이에요/);
+    // 용어·route는 전체 커리큘럼 기준: fb-d01로 가는 링크도 유효하다
+    assert.equal(embeddedData(html).projects.length, 2);
+  });
+});
+
+test('only mode still fails when a listed day is missing or invalid', async () => {
+  await withContentCopy(async ({ content, out }) => {
+    await rm(path.join(content, 'fa', 'day-02.md'));
+    const missing = runBuild(['--only', 'fa-d02', '--content', content, '--out', out]);
+    assert.equal(missing.status, 1, missing.output);
+    assert.match(missing.stdout, /E_CUR_FILE_MISSING/);
+
+    const file = path.join(content, 'fa', 'day-01.md');
+    await writeFile(file, (await readFile(file, 'utf8')).replace('## ✅ 정답', ''));
+    const invalid = runBuild(['--only', 'fa-d01', '--content', content, '--out', out]);
+    assert.equal(invalid.status, 1, invalid.output);
+    assert.match(invalid.stdout, /E_SECTION_MISSING/);
+
+    const unknown = runBuild(['--only', 'fa-d01,zz-d09', '--content', content, '--out', out]);
+    assert.equal(unknown.status, 1, unknown.output);
+    assert.match(unknown.stdout, /zz-d09/);
+  });
+});
+
+test('only mode validates routes against the whole curriculum', async () => {
+  await withContentCopy(async ({ content, out }) => {
+    const file = path.join(content, 'fa', 'day-01.md');
+    await writeFile(file, (await readFile(file, 'utf8')) + '\n[잠긴 Day](#/day/fb-d01) [프로젝트](#/project/fb) [설정](#/settings) [처음](#/)\n');
+    const ok = runBuild(['--only', 'fa-d01', '--content', content, '--out', out]);
+    assert.equal(ok.status, 0, ok.output);
+    await writeFile(file, (await readFile(file, 'utf8')) + '\n[없음](#/day/zz-d09) [없음2](#/page/nope)\n');
+    const bad = runBuild(['--only', 'fa-d01', '--content', content, '--out', out]);
+    assert.equal(bad.status, 1);
+    assert.equal((bad.stdout.match(/E_LINK_UNKNOWN/g) ?? []).length, 2, bad.stdout);
+  });
+});
+
+test('curriculum errors stop the build with path and code', async () => {
+  await withContentCopy(async ({ content, out }) => {
+    const file = path.join(content, 'curriculum.json');
+    const cur = JSON.parse(await readFile(file, 'utf8'));
+    cur.projects[0].days[0].minutes = 30;
+    await writeFile(file, JSON.stringify(cur));
+    const r = runBuild(['--content', content, '--out', out]);
+    assert.equal(r.status, 1, r.output);
+    assert.match(r.stdout, /curriculum\.json E_CUR_SCHEMA .*minutes/);
+  });
+});
+
+test('orphan day file fails the build', async () => {
+  await withContentCopy(async ({ content, out }) => {
+    await writeFile(path.join(content, 'fb', 'day-02.md'), '## 아직 없는 Day\n');
+    await writeFile(path.join(content, 'fb', '_outline.md'), '개요는 무시해요\n');
+    const r = runBuild(['--content', content, '--out', out]);
+    assert.equal(r.status, 1, r.output);
+    assert.match(r.stdout, /fb[\\/]day-02\.md E_CUR_ORPHAN_FILE/);
+    assert.doesNotMatch(r.stdout, /_outline/);
+  });
+});
+
+test('duplicate glossary terms and a bad term link fail the build', async () => {
+  await withContentCopy(async ({ content, out }) => {
+    await writeFile(path.join(content, 'glossary', 'more.md'), '### 픽스처용어\n중복이에요.\n');
+    const r = runBuild(['--content', content, '--out', out]);
+    assert.equal(r.status, 1, r.output);
+    assert.match(r.stdout, /glossary[\\/]more\.md:1 E_TERM_DUPLICATE/);
+  });
+});
+
+test('troubleshooting page is generated from its fragments', async () => {
+  await withContentCopy(async ({ content, out }) => {
+    const file = path.join(content, 'curriculum.json');
+    const cur = JSON.parse(await readFile(file, 'utf8'));
+    cur.pages.push({ id: 'help', title: '문제 해결', generated: 'troubleshooting' });
+    await writeFile(file, JSON.stringify(cur));
+    await mkdir(path.join(content, 'troubleshooting'));
+    await writeFile(path.join(content, 'troubleshooting', 'fa-basic.md'), '### 화면이 비어 있어요\n저장했는지 확인해요. [[픽스처용어]]\n');
+    const r = runBuild(['--content', content, '--out', out]);
+    assert.equal(r.status, 0, r.output);
+    const html = await readFile(out, 'utf8');
+    const page = template(html, 't-page-help');
+    assert.match(page, /<h2[^>]*>픽스처 프로젝트 A<\/h2>/);
+    assert.match(page, /화면이 비어 있어요/);
+    assert.match(embeddedData(html).search.find((s) => s.id === 'help').text, /저장했는지/);
+  });
+});
+
+test('size over 16MB is an error', async () => {
+  await withContentCopy(async ({ content, out }) => {
+    const file = path.join(content, 'fa', 'day-02.md');
+    const src = await readFile(file, 'utf8');
+    // 코드 한 줄을 17MB 만큼 늘린다 (렌더 결과가 한도를 넘는다)
+    await writeFile(file, src.replace('1. 파일을 다시 열어요.', '```text\n' + 'a'.repeat(17 * 1024 * 1024) + '\n```'));
+    const r = runBuild(['--content', content, '--out', out]);
+    assert.equal(r.status, 1);
+    assert.match(r.stdout, /E_SIZE_LIMIT/);
+    assert.ok(!existsSync(out));
+  });
+});
+
+test('unknown flags exit 1 with usage', () => {
+  const r = runBuild(['--nope']);
+  assert.equal(r.status, 1);
+  assert.match(r.output, /--only/);
+});
+
+/** src 폴더 복사본(template.html 은 실제 파일, 나머지는 테스트용)으로 in-process 빌드한다 */
+async function buildWithSrc(files) {
+  return withTmp(async (tmp) => {
+    const srcDir = path.join(tmp, 'src');
+    await mkdir(path.join(srcDir, 'app'), { recursive: true });
+    await cp(path.join(ROOT, 'textbook', 'src', 'template.html'), path.join(srcDir, 'template.html'));
+    for (const [name, text] of Object.entries(files)) await writeFile(path.join(srcDir, name), text);
+    return build({ contentDir: FIXTURE, srcDir });
+  });
+}
+
+test('src/app is bundled into one inline script and styles.css is inlined', async () => {
+  const r = await buildWithSrc({
+    'styles.css': 'body{color:red}.x::after{content:"$&"}',
+    'app/util.js': 'export const greet = (n) => `안녕 ${n} </script> $&`;',
+    'app/main.js': 'import { greet } from "./util.js"; window.__wzh = greet("교재");',
+  });
+  assert.equal(r.ok, true, JSON.stringify(r.errors));
+  assert.deepEqual(r.warnings, []);
+  assert.ok(r.html.includes('<style>body{color:red}.x::after{content:"$&"}</style>'));
+  assert.doesNotMatch(r.html, /\bimport\b.*from/);
+  assert.equal((r.html.match(/<script>/g) ?? []).length, 1);
+  // 번들 안의 </script> 는 닫는 태그가 되지 않고, 실행하면 원래 값이 나온다
+  const code = /<script>([\s\S]*?)<\/script>\s*<\/body>/.exec(r.html)[1];
+  const win = {};
+  new Function('window', code)(win);
+  assert.equal(win.__wzh, '안녕 교재 </script> $&');
+});
+
+test('a broken script is reported as E_JS_BUNDLE with file and line', async () => {
+  const r = await buildWithSrc({ 'app/main.js': 'const ok = 1;\nconst = ;\n' });
+  assert.equal(r.ok, false);
+  assert.equal(r.errors[0].code, 'E_JS_BUNDLE');
+  assert.match(r.errors[0].file, /main\.js$/);
+  assert.equal(r.errors[0].line, 2);
+});
