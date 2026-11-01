@@ -50,6 +50,114 @@ public class OverlayHubTests
         Assert.Equal(DonationStatus.Shown, Assert.Single(all!).Status);
     }
 
+    private static async Task<DonationDto> FindAsync(HttpClient streamer, int id) =>
+        (await streamer.GetFromJsonAsync<List<DonationDto>>("/api/dashboard/donations", ApiFactory.Json))!.Single(d => d.Id == id);
+
+    [Fact]
+    public async Task Overlay_ConnectingLater_ReceivesApprovedBacklog()
+    {
+        await using var app = new ApiFactory();
+        var streamer = await app.CreateStreamerClientAsync("late-obs");
+
+        // OBS를 켜기 전에 승인했다 (이때는 받을 오버레이가 없다)
+        var id = await DonateAsync(app, "late-obs");
+        (await streamer.PostAsync($"/api/dashboard/donations/{id}/approve", null)).EnsureSuccessStatusCode();
+
+        // 나중에 오버레이가 연결되면 아직 보여 주지 못한 승인 후원을 받는다
+        await using var overlay = app.CreateOverlayConnection(await ApiFactory.GetOverlayTokenAsync(streamer));
+        var shown = new TaskCompletionSource<OverlayDonationDto>();
+        overlay.On<OverlayDonationDto>("ShowDonation", d => shown.TrySetResult(d));
+        await overlay.StartAsync();
+
+        Assert.Equal(id, (await shown.Task.WaitAsync(TimeSpan.FromSeconds(10))).Id);
+    }
+
+    [Fact]
+    public async Task EmergencyStop_MarksCleared_AndIsNotResentOnReconnect()
+    {
+        await using var app = new ApiFactory();
+        var streamer = await app.CreateStreamerClientAsync("panic");
+        var token = await ApiFactory.GetOverlayTokenAsync(streamer);
+
+        var id = await DonateAsync(app, "panic");
+        (await streamer.PostAsync($"/api/dashboard/donations/{id}/approve", null)).EnsureSuccessStatusCode();
+        var imageUrl = (await FindAsync(streamer, id)).ImageUrl!;
+
+        // 긴급 정지: 승인 후원이 Cleared가 되고 이미지도 지워진다
+        Assert.Equal(HttpStatusCode.NoContent, (await streamer.PostAsync("/api/dashboard/overlay/clear", null)).StatusCode);
+        var cleared = await FindAsync(streamer, id);
+        Assert.Equal(DonationStatus.Cleared, cleared.Status);
+        Assert.Null(cleared.ImageUrl);
+        Assert.Equal(HttpStatusCode.NotFound, (await app.CreateClient().GetAsync(imageUrl)).StatusCode);
+
+        // 오버레이를 다시 연결해도 내린 후원은 오지 않는다. 확인용으로 새 후원을 승인하면 그것이 "처음" 받는 후원이어야 한다
+        await using var overlay = app.CreateOverlayConnection(token);
+        var first = new TaskCompletionSource<int>();
+        overlay.On<OverlayDonationDto>("ShowDonation", d => first.TrySetResult(d.Id));
+        await overlay.StartAsync();
+        var next = await DonateAsync(app, "panic");
+        (await streamer.PostAsync($"/api/dashboard/donations/{next}/approve", null)).EnsureSuccessStatusCode();
+
+        Assert.Equal(next, await first.Task.WaitAsync(TimeSpan.FromSeconds(10)));
+        // 내린 뒤에는 다 보여 줬다는 신호(MarkShown)가 와도 Shown으로 되살아나지 않는다
+        await overlay.InvokeAsync("MarkShown", id);
+        Assert.Equal(DonationStatus.Cleared, (await FindAsync(streamer, id)).Status);
+    }
+
+    [Fact]
+    public async Task OverlayClear_OnlyReachesThatStreamersOverlay()
+    {
+        await using var app = new ApiFactory();
+        var streamerA = await app.CreateStreamerClientAsync("clear-a");
+        var streamerB = await app.CreateStreamerClientAsync("clear-b");
+        await using var overlayA = app.CreateOverlayConnection(await ApiFactory.GetOverlayTokenAsync(streamerA));
+        await using var overlayB = app.CreateOverlayConnection(await ApiFactory.GetOverlayTokenAsync(streamerB));
+        var clearedA = new TaskCompletionSource();
+        var clearsOnB = 0;
+        var shownOnB = new TaskCompletionSource<int>();
+        overlayA.On("Clear", () => clearedA.TrySetResult());
+        overlayB.On("Clear", () => Interlocked.Increment(ref clearsOnB));
+        overlayB.On<OverlayDonationDto>("ShowDonation", d => shownOnB.TrySetResult(d.Id));
+        await overlayA.StartAsync();
+        await overlayB.StartAsync();
+
+        (await streamerA.PostAsync("/api/dashboard/overlay/clear", null)).EnsureSuccessStatusCode();
+        await clearedA.Task.WaitAsync(TimeSpan.FromSeconds(10));
+
+        // B에게 메시지를 하나 더 보내서, 그 전에 Clear가 오지 않았음을 확인한다 (한 연결의 메시지는 순서대로 온다)
+        var id = await DonateAsync(app, "clear-b");
+        (await streamerB.PostAsync($"/api/dashboard/donations/{id}/approve", null)).EnsureSuccessStatusCode();
+        Assert.Equal(id, await shownOnB.Task.WaitAsync(TimeSpan.FromSeconds(10)));
+        Assert.Equal(0, clearsOnB);
+    }
+
+    [Fact]
+    public async Task RotateToken_OldConnectionIsAbortedOnMarkShown()
+    {
+        await using var app = new ApiFactory();
+        var streamer = await app.CreateStreamerClientAsync("leaked");
+        await using var oldOverlay = app.CreateOverlayConnection(await ApiFactory.GetOverlayTokenAsync(streamer));
+        var shown = new TaskCompletionSource<int>();
+        var closed = new TaskCompletionSource();
+        oldOverlay.On<OverlayDonationDto>("ShowDonation", d => shown.TrySetResult(d.Id));
+        oldOverlay.Closed += _ =>
+        {
+            closed.TrySetResult();
+            return Task.CompletedTask;
+        };
+        await oldOverlay.StartAsync();
+
+        var id = await DonateAsync(app, "leaked");
+        (await streamer.PostAsync($"/api/dashboard/donations/{id}/approve", null)).EnsureSuccessStatusCode();
+        Assert.Equal(id, await shown.Task.WaitAsync(TimeSpan.FromSeconds(10)));
+
+        // 주소가 새어 나가 재발급했다. 옛 주소로 열려 있던 연결이 서버를 부르면 그 자리에서 끊긴다
+        (await streamer.PostAsync("/api/dashboard/overlay-token/rotate", null)).EnsureSuccessStatusCode();
+        await Assert.ThrowsAnyAsync<Exception>(() => oldOverlay.InvokeAsync("MarkShown", id));
+        await closed.Task.WaitAsync(TimeSpan.FromSeconds(10));
+        Assert.Equal(DonationStatus.Approved, (await FindAsync(streamer, id)).Status); // 옛 연결의 신호는 반영되지 않는다
+    }
+
     [Fact]
     public async Task OverlayHub_RejectsBadToken()
     {

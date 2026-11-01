@@ -13,6 +13,8 @@ public sealed record CheeseDonationEvent(
 // 후원 이벤트를 "보내 주는 쪽"의 공통 모양.
 // 진짜(ChzzkSessionSource)와 가짜(FakeDonationSource)가 같은 이벤트를 내보내므로,
 // 받는 쪽(DonationService)은 어느 쪽에서 왔는지 신경 쓰지 않아도 된다.
+// 주의: 처리기를 여러 개 붙이면 `await DonationReceived(evt)`는 "마지막" 처리기의 Task만 기다린다.
+// 이 프로젝트는 Program.cs에서 처리기를 딱 하나만 붙인다. 여러 개가 필요하면 GetInvocationList()로 하나씩 기다려야 한다.
 public interface IDonationEventSource
 {
     event Func<CheeseDonationEvent, Task>? DonationReceived;

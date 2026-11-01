@@ -10,20 +10,32 @@ export default function SettingsPage() {
   const [bannedText, setBannedText] = useState('') // 금지어: 한 줄에 하나
   const [token, setToken] = useState('')
   const [notice, setNotice] = useState('')
+  const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
     let ignore = false
-    Promise.all([getSettings(), getOverlayToken()]).then(([s, t]) => {
-      if (ignore) return
-      setSettings(s)
-      setBannedText(s.bannedWords.join('\n'))
-      setToken(t.overlayToken)
-    })
+    Promise.all([getSettings(), getOverlayToken()])
+      .then(([s, t]) => {
+        if (ignore) return
+        setSettings(s)
+        setBannedText(s.bannedWords.join('\n'))
+        setToken(t.overlayToken)
+      })
+      .catch((e) => {
+        if (!ignore) setLoadError(e instanceof Error ? e.message : '설정을 불러오지 못했어요.')
+      })
     return () => {
       ignore = true
     }
   }, [])
 
+  if (loadError) {
+    return (
+      <p role="alert" className="error">
+        {loadError} 새로고침해 주세요.
+      </p>
+    )
+  }
   if (!settings) return <p>불러오는 중…</p>
 
   // 입력 하나를 바꿀 때: 나머지 값은 그대로 두고 새 객체를 만든다
@@ -45,8 +57,12 @@ export default function SettingsPage() {
 
   async function handleRotate() {
     if (!window.confirm('오버레이 주소를 새로 만들까요? OBS의 브라우저 소스 주소도 바꿔야 해요.')) return
-    setToken((await rotateOverlayToken()).overlayToken)
-    setNotice('새 오버레이 주소를 만들었어요. 옛 주소는 더 이상 동작하지 않아요.')
+    try {
+      setToken((await rotateOverlayToken()).overlayToken)
+      setNotice('새 오버레이 주소를 만들었어요. 옛 주소는 더 이상 동작하지 않아요.')
+    } catch (e) {
+      setNotice(e instanceof Error ? e.message : '재발급하지 못했어요. 다시 시도해 주세요.')
+    }
   }
 
   async function handleCopy() {

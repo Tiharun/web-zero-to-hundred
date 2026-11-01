@@ -85,9 +85,17 @@ public static class PublicEndpoints
         }
     }
 
-    private static IResult GetMedia(string file, IImageStorage storage, HttpContext http)
+    // 보여 줄 수 있는 상태의 후원 이미지만 준다. 파일이 남아 있어도 거절(신고 포함)·만료·긴급 정지된 후원이거나
+    // DB에 없는 파일이면 404 → 신고된 이미지는 증거로 남아 있지만 오버레이·시청자 누구에게도 나가지 않는다(격리)
+    private static async Task<IResult> GetMedia(string file, IImageStorage storage, AppDbContext db, HttpContext http)
     {
-        var stream = storage.OpenRead(file); // 이름 형식(GUID.webp)이 아니면 null
+        var status = await db.Donations.AsNoTracking()
+            .Where(d => d.ImageFile == file)
+            .Select(d => (DonationStatus?)d.Status)
+            .FirstOrDefaultAsync();
+        if (status is null || !DonationDto.ImageVisible(status.Value)) return Results.NotFound();
+
+        var stream = storage.OpenRead(file); // 이름 형식(GUID.webp)이 아니거나 파일이 없으면 null
         if (stream is null) return Results.NotFound();
 
         http.Response.Headers.CacheControl = "private, max-age=3600";

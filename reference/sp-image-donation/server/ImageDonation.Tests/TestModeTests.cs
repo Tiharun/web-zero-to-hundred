@@ -1,7 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
+using ImageDonation.Api.Data;
 using ImageDonation.Api.Dtos;
 using ImageDonation.Api.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ImageDonation.Tests;
 
@@ -30,6 +33,25 @@ public class TestModeTests
         Assert.Equal(created.Id, pending.Id);
         Assert.Equal(1000, pending.CheeseAmount);
         Assert.Empty(await ListAsync(streamer, "AwaitingCheese"));
+    }
+
+    [Fact]
+    public async Task CheeseEvents_StoreOnlyWhatMatchingNeeds()
+    {
+        await using var app = new ApiFactory();
+        var free = await app.CreateStreamerClientAsync("free-events");
+        var cheese = await app.CreateStreamerClientAsync("cheese-events");
+        await ApiFactory.UpdateSettingsAsync(cheese, s => s with { Mode = DonationMode.Cheese });
+
+        // 무료 모드: 이벤트를 아예 저장하지 않는다 / 치즈 모드: 코드가 없어도 금액·시각만 남긴다
+        await PostTestDonation(free, 1000, "아무 메시지");
+        await PostTestDonation(cheese, 1000, "코드 없는 메시지");
+
+        using var scope = app.Services.CreateScope();
+        var events = await scope.ServiceProvider.GetRequiredService<AppDbContext>().DonationEvents.AsNoTracking().ToListAsync();
+        var only = Assert.Single(events);
+        Assert.Equal((1000, "test", (int?)null), (only.PayAmount, only.Source, only.MatchedDonationId));
+        // DonationEvent에는 후원자 닉네임·메시지 열 자체가 없다 (엔티티 정의 참고)
     }
 
     [Fact]

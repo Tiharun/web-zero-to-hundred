@@ -1,3 +1,5 @@
+using System.Buffers.Binary;
+using System.IO.Compression;
 using System.Text;
 using SkiaSharp;
 
@@ -27,41 +29,55 @@ public static class TestImages
         return [.. jpeg.AsSpan(0, 2), .. ExifSegment(orientation), .. jpeg.AsSpan(2)];
     }
 
-    // 3장면짜리 움직이는 GIF (빨강 → 초록 → 파랑). SkiaSharp은 GIF를 저장하지 못해서 바이트를 직접 쓴다
-    public static byte[] AnimatedGif(int width = 40, int height = 30)
-    {
-        using var stream = new MemoryStream();
-        using var w = new BinaryWriter(stream); // BinaryWriter는 리틀 엔디언: GIF와 같다
-        w.Write("GIF89a"u8);
-        w.Write((ushort)width);
-        w.Write((ushort)height);
-        w.Write((byte)0b1000_0001); // 전역 색상표 있음, 4색
-        w.Write((byte)0);           // 배경색 번호
-        w.Write((byte)0);           // 화면 비율
-        w.Write([255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0]); // 색상표: 빨강, 초록, 파랑, 검정
+    // 3장면짜리 움직이는 GIF (4×3픽셀, 빨강 → 초록 → 파랑). SkiaSharp은 GIF를 저장하지 못해서 바이트를 그대로 적어 둔다 (113바이트)
+    public static byte[] AnimatedGif() => Convert.FromHexString(
+        "47494638396104000300810000" +                                     // "GIF89a", 4×3, 전역 색상표 4색
+        "FF000000FF000000FF000000" +                                       // 색상표: 빨강, 초록, 파랑, 검정
+        "21F904000A0000002C0000000004000300000208040810204080400100" +     // 장면 1: 0.1초, 모두 빨강
+        "21F904000A0000002C00000000040003000002084C983061C284490100" +     // 장면 2: 모두 초록
+        "21F904000A0000002C0000000004000300000208942851A24489520100" +     // 장면 3: 모두 파랑
+        "3B");                                                            // 파일 끝
 
-        for (byte color = 0; color < 3; color++)
+    // 머리글(IHDR)에는 width×height라고 적혀 있지만 픽셀 데이터는 거의 없는 PNG.
+    // 디코딩 전에 크기만 보고 거절하는지 확인할 때 쓴다 (실제로 그만큼 메모리를 쓰는 그림을 만들 필요가 없다)
+    public static byte[] PngHeaderClaiming(int width, int height)
+    {
+        var header = new byte[13];
+        BinaryPrimitives.WriteInt32BigEndian(header, width);
+        BinaryPrimitives.WriteInt32BigEndian(header.AsSpan(4), height);
+        header[8] = 8; // 비트 깊이
+        header[9] = 6; // RGBA
+        using var zlib = new MemoryStream();
+        using (var z = new ZLibStream(zlib, CompressionLevel.Fastest, leaveOpen: true)) z.Write(new byte[16]);
+        return [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, .. PngChunk("IHDR", header), .. PngChunk("IDAT", zlib.ToArray()), .. PngChunk("IEND", [])];
+    }
+
+    // 큰 JPEG (예: 5000×4000 휴대폰 사진)
+    public static byte[] LargeJpeg(int width, int height)
+    {
+        using var bitmap = TwoColors(width, height, Left, Right);
+        return Encode(bitmap, SKEncodedImageFormat.Jpeg);
+    }
+
+    private static byte[] PngChunk(string type, byte[] data)
+    {
+        byte[] typeAndData = [.. Encoding.ASCII.GetBytes(type), .. data];
+        var length = new byte[4];
+        var crc = new byte[4];
+        BinaryPrimitives.WriteInt32BigEndian(length, data.Length);
+        BinaryPrimitives.WriteUInt32BigEndian(crc, Crc32(typeAndData)); // PNG는 조각마다 CRC를 검사한다
+        return [.. length, .. typeAndData, .. crc];
+    }
+
+    private static uint Crc32(ReadOnlySpan<byte> bytes)
+    {
+        var crc = 0xFFFFFFFFu;
+        foreach (var b in bytes)
         {
-            w.Write([0x21, 0xF9, 0x04, 0x00, 10, 0, 0x00, 0x00]); // 그래픽 제어 확장: 0.1초씩 보여 주기
-            w.Write((byte)0x2C);                                   // 그림 시작
-            w.Write((ushort)0);
-            w.Write((ushort)0);
-            w.Write((ushort)width);
-            w.Write((ushort)height);
-            w.Write((byte)0);
-            w.Write((byte)2); // LZW 최소 코드 크기
-            var lzw = SolidLzw(width * height, color);
-            for (var i = 0; i < lzw.Length; i += 255) // 데이터는 255바이트 이하 조각으로 나눈다
-            {
-                var length = Math.Min(255, lzw.Length - i);
-                w.Write((byte)length);
-                w.Write(lzw, i, length);
-            }
-            w.Write((byte)0); // 이 그림의 데이터 끝
+            crc ^= b;
+            for (var bit = 0; bit < 8; bit++) crc = (crc & 1) != 0 ? (crc >> 1) ^ 0xEDB88320u : crc >> 1;
         }
-        w.Write((byte)0x3B); // 파일 끝
-        w.Flush();
-        return stream.ToArray();
+        return ~crc;
     }
 
     private static SKBitmap TwoColors(int width, int height, SKColor left, SKColor right)
@@ -108,35 +124,5 @@ public static class TestImages
         byte[] payload = [.. "Exif\0\0"u8, .. tiff.ToArray()];
         var length = payload.Length + 2; // 길이 칸(2바이트, 빅 엔디언)은 자기 자신을 포함한다
         return [0xFF, 0xE1, (byte)(length >> 8), (byte)length, .. payload];
-    }
-
-    // 한 가지 색으로 채운 그림의 LZW 데이터.
-    // 글자 2개마다 Clear(4)를 넣어 사전이 커지지 않게 하면 코드 길이가 3비트로 고정된다 (압축은 안 되지만 올바른 GIF)
-    private static byte[] SolidLzw(int pixelCount, byte colorIndex)
-    {
-        const int clear = 4, end = 5, bits = 3;
-        var codes = new List<int>();
-        for (var i = 0; i < pixelCount; i++)
-        {
-            if (i % 2 == 0) codes.Add(clear);
-            codes.Add(colorIndex);
-        }
-        codes.Add(end);
-
-        var output = new List<byte>();
-        int buffer = 0, count = 0;
-        foreach (var code in codes) // 코드를 낮은 비트부터 차례로 채운다
-        {
-            buffer |= code << count;
-            count += bits;
-            while (count >= 8)
-            {
-                output.Add((byte)buffer);
-                buffer >>= 8;
-                count -= 8;
-            }
-        }
-        if (count > 0) output.Add((byte)buffer);
-        return [.. output];
     }
 }

@@ -85,13 +85,15 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         };
     }
 
-    // 오버레이 SignalR 연결 (TestServer에서는 롱 폴링으로 붙는다)
+    // 오버레이 SignalR 연결: 실제 OBS처럼 웹소켓으로 붙는다 (TestServer 안의 가짜 웹소켓)
     public HubConnection CreateOverlayConnection(string token) =>
         new HubConnectionBuilder()
             .WithUrl(new Uri(Server.BaseAddress, $"/hubs/overlay?token={Uri.EscapeDataString(token)}"), o =>
             {
-                o.Transports = HttpTransportType.LongPolling;
-                o.HttpMessageHandlerFactory = _ => Server.CreateHandler();
+                o.Transports = HttpTransportType.WebSockets;
+                o.HttpMessageHandlerFactory = _ => Server.CreateHandler(); // 협상(negotiate) 요청
+                o.WebSocketFactory = (context, ct) => new ValueTask<System.Net.WebSockets.WebSocket>(
+                    Server.CreateWebSocketClient().ConnectAsync(context.Uri, ct));
             })
             .AddJsonProtocol(o => o.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
             .Build();

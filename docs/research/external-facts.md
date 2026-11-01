@@ -488,7 +488,7 @@
 | Windows 설치 마법사 한국어 화면 문구 전반(Git, Node, Docker, VS Code Copilot 페이지) | 영어 원문 소스 기준, 실기 미확인 | 텍스트 안내 + "같은 위치의 선택지" 문구 |
 | Render 무료 인스턴스 카드 요구, Cloudflare Pages 카드·대역폭 | 공식 문서 직접 확인 못 함 | 가입 화면에서 확인하도록 안내 |
 | Azure F1에서 SQLite 파일 영속성 | 미확인 | P2 배포는 선택 실습, 본선은 로컬 |
-| SkiaSharp·Magick.NET의 판별·EXIF·WebP 기능 | 미실행 확인 | ImageSharp 선택(실행 확인) |
+| SkiaSharp·Magick.NET의 판별·EXIF·WebP 기능 | **SkiaSharp은 해소**: 판별(`SKCodec`)·첫 장면 디코딩·축소 디코딩·EXIF 방향·WebP 인코딩·Docker(`aspnet:10.0`) 동작을 실행 확인(12절). Windows에서 실제 실행은 미확인(패키지 그래프·게시 결과만 확인). Magick.NET은 미실행 | **SkiaSharp 4.154.0 선택**(MIT, 빌드 시 라이선스 키 없음, Ruling R28). ImageSharp 3.2+/4.x는 Release 빌드에 키가 필요해 쓰지 않음 |
 | OBS 실제 화면, 브라우저 소스 투명도 실제 합성 | 소스 코드 기준, 실행 안 함 | 오버레이 CSS에서 배경 투명을 명시 |
 
 ## 부록 B. 이 조사에서 실행한 검증 (재현 가능한 요약)
@@ -496,7 +496,7 @@
 - Node 22.23.4: `npm i -D typescript@7.0.2` → `npx tsc --version` = `Version 7.0.2`, `npx tsc --init`, `npx tsc hello.ts`(→ TS5112), `npx tsc --ignoreConfig hello.ts --outDir out`, `node hello.ts`(네이티브 실행 성공)
 - `apt-get install -y dotnet-sdk-10.0` → SDK 10.0.114 / 런타임 10.0.14. `dotnet new list`, `dotnet new sln|web|webapi|console|xunit`, 기능 확인 프로젝트에서 `AddValidation`(public 레코드·쿼리 매개변수 → 400, internal 레코드 → 검증 없음), `TypedResults.ServerSentEvents`, `MapIdentityApi` + `/login?useCookies=true`(쿠키 발급·보호 엔드포인트 200), `AddFixedWindowLimiter`(200 200 200 429 429), `dotnet tool install … dotnet-ef`(10.0.14)
 - 로컬 `socket.io@2.5.0` 서버(포트 5099, 서버 로그 `EIO= 3`) ↔ `SocketIOClient 4.0.5` 콘솔 앱: `Query["auth"]` 전달 성공 / `Uri` 쿼리는 전달 안 됨 / `SYSTEM`·`DONATION` JSON 문자열 수신
-- `SixLabors.ImageSharp 4.1.3` 콘솔 앱: 형식 판별, `Identify`, 비이미지 예외, EXIF 제거, WebP 인코딩
+- `SkiaSharp 4.154.0`(+ `SkiaSharp.NativeAssets.Linux.NoDependencies`): SP 레퍼런스 `ImageProcessor` 테스트와 Docker Release 이미지에서 형식 판별(`SKCodec.Create`가 비이미지에 null), 첫 장면 디코딩, `GetScaledDimensions` 축소 디코딩(JPEG 1/8 단위, 내림), EXIF 방향, EXIF·ICC 없는 WebP 재인코딩, GIF 인코딩 미지원(null) 확인. 처음 선택이던 `SixLabors.ImageSharp 4.1.3` 콘솔 앱(형식 판별, `Identify`, 비이미지 예외, EXIF 제거, WebP 인코딩)은 비교용으로 12절에 남김. ImageSharp 4.1.3을 직접 참조하면 키 없이 `dotnet build -c Release`가 실패함도 확인
 - 보정 라운드 추가 실행(2026-11-01): ① 격리된 `RUSTUP_HOME`에 `rustup toolchain install stable --profile minimal`(rustc 1.99.1)만 설치 → `cargo build --target wasm32-unknown-unknown --release`가 `E0463 can't find crate for core`로 실패 → `rustup target add wasm32-unknown-unknown` 후 성공, 같은 환경에서 axum/tokio/serde/sqlx/tracing 조합 `cargo check` 통과 ② 위 wasm 앱을 `vite --port 5199` 개발 서버로 띄워 Playwright Chromium에서 출력 확인, `.wasm`은 `200 application/wasm` ③ `rand`+`getrandom(wasm_js)` wasm을 `python3 -m http.server`로 서빙해 `roll()` 30회 호출(전부 1~6, 6가지 값, 콘솔 오류 0) ④ `socket.io@2.5.0` 에뮬레이터가 문자열·객체 두 형태의 `DONATION`을 보내고 `SocketIOClient 4.0.5`가 `GetValue<JsonElement>(0)`로 둘 다 처리(`payAmount` 문자열 `1000`, 숫자 `2500`) ⑤ TS 7 새 프로젝트: `types: []`에서 TS2591, `type: module` 없을 때 TS1295, `@types/node@26.6.6` + `"types": ["node"]` + `"type": "module"` 후 `tsc --noEmit` 통과 ⑥ `create-vite@9.3.3` `dist/index.js`에서 대화형 질문 문구 추출 ⑦ Node 26.13.0 Windows ZIP 목록에서 `npm.ps1`/`npm.cmd` 확인 ⑧ 스크래치 저장소(프로젝트 밖)에서 `git -c init.defaultBranch=main init` 확인
 - Rust 1.97.0: `cargo install wasm-bindgen-cli --version 0.2.130`, `cargo build --target wasm32-unknown-unknown --release`, `wasm-bindgen --target web`, `npm create vite@latest app -- --template vanilla-ts` + `vite build` + Playwright Chromium에서 wasm 출력 확인, `rand 0.10.3` + `getrandom 0.4.3(wasm_js)` wasm32 빌드, axum 0.8.9(ws)/tokio/serde/sqlx 0.9.0/tracing 조합 `cargo check` 통과
 

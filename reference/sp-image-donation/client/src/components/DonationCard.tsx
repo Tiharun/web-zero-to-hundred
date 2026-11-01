@@ -6,12 +6,13 @@ interface Props {
   onApprove: (id: number) => void
   onReject: (id: number) => void
   onBlock: (id: number) => void
+  onReport: (id: number) => void
 }
 
 const timeText = (iso: string) => new Date(iso).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
 
 // 검수 카드 1장. 닉네임·메시지는 {} 로 넣으므로 React가 글자로 출력한다(HTML로 해석하지 않음)
-export default function DonationCard({ donation: d, onApprove, onReject, onBlock }: Props) {
+export default function DonationCard({ donation: d, onApprove, onReject, onBlock, onReport }: Props) {
   return (
     <article className={`card status-${d.status}`}>
       {d.imageUrl ? (
@@ -31,19 +32,27 @@ export default function DonationCard({ donation: d, onApprove, onReject, onBlock
           </p>
         )}
         {d.cheeseAmount !== null && <p className="meta">치즈 {d.cheeseAmount.toLocaleString('ko-KR')}개 확인</p>}
-        {d.status === 'Pending' && (
-          <div className="actions">
-            <button type="button" onClick={() => onApprove(d.id)}>
-              승인
+        <div className="actions">
+          {d.status === 'Pending' && (
+            <>
+              <button type="button" onClick={() => onApprove(d.id)}>
+                승인
+              </button>
+              <button type="button" onClick={() => onReject(d.id)}>
+                거절
+              </button>
+              <button type="button" className="quiet" onClick={() => onBlock(d.id)}>
+                차단
+              </button>
+            </>
+          )}
+          {/* 신고는 방송에 나간 뒤에도 할 수 있다 (만료된 후원은 이미지가 없고 방송에도 안 나갔다) */}
+          {d.status !== 'Expired' && (
+            <button type="button" className="quiet" onClick={() => onReport(d.id)}>
+              신고
             </button>
-            <button type="button" onClick={() => onReject(d.id)}>
-              거절
-            </button>
-            <button type="button" className="quiet" onClick={() => onBlock(d.id)}>
-              차단
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </article>
   )

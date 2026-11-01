@@ -44,12 +44,17 @@ function CreateStreamerForm({ onCreated }: { onCreated: () => void }) {
 
 function OnboardingGuide({ slug }: { slug: string }) {
   const [token, setToken] = useState('')
+  const [error, setError] = useState('')
 
   useEffect(() => {
     let ignore = false
-    getOverlayToken().then((r) => {
-      if (!ignore) setToken(r.overlayToken)
-    })
+    getOverlayToken()
+      .then((r) => {
+        if (!ignore) setToken(r.overlayToken)
+      })
+      .catch((e) => {
+        if (!ignore) setError(e instanceof Error ? e.message : '오버레이 주소를 불러오지 못했어요.')
+      })
     return () => {
       ignore = true
     }
@@ -71,7 +76,13 @@ function OnboardingGuide({ slug }: { slug: string }) {
             주소를 붙여 넣으세요. <strong>너비</strong> 1920, <strong>높이</strong> 1080으로 바꾸세요. 이 주소는 비밀번호처럼 다루세요(유출되면
             설정에서 재발급).
           </p>
-          <input readOnly aria-label="오버레이 주소" value={token ? overlayUrl(token) : '불러오는 중…'} onFocus={(e) => e.target.select()} />
+          {error ? (
+            <p role="alert" className="error">
+              {error} 설정 화면에서 다시 확인해 주세요.
+            </p>
+          ) : (
+            <input readOnly aria-label="오버레이 주소" value={token ? overlayUrl(token) : '불러오는 중…'} onFocus={(e) => e.target.select()} />
+          )}
         </li>
         <li>
           <h2>테스트 후원</h2>

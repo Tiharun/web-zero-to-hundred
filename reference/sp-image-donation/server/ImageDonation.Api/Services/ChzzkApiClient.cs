@@ -2,8 +2,10 @@ using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using ImageDonation.Api.Data;
 using ImageDonation.Api.Entities;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace ImageDonation.Api.Services;
@@ -36,7 +38,8 @@ public sealed record ChzzkUser(string ChannelId, string ChannelName);
 // 응답 공통 형식: 성공 {"code":200,"message":null,"content":{...}}, 실패 {"code":401,"message":"INVALID_TOKEN"}
 public sealed class ChzzkApiClient(HttpClient http, IOptions<ChzzkOptions> options, IDataProtectionProvider dataProtection, TimeProvider time)
 {
-    // 리프레시 토큰은 1회용이라, 같은 토큰으로 두 번 동시에 갱신하면 하나는 반드시 실패한다 → 한 번에 하나씩
+    // 리프레시 토큰은 1회용이라, 같은 토큰으로 두 번 동시에 갱신하면 하나는 반드시 실패한다 → 한 번에 하나씩.
+    // (서버 프로세스 하나 안에서만 지켜진다. 서버를 여러 대 띄우면 DB 잠금 같은 다른 방법이 필요하다)
     private static readonly SemaphoreSlim RefreshLock = new(1, 1);
 
     private readonly ChzzkOptions _options = options.Value;
@@ -80,19 +83,22 @@ public sealed class ChzzkApiClient(HttpClient http, IOptions<ChzzkOptions> optio
 
     public string ReadRefreshToken(ChzzkToken entity) => _protector.Unprotect(entity.RefreshTokenProtected);
 
-    // 쓸 수 있는 Access Token을 돌려준다. 만료 5분 전부터는 먼저 갱신하고 새 토큰 쌍으로 바꿔 둔다
-    public async Task<string> GetValidAccessTokenAsync(ChzzkToken entity, CancellationToken ct = default)
+    // 쓸 수 있는 Access Token을 돌려준다. 만료 5분 전부터는 갱신해서 새 토큰 쌍을 DB에 저장한다
+    public async Task<string> GetValidAccessTokenAsync(AppDbContext db, string userId, CancellationToken ct = default)
     {
-        if (entity.AccessTokenExpiresAt - time.GetUtcNow() > TimeSpan.FromMinutes(5))
-        {
-            return _protector.Unprotect(entity.AccessTokenProtected);
-        }
+        var token = await db.ChzzkTokens.SingleAsync(t => t.UserId == userId, ct);
+        if (IsFresh(token)) return _protector.Unprotect(token.AccessTokenProtected);
 
         await RefreshLock.WaitAsync(ct);
         try
         {
-            var refreshed = await RefreshAsync(ReadRefreshToken(entity), ct);
-            StoreTokens(entity, refreshed); // 옛 리프레시 토큰은 이제 무효 → 바로 덮어쓴다
+            // 잠금을 기다리는 동안 다른 요청이 이미 갱신했을 수 있다 → DB에서 다시 읽는다
+            await db.Entry(token).ReloadAsync(ct);
+            if (IsFresh(token)) return _protector.Unprotect(token.AccessTokenProtected);
+
+            var refreshed = await RefreshAsync(ReadRefreshToken(token), ct);
+            StoreTokens(token, refreshed); // 옛 리프레시 토큰은 이제 무효 → 바로 덮어쓴다
+            await db.SaveChangesAsync(ct); // 잠금 안에서 저장해야 다음 요청이 새 토큰을 읽는다
             return refreshed.AccessToken;
         }
         finally
@@ -100,6 +106,8 @@ public sealed class ChzzkApiClient(HttpClient http, IOptions<ChzzkOptions> optio
             RefreshLock.Release();
         }
     }
+
+    private bool IsFresh(ChzzkToken token) => token.AccessTokenExpiresAt - time.GetUtcNow() > TimeSpan.FromMinutes(5);
 
     // 로그인한 사용자의 채널 정보 (Scope: 유저 정보 조회)
     public async Task<ChzzkUser> GetMeAsync(string accessToken, CancellationToken ct = default)
@@ -171,7 +179,8 @@ public sealed class ChzzkApiClient(HttpClient http, IOptions<ChzzkOptions> optio
     {
         try
         {
-            root = JsonDocument.Parse(text).RootElement.Clone();
+            using var document = JsonDocument.Parse(text); // JsonDocument는 빌린 메모리를 쓰므로 다 쓰면 돌려준다
+            root = document.RootElement.Clone();           // Clone: document를 닫아도 쓸 수 있는 복사본
             return true;
         }
         catch (JsonException)

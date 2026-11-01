@@ -14,7 +14,8 @@ public sealed partial class LocalImageStorage : IImageStorage
     }
 
     // 우리가 만든 이름(GUID 32자리 + .webp)만 허용 → "../" 같은 경로 조작을 원천 차단
-    [GeneratedRegex("^[0-9a-f]{32}\\.webp$")]
+    // 끝은 $가 아니라 \z: $는 맨 끝의 줄바꿈("…webp\n")도 통과시킨다
+    [GeneratedRegex("^[0-9a-f]{32}\\.webp\\z")]
     private static partial Regex FileNamePattern();
 
     public static bool IsValidFileName(string fileName) => FileNamePattern().IsMatch(fileName);

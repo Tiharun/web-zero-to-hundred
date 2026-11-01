@@ -9,15 +9,22 @@ public sealed class InvalidImageException(string message) : Exception(message);
 public sealed record ProcessedImage(byte[] Content, string Extension, int Width, int Height);
 
 // 업로드 이미지 검사·정리 (SkiaSharp 사용, MIT 라이선스)
-// 순서: 매직 넘버 → 머리글 읽기(형식·크기) → 첫 장면 디코딩 → 리사이즈 → 방향 보정 → WebP 재인코딩
+// 순서: 매직 넘버 → 머리글 읽기(형식·크기) → 첫 장면 디코딩(가능하면 줄여서) → 리사이즈 → 방향 보정 → WebP 재인코딩
 // 확장자와 Content-Type은 시청자가 마음대로 바꿀 수 있으므로 믿지 않는다.
 // 재인코딩은 "픽셀만" 새 파일로 쓰기 때문에 EXIF(위치·기기 정보) 같은 메타데이터는 따라가지 않는다.
 // SKData·SKCodec·SKBitmap·SKImage는 네이티브 메모리를 쓰므로 모두 using으로 바로 돌려준다.
 public sealed class ImageProcessor
 {
-    public const int MaxLongSide = 1280;       // 긴 변 최대 1280px
-    private const long MaxPixels = 50_000_000; // 디코딩 전에 거르는 최대 픽셀 수 (압축 폭탄 방지)
+    public const int MaxLongSide = 1280; // 긴 변 최대 1280px
     private const int WebpQuality = 80;
+
+    // 머리글에 적힌 원본 크기 상한: 1억 픽셀 (예: 12000×8000). 이보다 크면 디코딩을 시작하지 않는다
+    public const long MaxSourcePixels = 100_000_000;
+
+    // 실제로 메모리에 풀 그림의 상한: 4096×4096 = 16,777,216픽셀 = RGBA 4바이트로 64MB.
+    // JPEG·WebP는 "줄여서 바로 풀기"(축소 디코딩)를 하므로 큰 사진도 이 안에 들어오고,
+    // 줄여서 풀 수 없는 PNG·GIF는 원본 크기 그대로라 이 크기를 넘으면 거절한다 (압축 폭탄 방지)
+    public const long MaxDecodePixels = 4096L * 4096L;
 
     // 파일 맨 앞 몇 바이트(매직 넘버)로 형식을 확인한다: JPEG·PNG·GIF·WebP만 허용
     public static bool HasAllowedSignature(ReadOnlySpan<byte> h)
@@ -44,34 +51,55 @@ public sealed class ImageProcessor
         {
             throw new InvalidImageException("JPEG·PNG·WebP·GIF 이미지만 올릴 수 있어요.");
         }
-        if ((long)codec.Info.Width * codec.Info.Height > MaxPixels)
+        if ((long)codec.Info.Width * codec.Info.Height > MaxSourcePixels)
         {
             throw new InvalidImageException("이미지 해상도가 너무 커요.");
         }
 
-        // 2) 실제로 디코딩해 본다: 머리글만 이미지인 가짜 파일은 여기서 걸린다
-        using var decoded = DecodeFirstFrame(codec);
+        // 2) 풀 크기를 정한다: 줄여서 풀 수 있는 형식(JPEG·WebP)은 필요한 만큼만 작게 푼다
+        var decodeSize = ChooseDecodeSize(codec);
+        if ((long)decodeSize.Width * decodeSize.Height > MaxDecodePixels)
+        {
+            throw new InvalidImageException("이미지 해상도가 너무 커요.");
+        }
 
-        // 3) 긴 변이 1280px를 넘으면 줄인다 (작은 이미지는 그대로)
+        // 3) 실제로 디코딩해 본다: 머리글만 이미지인 가짜 파일은 여기서 걸린다
+        using var decoded = DecodeFirstFrame(codec, decodeSize);
+
+        // 4) 긴 변이 아직 1280px를 넘으면 마저 줄인다 (작은 이미지는 그대로)
         using var resized = ShrinkToFit(decoded); // 줄일 필요가 없으면 null
         var source = resized ?? decoded;
 
-        // 4) EXIF의 방향 정보를 픽셀에 적용한다 (EXIF를 버려도 휴대폰 세로 사진이 똑바로 보이도록)
+        // 5) EXIF의 방향 정보를 픽셀에 적용한다 (EXIF를 버려도 휴대폰 세로 사진이 똑바로 보이도록)
         using var oriented = ApplyOrigin(source, codec.EncodedOrigin);
 
-        // 5) WebP로 새로 저장(재인코딩): 원본 파일의 바이트(메타데이터 포함)는 하나도 남지 않는다
+        // 6) WebP로 새로 저장(재인코딩): 원본 파일의 바이트(메타데이터 포함)는 하나도 남지 않는다
         using var image = SKImage.FromBitmap(oriented);
         using var encoded = image.Encode(SKEncodedImageFormat.Webp, WebpQuality)
             ?? throw new InvalidOperationException("WebP로 저장하지 못했어요.");
         return new ProcessedImage(encoded.ToArray(), ".webp", oriented.Width, oriented.Height);
     }
 
+    // 긴 변이 1280px 이상 남는 가장 작은 "줄여서 풀기" 크기를 고른다.
+    // JPEG는 1/8 단위(1/8, 2/8, … 8/8)로만 줄일 수 있고 결과를 내림하므로, 작은 쪽부터 차례로 물어본다.
+    // PNG·GIF는 줄여서 풀 수 없어서 어떤 배율을 물어도 원래 크기를 돌려준다 → 첫 번째에 바로 원래 크기
+    private static SKSizeI ChooseDecodeSize(SKCodec codec)
+    {
+        var target = Math.Min(MaxLongSide, Math.Max(codec.Info.Width, codec.Info.Height));
+        for (var eighths = 1; eighths < 8; eighths++)
+        {
+            var size = codec.GetScaledDimensions(eighths / 8f);
+            if (Math.Max(size.Width, size.Height) >= target) return size;
+        }
+        return codec.Info.Size;
+    }
+
     // 첫 장면(frameIndex 0)만 디코딩한다.
     // 애니메이션 GIF·WebP 정책: 첫 장면 1장만 정지 이미지로 쓴다 (CPU·메모리 보호)
-    private static SKBitmap DecodeFirstFrame(SKCodec codec)
+    private static SKBitmap DecodeFirstFrame(SKCodec codec, SKSizeI size)
     {
         // sRGB로 바꿔서 푼다: 원본의 색 프로필(ICC)이 달라도 색이 비슷하게 보이고, 프로필은 버린다
-        var info = new SKImageInfo(codec.Info.Width, codec.Info.Height, SKColorType.Rgba8888, AlphaOf(codec), SKColorSpace.CreateSrgb());
+        var info = new SKImageInfo(size.Width, size.Height, SKColorType.Rgba8888, AlphaOf(codec), SKColorSpace.CreateSrgb());
         var bitmap = new SKBitmap(info);
         var result = codec.GetPixels(info, bitmap.GetPixels(), new SKCodecOptions(0));
         if (result != SKCodecResult.Success) // 잘린 파일(IncompleteInput)도 받지 않는다

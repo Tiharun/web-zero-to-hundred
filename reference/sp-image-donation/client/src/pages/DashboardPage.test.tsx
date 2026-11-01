@@ -11,6 +11,7 @@ vi.mock('../api', async (importOriginal) => ({
   listDonations: vi.fn(),
   approveDonation: vi.fn(),
   rejectDonation: vi.fn(),
+  reportDonation: vi.fn(),
   clearOverlay: vi.fn(),
 }))
 
@@ -35,6 +36,21 @@ describe('DashboardPage', () => {
 
     expect(api.approveDonation).toHaveBeenCalledWith(42)
     expect(await within(card).findByText('승인됨')).toBeInTheDocument()
+  })
+
+  it('report asks for a reason and calls the API', async () => {
+    vi.mocked(api.listDonations).mockResolvedValue([{ ...pending, status: 'Shown' }])
+    vi.mocked(api.reportDonation).mockResolvedValue({ ...pending, status: 'Rejected', imageUrl: null })
+    vi.spyOn(window, 'prompt').mockReturnValue('  부적절한 이미지  ')
+    const user = userEvent.setup()
+    render(<MemoryRouter><DashboardPage /></MemoryRouter>)
+
+    const card = (await screen.findByText('시청자')).closest('article')!
+    await user.click(within(card).getByRole('button', { name: '신고' }))
+
+    expect(api.reportDonation).toHaveBeenCalledWith(42, '부적절한 이미지')
+    expect(await within(card).findByText('거절됨')).toBeInTheDocument()
+    expect(await screen.findByText('신고했어요.')).toBeInTheDocument()
   })
 
   it('emergency stop calls clear', async () => {

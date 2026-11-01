@@ -1,5 +1,14 @@
 import { useEffect, useState } from 'react'
-import { approveDonation, blockSender, clearOverlay, listDonations, rejectDonation, type Donation, type DonationStatus } from '../api'
+import {
+  approveDonation,
+  blockSender,
+  clearOverlay,
+  listDonations,
+  rejectDonation,
+  reportDonation,
+  type Donation,
+  type DonationStatus,
+} from '../api'
 import DonationCard from '../components/DonationCard'
 import TestDonationPanel from '../components/TestDonationPanel'
 import { upsertDonation } from '../donationList'
@@ -58,9 +67,20 @@ export default function DashboardPage() {
     if (window.confirm('이 후원을 보낸 사람을 차단할까요? 같은 곳에서 오는 후원을 더 받지 않아요.')) void act(blockSender, id)
   }
 
+  // 신고: 사유를 받아서 운영자에게 보낸다 (거절·차단도 함께 된다)
+  function handleReport(id: number) {
+    const reason = window.prompt('신고 사유를 적어 주세요 (200자까지). 이 후원은 거절되고 보낸 사람은 차단돼요.')?.trim()
+    if (!reason) return
+    void act((donationId) => reportDonation(donationId, reason.slice(0, 200)), id).then(() => setNotice('신고했어요.'))
+  }
+
   async function handleClear() {
-    await clearOverlay()
-    setNotice('오버레이 화면을 비웠어요.')
+    try {
+      await clearOverlay()
+      setNotice('오버레이 화면을 비웠어요. 아직 나가지 않은 승인 후원도 모두 내렸어요.')
+    } catch (e) {
+      setNotice(e instanceof Error ? e.message : '긴급 정지에 실패했어요. 다시 눌러 주세요.')
+    }
   }
 
   const visible = filter === 'all' ? donations : donations.filter((d) => d.status === filter)
@@ -118,6 +138,7 @@ export default function DashboardPage() {
               onApprove={(id) => void act(approveDonation, id)}
               onReject={(id) => void act(rejectDonation, id)}
               onBlock={handleBlock}
+              onReport={handleReport}
             />
           ))}
         </div>

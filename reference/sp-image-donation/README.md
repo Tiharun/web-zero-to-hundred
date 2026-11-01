@@ -32,13 +32,20 @@ overlay.html(OBS) ◀──SignalR(토큰)──┘
 ### 후원 상태
 
 ```
-무료:  Pending ──승인──▶ Approved ──오버레이 표시 끝──▶ Shown
-         └──거절──▶ Rejected
+무료:  Pending ──승인──▶ Approved ──오버레이 표시 끝(MarkShown)──▶ Shown
+         └──거절·차단──▶ Rejected        └──긴급 정지──▶ Cleared
 치즈:  AwaitingCheese ──코드 확인──▶ Pending(자동 승인이면 Approved) …
          └──30분 지남──▶ Expired
+신고:  Rejected·Expired가 아닌 모든 상태 ──신고──▶ Rejected (+ 신고 기록 + 차단)
 ```
 
-상태는 `WHERE "Status" = '지금 상태'` 조건을 붙인 UPDATE 한 번으로 바꿔서, 같은 후원을 두 번 승인하거나 두 번 매칭할 수 없어요.
+- 상태는 `WHERE "Status" = '지금 상태'` 조건을 붙인 UPDATE 한 번으로 바꿔요. 같은 후원을 두 번 승인하거나 두 번 매칭할 수 없고,
+  정리 작업(30분 만료)이 고른 후보가 그 사이 코드 확인으로 Pending이 됐다면 만료시키지 않아요(시청자가 낸 후원을 지킴).
+- **오버레이가 늦게 연결될 때**: 승인은 그 순간 연결된 오버레이로 보내고, 오버레이가 나중에 연결되거나 새로고침하면 **최근 30분 안에 승인됐지만 아직 보여 주지 못한 후원**(Approved)을
+  승인한 순서대로 다시 보내요. 30분보다 오래된 승인은 방송이 끝났을 수 있어 다시 보내지 않고 "승인됨"으로 남아요(7일 뒤 삭제).
+- **긴급 정지**는 화면을 비우는 것과 함께 아직 나가지 않은 승인 후원을 모두 **Cleared**로 바꾸고 이미지를 지워요. 그래서 오버레이를 다시 연결해도 다시 나오지 않아요.
+- 거절·만료·긴급 정지된 후원의 이미지는 바로 지워요. **신고된 후원의 이미지는 운영자가 볼 증거라 지우지 않고 격리해요**:
+  저장소에는 남지만 `GET /media/{file}`은 Rejected 상태라 누구에게도(오버레이·시청자·로그인한 스트리머 모두) 404를 주고 다시 보내지도 않아요. 7일 보관 기간이 지나면 정리 작업이 지워요.
 
 ### 주요 API
 
@@ -48,14 +55,15 @@ overlay.html(OBS) ◀──SignalR(토큰)──┘
 | `POST /api/public/streamers/{slug}/donations` | multipart: `image`, `nickname`(≤20), `message`(≤100) → `{id, status, code?}`. IP당 요청 제한 |
 | `GET /media/{file}` | 처리된 이미지(`GUID.webp`) |
 | `GET /api/dashboard/donations?status=` | 내 후원 목록 (로그인 필요) |
-| `POST /api/dashboard/donations/{id}/approve` · `/reject` · `/block` | 승인 · 거절 · 보낸 사람 차단 |
-| `POST /api/dashboard/overlay/clear` | 긴급 정지 |
+| `POST /api/dashboard/donations/{id}/approve` · `/reject` · `/block` | 승인 · 거절 · 보낸 사람 차단 (다른 스트리머의 후원이면 404) |
+| `POST /api/dashboard/donations/{id}/report` | 신고: 본문 `{"reason": "…"}`(1~200자). 신고 기록 + 거절 + 차단을 한 트랜잭션으로 |
+| `POST /api/dashboard/overlay/clear` | 긴급 정지 (승인 대기열도 Cleared로) |
 | `GET`·`PUT /api/dashboard/settings` | 설정 (`Mode`, `MinCheese`, `AutoApprove`, `DisplaySeconds` 3~30, `MinIntervalSeconds`, `MaxFileMb` ≤10, `BannedWords`) |
 | `GET /api/dashboard/overlay-token` · `POST /api/dashboard/overlay-token/rotate` | 오버레이 토큰 보기 · 재발급 |
 | `POST /api/dashboard/test-donation` | 테스트 모드: 가짜 치즈 후원 이벤트 |
 | `/api/auth/register`, `/api/auth/login?useCookies=true`, `/api/auth/logout`, `/api/auth/me`, `/api/auth/onboarding` | 개발용 로컬 로그인(Identity)과 온보딩 |
 | `/api/chzzk/login`, `/api/chzzk/callback` | 치지직 로그인 (OAuth 2.0 인가 코드) |
-| SignalR `/hubs/overlay?token=` | 서버→오버레이 `ShowDonation(dto)`, `Clear()` / 오버레이→서버 `MarkShown(id)` |
+| SignalR `/hubs/overlay?token=` | 서버→오버레이 `ShowDonation(dto)`, `Clear()` / 오버레이→서버 `MarkShown(id)`. 연결하면 최근 30분의 미표시 승인 후원을 먼저 받음 |
 | SignalR `/hubs/dashboard` | 로그인 필요. 서버→대시보드 `DonationCreated(dto)`, `DonationUpdated(dto)` |
 | `GET /healthz` | 상태 확인 |
 
@@ -149,30 +157,66 @@ docker compose up --build -d
   페이로드가 JSON 문자열이든 객체든, `payAmount`·`expiresIn`이 문자열이든 숫자든 받아요. 끊기면 다음 점검(60초) 때 새 세션으로 다시 연결해요.
 - 진짜 수신기(`ChzzkSessionSource`)와 테스트 모드(`FakeDonationSource`)는 같은 `IDonationEventSource` 이벤트를 내보내고,
   테스트 모드도 치지직과 같은 JSON을 같은 해석기(`ParseDonation`)에 통과시켜요.
+  주의: C# 이벤트에 처리기가 여러 개 붙으면 `await handler(evt)`는 **마지막 처리기의 Task만** 기다려요. 이 프로젝트는 `Program.cs`에서 처리기를 하나만 붙여요.
+- 소켓이 "연결만 되고 후원은 못 받는" 상태로 남지 않게 해요: 후원 구독 API가 실패하거나 `SYSTEM`(`revoked`, 권한 회수)이 오거나 서버가 끊으면
+  소켓을 끊고 정리한 뒤 다음 점검(60초) 때 새 세션으로 다시 연결해요. 소켓 처리기 안의 예외(깨진 JSON, `int` 범위를 넘는 금액, DB 오류)는 잡아서 기록하고 다음 후원을 계속 받아요.
+- 토큰 갱신은 서버 안에서 한 번에 하나씩만 해요: 잠금 안에서 DB의 토큰을 다시 읽고(다른 요청이 이미 갱신했을 수 있음), 갱신했으면 잠금 안에서 저장해요.
+  서버를 여러 대 띄우면 이 잠금으로는 부족해요(DB 잠금 등 필요).
 
 ## 이미지 처리 (보안)
 
 업로드 순서: 크기 제한(스트리머 설정 `MaxFileMb`, 서버 전체 상한 10MB → 넘으면 413) → **매직 넘버** 검사(JPEG·PNG·WebP·GIF만,
-확장자·Content-Type은 믿지 않음) → `SKCodec.Create`로 머리글만 읽기(형식 확인, 5천만 픽셀 초과 거절) → 첫 장면을 sRGB로 디코딩(가짜·잘린 파일 거절)
+확장자·Content-Type은 믿지 않음) → `SKCodec.Create`로 머리글만 읽기(형식 확인) → 첫 장면을 sRGB로 디코딩(가짜·잘린 파일 거절, JPEG·WebP는 줄여서 바로 풀기)
 → 긴 변 1280px로 축소(작은 이미지는 키우지 않음) → EXIF 방향(1~8)을 픽셀에 적용 → **WebP(품질 80)로 재인코딩** → 무작위 GUID 파일 이름으로 저장 → `GET /media/{file}`.
+
+- **메모리 상한**: 머리글에 적힌 원본이 **1억 픽셀**(`MaxSourcePixels`)을 넘으면 풀기 전에 거절해요. 실제로 메모리에 푸는 그림은 **4096×4096 = 16,777,216픽셀(RGBA 64MB)**
+  (`MaxDecodePixels`)까지예요. JPEG·WebP는 `GetScaledDimensions`로 긴 변이 1280px 이상 남는 가장 작은 크기(JPEG는 1/8 단위)로 줄여서 풀기 때문에
+  5000×4000 휴대폰 사진도 1875×1500으로 풀려요. 줄여서 풀 수 없는 PNG·GIF는 원래 크기 그대로라 1,600만 픽셀을 넘으면 거절해요.
 
 - **메타데이터 제거**: 재인코딩은 픽셀만 새 파일로 쓰므로 EXIF(위치·기기 정보)·XMP는 따라가지 않고, 색 공간을 비운 그림으로 저장해서 ICC 프로필도 붙지 않아요.
   테스트가 EXIF 조각(APP1)을 직접 써 넣은 JPEG로 결과 파일에 `Exif`·`ICCP`·소프트웨어 이름이 없는지 확인해요.
 - `SKData`·`SKCodec`·`SKBitmap`·`SKImage`·`SKCanvas`는 네이티브 메모리를 쓰므로 모두 `using`으로 바로 돌려줘요.
 
 - **움직이는 GIF·WebP 정책: 첫 장면만** 정지 이미지로 저장해요(디코딩 비용·메모리 폭탄 방지, 결과 형식을 하나로 단순화).
-- 거절·만료된 후원의 이미지는 바로 지우고, 나머지는 **7일 뒤** `RetentionService`가 이미지 파일·후원 기록·치즈 이벤트 기록을 지워요.
+- 거절·만료·긴급 정지된 후원의 이미지는 바로 지우고, 나머지(신고된 이미지 포함)는 **7일 뒤** `RetentionService`가 이미지 파일·후원 기록·치즈 이벤트 기록을 지워요.
+- `GET /media/{file}`은 파일이 있어도 DB에서 그 후원의 상태를 확인해, 보여 줄 수 있는 상태(치즈 대기·검수 대기·승인·방송 완료)일 때만 이미지를 줘요. DB에 없는 파일도 404예요.
+
+## 개인정보 최소 수집
+
+- 시청자: 닉네임·메시지·이미지(재인코딩본)·보낸 IP의 **HMAC 해시**만 저장하고 7일 뒤 지워요. IP 원문은 저장하지 않아요.
+- 치즈 후원 이벤트(`DonationEvents`): 매칭에 필요한 것(금액·받은 시각·출처·매칭된 후원 ID)만 남겨요. **치지직 후원자 닉네임·후원 메시지는 저장하지 않고**
+  (코드 매칭은 메모리에서 끝남), **무료 모드 스트리머의 이벤트는 아예 저장하지 않아요**.
+- 차단 목록(`BlockEntries`)과 신고(`Reports`)는 보관 기간 정리 대상이 아니에요(차단은 IP 해시와 참고용 닉네임, 신고는 후원 ID·사유뿐).
+
+## 신고 확인 (서비스 운영자)
+
+운영자 화면은 아직 없어요(나중에 관리자 페이지로 만들 수 있어요). 운영자는 SQL과 저장소 폴더로 확인해요.
+**후원 행과 신고된 이미지는 7일 보관 기간이 지나면 지워지므로, 운영자는 신고를 7일 안에 확인해야 해요.**
+신고된 이미지는 `/media`로 열리지 않으니, 서버의 저장소 폴더(`Storage:MediaPath`, 기본 `server\ImageDonation.Api\media`, Docker는 `appdata` 볼륨의 `/data/media`)에서
+`ImageFile` 이름의 파일을 직접 열어 봐요.
+
+```sql
+SELECT r."CreatedAt", r."Reason", s."Slug", d."Nickname", d."Message", d."ImageFile", d."SenderIpHash"
+FROM "Reports" r
+JOIN "Streamers" s ON s."Id" = r."StreamerId"
+LEFT JOIN "Donations" d ON d."Id" = r."DonationId"
+ORDER BY r."CreatedAt" DESC;
+```
 
 ## 보안 메모
 
 - **오버레이 토큰**: 256비트 무작위 값(Base64Url 43자). 로그인 없이 토큰만으로 접속하므로 비밀번호처럼 다뤄요.
-  설정의 **재발급**을 누르면 옛 주소로 열린 오버레이는 아무것도 받지 못해요(허브 그룹 이름에 토큰이 들어 있음). 틀린 토큰은 허브 연결 전에 401.
+  설정의 **재발급**을 누르면 옛 주소로 열려 있던 오버레이는 아무것도 받지 못하고(허브 그룹 이름에 토큰이 들어 있음), 서버를 부르면(`MarkShown`) 그 자리에서 끊겨요.
+  틀린 토큰은 허브 연결 전에 401.
 - **출력 인코딩**: 닉네임·메시지는 React가 글자로 출력해요(`dangerouslySetInnerHTML`을 쓰지 않음). `<script>`를 보내도 글자로 보여요.
 - **요청 제한**: 후원 보내기는 IP당 1분 5건(`RateLimit:DonationsPerMinute`), 로그인 API는 20건. 넘으면 429.
   리버스 프록시 뒤에 배포하면 `ForwardedHeaders` 설정이 있어야 실제 IP로 제한돼요(이 레퍼런스는 직접 노출만 가정).
 - **금지어**(대소문자 무시, 포함 검사)와 **차단**(보낸 사람 IP의 HMAC-SHA256 해시. IP 원문은 저장하지 않음).
 - **비밀 값**: 연결 문자열·`Security:IpHashKey`·치지직 Secret은 user-secrets 또는 환경 변수에만. 커밋된 설정 파일에는 없어요.
-- **쿠키**: Identity 쿠키(HttpOnly, SameSite=Lax)라 다른 사이트에서 보낸 POST에는 쿠키가 붙지 않아요. 공개 후원 API만 위조 방지 검사를 꺼요(쿠키를 쓰지 않으므로).
+- **CSRF(요청 위조)**: 대시보드 API에는 위조 방지 토큰이 없고, 본문 없는 POST(승인·거절·긴급 정지 등)는 **SameSite=Lax 쿠키에만 기대요**.
+  Lax는 다른 **사이트**(예: `evil.example`)에서 보낸 POST에는 쿠키를 붙이지 않지만, 같은 사이트의 다른 **출처**(같은 도메인의 다른 포트·하위 도메인)는 막지 못해요(same-site ≠ same-origin).
+  그래서 같은 도메인에 믿을 수 없는 다른 서비스를 함께 올리지 마세요. 필요하면 ASP.NET Core의 위조 방지 토큰(Antiforgery)을 추가하세요.
+  공개 후원 API는 쿠키를 쓰지 않으므로 위조 방지 검사를 꺼 두었어요.
 - **Data Protection 키**는 `DataProtection:KeysPath` 폴더에 평문 XML로 저장돼요(시작 로그의 "No XML encryptor configured" 경고). 운영 환경에서는 폴더 권한을 제한하세요.
 - 보안 헤더: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`(오버레이 토큰이 다른 사이트로 새지 않게).
 - 개발용 로컬 로그인은 `Auth:LocalLoginEnabled`(기본 `true`)로 끌 수 있어요. 인터넷에 공개할 때는 끄고 치지직 로그인만 쓰는 것을 권장해요.
@@ -191,13 +235,13 @@ docker compose up --build -d
 
 | 무엇 | 명령 | 준비물 |
 | :-- | :-- | :-- |
-| 서버 단위·통합 (29개) | `cd C:\dev\image-donation\server` → `dotnet test` | PostgreSQL. 환경 변수 `TEST_DATABASE_URL`(기본 `Host=127.0.0.1;Port=5432;Database=image_donation_test;Username=wzh;Password=wzh`). Node(치지직 에뮬레이터 테스트가 처음 한 번 `tools/chzzk-emulator`에서 `npm ci`를 실행) |
+| 서버 단위·통합 (53개) | `cd C:\dev\image-donation\server` → `dotnet test` | PostgreSQL. 환경 변수 `TEST_DATABASE_URL`(기본 `Host=127.0.0.1;Port=5432;Database=image_donation_test;Username=wzh;Password=wzh`). Node(치지직 에뮬레이터 테스트가 처음 한 번 `tools/chzzk-emulator`에서 `npm ci`를 실행) |
 | 화면 (Vitest + Testing Library) | `cd C:\dev\image-donation\client` → `npm ci` → `npx tsc -b` → `npm test` → `npm run build` | Node |
 | e2e (이 저장소에서) | 저장소 루트에서 `node --test tests/reference/sp.e2e.test.mjs` | .NET, Node, `psql`, PostgreSQL, Playwright Chromium |
 
 - 통합 테스트는 테스트마다 **새 스키마**(`Search Path`)를 만들어 마이그레이션을 적용하고, 끝나면 스키마째 지워요.
-- 테스트 이미지는 파일로 두지 않고 코드로 만들어요: SkiaSharp로 만든 PNG·JPEG에 EXIF(APP1) 조각을 바이트로 직접 끼워 넣은 JPEG,
-  바이트로 직접 쓴 3장면 GIF(SkiaSharp은 GIF를 저장하지 못해요).
+- 테스트 이미지는 파일로 두지 않고 코드로 만들어요: SkiaSharp로 만든 PNG·JPEG, EXIF(APP1) 조각을 바이트로 직접 끼워 넣은 JPEG,
+  머리글에만 큰 크기를 적은 PNG, 코드에 바이트(113바이트)로 적어 둔 3장면 GIF(SkiaSharp은 GIF를 저장하지 못해요).
 
 ## 자주 막히는 곳
 
@@ -210,11 +254,11 @@ docker compose up --build -d
 
 | 항목 | 결과 |
 | :-- | :-- |
-| `dotnet test` (SDK 10.0.114, PostgreSQL 16 로컬 서버) | 30개 통과 (단위: 매직 넘버, EXIF 제거·리사이즈, EXIF 방향 6 적용, GIF 첫 장면, 코드 매칭 4종, 금지어, 토큰 회전 / 통합: 무료 후원, 승인→오버레이 그룹, 잘못된 토큰 401, 토큰 재발급, 테스트 후원 매칭, 413, 429, 보관 기간 정리, 코드 만료 / 에뮬레이터 소켓 수신). `dotnet build -c Release` 경고 0 |
-| 화면 `npm ci && npx tsc -b && npm test && npm run build` (Node 22.23.4, TypeScript 7.0.2, Vite 8.3.5, Vitest 5.0.5) | 테스트 5개 통과, 빌드 성공, `npm run lint`(Oxlint) 경고 0 |
-| e2e `tests/reference/sp.e2e.test.mjs` (Chromium) | 통과: 개발 로그인 → 온보딩 → 치즈 모드 → 업로드 → 코드 → 테스트 후원 → 검수 대기 → 승인 → 오버레이 표시 → 긴급 정지 → 사라짐, 콘솔 오류 0 |
+| `dotnet test` (SDK 10.0.114, PostgreSQL 16 로컬 서버) | 53개 통과. 단위: 매직 넘버, EXIF 제거·리사이즈, EXIF 방향 6, GIF 첫 장면, 해상도 상한·큰 JPEG 축소 디코딩, 코드 매칭, 금지어, 페이로드 해석 / 통합(PostgreSQL): 무료 후원, 승인→오버레이 그룹, 늦게 연결한 오버레이가 미표시 승인 후원을 받음, 긴급 정지가 Cleared로 남고 재연결해도 안 나옴, 긴급 정지는 그 스트리머 오버레이에만, 잘못된 토큰 401, 토큰 재발급(옛 연결은 MarkShown에서 끊김), 테스트 후원 매칭, 이벤트 최소 저장, 413, 429, 설정 범위·null 금지어 400, 거절 시 이미지 삭제, 차단 후 403, 신고(기록·거절·차단, 이미지는 증거로 남지만 /media 404 → 7일 뒤 삭제), 다른 스트리머 후원 404, 보관 기간 정리, 30분 만료, 만료와 매칭 경합(매칭이 이김), 토큰 회전, 동시 갱신 1회 / 에뮬레이터: 수신, 구독 실패·revoked·서버 끊김 시 정리, 깨진 페이로드·처리기 예외 후에도 계속 수신. `dotnet build -c Release` 경고 0 |
+| 화면 `npm ci && npx tsc -b && npm test && npm run build` (Node 22.23.4, TypeScript 7.0.2, Vite 8.3.5, Vitest 5.0.5) | 테스트 6개 통과, 빌드 성공, `npm run lint`(Oxlint) 경고 0 |
+| e2e `tests/reference/sp.e2e.test.mjs` (Chromium) | 통과: 개발 로그인 → 온보딩 → 치즈 모드 → 업로드 → 코드 → 테스트 후원 → 검수 대기 → 승인 → 오버레이 표시 → 긴급 정지 → 사라짐 → 카드가 "긴급 정지됨", 콘솔 오류 0 |
 | `ChzzkSessionSource` ↔ 로컬 Socket.IO 2.5.0 에뮬레이터 | 통과: `EIO=3`, `auth` 쿼리 전달, `SYSTEM connected`의 `sessionKey`, 문자열·객체 두 형태의 `DONATION`과 문자열·숫자 `payAmount` |
-| Docker (`postgres:18`, `node:26-slim`, `mcr.microsoft.com/dotnet/sdk:10.0`·`aspnet:10.0`) | Release로 빌드 → `docker compose up` → `/healthz` 200, 가입·로그인·온보딩·업로드(컨테이너 안의 `libSkiaSharp.so`로 WebP 변환)·`/media` 200, 텍스트 파일 업로드 400 → `down -v`. 컨테이너를 다시 만든 뒤에도 쿠키·이미지가 유지되는 것은 이전 라이브러리로 만든 이미지에서 확인(볼륨 구성은 같음) |
+| Docker (`postgres:18`, `node:26-slim`, `mcr.microsoft.com/dotnet/sdk:10.0`·`aspnet:10.0`) | Release로 빌드 → `docker compose up` → `/healthz` 200, 가입·로그인·온보딩·업로드(컨테이너 안의 `libSkiaSharp.so`로 WebP 변환)·`/media` 200, 텍스트 파일 업로드 400, 승인 → 긴급 정지 → `Cleared`·이미지 404, 신고 → 같은 곳의 다음 업로드 403(이 검증은 신고 이미지 보존 변경 전), 마이그레이션 2개 적용 → `down -v`. 컨테이너를 다시 만든 뒤에도 쿠키·이미지가 유지되는 것은 이전 라이브러리로 만든 이미지에서 확인(볼륨 구성은 같음) |
 
 ### 확인하지 못한 것 (실제 계정·장비가 필요)
 

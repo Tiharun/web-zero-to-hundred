@@ -23,6 +23,9 @@ public static class DashboardEndpoints
             ChangeAsync(id, user, db, s => donations.RejectAsync(s, id)));
         group.MapPost("/donations/{id:int}/block", (int id, ClaimsPrincipal user, AppDbContext db, DonationService donations) =>
             ChangeAsync(id, user, db, s => donations.BlockSenderAsync(s, id)));
+        // 신고: 운영자에게 알림 + 거절 + 차단을 한 번에 (본문 {"reason":"..."}, 200자까지)
+        group.MapPost("/donations/{id:int}/report", (int id, ReportRequest body, ClaimsPrincipal user, AppDbContext db, DonationService donations) =>
+            ChangeAsync(id, user, db, s => donations.ReportAsync(s, id, body.Reason)));
 
         group.MapPost("/overlay/clear", ClearOverlay);
         group.MapGet("/settings", GetSettings);
@@ -54,7 +57,7 @@ public static class DashboardEndpoints
         return Results.Ok(list.Select(DonationDto.From));
     }
 
-    // 승인·거절·차단 공통: 없으면 404, 지금 상태에서 할 수 없으면 409
+    // 승인·거절·차단·신고 공통: 없거나 다른 스트리머의 후원이면 404, 지금 상태에서 할 수 없으면 409
     private static async Task<IResult> ChangeAsync(int id, ClaimsPrincipal user, AppDbContext db, Func<Streamer, Task<DonationDto?>> change)
     {
         var streamer = await db.FindStreamerAsync(user);
@@ -89,6 +92,11 @@ public static class DashboardEndpoints
         var streamer = await db.FindStreamerAsync(user);
         if (streamer is null) return NeedsOnboarding();
 
+        // JSON의 ["a", null]처럼 빈 값(null)이 섞여 들어올 수 있다 → 그대로 쓰면 서버 오류(500)가 나므로 400으로 막는다
+        if (body.BannedWords.Any(w => w is null))
+        {
+            return Results.Problem(detail: "금지어 목록에 빈 값(null)이 있어요.", statusCode: 400);
+        }
         var words = body.BannedWords.Select(w => w.Trim()).Where(w => w.Length > 0).Distinct().ToArray();
         if (words.Any(w => w.Length > SettingsDto.MaxBannedWordLength))
         {

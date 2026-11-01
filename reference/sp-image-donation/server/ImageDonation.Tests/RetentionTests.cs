@@ -62,4 +62,39 @@ public class RetentionTests
         Assert.Equal([DonationStatus.AwaitingCheese, DonationStatus.Expired], statuses); // fresh, late 순
         Assert.Equal(1, result.ExpiredDonations);
     }
+
+    [Fact]
+    public async Task Retention_DoesNotExpireDonationMatchedInTheMeantime()
+    {
+        await using var app = new ApiFactory();
+        await app.CreateStreamerClientAsync("racer");
+        using var scope = app.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var storage = scope.ServiceProvider.GetRequiredService<IImageStorage>();
+        var retention = app.Services.GetRequiredService<RetentionService>();
+        var streamerId = (await db.Streamers.SingleAsync()).Id;
+        var now = DateTimeOffset.UtcNow;
+
+        var file = await storage.SaveAsync(TestImages.Png(), ".webp");
+        var donation = new Donation
+        {
+            StreamerId = streamerId, Status = DonationStatus.AwaitingCheese, Nickname = "paid", Code = "#PAID",
+            ImageFile = file, CreatedAt = now.AddMinutes(-31), UpdatedAt = now.AddMinutes(-31),
+        };
+        db.Donations.Add(donation);
+        await db.SaveChangesAsync();
+
+        // 1) 정리 작업이 만료 후보를 골랐다
+        var candidates = await RetentionService.FindExpiryCandidatesAsync(db, now);
+        Assert.Equal([donation.Id], candidates);
+
+        // 2) 바로 그때 치즈 후원이 매칭되어 Pending이 됐다 (DonationService가 하는 조건부 UPDATE)
+        await db.Donations.Where(d => d.Id == donation.Id && d.Status == DonationStatus.AwaitingCheese)
+            .ExecuteUpdateAsync(s => s.SetProperty(d => d.Status, DonationStatus.Pending));
+
+        // 3) 정리 작업이 이어서 만료를 시도해도, 매칭이 이긴다: 그대로 Pending, 이미지도 남는다
+        Assert.Equal(0, await retention.ExpireAsync(db, candidates, now));
+        Assert.Equal(DonationStatus.Pending, (await db.Donations.AsNoTracking().SingleAsync()).Status);
+        Assert.True(storage.Exists(file));
+    }
 }

@@ -15,6 +15,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
     public DbSet<DonationEvent> DonationEvents => Set<DonationEvent>();
     public DbSet<ChzzkToken> ChzzkTokens => Set<ChzzkToken>();
     public DbSet<BlockEntry> BlockEntries => Set<BlockEntry>();
+    public DbSet<Report> Reports => Set<Report>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -45,6 +46,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
             d.Property(x => x.Code).HasMaxLength(5);
             d.HasIndex(x => new { x.StreamerId, x.Status }); // 대기열 조회를 빠르게
             d.HasIndex(x => x.CreatedAt);                     // 보관 기간 정리를 빠르게
+            d.HasIndex(x => x.ImageFile);                     // /media 요청마다 이 파일의 후원 상태를 확인한다
         });
 
         builder.Entity<DonationEvent>(e => e.HasIndex(x => x.ReceivedAt));
@@ -56,6 +58,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
         });
 
         builder.Entity<BlockEntry>(b => b.HasIndex(x => new { x.StreamerId, x.SenderIpHash }));
+
+        builder.Entity<Report>(r =>
+        {
+            r.Property(x => x.Reason).HasMaxLength(200);
+            r.HasIndex(x => x.CreatedAt); // 운영자가 최근 신고부터 본다
+        });
     }
 
     // 로그인한 사용자의 스트리머 정보(설정 포함). 온보딩 전이면 null

@@ -306,7 +306,8 @@ progress {
 }
 
 .status-Rejected,
-.status-Expired {
+.status-Expired,
+.status-Cleared {
   opacity: 0.6;
 }
 

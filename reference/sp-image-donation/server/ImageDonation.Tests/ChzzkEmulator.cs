@@ -18,7 +18,8 @@ public sealed class ChzzkEmulator : IAsyncDisposable
         get { lock (_output) return _output.ToString(); }
     }
 
-    public static async Task<ChzzkEmulator> StartAsync()
+    // scenario: donations(기본) / revoked / kick / malformed (emulator.cjs 맨 위 설명 참고)
+    public static async Task<ChzzkEmulator> StartAsync(string scenario = "donations")
     {
         var dir = FindEmulatorDirectory();
         if (!Directory.Exists(Path.Combine(dir, "node_modules", "socket.io")))
@@ -27,7 +28,7 @@ public sealed class ChzzkEmulator : IAsyncDisposable
             await RunAsync("npm", "ci --no-audit --no-fund", dir);
         }
 
-        var process = Process.Start(new ProcessStartInfo("node", "emulator.cjs 0")
+        var process = Process.Start(new ProcessStartInfo("node", $"emulator.cjs 0 {scenario}")
         {
             WorkingDirectory = dir,
             RedirectStandardOutput = true,

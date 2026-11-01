@@ -263,6 +263,7 @@ test('스트리머 온보딩 → 치즈 모드 → 이미지 후원 → 테스�
     await streamer.getByText('오버레이 화면을 비웠어요.').waitFor();
     await shown.waitFor({ state: 'detached' });
     assert.equal(await overlay.locator('figure.donation').count(), 0);
+    await card.getByText('긴급 정지됨').waitFor(); // DB에도 남는다: 다시 연결해도 또 나오지 않는다
 
     // 11) 콘솔 오류 0건 (세 화면 모두)
     assert.deepEqual(errors, { streamer: [], viewer: [], overlay: [] });

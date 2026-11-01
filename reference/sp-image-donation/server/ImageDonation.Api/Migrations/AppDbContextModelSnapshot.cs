@@ -136,6 +136,8 @@ namespace ImageDonation.Api.Migrations
 
                     b.HasIndex("CreatedAt");
 
+                    b.HasIndex("ImageFile");
+
                     b.HasIndex("StreamerId", "Status");
 
                     b.ToTable("Donations");
@@ -148,14 +150,6 @@ namespace ImageDonation.Api.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("DonationText")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("DonatorNickname")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<int?>("MatchedDonationId")
                         .HasColumnType("integer");
@@ -178,6 +172,35 @@ namespace ImageDonation.Api.Migrations
                     b.HasIndex("ReceivedAt");
 
                     b.ToTable("DonationEvents");
+                });
+
+            modelBuilder.Entity("ImageDonation.Api.Entities.Report", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DonationId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("StreamerId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.ToTable("Reports");
                 });
 
             modelBuilder.Entity("ImageDonation.Api.Entities.Streamer", b =>

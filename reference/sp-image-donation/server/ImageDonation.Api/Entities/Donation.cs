@@ -3,14 +3,17 @@ namespace ImageDonation.Api.Entities;
 // 후원 상태
 //   무료:   Pending → Approved → Shown,  Pending → Rejected
 //   치즈:   AwaitingCheese → Pending(코드 매칭) 또는 → Expired(30분)
+//   긴급 정지: Approved → Cleared (아직 다 보여 주지 못한 승인 후원을 모두 내린다)
+//   신고:   Rejected·Expired가 아니면 → Rejected
 public enum DonationStatus
 {
     AwaitingCheese, // 치즈 후원(코드 포함)을 기다리는 중
     Pending,        // 스트리머 검수 대기
     Approved,       // 승인됨 → 오버레이로 보냄
     Shown,          // 오버레이가 다 보여 줌
-    Rejected,       // 거절됨
+    Rejected,       // 거절됨 (신고 포함)
     Expired,        // 30분 안에 치즈 후원이 오지 않음
+    Cleared,        // 긴급 정지로 방송에서 내림
 }
 
 // 시청자가 보낸 이미지 후원 1건

@@ -104,8 +104,29 @@ public class ImageProcessorTests
 
         // 정책: 정지 이미지 1장 (Skia는 정지 WebP의 장면 수를 0으로 알려 주므로 "1 이하"로 확인한다)
         Assert.InRange(Inspect(result.Content).Frames, 0, 1);
-        var pixel = PixelAt(result.Content, 20, 15);
+        var pixel = PixelAt(result.Content, 1, 1);
         Assert.True(pixel.Red > 200 && pixel.Green < 60 && pixel.Blue < 60, $"첫 장면(빨강)이어야 해요: {pixel}");
+    }
+
+    [Fact]
+    public void ImageProcessor_RejectsHugeResolutionBeforeDecoding()
+    {
+        // 머리글이 4억 픽셀이라고 주장 → 원본 상한(1억) 초과
+        var huge = Assert.Throws<InvalidImageException>(() => _processor.Process(TestImages.PngHeaderClaiming(20_000, 20_000)));
+        // 2천만 픽셀 PNG: PNG는 줄여서 풀 수 없으니 그대로 풀면 80MB → 디코딩 상한(4096×4096) 초과
+        var big = Assert.Throws<InvalidImageException>(() => _processor.Process(TestImages.PngHeaderClaiming(5000, 4000)));
+
+        Assert.Contains("해상도", huge.Message);
+        Assert.Contains("해상도", big.Message);
+    }
+
+    [Fact]
+    public void ImageProcessor_LargeJpeg_IsDecodedScaledDown()
+    {
+        // 5000×4000(2천만 픽셀) JPEG도 받는다: 1/8 단위로 줄여서 풀기 때문에 디코딩 상한 안에 들어온다
+        var result = _processor.Process(TestImages.LargeJpeg(5000, 4000));
+
+        Assert.Equal((1280, 1024), (result.Width, result.Height));
     }
 
     [Fact]

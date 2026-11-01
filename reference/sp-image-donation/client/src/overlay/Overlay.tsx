@@ -34,7 +34,8 @@ export default function Overlay({ token }: { token: string }) {
       {status === 'failed' && <p className="overlay-error">오버레이 연결 실패: 주소(토큰)와 서버를 확인해 주세요.</p>}
       {current && (
         <figure key={current.id} className="donation" style={{ '--show-seconds': `${current.displaySeconds}s` } as CSSProperties}>
-          <img src={current.imageUrl} alt="" />
+          {/* 이미지를 못 불러오면(신고로 지워짐 등) 건너뛰고 다음 이미지로 */}
+          <img src={current.imageUrl} alt="" onError={() => setQueue((q) => q.slice(1))} />
           <figcaption>
             <strong>{current.nickname}</strong>
             {current.message && <span>{current.message}</span>}

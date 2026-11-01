@@ -2,7 +2,7 @@
 // 로그인은 쿠키로 하므로, 화면과 API가 같은 주소에 있어야 한다 (서버가 React 빌드를 제공하거나, 개발 서버 프록시).
 
 export type DonationMode = 'Free' | 'Cheese'
-export type DonationStatus = 'AwaitingCheese' | 'Pending' | 'Approved' | 'Shown' | 'Rejected' | 'Expired'
+export type DonationStatus = 'AwaitingCheese' | 'Pending' | 'Approved' | 'Shown' | 'Rejected' | 'Expired' | 'Cleared'
 
 export interface Donation {
   id: number
@@ -134,6 +134,9 @@ export const listDonations = () => request<Donation[]>('/api/dashboard/donations
 export const approveDonation = (id: number) => sendJson<Donation>('POST', `/api/dashboard/donations/${id}/approve`)
 export const rejectDonation = (id: number) => sendJson<Donation>('POST', `/api/dashboard/donations/${id}/reject`)
 export const blockSender = (id: number) => sendJson<Donation>('POST', `/api/dashboard/donations/${id}/block`)
+// 신고: 서비스 운영자에게 알리고, 거절하고, 보낸 사람을 차단한다
+export const reportDonation = (id: number, reason: string) =>
+  sendJson<Donation>('POST', `/api/dashboard/donations/${id}/report`, { reason })
 export const clearOverlay = () => sendJson<void>('POST', '/api/dashboard/overlay/clear')
 export const sendTestDonation = (amount: number, message: string) =>
   sendJson<void>('POST', '/api/dashboard/test-donation', { amount, message, nickname: '테스트 후원자' })

@@ -24,7 +24,7 @@ public record DonationDto(
         d.Status,
         d.Nickname,
         d.Message,
-        HasImage(d.Status) ? MediaUrl(d.ImageFile) : null, // 거절·만료된 후원은 이미지를 바로 지운다
+        ImageVisible(d.Status) ? MediaUrl(d.ImageFile) : null,
         d.Code,
         d.CheeseAmount,
         d.CreatedAt,
@@ -32,7 +32,9 @@ public record DonationDto(
 
     public static string MediaUrl(string file) => $"/media/{file}";
 
-    private static bool HasImage(DonationStatus s) => s is not (DonationStatus.Rejected or DonationStatus.Expired);
+    // 이미지를 보여 줄 수 있는 상태인가. 거절(신고 포함)·만료·긴급 정지된 후원의 이미지는 누구에게도 제공하지 않는다
+    // (대부분 바로 지우고, 신고된 이미지만 증거로 7일 동안 격리해 둔다)
+    public static bool ImageVisible(DonationStatus s) => s is not (DonationStatus.Rejected or DonationStatus.Expired or DonationStatus.Cleared);
 }
 
 // 공개 후원 API의 응답: {id, status, code?}
@@ -52,6 +54,9 @@ public record OverlayDonationDto(
 
 // 후원 페이지가 처음에 읽는 스트리머 정보 (비밀 값은 넣지 않는다)
 public record PublicStreamerDto(string Slug, string DisplayName, DonationMode Mode, int MinCheese, int MaxFileMb);
+
+// 신고 사유
+public record ReportRequest([Required, StringLength(200, MinimumLength = 1)] string Reason);
 
 // 테스트 모드: 가짜 치즈 후원 1건
 public record TestDonationRequest(

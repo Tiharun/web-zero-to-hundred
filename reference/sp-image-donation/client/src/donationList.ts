@@ -8,6 +8,7 @@ export const statusLabel: Record<DonationStatus, string> = {
   Shown: '방송 완료',
   Rejected: '거절됨',
   Expired: '만료됨',
+  Cleared: '긴급 정지됨',
 }
 
 // 목록에 후원 1건을 넣거나(새 것) 바꾼다(같은 id). 새 배열을 돌려준다 (state는 직접 고치지 않는다)
