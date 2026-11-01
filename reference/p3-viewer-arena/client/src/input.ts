@@ -21,7 +21,11 @@ export function round2(dir: Direction): Direction {
 
 export function keyboard(target: Window = window): () => Direction {
   const down = new Set<string>();
-  target.addEventListener('keydown', (event) => down.add(event.code));
+  target.addEventListener('keydown', (event) => {
+    if (event.target instanceof HTMLInputElement) return; // 닉네임을 쓰는 중이면 조작키로 보지 않아요
+    if (event.code.startsWith('Arrow')) event.preventDefault(); // 방향키로 페이지가 스크롤되지 않게
+    down.add(event.code);
+  });
   target.addEventListener('keyup', (event) => down.delete(event.code));
   target.addEventListener('blur', () => down.clear()); // 창을 벗어나면 눌린 키를 잊어요
 

@@ -5,10 +5,9 @@
 
 use rand::rngs::StdRng;
 use rand::{RngExt, SeedableRng};
-use serde::{Deserialize, Serialize};
 
 use crate::physics::{self, Body, Input};
-use crate::protocol::{ItemState, PlayerState, RankEntry, Snapshot};
+use crate::protocol::{ItemState, Phase, PlayerState, RankEntry, Snapshot};
 use crate::rules::{
     ARENA_RADIUS, ITEM_COUNT, ITEM_RADIUS, ITEM_SCORE, MAX_PLAYERS, PLAYER_COLORS, PLAYER_RADIUS,
     RESULT_SECS, ROUND_SECS, WAITING_SECS,
@@ -17,15 +16,6 @@ use crate::vec2::Vec2;
 
 /// 플레이어 번호. 1부터 차례로 붙인다(0은 관전 화면용으로 비워 둔다).
 pub type PlayerId = u32;
-
-/// 라운드 상태 머신: 대기 → 진행 → 결과 → 대기 → …
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum Phase {
-    Waiting,
-    Playing,
-    Ended,
-}
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Player {
@@ -47,6 +37,8 @@ pub struct Item {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum JoinError {
     RoomFull,
+    /// 같은 방에 같은 닉네임이 이미 있다.
+    NameTaken,
 }
 
 #[derive(Debug)]
@@ -76,10 +68,14 @@ impl World {
         }
     }
 
-    /// 플레이어를 추가하고 번호를 돌려준다. 방이 꽉 찼으면 오류.
+    /// 플레이어를 추가하고 번호를 돌려준다. 방이 꽉 찼거나 같은 닉네임이 있으면 오류.
     pub fn add_player(&mut self, name: String) -> Result<PlayerId, JoinError> {
         if self.players.len() >= MAX_PLAYERS {
             return Err(JoinError::RoomFull);
+        }
+        // 같은 닉네임이 둘이면 화면에서도, 결과 순위에서도 누가 누군지 알 수 없다.
+        if self.players.iter().any(|p| p.name == name) {
+            return Err(JoinError::NameTaken);
         }
         let id = self.next_player_id;
         self.next_player_id += 1;
@@ -400,6 +396,21 @@ mod tests {
         assert_eq!(world.players.len(), MAX_PLAYERS - 1);
         let id = world.add_player("하나 더".to_string()).unwrap();
         assert_eq!(id, MAX_PLAYERS as u32 + 1, "번호는 다시 쓰지 않는다");
+    }
+
+    #[test]
+    fn duplicate_names_are_rejected() {
+        let mut world = World::new(1);
+        let id = world.add_player("철수".to_string()).unwrap();
+        assert_eq!(
+            world.add_player("철수".to_string()),
+            Err(JoinError::NameTaken)
+        );
+        assert_eq!(world.players.len(), 1);
+
+        // 나간 뒤에는 같은 닉네임으로 다시 들어올 수 있다
+        world.remove_player(id);
+        assert!(world.add_player("철수".to_string()).is_ok());
     }
 
     #[test]

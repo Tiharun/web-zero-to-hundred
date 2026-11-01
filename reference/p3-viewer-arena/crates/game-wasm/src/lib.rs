@@ -55,7 +55,7 @@ pub fn predict(state_json: &str, input_json: &str, dt: f32) -> Result<String, St
 #[cfg(test)]
 mod tests {
     use super::*;
-    use game_core::rules::{ARENA_RADIUS, PLAYER_RADIUS, TICK_DT};
+    use game_core::rules::{ARENA_RADIUS, PLAYER_MAX_SPEED, PLAYER_RADIUS, TICK_DT};
 
     fn parse(json: &str) -> BodyState {
         serde_json::from_str(json).unwrap()
@@ -104,6 +104,22 @@ mod tests {
         )
         .unwrap();
         assert!(parse(&edge).x <= ARENA_RADIUS - PLAYER_RADIUS + 1e-3);
+    }
+
+    #[test]
+    fn predict_caps_huge_speed() {
+        // 속도가 1000으로 튀어 있어도 한 번 계산하면 최고 속도(300) 이하가 된다(서버와 같은 규칙)
+        let out = predict(
+            r#"{"x":0,"y":0,"vx":1000,"vy":0}"#,
+            r#"{"dx":0,"dy":0}"#,
+            0.05,
+        )
+        .unwrap();
+        let next = parse(&out);
+        assert!(
+            next.vx.hypot(next.vy) <= PLAYER_MAX_SPEED + 1e-3,
+            "{next:?}"
+        );
     }
 
     #[test]

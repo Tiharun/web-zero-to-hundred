@@ -10,6 +10,7 @@
 //! | 그 밖                                    | `client/dist`의 파일(index.html, host.html, play.html …) |
 
 use std::path::Path;
+use std::time::Duration;
 
 use axum::extract::{Path as UrlPath, Query, State};
 use axum::http::StatusCode;
@@ -31,6 +32,8 @@ pub struct AppState {
     pub rooms: Rooms,
     /// None이면 랭킹이 꺼진 상태(DATABASE_URL 없음)
     pub db: Option<PgPool>,
+    /// 이 시간 동안 아무 메시지도 없는 연결은 끊긴 것으로 보고 닫는다(기본 10초, 테스트에서는 짧게).
+    pub idle_timeout: Duration,
 }
 
 impl AppState {
@@ -38,6 +41,7 @@ impl AppState {
         AppState {
             rooms: Rooms::default(),
             db,
+            idle_timeout: ws::IDLE_TIMEOUT,
         }
     }
 }

@@ -3,8 +3,8 @@
 
 import './style.css';
 import { SnapshotBuffer } from './interp';
-import { connect, fetchLeaderboard, isLocalOnlyAddress, roomFromUrl } from './net';
-import { PHASE_LABEL, formatTime, type RankEntry, type Snapshot } from './protocol';
+import { connect, fetchLeaderboard, fetchRoom, isLocalOnlyAddress, roomFromUrl } from './net';
+import { PHASE_LABEL, formatTime, type RankEntry, type RoomInfo, type Snapshot } from './protocol';
 import { drawQr } from './qr';
 import { drawScene, fitCanvas } from './render';
 
@@ -52,17 +52,39 @@ async function refreshBoard(): Promise<void> {
   }
 }
 
-function start(room: string): void {
-  const joinUrl = `${location.origin}/play.html?room=${room}`;
-  codeText.textContent = room;
-  joinUrlText.textContent = joinUrl;
-  drawQr(qrCanvas, joinUrl, 200);
-  if (isLocalOnlyAddress()) {
-    statusText.textContent = '⚠️ 127.0.0.1 주소라서 휴대폰이 QR로 들어올 수 없어요. PC의 IP 주소로 이 페이지를 열어 주세요.';
+const RECONNECT_MS = 3000;
+const snapshots = new SnapshotBuffer();
+
+/** 평소 상태 줄: 127.0.0.1로 열었으면 휴대폰이 못 들어온다는 경고, 아니면 빈칸 */
+function normalStatus(): string {
+  return isLocalOnlyAddress()
+    ? '⚠️ 127.0.0.1 주소라서 휴대폰이 QR로 들어올 수 없어요. PC의 IP 주소로 이 페이지를 열어 주세요.'
+    : '';
+}
+
+/**
+ * 방이 있는지 확인하고 관전자로 연결해요.
+ * OBS 화면은 방송 내내 켜 두니까, 연결이 끊기면 3초 뒤 스스로 다시 붙어요.
+ */
+async function watch(room: string): Promise<void> {
+  let info: RoomInfo | null;
+  try {
+    info = await fetchRoom(room);
+  } catch {
+    statusText.textContent = '서버에 연결하지 못했어요. 서버를 켜면 자동으로 다시 붙어요.';
+    window.setTimeout(() => void watch(room), RECONNECT_MS);
+    return;
+  }
+  if (!info) {
+    statusText.textContent = '방을 찾을 수 없어요. 방 코드를 확인하거나 첫 화면에서 새 방을 만들어 주세요.';
+    phaseText.textContent = '방 없음';
+    return;
   }
 
-  const snapshots = new SnapshotBuffer();
   connect(room, 'host', {
+    onOpen() {
+      statusText.textContent = normalStatus();
+    },
     onMessage(msg) {
       if (msg.t === 'snapshot') {
         snapshots.push(msg, performance.now());
@@ -76,9 +98,20 @@ function start(room: string): void {
       }
     },
     onClose() {
-      statusText.textContent = '서버와 연결이 끊겼어요. 서버를 켜고 새로 고침(F5)해 주세요.';
+      statusText.textContent = '서버와 연결이 끊겼어요. 3초 뒤 다시 연결해요…';
+      window.setTimeout(() => void watch(room), RECONNECT_MS);
     },
   });
+}
+
+function start(room: string): void {
+  const joinUrl = `${location.origin}/play.html?room=${room}`;
+  codeText.textContent = room;
+  joinUrlText.textContent = joinUrl;
+  drawQr(qrCanvas, joinUrl, 200);
+  statusText.textContent = normalStatus();
+
+  void watch(room);
   void refreshBoard();
 
   // 화면 주사율(보통 60Hz)마다 그려요. 스냅샷은 10Hz라서 그 사이는 보간으로 채워요.

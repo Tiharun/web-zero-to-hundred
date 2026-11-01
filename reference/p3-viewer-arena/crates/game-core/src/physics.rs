@@ -155,6 +155,32 @@ mod tests {
     }
 
     #[test]
+    fn max_speed_is_enforced_even_from_huge_velocity() {
+        // 마찰만으로는 한 틱에 1000 → 769로밖에 안 줄어든다. 속도 제한이 있어야 300 이하가 된다.
+        let mut body = Body {
+            pos: Vec2::ZERO,
+            vel: Vec2::new(1000.0, 0.0),
+        };
+        integrate(&mut body, Input::default(), 0.05);
+        assert!(
+            body.vel.length() <= PLAYER_MAX_SPEED + 1e-3,
+            "{:?}",
+            body.vel
+        );
+
+        let mut pushed = Body {
+            pos: Vec2::ZERO,
+            vel: Vec2::new(0.0, -5000.0),
+        };
+        integrate(&mut pushed, Input::new(0.0, -1.0), 0.05);
+        assert!(
+            pushed.vel.length() <= PLAYER_MAX_SPEED + 1e-3,
+            "{:?}",
+            pushed.vel
+        );
+    }
+
+    #[test]
     fn keep_inside_arena_pulls_back_to_edge() {
         let mut body = Body {
             pos: Vec2::new(ARENA_RADIUS + 50.0, 0.0),

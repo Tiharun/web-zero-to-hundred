@@ -67,7 +67,7 @@ wasm-bindgen --version
 
 - `wasm32-unknown-unknown`은 Rust 기본 설치에 들어 있지 않아요. 꼭 한 번 추가해야 해요.
 - `wasm-bindgen-cli`는 컴파일하느라 몇 분 걸려요. 버전은 `Cargo.toml`의 `wasm-bindgen = "=0.2.130"`과 **정확히 같아야** 해요.
-- 이 교재는 wasm-pack을 쓰지 않아요(관리자가 1명이고 wasm-bindgen 팀의 권장 여부가 정해지지 않아서). `cargo` + `wasm-bindgen` 두 명령으로 충분해요.
+- 이 교재는 wasm-pack을 쓰지 않아요(유지보수자가 1명이고 wasm-bindgen 팀의 권장 여부가 정해지지 않아서). `cargo` + `wasm-bindgen` 두 명령으로 충분해요.
 
 ## 처음 실행하기 (DB 없이)
 
@@ -94,7 +94,7 @@ cargo run -p server --release
    cargo run -p server --release
    ```
 
-   `$env:`로 넣은 값은 그 PowerShell 창에서만 유지돼요. 매번 쓰기 귀찮으면 `.env.example`을 `.env`로 복사하고 `HOST=0.0.0.0`으로 바꿔요(`cargo run`이 `.env`를 읽어요).
+   `$env:`로 넣은 값은 그 PowerShell 창에서만 유지돼요. 매번 쓰기 귀찮으면 `.env.example`을 `.env`로 복사하고 `HOST=0.0.0.0`으로 바꿔요(서버가 시작할 때 `dotenvy` 크레이트로 `.env`를 읽어요).
 2. **Windows 방화벽**: 서버를 `0.0.0.0`으로 처음 켜면 Windows Defender 방화벽이 `server.exe`의 네트워크 접근을 물어보는 창을 띄워요. **개인 네트워크**에 체크하고 허용해요. `cargo run`(debug)과 `--release`는 실행 파일 경로가 달라서 각각 한 번씩 물어볼 수 있어요. 집 Wi-Fi가 "공용 네트워크"로 잡혀 있으면 휴대폰이 못 들어오니, Windows 설정에서 그 Wi-Fi의 네트워크 프로필을 **개인**으로 바꿔요. (창의 문구와 메뉴 위치는 Windows 버전에 따라 다를 수 있어요.)
 3. 서버 로그의 `같은 Wi-Fi의 휴대폰에서는: http://192.168.x.x:8080`을 확인해요(`ipconfig`의 IPv4 주소와 같아요).
 4. **PC 브라우저도 그 주소로** 열어서 방을 만들어요. QR 코드는 지금 페이지 주소로 만들어지기 때문에, `127.0.0.1`로 열면 휴대폰이 그 주소로 갈 수 없어요(페이지에 경고가 떠요).
@@ -123,6 +123,7 @@ cargo run -p server --release
 - 서버가 시작할 때 `crates/server/migrations/0001_init.sql`을 한 번만 실행해요(기록은 `_sqlx_migrations` 표).
 - DB 들여다보기: `docker compose exec db psql -U arena -d viewer_arena` → `\dt`, `SELECT * FROM matches;`
 - PostgreSQL 18 이미지는 데이터 위치가 `/var/lib/postgresql`이에요(17 이하의 `/var/lib/postgresql/data`가 아니에요). `docker-compose.yml`도 그렇게 마운트해요.
+- 이 서버는 TLS 없이 DB에 붙어요(같은 PC·같은 Docker 네트워크라서 괜찮아요). 클라우드의 관리형 PostgreSQL처럼 TLS(`sslmode=require`)를 요구하는 DB에 붙으려면 `Cargo.toml`의 sqlx 기능에 TLS(예: `tls-rustls`)를 더해야 해요(Day 41~42).
 
 ### Docker 없이 (PostgreSQL 18 직접 설치)
 
@@ -147,7 +148,7 @@ docker compose up --build -d
 docker compose logs -f server
 ```
 
-- http://localhost:8080. 첫 빌드는 Rust 컴파일과 `wasm-bindgen-cli` 설치 때문에 오래 걸려요(다음부터는 캐시를 써요).
+- http://localhost:8080. 첫 빌드는 Rust 컴파일과 `wasm-bindgen-cli` 설치 때문에 오래 걸려요. 다음 빌드에서는 **바뀌지 않은 단계만** 캐시에서 다시 써요(예: `wasm-bindgen-cli` 설치, `package*.json`이 그대로면 `npm ci`). Rust 소스를 고치면 서버는 의존성까지 처음부터 다시 컴파일해요.
 - 끄기: `docker compose down` / DB 데이터까지 지우기: `docker compose down -v`
 - 포트가 겹치면 `.env`에 `SERVER_PORT=18080`, `DB_PORT=55432`처럼 바꿔요.
 - 컨테이너 안의 서버 로그에 찍히는 `같은 Wi-Fi의 휴대폰에서는: http://172.x.x.x:8080`은 컨테이너 내부 주소라서 쓰지 않아요. 휴대폰은 `ipconfig`로 본 PC 주소(예: `http://192.168.0.10:8080`)로 들어와요.
@@ -208,8 +209,9 @@ npx tsc --noEmit
 ## 안전장치 (Day 32)
 
 - 메시지 하나 최대 **1KB**(넘으면 연결을 끊어요)
-- 1초에 메시지 최대 **30개**(넘친 것은 버리고 `rate_limited` 오류를 한 번만 보내요)
-- 닉네임 1~12자, 제어 문자·금지어 거절(`protocol.rs`의 `BANNED_WORDS`)
+- 1초에 메시지 최대 **30개**(글자·바이너리를 모두 세요. 넘친 것은 버리고, 1초마다 한 번씩만 `rate_limited` 오류로 알려요)
+- 10초 동안 아무 메시지도 없는 연결은 끊긴 것으로 보고 정리해요(화면이 꺼진 휴대폰이 유령 플레이어로 남지 않게). 브라우저는 2초마다 `ping`을, 1초마다 지금 입력을 다시 보내요
+- 닉네임 1~12자, 제어 문자·보이지 않는 유니코드 글자(폭 없는 공백, 방향 제어 등)·금지어 거절(`protocol.rs`의 `validate_name`, `BANNED_WORDS`), 같은 방에서 같은 닉네임 거절(`name_taken`)
 - 입력 방향은 길이 1로 줄이고, 속도는 서버가 제한해요(클라이언트 값을 믿지 않아요)
 - 방 코드는 영문 대문자 4자, 서버 하나에 방 최대 100개, 연결이 없는 방은 60초 뒤 정리
 
@@ -219,7 +221,7 @@ npx tsc --noEmit
 | :-- | :-- |
 | `POST /api/rooms` | `201 {"code":"ABCD"}` |
 | `GET /api/rooms/{code}` | `{"code","players","phase"}` / 없으면 `404 {"code":"room_not_found",…}` |
-| `GET /api/leaderboard?period=day\|all` | `{"enabled","period","entries":[{"name","score"}]}` (DB 없으면 `enabled:false`) |
+| `GET /api/leaderboard?period=day\|all` | `{"enabled","period","entries":[{"name","score"}]}`: 닉네임별 최고 점수 상위 10명. `day` = **최근 24시간**(달력의 오늘이 아님), `all` = 전체, 생략하면 `day`. DB 없으면 `enabled:false` |
 | `GET /ws/{code}?role=host\|player` | WebSocket |
 | `GET /healthz` | `ok` |
 
@@ -241,6 +243,7 @@ WebSocket 메시지는 JSON이고 `t`가 종류예요.
 | `PostgreSQL에 연결하지 못했어요(pool timed out …)` | DB가 꺼져 있거나 `DATABASE_URL`이 틀렸어요. `docker compose ps`로 db 확인. DB 없이 하려면 `DATABASE_URL`을 지워요 |
 | 휴대폰에서 페이지가 안 열림 | `HOST=0.0.0.0`, 방화벽 허용(개인 네트워크), 같은 Wi-Fi, PC 주소로 연 페이지의 QR인지 확인 |
 | 닉네임을 넣었는데 `쓸 수 없는 닉네임이에요.` | 금지어가 들어 있어요(공백·대소문자를 무시하고 검사해요) |
+| `이미 같은 닉네임이 있어요.` | 같은 방에 같은 닉네임이 있어요. 방금 끊긴 내 연결이면 10초쯤 뒤 정리되니 잠시 뒤 다시 참가해요 |
 
 ## Day별 지도 (교재 작성용)
 
@@ -249,12 +252,12 @@ WebSocket 메시지는 JSON이고 `t`가 종류예요.
 | 6·10 | 구조체·연산자 오버로딩 | `game-core/src/vec2.rs` |
 | 7·24 | enum·serde 메시지 | `game-core/src/protocol.rs`, `client/src/protocol.ts` |
 | 8 | 오류 처리 | `server/src/error.rs`, `server/src/main.rs`(`run`) |
-| 11·19 | 워크스페이스·game-core·테스트 | `Cargo.toml`, `game-core/src/*.rs`의 `#[cfg(test)]` |
+| 11·19 | 워크스페이스·모듈(한 방향 의존)·game-core·테스트 | `Cargo.toml`, `game-core/src/lib.rs`, `game-core/src/*.rs`의 `#[cfg(test)]` |
 | 13~15 | 게임 루프·Canvas·입력 | `client/src/render.ts`, `client/src/input.ts`, `client/src/play.ts`(`frame`) |
 | 16~18 | 이동·충돌·규칙 | `game-core/src/physics.rs`, `world.rs`, `rules.rs` |
 | 20·28 | WASM·예측 | `game-wasm/src/lib.rs`, `client/src/wasm.ts`, `client/src/play.ts`(`correct`) |
 | 22·23 | Axum·WebSocket | `server/src/app.rs`, `server/src/ws.rs` |
-| 25·26·29 | 액터·입퇴장·방 | `server/src/room.rs`, `server/src/rooms.rs` |
+| 25·26·29 | 액터·입퇴장·끊김·방 | `server/src/room.rs`, `server/src/rooms.rs`(`RemoveOnDrop`), `server/src/ws.rs`(무응답 정리 `IDLE_TIMEOUT`) |
 | 27 | 스냅샷·보간 | `client/src/interp.ts` |
 | 30·31 | 호스트·컨트롤러 화면 | `client/host.html`·`src/host.ts`·`src/qr.ts`, `client/play.html` |
 | 32 | 안전 | `server/src/ws.rs`(`RateLimiter`), `protocol.rs`(`validate_name`) |

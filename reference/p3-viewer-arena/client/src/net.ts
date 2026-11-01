@@ -1,7 +1,7 @@
 // 네트워크: HTTP API 호출과 WebSocket 연결.
 // 주소는 지금 페이지와 같은 서버(location.host)를 써요. 그래서 개발 서버(vite)는 프록시가 필요해요.
 
-import type { ClientMsg, Leaderboard, Role, ServerMsg } from './protocol';
+import type { ClientMsg, Leaderboard, Role, RoomInfo, ServerMsg } from './protocol';
 
 /** 방 코드 정리: 앞뒤 공백 제거 + 대문자 */
 export function normalizeCode(raw: string): string {
@@ -26,6 +26,16 @@ export async function createRoom(): Promise<string> {
   }
   const body = (await response.json()) as { code: string };
   return body.code;
+}
+
+/** 방 상태. 방이 없으면(404) null, 서버에 닿지 못하면 예외가 나요. */
+export async function fetchRoom(code: string): Promise<RoomInfo | null> {
+  const response = await fetch(`/api/rooms/${encodeURIComponent(code)}`);
+  if (response.status === 404) return null;
+  if (!response.ok) {
+    throw new Error(`방 정보를 불러오지 못했어요 (${response.status})`);
+  }
+  return (await response.json()) as RoomInfo;
 }
 
 export async function fetchLeaderboard(period: 'day' | 'all'): Promise<Leaderboard> {

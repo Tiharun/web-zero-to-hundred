@@ -28,7 +28,9 @@ pub const PLAYER_RADIUS: f32 = 20.0;
 pub const PLAYER_ACCEL: f32 = 1800.0;
 /// 마찰(클수록 빨리 멈춘다). 최고 속도 ≈ PLAYER_ACCEL / PLAYER_FRICTION = 300.
 pub const PLAYER_FRICTION: f32 = 6.0;
-/// 서버가 강제하는 최고 속도. 클라이언트가 무엇을 보내도 이보다 빨라질 수 없다.
+/// 서버가 강제하는 최고 속도(안전장치). 보통은 마찰 때문에 이 근처에서 저절로 멈추지만,
+/// 밀려나기·큰 dt·버그로 속도가 튀어도 `integrate`가 매 틱 이 값으로 잘라 낸다.
+/// 클라이언트가 무엇을 보내도 이보다 빨라질 수 없다.
 pub const PLAYER_MAX_SPEED: f32 = 300.0;
 
 /// 아이템(원) 반지름, 동시에 떠 있는 아이템 수, 하나 먹을 때 점수.

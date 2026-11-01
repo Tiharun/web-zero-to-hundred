@@ -7,7 +7,7 @@
 import './style.css';
 import { SnapshotBuffer } from './interp';
 import { STILL, firstActive, joystick, keyboard, round2, type Direction } from './input';
-import { connect, roomFromUrl, type Connection } from './net';
+import { connect, fetchRoom, roomFromUrl, type Connection } from './net';
 import { PHASE_LABEL, TICK_HZ, formatTime, type Snapshot } from './protocol';
 import { drawScene, fitCanvas } from './render';
 import { loadWasm, predictBody, type BodyState } from './wasm';
@@ -25,6 +25,7 @@ const stick = document.querySelector<HTMLElement>('#stick')!;
 const knob = document.querySelector<HTMLElement>('#knob')!;
 
 const SNAP_DISTANCE = 80; // 예측이 서버와 이만큼(월드 단위) 넘게 다르면 바로 서버 위치로
+const RESEND_MS = 1000; // 입력이 그대로여도 1초마다 다시 보내요(중간에 사라진 입력이 저절로 고쳐져요)
 const CORRECTION = 0.3; // 그보다 작으면 스냅샷마다 차이의 30%씩 서버 쪽으로
 
 // 조이스틱을 먼저 보고, 안 쓰고 있으면 키보드를 봐요. 소수 둘째 자리까지만 써요.
@@ -56,29 +57,57 @@ function showHud(snapshot: Snapshot, myId: number): void {
   scoreText.textContent = `${me?.score ?? 0}점`;
 }
 
-/** 입력을 1초에 20번(TICK_HZ) 살펴보고, 바뀌었을 때만 서버로 보내요. */
+/** 입력을 1초에 20번(TICK_HZ) 살펴보고, 바뀌었거나 1초가 지났으면 서버로 보내요. */
 function startSending(connection: Connection, isOpen: () => boolean): void {
   let seq = 0;
   let sent = STILL;
+  let sentAt = 0;
   const timer = window.setInterval(() => {
     if (!isOpen()) {
       window.clearInterval(timer);
       return;
     }
     const dir = readInput();
-    if (dir.dx === sent.dx && dir.dy === sent.dy) return;
+    const now = performance.now();
+    const changed = dir.dx !== sent.dx || dir.dy !== sent.dy;
+    if (!changed && now - sentAt < RESEND_MS) return;
     seq += 1;
     connection.send({ t: 'input', seq, dx: dir.dx, dy: dir.dy });
     sent = dir;
+    sentAt = now;
   }, 1000 / TICK_HZ);
+}
+
+/** 참가하지 못했을 때: 이유를 보여 주고 다시 누를 수 있게 해요. */
+function joinFailed(message: string): void {
+  statusText.textContent = message;
+  joinButton.disabled = false;
 }
 
 async function join(room: string, name: string): Promise<void> {
   joinButton.disabled = true;
   statusText.textContent = '연결 중…';
-  await loadWasm(); // 예측에 쓸 Rust 코드를 먼저 준비해요
+
+  // 1) 방이 있는지 먼저 물어봐요(없는 방이면 WebSocket을 열어 봐야 이유를 알 수 없어요).
+  try {
+    if (!(await fetchRoom(room))) {
+      joinFailed('방을 찾을 수 없어요. 방 코드를 확인해 주세요.');
+      return;
+    }
+  } catch {
+    joinFailed('서버에 연결하지 못했어요. 같은 Wi-Fi인지, 서버가 켜져 있는지 확인해 주세요.');
+    return;
+  }
+  // 2) 예측에 쓸 Rust 코드(WebAssembly)를 준비해요.
+  try {
+    await loadWasm();
+  } catch {
+    joinFailed('게임 파일(WebAssembly)을 불러오지 못했어요. 다시 눌러 주세요.');
+    return;
+  }
 
   let myId = 0; // 0 = 아직 참가 전
+  let gotError = false; // 서버가 이유(error)를 알려 줬나요?
   let open = true;
   let me: BodyState | null = null; // 예측한 내 몸 상태
   const snapshots = new SnapshotBuffer();
@@ -108,6 +137,7 @@ async function join(room: string, name: string): Promise<void> {
           break;
         }
         case 'error':
+          gotError = true;
           statusText.textContent = msg.message;
           break;
       }
@@ -115,7 +145,8 @@ async function join(room: string, name: string): Promise<void> {
     onClose() {
       open = false;
       if (myId === 0) {
-        joinButton.disabled = false; // 참가 전에 끊김(닉네임 거절 등): 고쳐서 다시 시도할 수 있어요
+        // 참가 전에 끊김: 서버가 이유(닉네임 거절 등)를 보냈으면 그대로 두고, 아니면 일반 안내를 보여 줘요.
+        joinFailed(gotError ? statusText.textContent ?? '' : '방에 들어가지 못했어요. 잠시 뒤 다시 눌러 주세요.');
         return;
       }
       statusText.textContent = '연결이 끊겼어요. 새로 고침해서 다시 참가해 주세요.';

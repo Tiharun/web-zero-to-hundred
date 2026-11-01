@@ -37,10 +37,13 @@ impl Rooms {
         let (handle, actor) = room::new_room(code.clone(), rand::random(), db);
         rooms.insert(code.clone(), handle.clone());
 
-        let registry = self.clone();
+        let guard = RemoveOnDrop {
+            rooms: self.clone(),
+            code,
+        };
         tokio::spawn(async move {
-            actor.run().await; // 방이 끝날 때까지 기다렸다가
-            registry.remove(&code); // 목록에서 지운다
+            let _guard = guard; // 이 작업이 끝날 때(정상 종료든 panic이든) 같이 사라지며 방을 지운다
+            actor.run().await;
         });
         Ok(handle)
     }
@@ -52,7 +55,24 @@ impl Rooms {
     }
 
     fn remove(&self, code: &str) {
-        self.inner.lock().expect("방 목록 잠금").remove(code);
+        // Drop 안에서 불리므로 여기서 panic하면 안 된다. 잠금이 망가졌으면(poisoned) 그냥 넘어간다.
+        if let Ok(mut rooms) = self.inner.lock() {
+            rooms.remove(code);
+        }
+    }
+}
+
+/// 방 작업이 어떻게 끝나든 목록에서 방을 지우는 "경비원".
+/// 값이 사라질 때 Rust가 반드시 `drop`을 불러 준다. 작업이 panic으로 풀릴 때(unwind)도 마찬가지다.
+/// 그래서 액터에 버그가 있어도 목록에 죽은 방(코드는 있는데 아무도 답하지 않는 방)이 남지 않는다.
+struct RemoveOnDrop {
+    rooms: Rooms,
+    code: String,
+}
+
+impl Drop for RemoveOnDrop {
+    fn drop(&mut self) {
+        self.rooms.remove(&self.code);
     }
 }
 
@@ -101,6 +121,33 @@ mod tests {
 
         tokio::time::sleep(std::time::Duration::from_secs(31)).await;
         assert!(rooms.get(&code).is_none(), "60초가 지나면 정리된다");
+    }
+
+    #[tokio::test]
+    async fn room_is_removed_even_if_its_task_panics() {
+        // 액터 대신 일부러 panic하는 작업에 같은 경비원을 들려 보낸다.
+        // (테스트 출력에 panic 메시지가 보이는 것은 정상이다.)
+        let rooms = Rooms::default();
+        let (handle, _actor) = room::new_room("BOOM".to_string(), 1, None);
+        rooms
+            .inner
+            .lock()
+            .unwrap()
+            .insert("BOOM".to_string(), handle);
+        let guard = RemoveOnDrop {
+            rooms: rooms.clone(),
+            code: "BOOM".to_string(),
+        };
+
+        let task = tokio::spawn(async move {
+            let _guard = guard;
+            panic!("액터 안에서 버그가 났다고 치자");
+        });
+        assert!(task.await.unwrap_err().is_panic());
+        assert!(
+            rooms.get("BOOM").is_none(),
+            "panic이 나도 목록에서 지워진다"
+        );
     }
 
     #[tokio::test(start_paused = true)]

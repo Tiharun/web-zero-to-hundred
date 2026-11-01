@@ -24,6 +24,7 @@ rand = { version = "=0.10.3", default-features = false }
 axum = { version = "=0.8.9", features = ["ws"] }
 tokio = { version = "=1.54.1", features = ["full"] }
 tower-http = { version = "=0.7.1", features = ["fs"] }
+# TLS 기능은 켜지 않았다(로컬·Docker DB용). TLS가 필요한 클라우드 DB는 features에 "tls-rustls"를 더한다(Day 41~42).
 sqlx = { version = "=0.9.0", default-features = false, features = ["runtime-tokio", "postgres", "macros", "migrate"] }
 tracing = "=0.1.44"
 tracing-subscriber = { version = "=0.3.23", features = ["env-filter"] }

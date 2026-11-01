@@ -6,8 +6,6 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::world::Phase;
-
 /// 프로토콜 버전. 메시지 모양을 호환되지 않게 바꾸면 1 올린다.
 pub const PROTOCOL_VERSION: u32 = 1;
 
@@ -61,6 +59,16 @@ impl ClientMsg {
 }
 
 // ---------- 서버 → 클라이언트 ----------
+
+/// 라운드 상태 머신: 대기 → 진행 → 결과 → 대기 → …
+/// 스냅샷에 실려 나가는 값이라 여기(protocol)에 둔다. JSON에서는 "waiting"처럼 소문자.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Phase {
+    Waiting,
+    Playing,
+    Ended,
+}
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "t", rename_all = "camelCase")]
@@ -124,6 +132,7 @@ pub enum ErrorCode {
     BadName,
     RoomFull,
     RoomClosed,
+    NameTaken,
     RateLimited,
 }
 
@@ -133,6 +142,7 @@ pub enum ErrorCode {
 pub enum NameError {
     Empty,
     TooLong,
+    BadChar,
     Banned,
 }
 
@@ -142,12 +152,22 @@ impl NameError {
         match self {
             NameError::Empty => "닉네임을 입력해 주세요.",
             NameError::TooLong => "닉네임은 12자까지 쓸 수 있어요.",
+            NameError::BadChar => "보이지 않는 글자나 제어 문자는 닉네임에 쓸 수 없어요.",
             NameError::Banned => "쓸 수 없는 닉네임이에요.",
         }
     }
 }
 
-/// 앞뒤 공백을 지운 닉네임을 돌려준다. 1~12자, 제어 문자·금지어는 안 된다.
+/// 화면에 보이지 않거나 글자 방향을 바꾸는 유니코드 글자(폭 없는 공백·결합자, 방향 제어, BOM).
+/// 이런 글자를 끼우면 금지어 검사를 피하거나 이름표를 어지럽힐 수 있다.
+fn is_invisible(c: char) -> bool {
+    matches!(
+        c,
+        '\u{200B}'..='\u{200F}' | '\u{202A}'..='\u{202E}' | '\u{2060}'..='\u{2064}' | '\u{FEFF}'
+    )
+}
+
+/// 앞뒤 공백을 지운 닉네임을 돌려준다. 1~12자, 제어·보이지 않는 글자와 금지어는 안 된다.
 pub fn validate_name(raw: &str) -> Result<String, NameError> {
     let name = raw.trim();
     if name.is_empty() {
@@ -157,8 +177,8 @@ pub fn validate_name(raw: &str) -> Result<String, NameError> {
     if name.chars().count() > NAME_MAX_CHARS {
         return Err(NameError::TooLong);
     }
-    if name.chars().any(char::is_control) {
-        return Err(NameError::Banned);
+    if name.chars().any(|c| c.is_control() || is_invisible(c)) {
+        return Err(NameError::BadChar);
     }
     // "시 발", "ADMIN"처럼 피해 가지 못하게 공백을 빼고 소문자로 바꿔서 비교한다.
     let squashed: String = name
@@ -301,8 +321,23 @@ mod tests {
         );
         assert_eq!(
             validate_name("a\u{0007}b"),
-            Err(NameError::Banned),
+            Err(NameError::BadChar),
             "제어 문자"
         );
+    }
+
+    #[test]
+    fn invisible_characters_are_rejected() {
+        // 폭이 0인 글자를 끼워 금지어 검사를 피하거나, 글자 방향을 뒤집어 화면을 어지럽히지 못하게 한다.
+        for name in [
+            "ad\u{200B}min", // 폭 없는 공백(zero-width space)
+            "철\u{200D}수",  // 폭 없는 결합자(ZWJ)
+            "\u{202E}gnp",   // 오른쪽→왼쪽 강제(RLO)
+            "철\u{2060}수",  // 단어 결합자(word joiner)
+            "\u{FEFF}철수",  // BOM(trim으로 지워지지 않는다)
+        ] {
+            assert_eq!(validate_name(name), Err(NameError::BadChar), "{name:?}");
+        }
+        assert_eq!(validate_name("철수_01"), Ok("철수_01".to_string()));
     }
 }

@@ -18,7 +18,10 @@ let loading: Promise<unknown> | null = null;
 
 /** .wasm 파일을 내려받아 준비해요. 여러 번 불러도 한 번만 받아요(??= : 비어 있을 때만 넣기). */
 export function loadWasm(): Promise<unknown> {
-  return (loading ??= init());
+  return (loading ??= init().catch((error: unknown) => {
+    loading = null; // 실패했으면 비워 둬요. 그래야 다음에 다시 시도할 수 있어요.
+    throw error;
+  }));
 }
 
 /** dt초 뒤 내 몸 상태(서버와 똑같은 규칙). loadWasm()이 끝난 뒤에 불러요. */

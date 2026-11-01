@@ -7,8 +7,9 @@ use std::path::Path;
 use std::time::Duration;
 
 use futures_util::{SinkExt, StreamExt};
-use game_core::protocol::{ClientMsg, ErrorCode, PROTOCOL_VERSION, ServerMsg};
-use game_core::world::Phase;
+use game_core::protocol::{
+    ClientMsg, ErrorCode, MAX_INPUTS_PER_SEC, PROTOCOL_VERSION, Phase, ServerMsg,
+};
 use server::app::{AppState, router};
 use tokio::net::{TcpListener, TcpStream};
 use tokio::time::{sleep, timeout};
@@ -21,7 +22,14 @@ type Ws = WebSocketStream<MaybeTlsStream<TcpStream>>;
 
 /// 서버를 127.0.0.1의 빈 포트(0 = 운영체제가 골라 줌)에 띄우고 주소를 돌려준다.
 async fn start_server() -> SocketAddr {
-    let app = router(AppState::new(None), Path::new("no-static-files-in-tests"));
+    start_server_with_idle(AppState::new(None).idle_timeout).await
+}
+
+/// 무응답 제한 시간을 바꿔서 서버를 띄운다(끊김 테스트용).
+async fn start_server_with_idle(idle_timeout: Duration) -> SocketAddr {
+    let mut state = AppState::new(None);
+    state.idle_timeout = idle_timeout;
+    let app = router(state, Path::new("no-static-files-in-tests"));
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let addr = listener.local_addr().unwrap();
     tokio::spawn(async move { axum::serve(listener, app).await.unwrap() });
@@ -97,6 +105,39 @@ async fn join(addr: SocketAddr, code: &str, name: &str) -> (Ws, u32) {
         }
         other => panic!("welcome이 와야 해요: {other:?}"),
     }
+}
+
+async fn room_info(addr: SocketAddr, code: &str) -> serde_json::Value {
+    reqwest::get(format!("http://{addr}/api/rooms/{code}"))
+        .await
+        .unwrap()
+        .json()
+        .await
+        .unwrap()
+}
+
+/// 0.8초 동안 온 오류를 센다: (rate_limited 개수, bad_message 개수)
+async fn count_errors(ws: &mut Ws) -> (usize, usize) {
+    let mut rate_limited = 0;
+    let mut bad_message = 0;
+    let collect = async {
+        while let Some(msg) = recv(ws).await {
+            match msg {
+                ServerMsg::Error {
+                    code: ErrorCode::RateLimited,
+                    ..
+                } => rate_limited += 1,
+                ServerMsg::Error {
+                    code: ErrorCode::BadMessage,
+                    ..
+                } => bad_message += 1,
+                ServerMsg::Error { code, message } => panic!("다른 오류: {code:?} {message}"),
+                _ => {}
+            }
+        }
+    };
+    let _ = timeout(Duration::from_millis(800), collect).await;
+    (rate_limited, bad_message)
 }
 
 fn is_snapshot_with(players: usize) -> impl Fn(&ServerMsg) -> bool {
@@ -193,50 +234,98 @@ async fn input_flood_is_throttled() {
     let code = create_room(addr).await;
     let (mut ws, _id) = join(addr, &code, "연타왕").await;
 
-    // 보통 속도(초당 20개)는 괜찮다
-    for seq in 1..=10 {
-        send(
-            &mut ws,
-            &ClientMsg::Input {
-                seq,
-                dx: 0.0,
-                dy: 1.0,
-            },
-        )
-        .await;
-        sleep(Duration::from_millis(50)).await;
-    }
-    // 한꺼번에 100개 → 초당 30개를 넘은 것은 버리고, 한 번만 알려 준다
-    for seq in 11..=110 {
-        send(
-            &mut ws,
-            &ClientMsg::Input {
-                seq,
-                dx: 1.0,
-                dy: 0.0,
-            },
-        )
-        .await;
+    // 한꺼번에 100개 → 1초에 30개를 넘은 것은 버리고, 1초 창마다 한 번만 알려 준다
+    for seq in 1..=100 {
+        let input = ClientMsg::Input {
+            seq,
+            dx: 1.0,
+            dy: 0.0,
+        };
+        send(&mut ws, &input).await;
     }
 
-    let mut rate_limited = 0;
-    let collect = async {
-        while let Some(msg) = recv(&mut ws).await {
-            match msg {
-                ServerMsg::Error {
-                    code: ErrorCode::RateLimited,
-                    ..
-                } => rate_limited += 1,
-                ServerMsg::Error { code, message } => panic!("다른 오류: {code:?} {message}"),
-                _ => {}
-            }
-        }
-    };
-    let _ = timeout(Duration::from_millis(800), collect).await;
-    assert_eq!(rate_limited, 1, "넘친 입력은 버리고 오류는 한 번만 보낸다");
+    let (rate_limited, bad_message) = count_errors(&mut ws).await;
+    assert_eq!(bad_message, 0);
+    // 보내는 데 1초가 넘게 걸리면 창이 두 번 바뀔 수 있어서 1~2번을 허용한다(넘친 70개마다 보내지는 않는다).
+    assert!(
+        (1..=2).contains(&rate_limited),
+        "rate_limited 오류 {rate_limited}번"
+    );
 
     // 연결은 그대로 살아 있다
     recv_until(&mut ws, |msg| matches!(msg, ServerMsg::Snapshot(_))).await;
+}
+
+#[tokio::test]
+async fn binary_frames_count_toward_the_rate_limit() {
+    let addr = start_server().await;
+    let code = create_room(addr).await;
+    let (mut ws, _id) = join(addr, &code, "바이너리").await;
+
+    // 바이너리 프레임도 빈도 제한에 들어간다(제한을 피해 오류 답장만 잔뜩 받아 내지 못하게).
+    for _ in 0..100 {
+        ws.send(Message::binary(vec![1, 2, 3])).await.unwrap();
+    }
+
+    let (rate_limited, bad_message) = count_errors(&mut ws).await;
+    assert!(rate_limited >= 1, "rate_limited가 와야 해요");
+    assert!(
+        bad_message <= 2 * MAX_INPUTS_PER_SEC as usize,
+        "bad_message 답장 {bad_message}개: 제한 안쪽의 메시지에만 답해야 해요"
+    );
+}
+
+#[tokio::test]
+async fn silent_client_is_removed_but_pinging_client_stays() {
+    // 테스트가 오래 걸리지 않게 무응답 제한을 0.5초로 줄인 서버
+    let addr = start_server_with_idle(Duration::from_millis(500)).await;
+    let code = create_room(addr).await;
+    let (mut silent, _) = join(addr, &code, "잠수").await;
+    let (mut talker, _) = join(addr, &code, "수다").await;
+
+    // talker는 0.15초마다 ping(심장 박동)을 보내고, silent는 아무것도 보내지 않는다
+    for i in 0..8 {
+        send(&mut talker, &ClientMsg::Ping { ts: f64::from(i) }).await;
+        sleep(Duration::from_millis(150)).await;
+    }
+
+    let info = room_info(addr, &code).await;
+    assert_eq!(
+        info["players"], 1,
+        "말없는 플레이어는 빠지고 ping을 보낸 플레이어는 남는다"
+    );
+
+    // 서버가 silent의 연결을 닫았다(남은 메시지를 다 읽으면 스트림이 끝난다)
+    let drained = timeout(Duration::from_secs(2), async {
+        while let Some(Ok(_)) = silent.next().await {}
+    })
+    .await;
+    assert!(drained.is_ok(), "서버가 연결을 닫아야 해요");
+}
+
+#[tokio::test]
+async fn duplicate_nickname_in_room_is_rejected() {
+    let addr = start_server().await;
+    let code = create_room(addr).await;
+    let (_first, _) = join(addr, &code, "철수").await;
+
+    let mut second = connect(addr, &code, "player").await;
+    send(
+        &mut second,
+        &ClientMsg::Join {
+            name: "철수".to_string(),
+        },
+    )
+    .await;
+    match recv(&mut second).await {
+        Some(ServerMsg::Error {
+            code: ErrorCode::NameTaken,
+            ..
+        }) => {}
+        other => panic!("name_taken 오류가 와야 해요: {other:?}"),
+    }
+    assert!(recv(&mut second).await.is_none(), "그다음 연결이 닫힌다");
+    assert_eq!(room_info(addr, &code).await["players"], 1);
 }
 
 #[tokio::test]

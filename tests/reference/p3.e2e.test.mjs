@@ -222,14 +222,48 @@ test('home page creates a room and links to the host and play pages', async (t) 
   assert.deepEqual(errors, []);
 });
 
-test('a banned nickname is rejected and the player can try again', async (t) => {
+test('a banned nickname is rejected, the retry joins, and input is resent every second', async (t) => {
   const code = await createRoom();
   const phone = await openPhone(t, code, 'admin');
   await phone.page.waitForFunction(() => document.querySelector('#status')?.textContent === '쓸 수 없는 닉네임이에요.');
   await phone.page.waitForSelector('#join:not([disabled])');
 
+  // 휴대폰이 보내는 input 프레임을 센다
+  const inputsSent = [];
+  phone.page.on('websocket', (socket) => {
+    socket.on('framesent', (frame) => {
+      if (String(frame.payload).includes('"t":"input"')) inputsSent.push(Date.now());
+    });
+  });
+
   await phone.page.fill('#name', '착한닉네임');
   await phone.page.click('#join');
   await phone.page.waitForSelector('body[data-state="joined"]');
+
+  // 아무것도 누르지 않아도 1초마다 지금 입력을 다시 보낸다(사라진 입력이 저절로 고쳐지게)
+  await new Promise((resolve) => setTimeout(resolve, 2500));
+  assert.ok(inputsSent.length >= 2, `2.5초 동안 보낸 input: ${inputsSent.length}개`);
+  assert.ok(inputsSent.length <= 5, `바뀐 게 없으면 1초에 한 번 정도만 보내요: ${inputsSent.length}개`);
   assert.deepEqual(phone.errors, []);
+});
+
+test('an unknown room shows a clear message on the host and play pages', async (t) => {
+  const context = await browser.newContext();
+  t.after(() => context.close());
+  const page = await context.newPage();
+  const errors = collectConsoleErrors(page);
+
+  // 방 코드는 영문 대문자뿐이라 숫자가 들어간 코드는 절대 없는 방이다
+  await page.goto(`${baseUrl}host.html?room=ZZ00`);
+  await page.waitForFunction(() => document.querySelector('#status')?.textContent.startsWith('방을 찾을 수 없어요'));
+  assert.equal(await page.getAttribute('#arena', 'data-players'), '0');
+
+  await page.goto(`${baseUrl}play.html?room=ZZ00`);
+  await page.fill('#name', '길잃은');
+  await page.click('#join');
+  await page.waitForFunction(() => document.querySelector('#status')?.textContent === '방을 찾을 수 없어요. 방 코드를 확인해 주세요.');
+  await page.waitForSelector('#join:not([disabled])');
+
+  // 콘솔에는 방 확인 요청의 404만 남아야 한다(Chromium이 실패한 요청을 오류로 기록한다)
+  assert.ok(errors.length > 0 && errors.every((e) => e.includes('404')), JSON.stringify(errors));
 });

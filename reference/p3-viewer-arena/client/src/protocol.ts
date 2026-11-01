@@ -12,7 +12,7 @@ export const ITEM_RADIUS = 12;
 // enum 대신 문자열 유니온 타입을 써요(Vite 템플릿의 erasableSyntaxOnly 설정).
 export type Phase = 'waiting' | 'playing' | 'ended';
 export type Role = 'host' | 'player';
-export type ErrorCode = 'bad_message' | 'bad_name' | 'room_full' | 'room_closed' | 'rate_limited';
+export type ErrorCode = 'bad_message' | 'bad_name' | 'room_full' | 'room_closed' | 'name_taken' | 'rate_limited';
 
 export interface PlayerState {
   id: number;

@@ -15,9 +15,9 @@ use std::time::Duration;
 
 use axum::extract::ws::Utf8Bytes;
 use game_core::physics::Input;
-use game_core::protocol::{ErrorCode, RankEntry, ServerMsg};
+use game_core::protocol::{ErrorCode, Phase, RankEntry, ServerMsg};
 use game_core::rules::{SNAPSHOT_HZ, TICK_DT, TICK_HZ};
-use game_core::world::{JoinError, Phase, PlayerId, World};
+use game_core::world::{JoinError, PlayerId, World};
 use serde::Serialize;
 use sqlx::PgPool;
 use tokio::sync::{broadcast, mpsc, oneshot};
@@ -76,6 +76,7 @@ impl RoomHandle {
         match answer.await {
             Ok(Ok(id)) => Ok(id),
             Ok(Err(JoinError::RoomFull)) => Err(ErrorCode::RoomFull),
+            Ok(Err(JoinError::NameTaken)) => Err(ErrorCode::NameTaken),
             Err(_) => Err(ErrorCode::RoomClosed),
         }
     }
