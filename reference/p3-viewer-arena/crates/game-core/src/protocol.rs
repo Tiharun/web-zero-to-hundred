@@ -158,12 +158,23 @@ impl NameError {
     }
 }
 
-/// 화면에 보이지 않거나 글자 방향을 바꾸는 유니코드 글자(폭 없는 공백·결합자, 방향 제어, BOM).
-/// 이런 글자를 끼우면 금지어 검사를 피하거나 이름표를 어지럽힐 수 있다.
+/// 화면에 보이지 않거나(빈칸처럼 보이거나) 글자 방향을 바꾸는 유니코드 글자.
+/// 이런 글자를 끼우면 금지어 검사를 피하거나, "빈 닉네임"을 만들거나, 이름표를 어지럽힐 수 있다.
+/// 이모지에 붙는 이형 선택자(U+FE00~FE0F)는 정상 글자라서 막지 않는다.
 fn is_invisible(c: char) -> bool {
     matches!(
         c,
-        '\u{200B}'..='\u{200F}' | '\u{202A}'..='\u{202E}' | '\u{2060}'..='\u{2064}' | '\u{FEFF}'
+        '\u{00AD}'                    // 소프트 하이픈
+            | '\u{034F}'              // 결합 문자 무시 기호(CGJ)
+            | '\u{061C}'              // 아랍 글자 표시(방향 제어)
+            | '\u{115F}' | '\u{1160}' // 한글 초성·중성 채움 문자
+            | '\u{200B}'..='\u{200F}' // 폭 없는 공백·결합자, 방향 표시
+            | '\u{202A}'..='\u{202E}' // 방향 덮어쓰기
+            | '\u{2060}'..='\u{2064}' // 단어 결합자 등 보이지 않는 연산자
+            | '\u{2066}'..='\u{2069}' // 방향 격리
+            | '\u{3164}'              // 한글 채움 문자(빈칸처럼 보인다)
+            | '\u{FEFF}'              // BOM
+            | '\u{FFA0}' // 반각 한글 채움 문자
     )
 }
 
@@ -330,14 +341,42 @@ mod tests {
     fn invisible_characters_are_rejected() {
         // 폭이 0인 글자를 끼워 금지어 검사를 피하거나, 글자 방향을 뒤집어 화면을 어지럽히지 못하게 한다.
         for name in [
-            "ad\u{200B}min", // 폭 없는 공백(zero-width space)
-            "철\u{200D}수",  // 폭 없는 결합자(ZWJ)
-            "\u{202E}gnp",   // 오른쪽→왼쪽 강제(RLO)
-            "철\u{2060}수",  // 단어 결합자(word joiner)
-            "\u{FEFF}철수",  // BOM(trim으로 지워지지 않는다)
+            "ad\u{200B}min",        // 폭 없는 공백(zero-width space)
+            "철\u{200D}수",         // 폭 없는 결합자(ZWJ)
+            "\u{202E}gnp",          // 오른쪽→왼쪽 강제(RLO)
+            "철\u{2060}수",         // 단어 결합자(word joiner)
+            "\u{FEFF}철수",         // BOM(trim으로 지워지지 않는다)
+            "ad\u{00AD}min",        // 소프트 하이픈(보통은 안 보인다)
+            "철\u{034F}수",         // 결합 문자 무시 기호(CGJ)
+            "\u{061C}철수",         // 아랍 글자 표시(ALM, 방향 제어)
+            "\u{2066}철수\u{2069}", // 방향 격리(LRI … PDI)
         ] {
             assert_eq!(validate_name(name), Err(NameError::BadChar), "{name:?}");
         }
         assert_eq!(validate_name("철수_01"), Ok("철수_01".to_string()));
+    }
+
+    #[test]
+    fn hangul_filler_blank_names_are_rejected() {
+        // 한글 채움 문자는 화면에 빈칸처럼 보이지만 공백(whitespace)이 아니라서 trim으로 안 지워진다.
+        // "빈 닉네임" 장난에 흔히 쓰인다.
+        for name in [
+            "\u{3164}\u{3164}\u{3164}", // 한글 채움 문자(HANGUL FILLER)만
+            "\u{115F}\u{1160}",         // 초성·중성 채움 문자
+            "\u{FFA0}",                 // 반각 한글 채움 문자
+            "철수\u{3164}",
+        ] {
+            assert_eq!(validate_name(name), Err(NameError::BadChar), "{name:?}");
+        }
+    }
+
+    #[test]
+    fn emoji_with_variation_selectors_are_allowed() {
+        // 이모지 뒤의 U+FE0F(이형 선택자)는 이모지를 그림으로 보이게 하는 정상 글자라서 막지 않는다.
+        assert_eq!(
+            validate_name("하트\u{2764}\u{FE0F}"),
+            Ok("하트\u{2764}\u{FE0F}".to_string())
+        );
+        assert_eq!(validate_name("철수🎮"), Ok("철수🎮".to_string()));
     }
 }

@@ -6,7 +6,8 @@
 //! 안전장치(클라이언트는 믿지 않는다):
 //! - 메시지 하나 1KB까지(넘으면 연결을 끊는다)
 //! - 1초에 메시지 30개까지(넘친 것은 버리고, 1초마다 한 번만 알린다)
-//! - 10초 동안 아무 메시지도 없으면 끊긴 연결로 보고 정리한다(브라우저는 2초마다 ping을 보낸다)
+//! - 10초 동안 아무 메시지도 없으면 끊긴 연결로 보고 정리한다(브라우저는 2초마다 ping을 보낸다).
+//!   보내기(쓰기)도 같은 기한 안에 끝나야 한다(아래 `write` 설명).
 //! - 닉네임 검사, 입력 방향 길이 ≤ 1(속도 제한은 game-core가 한다)
 
 use std::time::Duration;
@@ -23,7 +24,7 @@ use serde::Deserialize;
 use tokio::sync::broadcast;
 use tokio::sync::broadcast::error::RecvError;
 // tokio의 Instant: 테스트에서 tokio 시계를 멈추면 이 시계도 함께 멈춘다.
-use tokio::time::{Instant, sleep_until, timeout};
+use tokio::time::{Instant, sleep_until, timeout, timeout_at};
 
 use crate::app::AppState;
 use crate::error::AppError;
@@ -69,23 +70,23 @@ pub async fn ws_handler(
 
 async fn host_session(mut socket: WebSocket, room: RoomHandle, idle: Duration) {
     let mut events = room.subscribe();
+    // 마지막으로 소식을 들은 시각 + idle. 이때까지 아무것도 안 오면 끊긴 연결이다.
+    let mut deadline = Instant::now() + idle;
     let welcome = ServerMsg::Welcome {
         id: 0, // 관전 화면은 플레이어가 아니라서 0
         room: room.code.clone(),
         protocol: PROTOCOL_VERSION,
     };
-    if send_msg(&mut socket, &welcome).await.is_err() {
+    if !send_msg(&mut socket, &welcome, deadline).await {
         return;
     }
     // 관전 화면은 누구나 열 수 있으니(로그인 없음) 같은 빈도 제한을 건다.
     let mut limiter = RateLimiter::new(Instant::now());
-    // 마지막으로 소식을 들은 시각 + idle. 이때까지 아무것도 안 오면 끊긴 연결이다.
-    let mut deadline = Instant::now() + idle;
 
     loop {
         tokio::select! {
             event = events.recv() => {
-                if !forward(&mut socket, event).await {
+                if !forward(&mut socket, event, deadline).await {
                     break;
                 }
             }
@@ -106,8 +107,11 @@ async fn host_session(mut socket: WebSocket, room: RoomHandle, idle: Duration) {
                 let Message::Text(text) = message else {
                     continue;
                 };
-                if let Ok(ClientMsg::Ping { ts }) = ClientMsg::parse(&text) {
-                    let _ = send_msg(&mut socket, &ServerMsg::Pong { ts }).await;
+                let Ok(ClientMsg::Ping { ts }) = ClientMsg::parse(&text) else {
+                    continue;
+                };
+                if !send_msg(&mut socket, &ServerMsg::Pong { ts }, deadline).await {
+                    break; // 답장을 기한 안에 못 보냈다 → 끊긴 연결
                 }
             }
         }
@@ -124,7 +128,8 @@ async fn player_session(mut socket: WebSocket, room: RoomHandle, idle: Duration)
     let name = match protocol::validate_name(&raw_name) {
         Ok(name) => name,
         Err(error) => {
-            close_with_error(&mut socket, ErrorCode::BadName, error.message()).await;
+            let deadline = Instant::now() + idle;
+            close_with_error(&mut socket, ErrorCode::BadName, error.message(), deadline).await;
             return;
         }
     };
@@ -140,7 +145,7 @@ async fn player_session(mut socket: WebSocket, room: RoomHandle, idle: Duration)
                 }
                 _ => "방이 닫혔어요. 새 방 코드를 받아 주세요.",
             };
-            close_with_error(&mut socket, code, message).await;
+            close_with_error(&mut socket, code, message, Instant::now() + idle).await;
             return;
         }
     };
@@ -152,7 +157,7 @@ async fn player_session(mut socket: WebSocket, room: RoomHandle, idle: Duration)
         room: room.code.clone(),
         protocol: PROTOCOL_VERSION,
     };
-    if send_msg(&mut socket, &welcome).await.is_ok() {
+    if send_msg(&mut socket, &welcome, Instant::now() + idle).await {
         play(&mut socket, &room, id, &mut events, idle).await;
     }
 
@@ -169,7 +174,14 @@ async fn wait_for_join(socket: &mut WebSocket, idle: Duration) -> Option<String>
     match ClientMsg::parse(&text) {
         Ok(ClientMsg::Join { name }) => Some(name),
         _ => {
-            close_with_error(socket, ErrorCode::BadMessage, "먼저 join을 보내 주세요.").await;
+            let message = "먼저 join을 보내 주세요.";
+            close_with_error(
+                socket,
+                ErrorCode::BadMessage,
+                message,
+                Instant::now() + idle,
+            )
+            .await;
             None
         }
     }
@@ -190,9 +202,9 @@ async fn play(
 
     loop {
         tokio::select! {
-            // 방에서 온 스냅샷·결과를 휴대폰으로 넘긴다.
+            // 방에서 온 스냅샷·결과를 휴대폰으로 넘긴다(이 쓰기도 기한 안에 끝나야 한다).
             event = events.recv() => {
-                if !forward(socket, event).await {
+                if !forward(socket, event, deadline).await {
                     break;
                 }
             }
@@ -217,45 +229,76 @@ async fn play(
                 match limiter.check(Instant::now()) {
                     Rate::Allowed => {}
                     Rate::Dropped { first: true } => {
-                        let _ = send_error(socket, ErrorCode::RateLimited, "메시지가 너무 많아서 일부를 버렸어요.").await;
+                        let message = "메시지가 너무 많아서 일부를 버렸어요.";
+                        if !send_error(socket, ErrorCode::RateLimited, message, deadline).await {
+                            break;
+                        }
                         continue;
                     }
                     Rate::Dropped { first: false } => continue,
                 }
 
                 let Message::Text(text) = message else {
-                    let _ = send_error(socket, ErrorCode::BadMessage, "JSON 글자 메시지만 받아요.").await;
+                    let message = "JSON 글자 메시지만 받아요.";
+                    if !send_error(socket, ErrorCode::BadMessage, message, deadline).await {
+                        break;
+                    }
                     continue;
                 };
-                match ClientMsg::parse(&text) {
+                let sent = match ClientMsg::parse(&text) {
                     Ok(ClientMsg::Input { seq, dx, dy }) => {
-                        if seq <= last_seq {
-                            continue; // 이미 받은 번호보다 오래된 입력은 버린다
+                        // 이미 받은 번호보다 오래된 입력은 버린다
+                        if seq > last_seq {
+                            last_seq = seq;
+                            room.send_input(id, Input::new(dx, dy));
                         }
-                        last_seq = seq;
-                        room.send_input(id, Input::new(dx, dy));
+                        true
                     }
                     Ok(ClientMsg::Ping { ts }) => {
-                        let _ = send_msg(socket, &ServerMsg::Pong { ts }).await;
+                        send_msg(socket, &ServerMsg::Pong { ts }, deadline).await
                     }
                     Ok(ClientMsg::Join { .. }) => {
-                        let _ = send_error(socket, ErrorCode::BadMessage, "이미 참가했어요.").await;
+                        send_error(socket, ErrorCode::BadMessage, "이미 참가했어요.", deadline).await
                     }
                     Err(_) => {
-                        let _ = send_error(socket, ErrorCode::BadMessage, "메시지를 이해하지 못했어요.").await;
+                        let message = "메시지를 이해하지 못했어요.";
+                        send_error(socket, ErrorCode::BadMessage, message, deadline).await
                     }
+                };
+                if !sent {
+                    break; // 답장을 기한 안에 못 보냈다 → 끊긴 연결
                 }
             }
         }
     }
 }
 
-// ---------- 작은 도우미 ----------
+// ---------- 보내기(쓰기) 도우미: 모든 쓰기는 `write` 하나를 지나간다 ----------
+
+/// 소켓에 프레임 하나를 쓴다. 기한(`deadline`)까지 다 못 쓰면 실패(false)로 본다.
+///
+/// 왜 쓰기에도 기한이 필요할까? 끊긴 휴대폰은 데이터를 읽지 않는다. 그러면 운영체제의
+/// 보내기 버퍼(수십 KB)가 가득 차서 `send`가 끝나지 않고 멈춘다. 그동안 `select!`는
+/// 다른 가지(`sleep_until(deadline)`)를 살피지 못하므로, 쓰기를 같은 기한으로 묶지 않으면
+/// 무응답 정리가 몇 분씩 늦어진다(그동안 닉네임과 자리도 계속 차지한다).
+async fn write(socket: &mut WebSocket, message: Message, deadline: Instant) -> bool {
+    finish_by(deadline, socket.send(message)).await
+}
+
+/// 쓰기 작업 하나를 기한 안에 끝내 본다. 제때 성공했으면 true.
+/// (소켓 없이 테스트할 수 있게 "작업"만 받는다.)
+async fn finish_by<E>(deadline: Instant, work: impl Future<Output = Result<(), E>>) -> bool {
+    matches!(timeout_at(deadline, work).await, Ok(Ok(())))
+}
 
 /// 방 이벤트 하나를 소켓으로 넘긴다. 계속해도 되면 true.
-async fn forward(socket: &mut WebSocket, event: Result<Utf8Bytes, RecvError>) -> bool {
+async fn forward(
+    socket: &mut WebSocket,
+    event: Result<Utf8Bytes, RecvError>,
+    deadline: Instant,
+) -> bool {
     match event {
-        Ok(text) => socket.send(Message::Text(text)).await.is_ok(),
+        Ok(text) => write(socket, Message::Text(text), deadline).await,
         // 이 연결이 느려서 스냅샷 몇 개를 놓쳤다. 최신 것부터 다시 받으면 된다.
         Err(RecvError::Lagged(skipped)) => {
             tracing::debug!(skipped, "느린 연결: 지난 스냅샷을 건너뜀");
@@ -265,27 +308,34 @@ async fn forward(socket: &mut WebSocket, event: Result<Utf8Bytes, RecvError>) ->
     }
 }
 
-async fn send_msg(socket: &mut WebSocket, msg: &ServerMsg) -> Result<(), axum::Error> {
+async fn send_msg(socket: &mut WebSocket, msg: &ServerMsg, deadline: Instant) -> bool {
     let text = serde_json::to_string(msg).expect("ServerMsg는 항상 JSON으로 바뀐다");
-    socket.send(Message::Text(text.into())).await
+    write(socket, Message::Text(text.into()), deadline).await
 }
 
 async fn send_error(
     socket: &mut WebSocket,
     code: ErrorCode,
     message: &str,
-) -> Result<(), axum::Error> {
+    deadline: Instant,
+) -> bool {
     let msg = ServerMsg::Error {
         code,
         message: message.to_string(),
     };
-    send_msg(socket, &msg).await
+    send_msg(socket, &msg, deadline).await
 }
 
 /// 오류를 알려 준 뒤 연결을 닫는다.
-async fn close_with_error(socket: &mut WebSocket, code: ErrorCode, message: &str) {
-    let _ = send_error(socket, code, message).await;
-    let _ = socket.send(Message::Close(None)).await;
+async fn close_with_error(
+    socket: &mut WebSocket,
+    code: ErrorCode,
+    message: &str,
+    deadline: Instant,
+) {
+    if send_error(socket, code, message, deadline).await {
+        let _ = write(socket, Message::Close(None), deadline).await; // 어차피 끝내는 길이라 결과는 상관없다
+    }
 }
 
 /// 1초짜리 창(window)마다 메시지를 센다. 한 창에서 MAX_INPUTS_PER_SEC개를 넘으면 버린다.
@@ -344,5 +394,27 @@ mod tests {
         // 1초가 지나면 다시 받는다
         let later = start + Duration::from_millis(1000);
         assert_eq!(limiter.check(later), Rate::Allowed);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn stalled_write_gives_up_at_the_deadline() {
+        // 상대가 읽지 않아 영원히 끝나지 않는 쓰기(보내기 버퍼가 가득 찬 상황)
+        let started = Instant::now();
+        let deadline = started + IDLE_TIMEOUT;
+        let stuck = std::future::pending::<Result<(), ()>>();
+        // 바깥에 20초짜리 안전 시계를 둔다: 기한을 무시하는 코드라면 여기서 Err가 나서 실패한다.
+        let result = timeout(IDLE_TIMEOUT * 2, finish_by(deadline, stuck)).await;
+        assert_eq!(result, Ok(false), "기한(10초)에 포기해야 해요");
+        assert_eq!(Instant::now() - started, IDLE_TIMEOUT);
+
+        let fresh = Instant::now() + IDLE_TIMEOUT;
+        assert!(
+            finish_by(fresh, async { Ok::<(), ()>(()) }).await,
+            "제때 끝난 쓰기"
+        );
+        assert!(
+            !finish_by(fresh, async { Err::<(), ()>(()) }).await,
+            "실패한 쓰기"
+        );
     }
 }
