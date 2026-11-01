@@ -1,6 +1,6 @@
 // 가입 (#/register) (Day 31): 가입하면 바로 로그인 상태가 돼요
 import * as api from '../api.ts';
-import { register } from '../auth.ts';
+import { registerAndLogin, saveDisplayName } from '../auth.ts';
 import { errorMessage, setStatus } from '../ui.ts';
 
 export function renderRegister(view: HTMLElement): void {
@@ -26,15 +26,46 @@ export function renderRegister(view: HTMLElement): void {
   const submitButton = form.querySelector('button')!;
   const status = form.querySelector<HTMLElement>('.status')!;
 
+  // 가입은 두 단계예요: ① 가입 + 로그인 → ② 닉네임 저장. ①이 끝났는지 기억해 둬요
+  let accountCreated = false;
+
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
+
+    // 앞뒤 빈칸을 뺀 닉네임으로 길이를 먼저 확인해요. (minlength는 빈칸도 글자로 세요: "a "는 2글자)
+    // 서버에 보내기 전에 막아야 "가입은 됐는데 닉네임이 없는" 계정이 생기지 않아요
+    const displayName = nameInput.value.trim();
+    if (displayName.length < 2 || displayName.length > 20) {
+      setStatus(status, '닉네임은 앞뒤 빈칸을 빼고 2~20자로 써 주세요.', true);
+      nameInput.focus();
+      return;
+    }
+
     submitButton.disabled = true;
-    setStatus(status, '가입하는 중...');
     try {
-      await register(emailInput.value.trim(), passwordInput.value, nameInput.value.trim());
+      if (!accountCreated) {
+        setStatus(status, '가입하는 중...');
+        await registerAndLogin(emailInput.value.trim(), passwordInput.value);
+        accountCreated = true;
+        // 계정은 이미 만들어졌으니 이메일·비밀번호는 더 바꿀 수 없게 잠가요
+        emailInput.disabled = true;
+        passwordInput.disabled = true;
+      }
+      setStatus(status, '닉네임을 저장하는 중...');
+      await saveDisplayName(displayName);
       location.hash = '#/';
     } catch (error) {
-      setStatus(status, registerErrorMessage(error), true);
+      if (accountCreated) {
+        // ①은 됐고 ②만 실패: 로그인은 된 상태예요. 닉네임만 고쳐서 다시 저장하게 해요
+        setStatus(
+          status,
+          `가입은 됐지만 닉네임을 저장하지 못했어요. ${errorMessage(error)} 닉네임을 확인하고 다시 눌러 주세요.`,
+          true,
+        );
+        submitButton.textContent = '닉네임 다시 저장';
+      } else {
+        setStatus(status, registerErrorMessage(error), true);
+      }
       submitButton.disabled = false;
     }
   });

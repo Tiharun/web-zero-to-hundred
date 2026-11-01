@@ -1,7 +1,11 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using StreamerHub.Api.Data;
 using StreamerHub.Api.Dtos;
+using StreamerHub.Api.Entities;
 
 namespace StreamerHub.Tests;
 
@@ -100,6 +104,23 @@ public class ApiTests
     }
 
     [Fact]
+    public async Task Admin_CreateStreamer_NonHttpUrl_400()
+    {
+        using var app = new TestApp();
+        var admin = await app.CreateAdminClientAsync();
+        var request = NewStreamer("주소가 이상한 스트리머") with { ChannelUrl = "javascript:alert(1)", AvatarUrl = "ftp://example.com/a.png" };
+
+        var response = await admin.PostAsJsonAsync("/api/streamers", request);
+
+        // 우리가 만든 [HttpUrl] 특성도 AddValidation()이 검사해요
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        using var problem = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var errors = problem.RootElement.GetProperty("errors");
+        Assert.True(errors.TryGetProperty("ChannelUrl", out _), errors.ToString());
+        Assert.True(errors.TryGetProperty("AvatarUrl", out _), errors.ToString());
+    }
+
+    [Fact]
     public async Task Posts_Paginate()
     {
         using var app = new TestApp();
@@ -168,7 +189,7 @@ public class ApiTests
         for (var i = 0; i < 4; i++)
         {
             // 틀린 비밀번호로 로그인을 계속 시도한다 (무차별 대입 흉내)
-            var response = await client.PostAsJsonAsync("/api/auth/login?useCookies=true", new { email = "nobody@test.local", password = "Wrong-Passw0rd!" });
+            var response = await client.PostAsJsonAsync("/api/auth/login?useCookies=true", new { email = "nobody@test.local", password = TestApp.NewPassword() });
             statusCodes.Add(response.StatusCode);
             if (response.StatusCode == HttpStatusCode.TooManyRequests)
             {
@@ -181,7 +202,124 @@ public class ApiTests
             statusCodes);
     }
 
+    [Fact]
+    public async Task RateLimit_Posts_Returns429()
+    {
+        // 글쓰기 같은 보통 쓰기 요청에도 같은 제한이 걸려요. 1분에 5번으로 줄여서 확인해요
+        using var app = new TestApp(permitLimit: 5);
+        var fan = await app.CreateFanClientAsync("busy@test.local"); // 가입 1번 + 로그인 1번 = 이미 2번 썼어요 (같은 IP)
+
+        var statusCodes = new List<HttpStatusCode>();
+        for (var i = 1; i <= 4; i++)
+        {
+            var response = await fan.PostAsJsonAsync("/api/posts", new { title = $"도배 {i}", body = "내용" });
+            statusCodes.Add(response.StatusCode);
+        }
+
+        // 남은 3번은 201, 그다음은 429
+        Assert.Equal(
+            new[] { HttpStatusCode.Created, HttpStatusCode.Created, HttpStatusCode.Created, HttpStatusCode.TooManyRequests },
+            statusCodes);
+    }
+
+    // ---------- 게시판 권한: 본인 또는 관리자만 고치고 지울 수 있어요 (Day 30, 36) ----------
+
+    [Fact]
+    public async Task OtherUser_CannotUpdateOrDeletePost_403()
+    {
+        using var app = new TestApp();
+        var author = await app.CreateFanClientAsync("author@test.local");
+        var other = await app.CreateFanClientAsync("other@test.local");
+        var postId = await CreatePostAsync(author, "작성자의 글");
+
+        var update = await other.PutAsJsonAsync($"/api/posts/{postId}", new { title = "남이 고침", body = "남이 고침" });
+        var delete = await other.DeleteAsync($"/api/posts/{postId}");
+
+        Assert.Equal(HttpStatusCode.Forbidden, update.StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, delete.StatusCode);
+        var post = await author.GetFromJsonAsync<PostDetail>($"/api/posts/{postId}");
+        Assert.Equal("작성자의 글", post?.Title); // 그대로 남아 있어요
+    }
+
+    [Fact]
+    public async Task Author_UpdatesPost_204()
+    {
+        using var app = new TestApp();
+        var author = await app.CreateFanClientAsync("author@test.local");
+        var postId = await CreatePostAsync(author, "처음 제목");
+
+        var update = await author.PutAsJsonAsync($"/api/posts/{postId}", new { title = "고친 제목", body = "고친 내용" });
+
+        Assert.Equal(HttpStatusCode.NoContent, update.StatusCode);
+        var post = await author.GetFromJsonAsync<PostDetail>($"/api/posts/{postId}");
+        Assert.Equal("고친 제목", post?.Title);
+        Assert.NotNull(post?.UpdatedAt);
+    }
+
+    [Fact]
+    public async Task Admin_DeletesAnyPost_204()
+    {
+        using var app = new TestApp();
+        var author = await app.CreateFanClientAsync("author@test.local");
+        var admin = await app.CreateAdminClientAsync();
+        var postId = await CreatePostAsync(author, "관리자가 지울 글");
+
+        var delete = await admin.DeleteAsync($"/api/posts/{postId}");
+
+        Assert.Equal(HttpStatusCode.NoContent, delete.StatusCode);
+        var gone = await author.GetAsync($"/api/posts/{postId}");
+        Assert.Equal(HttpStatusCode.NotFound, gone.StatusCode);
+    }
+
+    // ---------- 관리자 시드: 먼저 가입해 둔 계정을 관리자로 올려 주지 않아요 (Day 26, 34) ----------
+
+    [Fact]
+    public async Task AdminSeed_DoesNotPromote_PreRegisteredAccountWithWrongPassword()
+    {
+        using var app = new TestApp();
+        // 1) 누군가 "앞으로 관리자가 될 이메일"로 먼저 가입해 둬요 (가입은 누구나, 이메일 확인 없음)
+        await app.CreateFanClientAsync("future-admin@test.local");
+
+        // 2) 운영자가 그 이메일을 관리자로 설정하고 서버를 다시 켠 상황: 시드가 다른 비밀번호로 다시 돌아요
+        using var scope = app.Services.CreateScope();
+        await SeedData.EnsureAdminAsync(scope.ServiceProvider, "future-admin@test.local", TestApp.NewPassword());
+
+        // 3) 비밀번호가 설정과 다르니 관리자로 올리지 않아요
+        Assert.False(await IsAdminAsync(scope.ServiceProvider, "future-admin@test.local"));
+    }
+
+    [Fact]
+    public async Task AdminSeed_Promotes_ExistingAccountWithMatchingPassword()
+    {
+        using var app = new TestApp();
+        // 운영자 본인이 화면에서 먼저 가입했고, 설정에도 같은 비밀번호를 넣은 경우
+        await app.CreateFanClientAsync("owner@test.local");
+
+        using var scope = app.Services.CreateScope();
+        await SeedData.EnsureAdminAsync(scope.ServiceProvider, "owner@test.local", TestApp.FanPassword);
+
+        Assert.True(await IsAdminAsync(scope.ServiceProvider, "owner@test.local"));
+    }
+
     // ---------- 도우미 ----------
+
+    // 글을 하나 쓰고 그 글의 id를 돌려줘요
+    private static async Task<int> CreatePostAsync(HttpClient client, string title)
+    {
+        var response = await client.PostAsJsonAsync("/api/posts", new { title, body = "내용" });
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var post = await response.Content.ReadFromJsonAsync<PostDetail>();
+        return post!.Id;
+    }
+
+    // DB에서 직접 Admin 역할이 있는지 봐요 (로그인 쿠키가 아니라 저장된 값)
+    private static async Task<bool> IsAdminAsync(IServiceProvider provider, string email)
+    {
+        var userManager = provider.GetRequiredService<UserManager<AppUser>>();
+        var user = await userManager.FindByEmailAsync(email);
+        Assert.NotNull(user);
+        return await userManager.IsInRoleAsync(user, SeedData.AdminRole);
+    }
 
     private static StreamerRequest NewStreamer(string name) => new()
     {

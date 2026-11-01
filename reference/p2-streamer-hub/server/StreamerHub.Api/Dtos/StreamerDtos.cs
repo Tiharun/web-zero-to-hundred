@@ -18,9 +18,9 @@ public record StreamerRequest
     [AllowedValues("chzzk", "youtube", "soop", "other", ErrorMessage = "플랫폼은 chzzk, youtube, soop, other 중 하나예요.")]
     public string Platform { get; init; } = "";
 
-    // [Url]은 http://, https://로 시작하는 주소만 통과시켜요. (javascript: 같은 위험한 주소를 막아요. Day 34)
+    // [HttpUrl]은 우리가 만든 검증 특성(HttpUrlAttribute.cs)이에요. http·https 주소만 받아요 (Day 34)
     [Required(ErrorMessage = "채널 주소를 입력해 주세요.")]
-    [Url(ErrorMessage = "채널 주소는 https://로 시작하는 주소로 써 주세요.")]
+    [HttpUrl(ErrorMessage = "채널 주소는 https://로 시작하는 주소로 써 주세요.")]
     [StringLength(200, ErrorMessage = "채널 주소는 200자까지 쓸 수 있어요.")]
     public string ChannelUrl { get; init; } = "";
 
@@ -29,7 +29,7 @@ public record StreamerRequest
     public string Bio { get; init; } = "";
 
     // 프로필 사진 주소는 없어도 돼요(null).
-    [Url(ErrorMessage = "프로필 사진 주소는 https://로 시작하는 주소로 써 주세요.")]
+    [HttpUrl(ErrorMessage = "프로필 사진 주소는 https://로 시작하는 주소로 써 주세요.")]
     [StringLength(200, ErrorMessage = "프로필 사진 주소는 200자까지 쓸 수 있어요.")]
     public string? AvatarUrl { get; init; }
 }

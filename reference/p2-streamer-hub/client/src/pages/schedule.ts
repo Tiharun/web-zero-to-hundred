@@ -6,6 +6,7 @@ import type { Schedule } from '../types.ts';
 import {
   KST_OFFSET_MS,
   createElementWithText,
+  createLink,
   errorMessage,
   formatKstTime,
   setStatus,
@@ -82,8 +83,9 @@ export async function renderSchedule(view: HTMLElement, _params: Params, query: 
       streamerNames.set(schedule.streamerId, schedule.streamerName);
     }
     for (const [id, name] of streamerNames) {
-      const option = createElementWithText('option', '', name);
+      const option = document.createElement('option');
       option.value = String(id);
+      option.textContent = name;
       filter.append(option);
     }
 
@@ -122,8 +124,7 @@ function drawWeek(container: HTMLElement, weekStart: Date, schedules: Schedule[]
     for (const schedule of daySchedules) {
       const item = document.createElement('p');
       item.className = 'slot';
-      const link = createElementWithText('a', '', schedule.streamerName);
-      link.href = `#/streamers/${schedule.streamerId}`;
+      const link = createLink(`#/streamers/${schedule.streamerId}`, schedule.streamerName);
       item.append(
         createElementWithText('time', 'slot-time', formatKstTime(schedule.startsAt)),
         ' ',

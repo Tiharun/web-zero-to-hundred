@@ -2,7 +2,7 @@
 import * as api from '../api.ts';
 import type { Params } from '../router.ts';
 import type { Streamer } from '../types.ts';
-import { createAvatar, createElementWithText, errorMessage, platformNames, setStatus } from '../ui.ts';
+import { createAvatar, createElementWithText, createLink, errorMessage, platformNames, setStatus } from '../ui.ts';
 
 export async function renderStreamers(view: HTMLElement, _params: Params, query: URLSearchParams): Promise<void> {
   const keyword = query.get('q') ?? '';
@@ -50,9 +50,7 @@ function createStreamerCard(streamer: Streamer): HTMLLIElement {
   card.className = 'card';
 
   const title = document.createElement('h2');
-  const link = createElementWithText('a', '', streamer.name);
-  link.href = `#/streamers/${streamer.id}`;
-  title.append(link);
+  title.append(createLink(`#/streamers/${streamer.id}`, streamer.name));
 
   card.append(
     createAvatar(streamer),

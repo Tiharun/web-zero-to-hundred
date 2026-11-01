@@ -3,7 +3,7 @@ import * as api from '../api.ts';
 import { getCurrentUser } from '../auth.ts';
 import type { Params } from '../router.ts';
 import type { PostListItem } from '../types.ts';
-import { createElementWithText, errorMessage, formatKstDate, setStatus } from '../ui.ts';
+import { createElementWithText, createLink, errorMessage, formatKstDate, setStatus } from '../ui.ts';
 
 export async function renderBoard(view: HTMLElement, _params: Params, query: URLSearchParams): Promise<void> {
   // ?page= 값이 없거나 이상하면 1쪽
@@ -60,8 +60,9 @@ export async function renderBoard(view: HTMLElement, _params: Params, query: URL
 
 function createPostRow(post: PostListItem): HTMLLIElement {
   const row = document.createElement('li');
-  const link = createElementWithText('a', 'post-title', post.title);
-  link.href = `#/board/${post.id}`;
-  row.append(link, createElementWithText('span', 'muted', `${post.authorName} · ${formatKstDate(post.createdAt)}`));
+  row.append(
+    createLink(`#/board/${post.id}`, post.title, 'post-title'),
+    createElementWithText('span', 'muted', `${post.authorName} · ${formatKstDate(post.createdAt)}`),
+  );
   return row;
 }

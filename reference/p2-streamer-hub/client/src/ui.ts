@@ -68,9 +68,20 @@ export const platformNames: Record<Platform, string> = {
   other: '기타',
 };
 
-// 프로필 사진. 주소가 없으면 이름 첫 글자를 동그라미에 넣어요
+// http:// 또는 https:// 주소인지 확인해요. 서버도 검사하지만 화면도 한 번 더 지켜요 (Day 34)
+// (javascript:alert(1) 같은 주소를 href나 src에 넣으면 위험해요)
+export function isHttpUrl(value: string): boolean {
+  try {
+    const url = new URL(value); // 완전한 주소가 아니면 오류가 나요
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+// 프로필 사진. 주소가 없거나 http(s)가 아니면 이름 첫 글자를 동그라미에 넣어요
 export function createAvatar(streamer: Streamer): HTMLElement {
-  if (streamer.avatarUrl !== null) {
+  if (streamer.avatarUrl !== null && isHttpUrl(streamer.avatarUrl)) {
     const image = document.createElement('img');
     image.className = 'avatar';
     image.src = streamer.avatarUrl;
@@ -103,15 +114,20 @@ export function errorMessage(error: unknown): string {
   return '서버에 연결하지 못했어요. 서버가 켜져 있는지 확인해 주세요.';
 }
 
-// P1에서 만든 도우미를 TypeScript로 옮겼어요. 태그 이름에 맞는 타입(예: 'a' → HTMLAnchorElement)이 돌아와요 (제네릭, Day 6)
+// P1에서 만든 도우미를 TypeScript로 옮겼어요. 매개변수와 돌려주는 값에 타입만 붙였어요.
 // textContent라서 사용자가 쓴 <script>도 글자로만 보여요 (XSS 방지, Day 34)
-export function createElementWithText<K extends keyof HTMLElementTagNameMap>(
-  tagName: K,
-  className: string,
-  text: string,
-): HTMLElementTagNameMap[K] {
+export function createElementWithText(tagName: string, className: string, text: string): HTMLElement {
   const element = document.createElement(tagName);
   element.className = className;
   element.textContent = text;
   return element;
+}
+
+// 링크(<a>)를 만들어요. href를 넣어야 해서 HTMLElement가 아니라 HTMLAnchorElement로 돌려줘요
+export function createLink(href: string, text: string, className = ''): HTMLAnchorElement {
+  const link = document.createElement('a');
+  link.href = href;
+  link.className = className;
+  link.textContent = text;
+  return link;
 }

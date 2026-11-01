@@ -1,7 +1,7 @@
 // 홈 화면 (#/): 다가오는 방송 3개와 게시판 새 글 5개
 import * as api from '../api.ts';
 import type { PostListItem, Schedule } from '../types.ts';
-import { createElementWithText, errorMessage, formatKstDate, formatKstDateTime, setStatus } from '../ui.ts';
+import { createElementWithText, createLink, errorMessage, formatKstDate, formatKstDateTime, setStatus } from '../ui.ts';
 
 export async function renderHome(view: HTMLElement): Promise<void> {
   // 틀은 innerHTML로 한 번에 만들어요. 여기에는 우리가 쓴 글자만 넣고, 서버에서 온 값은 넣지 않아요
@@ -47,16 +47,14 @@ export async function renderHome(view: HTMLElement): Promise<void> {
 
 function createScheduleItem(schedule: Schedule): HTMLLIElement {
   const item = document.createElement('li');
-  const link = createElementWithText('a', '', `${schedule.streamerName} · ${schedule.title}`);
-  link.href = `#/streamers/${schedule.streamerId}`;
+  const link = createLink(`#/streamers/${schedule.streamerId}`, `${schedule.streamerName} · ${schedule.title}`);
   item.append(link, ' ', createElementWithText('span', 'muted', formatKstDateTime(schedule.startsAt)));
   return item;
 }
 
 function createPostItem(post: PostListItem): HTMLLIElement {
   const item = document.createElement('li');
-  const link = createElementWithText('a', '', post.title);
-  link.href = `#/board/${post.id}`;
+  const link = createLink(`#/board/${post.id}`, post.title);
   item.append(
     link,
     ' ',

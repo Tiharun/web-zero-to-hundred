@@ -33,7 +33,7 @@ streamer-hub/
 │     ├─ api.ts                  타입 있는 API 함수 + ApiError
 │     ├─ types.ts                서버 DTO와 같은 모양의 타입
 │     ├─ auth.ts                 지금 로그인한 사람(/api/me)
-│     ├─ ui.ts                   한국 시간 표시, 프로필 그림, 상태 문장 도우미
+│     ├─ ui.ts                   한국 시간 표시, 링크·글자 요소 만들기, http(s) 주소 확인, 상태 문장 도우미
 │     ├─ overlay.ts              SSE(EventSource)로 공지 받기
 │     ├─ style.css
 │     └─ pages/                  화면 하나 = 파일 하나
@@ -43,7 +43,7 @@ streamer-hub/
    ├─ StreamerHub.Api/
    │  ├─ Program.cs              서비스 등록 → 미들웨어 순서 → 주소 연결
    │  ├─ Entities/               Streamer, Schedule, Post, Notice, AppUser (= DB 테이블)
-   │  ├─ Dtos/                   주고받는 모양 + 검증 특성([Required] 등)
+   │  ├─ Dtos/                   주고받는 모양 + 검증 특성([Required], 직접 만든 [HttpUrl] 등)
    │  ├─ Data/                   AppDbContext, SeedData(마이그레이션 적용·관리자·예시 데이터)
    │  ├─ Endpoints/              자원마다 파일 하나: Streamer, Schedule, Post, Notice, Auth
    │  ├─ Services/               PostService(게시판 규칙), ScheduleQuery(UTC 범위), NoticeBroadcaster(SSE)
@@ -109,16 +109,24 @@ npx tsc --noEmit
 | 단위 | `PostService_Update_ByOtherUser_Forbidden` | 남의 글은 고칠 수 없고 DB도 그대로 |
 | 단위 | `ScheduleQuery_FiltersByUtcRange` | 한국 날짜 하루를 UTC 범위로 거르기 |
 | 단위 | `StreamerValidation_RejectsEmptyName` | DTO 검증 특성 |
+| 단위 | `StreamerValidation_RejectsNonHttpUrl`(Theory), `StreamerValidation_AcceptsHttpsUrl` | `[HttpUrl]`: ftp·`javascript:`·호스트 없는 주소는 거절, https는 통과 |
 | 통합 | `Anonymous_CannotCreatePost_401` | 로그인 안 하면 401 |
 | 통합 | `Register_Login_CreatePost_201` | 가입 → 쿠키 로그인(HttpOnly, SameSite=Lax) → 글쓰기 201 |
 | 통합 | `NonAdmin_CannotCreateStreamer_403` | 팬은 관리자 기능 403 |
 | 통합 | `Admin_CreatesStreamer_201` | 관리자 등록 201 + Location, 검색에 보임 |
 | 통합 | `Admin_CreateStreamer_EmptyName_400` | `AddValidation()`이 400 + ProblemDetails |
+| 통합 | `Admin_CreateStreamer_NonHttpUrl_400` | 직접 만든 `[HttpUrl]`도 `AddValidation()`이 검사 |
 | 통합 | `Posts_Paginate` | `{items,total,page,pageSize}`, 최신 글 먼저, pageSize 범위 |
 | 통합 | `Notice_Stream_Sends_Event` | SSE: 연결하면 지금 공지, 새 공지도 이벤트로 |
-| 통합 | `RateLimit_Returns429` | 요청 제한 429 + ProblemDetails |
+| 통합 | `RateLimit_Returns429` | 로그인 시도 요청 제한 429 + ProblemDetails |
+| 통합 | `RateLimit_Posts_Returns429` | 글쓰기 같은 보통 쓰기 요청에도 429 |
+| 통합 | `OtherUser_CannotUpdateOrDeletePost_403` | 남의 글 PUT·DELETE는 403, 글은 그대로 |
+| 통합 | `Author_UpdatesPost_204` | 작성자는 자기 글을 고칠 수 있음(204) |
+| 통합 | `Admin_DeletesAnyPost_204` | 관리자는 누구의 글이든 지울 수 있음(204) |
+| 통합 | `AdminSeed_DoesNotPromote_PreRegisteredAccountWithWrongPassword` | 관리자 이메일로 먼저 가입해 둔 남의 계정을 관리자로 올리지 않음 |
+| 통합 | `AdminSeed_Promotes_ExistingAccountWithMatchingPassword` | 설정과 비밀번호가 같은 기존 계정(운영자 본인)은 관리자로 올림 |
 
-통합 테스트는 메모리 SQLite를 쓰고, 관리자 계정·요청 제한 값은 테스트 코드가 설정으로 넣어요(`TestApp.cs`).
+통합 테스트는 메모리 SQLite를 쓰고, 관리자 계정·요청 제한 값은 테스트 코드가 설정으로 넣어요(`TestApp.cs`). 테스트용 비밀번호도 코드에 적지 않고 실행할 때마다 무작위로 만들어요.
 
 ## 하나의 앱으로 빌드하기 (Day 38)
 
@@ -144,6 +152,7 @@ dotnet StreamerHub.Api.dll --urls http://localhost:5000
 - 배포한 앱은 user-secrets를 읽지 않아요(개발 환경 전용). 그래서 환경 변수로 넣어요. 설정 이름의 `:`는 환경 변수에서 `__`(밑줄 두 개)로 써요.
 - DB 파일은 실행한 폴더의 `streamerhub.db`예요. 다른 곳에 두려면 `$env:ConnectionStrings__Default = "Data Source=C:\data\streamerhub.db"`. 백업은 서버를 끈 뒤 이 파일(과 `-wal`, `-shm`)을 복사해요.
 - `UseStaticFiles`가 `wwwroot`의 파일을 보내고, 그 밖의 주소는 `MapFallbackToFile("index.html")`이 받아요. 없는 `/api/...` 주소는 index.html 대신 404예요.
+- 인터넷에 올릴 때 앞에 리버스 프록시(Nginx, 클라우드의 부하 분산기 등)를 두면, 서버에는 모든 요청이 프록시의 IP에서 온 것처럼 보여요. 그러면 "IP마다" 세는 요청 제한이 모든 사용자를 한 사람으로 세요. 이때는 `app.UseForwardedHeaders()`로 프록시가 넘겨 주는 `X-Forwarded-For`(진짜 접속 IP)를 읽게 하고, 믿을 수 있는 프록시만 `ForwardedHeadersOptions`의 `KnownProxies`나 `KnownIPNetworks`에 등록해요(.NET 10에서 옛 이름 `KnownNetworks`는 더 쓰지 않아요). (Day 39)
 
 ## API 한눈에 보기
 
@@ -171,6 +180,8 @@ dotnet StreamerHub.Api.dll --urls http://localhost:5000
 
 쓰기 요청(POST·PUT·DELETE)과 `/api/auth/*`에는 IP마다 고정 창 요청 제한(기본 1분에 30번, `appsettings.json`의 `RateLimit`)이 걸려 있어요. 넘으면 429예요.
 
+POST·PUT에 `Content-Type: application/json`을 빼거나 다른 값으로 보내면 **404**가 나와요. JSON 본문을 받는 엔드포인트는 Content-Type이 맞을 때만 "주소가 맞다"고 치기 때문에(원래는 415), 남은 요청을 `/api/{**rest}`가 받아서 404로 답해요. 어느 쪽이든 요청이 처리되지 않는 것은 같아서 문제는 없어요. 화면 코드(`api.ts`)는 항상 JSON으로 보내니, `.http` 파일로 연습하다 404가 나오면 `Content-Type` 줄부터 확인해 주세요.
+
 ## 설계 메모 (왜 이렇게 했나)
 
 - **DB와 API는 UTC, 화면만 한국 시간**: SQLite는 DateTime의 "UTC 표시"를 저장하지 못해서, `AppDbContext`가 읽을 때 UTC 표시를 다시 붙여요. 화면은 `Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul' })`로 보여 줘요. 그래서 컴퓨터 시간대가 달라도 한국 시간으로 보여요.
@@ -179,15 +190,17 @@ dotnet StreamerHub.Api.dll --urls http://localhost:5000
 - **로그인 안 한 `/api/me`는 401이 아니라 204**: 401이면 방문자 브라우저 콘솔에 페이지마다 빨간 오류가 찍혀요. "로그인 안 함"은 오류가 아니라서 "내용 없음"으로 알려요. 진짜로 막아야 하는 주소(글쓰기 등)는 401/403이에요.
 - **SSE는 연결하자마자 지금 공지부터 보내요**: OBS를 다시 켜거나 연결이 잠깐 끊겨도 바로 최신 공지가 보여요. 새 공지는 `NoticeBroadcaster`가 연결된 오버레이 모두에게 나눠 줘요.
 - **로그인 쿠키**: `HttpOnly`(자바스크립트로 못 읽음) + `SameSite=Lax`(다른 사이트가 보낸 POST에는 안 붙음). 클라이언트는 쿠키를 직접 다루지 않고 `/api/me`로 누구인지 물어요.
-- **화면에 사용자 데이터를 넣을 때는 항상 `textContent`/`value`**: `innerHTML`에는 우리가 쓴 고정 글자만 넣어요. 채널·사진 주소는 서버가 `[Url]`로 http(s)만 받아요.
+- **화면에 사용자 데이터를 넣을 때는 항상 `textContent`/`value`**: `innerHTML`에는 우리가 쓴 고정 글자만 넣어요. 채널·사진 주소는 서버가 직접 만든 `[HttpUrl]` 특성으로 http·https이고 호스트가 있는 주소만 받아요(기본 `[Url]`은 `ftp://`와 `https://`만 쓴 값도 통과시켜요). 화면도 `isHttpUrl`로 한 번 더 확인한 뒤 `href`·`src`에 넣어요.
 - **요청 제한은 IP마다 따로 세요**: 모두가 한 창을 같이 쓰면 한 사람이 다른 사람의 로그인까지 막을 수 있어요.
+- **관리자 시드는 비밀번호를 확인해요**: 가입은 누구나 할 수 있고 이메일 확인이 없어서, 남이 관리자 이메일로 먼저 가입해 둘 수 있어요. 그래서 이미 있는 계정은 설정의 비밀번호와 맞을 때만 관리자로 올려요.
+- **가입 화면은 닉네임을 먼저 검사해요**: 앞뒤 빈칸을 뺀 닉네임이 2~20자가 아니면 가입 요청을 보내지 않아요. 가입·로그인은 됐는데 닉네임 저장만 실패하면, 닉네임만 고쳐서 다시 저장할 수 있어요.
 
 ## Day ↔ 코드 지도
 
 | Day | 이 완성본에서 볼 곳 |
 | :-- | :-- |
 | 1~3 | 이 README의 폴더 구조, `client/package.json`(`npm ci`, `node_modules`) |
-| 4~6 | `client/src/types.ts`(interface·유니온·`Paged<T>`), `ui.ts`의 `createElementWithText<K>`, 모듈 `import`/`export` |
+| 4~6 | `client/src/types.ts`(interface·유니온·`Paged<T>`), `api.ts`의 `getJson<T>`(제네릭), `ui.ts`의 `createElementWithText`(P1 도우미에 타입 붙이기), 모듈 `import`/`export`, `tsconfig.json`의 `"strict": true` |
 | 7 | `client/` 전체(vanilla-ts 템플릿), `index.html`, `vite.config.ts` |
 | 8 | `api.ts`(async/await, 타입 있는 fetch, `ApiError`), `home.ts`(`Promise.all`, 불러오는 중·오류 문장) |
 | 9~15 | `Entities/*.cs`(클래스·속성), `Dtos/*.cs`(record), `PostService`(생성자·메서드·`async Task`·enum), LINQ(`Where`/`OrderBy`/`Select`), `NoticeBroadcaster`(List·lock) |
@@ -204,7 +217,7 @@ dotnet StreamerHub.Api.dll --urls http://localhost:5000
 | 30~31 | `PostService`, `PostEndpoints`, `PagedResult<T>` / `board.ts`, `postDetail.ts`, `postForm.ts`(`#/board/:id/edit` 포함), `login.ts`, `register.ts`, `auth.ts` |
 | 32 | `admin.ts`, `isAdmin()`와 `#admin-link`(역할 기반 UI) |
 | 33 | `NoticeEndpoints`(`/current` 폴링 → `/stream` SSE), `NoticeBroadcaster`, `overlay.html`·`overlay.ts` |
-| 34 | `textContent`, `[Url]`, 쿠키 옵션, `AddRateLimiter`, EF 매개변수(SQL 인젝션 방지) |
+| 34 | `textContent`, `[HttpUrl]`·`isHttpUrl`, 쿠키 옵션, `AddRateLimiter`, EF 매개변수(SQL 인젝션 방지), 관리자 시드의 비밀번호 확인 |
 | 35~36 | `StreamerHub.Tests/`(`TestDb`, `TestApp`), `npx tsc --noEmit` |
 | 37 | `dotnet format`(이 코드는 변경 없이 통과), Prettier(`--single-quote --print-width 120`로 변경 없이 통과) |
 | 38~39 | `UseStaticFiles`·`MapFallbackToFile`, 위의 "하나의 앱으로 빌드하기", DB 파일 위치·환경 변수 |

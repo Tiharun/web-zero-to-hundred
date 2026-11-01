@@ -261,8 +261,9 @@ async function reloadLists(view: HTMLElement): Promise<void> {
   const selected = streamerSelect.value;
   streamerSelect.replaceChildren(
     ...streamers.map((streamer) => {
-      const option = createElementWithText('option', '', streamer.name);
+      const option = document.createElement('option');
       option.value = String(streamer.id);
+      option.textContent = streamer.name;
       return option;
     }),
   );
@@ -290,11 +291,15 @@ async function reloadLists(view: HTMLElement): Promise<void> {
 // 목록 한 줄: 글자 + 수정 버튼 + 삭제 버튼
 function createAdminRow(text: string, onEdit: () => void, onDelete: () => Promise<void>): HTMLLIElement {
   const row = document.createElement('li');
-  const editButton = createElementWithText('button', 'button secondary small', '수정');
+  const editButton = document.createElement('button');
   editButton.type = 'button';
+  editButton.className = 'button secondary small';
+  editButton.textContent = '수정';
   editButton.addEventListener('click', onEdit);
-  const deleteButton = createElementWithText('button', 'button danger small', '삭제');
+  const deleteButton = document.createElement('button');
   deleteButton.type = 'button';
+  deleteButton.className = 'button danger small';
+  deleteButton.textContent = '삭제';
   deleteButton.addEventListener('click', () => {
     onDelete().catch((error) => alert(errorMessage(error)));
   });

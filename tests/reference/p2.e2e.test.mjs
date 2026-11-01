@@ -10,6 +10,7 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn, execFileSync } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
 import { cpSync, existsSync, mkdtempSync, rmSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -21,11 +22,13 @@ const ROOT = fileURLToPath(new URL('../../reference/p2-streamer-hub/', import.me
 const CLIENT_DIR = path.join(ROOT, 'client');
 const API_PROJECT = path.join(ROOT, 'server', 'StreamerHub.Api', 'StreamerHub.Api.csproj');
 
-// 임시 DB에만 쓰는 테스트 전용 계정
+// 임시 DB에만 쓰는 테스트 전용 계정. 비밀번호는 코드에 적지 않고 실행할 때마다 새로 만들어요
+// (Identity 규칙: 영어 대문자·소문자·숫자·기호, 6자 이상)
+const newPassword = () => `E2e-${randomUUID()}-Aa1!`;
 const ADMIN_EMAIL = 'admin@e2e.test';
-const ADMIN_PASSWORD = 'E2e-Admin-Passw0rd!';
+const ADMIN_PASSWORD = newPassword();
 const FAN_EMAIL = 'fan@e2e.test';
-const FAN_PASSWORD = 'E2e-Fan-Passw0rd!';
+const FAN_PASSWORD = newPassword();
 const FAN_NAME = '이투이팬';
 
 let tempDir;
@@ -40,7 +43,8 @@ before(async () => {
     run('npm', ['ci'], CLIENT_DIR);
   }
   run('npm', ['run', 'build'], CLIENT_DIR); // tsc(타입 검사) + vite build
-  run('dotnet', ['publish', API_PROJECT, '-c', 'Release', '-o', publishDir], ROOT);
+  // --disable-build-servers: 빌드가 끝난 뒤 MSBuild 작업 프로세스를 남겨 두지 않아요
+  run('dotnet', ['publish', API_PROJECT, '-c', 'Release', '-o', publishDir, '--disable-build-servers'], ROOT);
   cpSync(path.join(CLIENT_DIR, 'dist'), path.join(publishDir, 'wwwroot'), { recursive: true });
 
   server = await startServer(publishDir, path.join(tempDir, 'e2e.db'));
@@ -147,20 +151,26 @@ test('server serves the built client and the overlay page', async () => {
 test('fan: register → login → write a post → it shows in the board list', async (t) => {
   const { page, errors } = await openPage(t);
 
-  // 1) 가입하면 바로 로그인 상태가 되고, 위쪽 메뉴에 닉네임이 보여요
+  // 1) 앞뒤 빈칸을 빼면 1글자인 닉네임(" a ")은 서버에 보내기 전에 막아요. 계정도 생기지 않아요
   await page.goto(`${server.url}#/register`);
   await page.fill('#register-email', FAN_EMAIL);
-  await page.fill('#register-name', FAN_NAME);
+  await page.fill('#register-name', ' a ');
   await page.fill('#register-password', FAN_PASSWORD);
+  await page.click('#register-form button[type="submit"]');
+  await page.locator('#register-form .status.error', { hasText: '2~20자' }).waitFor();
+  assert.equal(await page.locator('#auth-menu .user-name').count(), 0, '아직 로그인되지 않아야 해요');
+
+  // 2) 닉네임을 고쳐서 다시 가입하면 바로 로그인 상태가 되고, 위쪽 메뉴에 닉네임이 보여요
+  await page.fill('#register-name', FAN_NAME);
   await page.click('#register-form button[type="submit"]');
   await page.locator('#auth-menu .user-name', { hasText: `${FAN_NAME}님` }).waitFor();
 
-  // 2) 로그아웃했다가 다시 로그인
+  // 3) 로그아웃했다가 다시 로그인
   await page.click('#auth-menu button');
   await page.locator('#auth-menu a[href="#/login"]').waitFor();
   await login(page, FAN_EMAIL, FAN_PASSWORD, FAN_NAME);
 
-  // 3) 게시판 → 글쓰기. 제목에 HTML을 넣어도 글자로만 보여야 해요(XSS 방지)
+  // 4) 게시판 → 글쓰기. 제목에 HTML을 넣어도 글자로만 보여야 해요(XSS 방지)
   const title = '첫 글이에요 <b>굵게?</b>';
   await page.click('.nav-links a[href="#/board"]');
   await page.click('#write-link');
@@ -171,7 +181,7 @@ test('fan: register → login → write a post → it shows in the board list', 
   assert.ok((await page.locator('#post-meta').textContent()).startsWith(FAN_NAME), '글쓴이는 내 닉네임');
   assert.equal(await page.locator('#post-actions').isVisible(), true, '내 글에는 수정·삭제 버튼이 보여요');
 
-  // 4) 목록에 보여요
+  // 5) 목록에 보여요
   await page.click('a[href="#/board"]');
   await page.locator('#post-list a', { hasText: title }).waitFor();
   assert.equal(await page.locator('#post-list b').count(), 0, '제목의 <b>가 태그로 해석되면 안 돼요');
@@ -246,6 +256,16 @@ test('times are shown in Korean time even when the browser is in another time zo
   await page.click('.nav-links a[href="#/schedule"]');
   await page.locator('#week .day').first().waitFor();
   assert.equal(await page.locator('#week .day').count(), 7);
+
+  assert.deepEqual(errors, []);
+});
+
+test('a broken address like #/streamers/% shows the not-found page', async (t) => {
+  const { page, errors } = await openPage(t);
+
+  // "%" 뒤에 16진수 두 자리가 없으면 decodeURIComponent가 오류를 내요. 라우터는 이것을 "없는 주소"로 다뤄요
+  await page.goto(`${server.url}#/streamers/%`);
+  await page.locator('#app h1', { hasText: '페이지를 찾을 수 없어요' }).waitFor();
 
   assert.deepEqual(errors, []);
 });

@@ -15,12 +15,8 @@ public record PostRequest
     public string Body { get; init; } = "";
 }
 
-// 응답: 목록의 한 줄. 본문은 빼서 가볍게 보내요
-public record PostListItem(int Id, string Title, string AuthorName, DateTime CreatedAt)
-{
-    // post.Author는 Include로 함께 불러와 둬야 해요
-    public static PostListItem From(Post post) => new(post.Id, post.Title, post.Author!.DisplayName, post.CreatedAt);
-}
+// 응답: 목록의 한 줄. 본문은 빼서 가볍게 보내요 (PostService.ListAsync가 Select로 바로 만들어요)
+public record PostListItem(int Id, string Title, string AuthorName, DateTime CreatedAt);
 
 // 응답: 글 상세. CanEdit = 지금 보는 사람이 고치거나 지울 수 있는지 (작성자 또는 관리자)
 public record PostDetail(

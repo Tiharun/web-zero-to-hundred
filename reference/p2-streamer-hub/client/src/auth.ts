@@ -36,11 +36,15 @@ export async function login(email: string, password: string): Promise<void> {
   await loadCurrentUser();
 }
 
-// 가입 → 바로 로그인 → 닉네임 저장
-// (Identity의 /register는 이메일·비밀번호만 받아서, 닉네임은 로그인한 뒤 PUT /api/me로 따로 저장해요)
-export async function register(email: string, password: string, displayName: string): Promise<void> {
+// 가입하고 바로 로그인해요
+// Identity의 /register는 이메일·비밀번호만 받아요. 닉네임은 로그인한 뒤 saveDisplayName으로 따로 저장해요
+export async function registerAndLogin(email: string, password: string): Promise<void> {
   await api.register(email, password);
-  await api.login(email, password);
+  await login(email, password);
+}
+
+// 닉네임 저장 (PUT /api/me). 저장한 뒤 위쪽 메뉴의 "닉네임님"도 바뀌어요
+export async function saveDisplayName(displayName: string): Promise<void> {
   await api.updateMe(displayName);
   await loadCurrentUser();
 }

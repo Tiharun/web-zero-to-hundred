@@ -6,6 +6,7 @@ import {
   createElementWithText,
   errorMessage,
   formatKstDateTime,
+  isHttpUrl,
   platformNames,
   setStatus,
 } from '../ui.ts';
@@ -40,8 +41,13 @@ export async function renderStreamerDetail(view: HTMLElement, params: Params): P
     platform.textContent = platformNames[streamer.platform];
     platform.classList.add(streamer.platform);
     view.querySelector('#streamer-bio')!.textContent = streamer.bio;
-    // 서버가 http(s) 주소만 받아서 저장하니(javascript: 차단) href에 넣어도 안전해요
-    view.querySelector<HTMLAnchorElement>('#channel-link')!.href = streamer.channelUrl;
+    // 서버가 [HttpUrl]로 http·https 주소만 저장하지만, 화면도 한 번 더 확인하고 href에 넣어요 (javascript: 차단, Day 34)
+    const channelLink = view.querySelector<HTMLAnchorElement>('#channel-link')!;
+    if (isHttpUrl(streamer.channelUrl)) {
+      channelLink.href = streamer.channelUrl;
+    } else {
+      channelLink.hidden = true;
+    }
 
     const list = view.querySelector<HTMLUListElement>('#schedule-list')!;
     for (const schedule of streamer.schedules) {

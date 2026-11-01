@@ -33,7 +33,12 @@ export function matchRoute(pattern: string, path: string): Params | null {
     const expected = patternParts[i];
     const actual = pathParts[i];
     if (expected.startsWith(':')) {
-      params[expected.slice(1)] = decodeURIComponent(actual);
+      // "%EA%B3%B0" 같은 표기를 "곰"으로 되돌려요. "%"처럼 잘못 쓴 표기는 오류가 나니 "맞지 않는 주소"로 봐요
+      try {
+        params[expected.slice(1)] = decodeURIComponent(actual);
+      } catch {
+        return null;
+      }
     } else if (expected !== actual) {
       return null;
     }
@@ -57,19 +62,20 @@ async function render(app: HTMLElement): Promise<void> {
   app.replaceChildren(view);
   window.scrollTo(0, 0);
 
-  for (const route of routes) {
-    const params = matchRoute(route.pattern, path);
-    if (params !== null) {
-      try {
+  // 주소 비교와 화면 그리기를 모두 try 안에 둬요. 어디서 오류가 나도 빈 화면 대신 안내 문장이 보여요
+  try {
+    for (const route of routes) {
+      const params = matchRoute(route.pattern, path);
+      if (params !== null) {
         await route.page(view, params, query);
-      } catch (error) {
-        view.textContent = '화면을 그리다가 문제가 생겼어요. 새로고침해 보세요.';
-        console.error(error); // 개발자 도구(F12) 콘솔에서 자세한 내용을 볼 수 있어요
+        return;
       }
-      return;
     }
+    view.innerHTML = '<h1>페이지를 찾을 수 없어요</h1><p><a href="#/">홈으로 가기</a></p>';
+  } catch (error) {
+    view.textContent = '화면을 그리다가 문제가 생겼어요. 새로고침해 보세요.';
+    console.error(error); // 개발자 도구(F12) 콘솔에서 자세한 내용을 볼 수 있어요
   }
-  view.innerHTML = '<h1>페이지를 찾을 수 없어요</h1><p><a href="#/">홈으로 가기</a></p>';
 }
 
 // 처음 한 번 그리고, 그다음부터는 # 뒤가 바뀔 때마다 다시 그려요

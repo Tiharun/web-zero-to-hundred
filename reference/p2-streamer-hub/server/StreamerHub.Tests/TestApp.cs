@@ -11,8 +11,16 @@ namespace StreamerHub.Tests;
 public sealed class TestApp : WebApplicationFactory<Program>
 {
     public const string AdminEmail = "admin@test.local";
-    public const string AdminPassword = "Admin-Passw0rd!";
-    public const string FanPassword = "Fan-Passw0rd!";
+
+    // 비밀번호는 코드에 적어 두지 않고, 테스트를 실행할 때마다 새로 만들어요 (진짜 비밀번호를 코드에 쓰지 않는 습관)
+    public static readonly string AdminPassword = NewPassword();
+    public static readonly string FanPassword = NewPassword();
+
+    // Identity 규칙(영어 대문자·소문자·숫자·기호, 6자 이상)에 맞는 무작위 비밀번호
+    public static string NewPassword()
+    {
+        return $"Test-{Guid.NewGuid():N}-Aa1!";
+    }
 
     private readonly string _connectionString;
     private readonly SqliteConnection _keepAlive;

@@ -30,14 +30,16 @@ public class PostService
     public async Task<PagedResult<PostListItem>> ListAsync(int page, int pageSize)
     {
         var total = await _db.Posts.CountAsync();
-        var posts = await _db.Posts
-            .Include(p => p.Author)          // 글쓴이 이름도 함께 불러와요
+
+        // 마지막 Select는 "프로젝션": 목록에 필요한 칸만 SELECT해요. 본문이나 글쓴이의 이메일·비밀번호 해시는 읽지 않아요.
+        // 엔티티 대신 DTO를 바로 만들면 EF Core가 변경을 추적하지 않아서(읽기 전용) 가볍기도 해요.
+        var items = await _db.Posts
             .OrderByDescending(p => p.Id)    // Id가 클수록 나중에 쓴 글
             .Skip((page - 1) * pageSize)     // 앞쪽 페이지만큼 건너뛰고
             .Take(pageSize)                  // 한 쪽 분량만 가져와요
+            .Select(p => new PostListItem(p.Id, p.Title, p.Author!.DisplayName, p.CreatedAt))
             .ToListAsync();
 
-        var items = posts.Select(PostListItem.From).ToList();
         return new PagedResult<PostListItem>(items, total, page, pageSize);
     }
 
@@ -45,7 +47,8 @@ public class PostService
     public async Task<PostDetail?> GetAsync(int id, string? userId, bool isAdmin)
     {
         var post = await _db.Posts
-            .Include(p => p.Author)
+            .AsNoTracking()          // 읽기만 하니까 변경 추적을 끄고 가볍게 읽어요
+            .Include(p => p.Author)  // 글쓴이 닉네임도 함께 불러와요
             .FirstOrDefaultAsync(p => p.Id == id);
         if (post is null)
         {

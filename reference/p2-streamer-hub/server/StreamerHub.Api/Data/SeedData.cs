@@ -20,18 +20,21 @@ public static class SeedData
         // 1) 아직 적용하지 않은 마이그레이션을 적용해요. DB 파일이 없으면 새로 만들어요 (Day 20)
         await db.Database.MigrateAsync();
 
-        // 2) 관리자 역할과 관리자 계정
-        await EnsureAdminAsync(provider);
+        // 2) 관리자 역할과 관리자 계정.
+        //    관리자 이메일·비밀번호는 코드나 appsettings.json에 쓰지 않고 "설정"에서 읽어요.
+        //    개발 PC: dotnet user-secrets set "Admin:Email" "..."  /  테스트·배포: 환경 변수 Admin__Email, Admin__Password
+        var configuration = provider.GetRequiredService<IConfiguration>();
+        await EnsureAdminAsync(provider, configuration["Admin:Email"], configuration["Admin:Password"]);
 
         // 3) 처음 실행이면 예시 스트리머와 방송 일정
         await AddSampleStreamersAsync(db);
     }
 
-    private static async Task EnsureAdminAsync(IServiceProvider provider)
+    // 관리자 역할을 만들고, email 계정을 관리자로 만들어요. (테스트에서도 부를 수 있게 public)
+    public static async Task EnsureAdminAsync(IServiceProvider provider, string? email, string? password)
     {
         var roleManager = provider.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = provider.GetRequiredService<UserManager<AppUser>>();
-        var configuration = provider.GetRequiredService<IConfiguration>();
         var logger = provider.GetRequiredService<ILoggerFactory>().CreateLogger("SeedData");
 
         if (!await roleManager.RoleExistsAsync(AdminRole))
@@ -39,10 +42,6 @@ public static class SeedData
             await roleManager.CreateAsync(new IdentityRole(AdminRole));
         }
 
-        // 관리자 이메일·비밀번호는 코드나 appsettings.json에 쓰지 않고 "설정"에서 읽어요.
-        // 개발 PC: dotnet user-secrets set "Admin:Email" "..."  /  테스트·배포: 환경 변수 Admin__Email, Admin__Password
-        var email = configuration["Admin:Email"];
-        var password = configuration["Admin:Password"];
         if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
         {
             logger.LogWarning("Admin:Email과 Admin:Password 설정이 없어서 관리자 계정을 만들지 않았어요.");
@@ -52,6 +51,7 @@ public static class SeedData
         var admin = await userManager.FindByEmailAsync(email);
         if (admin is null)
         {
+            // 아직 없는 계정이면 설정의 비밀번호로 새로 만들어요
             admin = new AppUser
             {
                 UserName = email,
@@ -66,13 +66,29 @@ public static class SeedData
                 var reasons = string.Join(" ", result.Errors.Select(e => e.Description));
                 throw new InvalidOperationException($"관리자 계정을 만들지 못했어요: {reasons}");
             }
+            await userManager.AddToRoleAsync(admin, AdminRole);
             logger.LogInformation("관리자 계정 {Email}을(를) 만들었어요.", email);
+            return;
         }
 
-        if (!await userManager.IsInRoleAsync(admin, AdminRole))
+        if (await userManager.IsInRoleAsync(admin, AdminRole))
         {
-            await userManager.AddToRoleAsync(admin, AdminRole);
+            return; // 이미 관리자예요 (서버를 다시 켤 때마다 여기로 와요)
         }
+
+        // 같은 이메일로 이미 가입한 계정이 있어요. 가입은 누구나 할 수 있고 이메일 확인도 없어서,
+        // 다른 사람이 "앞으로 관리자가 될 이메일"로 먼저 가입해 뒀을 수도 있어요.
+        // 그래서 설정의 비밀번호로 로그인할 수 있는 계정(= 운영자 본인)일 때만 관리자로 올려요.
+        if (!await userManager.CheckPasswordAsync(admin, password))
+        {
+            logger.LogWarning(
+                "{Email}로 이미 가입한 계정이 있지만 비밀번호가 설정과 달라서 관리자로 올리지 않았어요.",
+                email);
+            return;
+        }
+
+        await userManager.AddToRoleAsync(admin, AdminRole);
+        logger.LogInformation("이미 있던 계정 {Email}을(를) 관리자로 올렸어요.", email);
     }
 
     private static async Task AddSampleStreamersAsync(AppDbContext db)
