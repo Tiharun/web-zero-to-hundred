@@ -5,7 +5,7 @@ import { createStore } from './storage.js';
 import { h, notFoundScreen } from './views/common.js';
 import { renderDay } from './views/day.js';
 import { renderHome } from './views/home.js';
-import { renderPage } from './views/page.js';
+import { anchorTarget, renderPage } from './views/page.js';
 import { renderProject } from './views/project.js';
 import { renderSearch } from './views/search.js';
 import { renderSettings } from './views/settings.js';
@@ -37,6 +37,7 @@ function start() {
   let notice = null; // 다음에 그리는 홈에서 한 번만 보여 줄 안내
   let shell = null;
   let keepFocusNext = false; // 다음 hashchange 에서 포커스를 본문으로 옮기지 않는다 (검색창에서 칠 때)
+  let changeListeners = []; // 지금 화면이 진도·테마 변화를 따라가려고 건 것들. 화면을 새로 그릴 때마다 비운다
 
   const ctx = {
     cur,
@@ -49,6 +50,11 @@ function start() {
       prog = next;
       store.save(prog);
       shell.refresh();
+      for (const listener of changeListeners) listener();
+    },
+    /** 지금 화면이 진도·테마 변화를 따라가게 한다 (설정의 테마 선택처럼). 다른 화면으로 가면 저절로 해제된다 */
+    onChange(listener) {
+      changeListeners.push(listener);
     },
     setTheme(theme) {
       ctx.commit({ ...prog, theme });
@@ -84,6 +90,7 @@ function start() {
 
   function render({ focus, scroll }) {
     const route = parseHash(location.hash);
+    changeListeners = [];
     main.replaceChildren();
     let title;
     try {
@@ -93,12 +100,12 @@ function start() {
       main.replaceChildren(h('section', { class: 'notfound' }, h('h1', null, '화면을 그리다 문제가 생겼어요'), h('p', { class: 'lead' }, '새로고침하면 대부분 해결돼요. 계속되면 설정에서 진도를 백업해 두세요.')));
       title = '문제가 생겼어요';
     }
-    main.dataset.hash = location.hash || '#/';
+    main.dataset.hash = location.hash || '#/'; // e2e 테스트가 "이 주소의 화면이 다 그려졌다"를 기다리는 표시일 뿐, 앱 동작에는 쓰지 않는다
     document.title = `${title} · ${cur.title}`;
     shell.onRoute(route);
     if (focus) main.focus({ preventScroll: true }); // 화면을 옮기면 본문으로 포커스를 옮겨 읽는 위치를 알린다
-    // 용어 사전처럼 #/page/<id>/<anchor> 로 온 경우에는 페이지가 이미 그 자리로 스크롤했다
-    if (scroll && !(route.name === 'page' && route.anchor && document.getElementById(route.anchor))) window.scrollTo(0, 0);
+    // 용어 사전처럼 #/page/<id>/<anchor> 로 온 경우에는 페이지가 이미 그 자리로 스크롤했다 (본문 안의 id 일 때만)
+    if (scroll && !(route.name === 'page' && anchorTarget(main, route.anchor))) window.scrollTo(0, 0);
   }
 
   shell = createShell(ctx);

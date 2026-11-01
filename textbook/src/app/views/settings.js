@@ -67,6 +67,10 @@ export function renderSettings(ctx, root) {
   }
 
   const saved = ctx.store.available;
+  // 윗줄의 테마 버튼으로 바꿔도 이 화면의 선택이 따라가게 한다
+  ctx.onChange(() => {
+    for (const radio of root.querySelectorAll('input[name="theme"]')) radio.checked = radio.value === ctx.prog.theme;
+  });
   root.append(
     h(
       'div',

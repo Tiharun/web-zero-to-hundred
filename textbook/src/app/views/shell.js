@@ -123,6 +123,20 @@ export function createShell(ctx) {
     return link;
   }
 
+  /**
+   * 사이드바 안에서 링크가 보이도록 사이드바만 스크롤한다.
+   * scrollIntoView 는 쓰지 않는다: 브라우저가 Tab 의 시작점을 그 링크로 옮겨서, 처음 열었을 때 첫 Tab 이
+   * 건너뛰기 링크·윗줄을 건너뛰고 사이드바 한가운데로 가 버린다.
+   */
+  function revealInSidebar(link) {
+    if (!link) return;
+    const box = sidebar.getBoundingClientRect();
+    const rect = link.getBoundingClientRect();
+    const margin = 8;
+    if (rect.top < box.top) sidebar.scrollTop -= box.top - rect.top + margin;
+    else if (rect.bottom > box.bottom) sidebar.scrollTop += rect.bottom - box.bottom + margin;
+  }
+
   // ───────── 모바일 서랍 ─────────
 
   function navOpen() {
@@ -134,8 +148,9 @@ export function createShell(ctx) {
     menuToggle.setAttribute('aria-expanded', String(open));
     main.inert = open; // 서랍이 열려 있는 동안 뒤쪽 본문으로는 Tab 이 가지 않는다
     if (open) {
-      sidebar.querySelector('[aria-current]')?.scrollIntoView({ block: 'nearest' });
-      (sidebar.querySelector('[aria-current]') ?? sidebar.querySelector('a'))?.focus({ preventScroll: true });
+      const current = sidebar.querySelector('[aria-current]');
+      revealInSidebar(current);
+      (current ?? sidebar.querySelector('a'))?.focus({ preventScroll: true });
     } else if (restoreFocus && document.activeElement && sidebar.contains(document.activeElement)) {
       menuToggle.focus({ preventScroll: true });
     }
@@ -240,7 +255,7 @@ export function createShell(ctx) {
       currentRoute = route;
       const link = markCurrent(route, { open: true });
       if (navOpen()) setNav(false, { restoreFocus: false });
-      link?.scrollIntoView({ block: 'nearest' });
+      revealInSidebar(link);
       if (route.name === 'search') {
         if (document.activeElement !== searchInput) searchInput.value = route.q;
       } else if (searchInput.value !== '') {

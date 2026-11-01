@@ -87,12 +87,12 @@ async function eventually(check, timeout = 5000) {
 
 /**
  * 새 컨텍스트와 페이지를 열어 fn 에 넘기고, 끝에서 콘솔 오류가 없는지 확인한다.
- * init: 페이지 스크립트보다 먼저 실행할 함수(addInitScript), viewport/colorScheme: 컨텍스트 옵션
+ * init: 페이지 스크립트보다 먼저 실행할 함수(addInitScript, initArg 를 인자로 받는다), viewport/colorScheme: 컨텍스트 옵션
  */
-async function withPage(fn, { init, viewport = { width: 1280, height: 800 }, colorScheme = 'light', url = INDEX_URL } = {}) {
+async function withPage(fn, { init, initArg, viewport = { width: 1280, height: 800 }, colorScheme = 'light', url = INDEX_URL } = {}) {
   const context = await browser.newContext({ viewport, colorScheme, locale: 'ko-KR', acceptDownloads: true });
   try {
-    if (init) await context.addInitScript(init);
+    if (init) await context.addInitScript(init, initArg);
     const page = await context.newPage();
     const errors = collectConsoleErrors(page);
     // 외부 요청 0건: 교재 파일 자신(file:)과 data:/blob: 말고는 아무 데도 요청하지 않는다
@@ -815,4 +815,126 @@ test('the early theme script reads the same storage key as the app', async () =>
   const early = /<script id="theme-init">([\s\S]*?)<\/script>/.exec(template);
   assert.ok(early, 'theme-init script is in template.html');
   assert.ok(early[1].includes(`"${STORAGE_KEY}"`), `theme-init must read ${STORAGE_KEY}`);
+});
+
+// ───────────────────────── 수정 1차 (리뷰 반영) ─────────────────────────
+
+test('first Tab reaches skip link', TIMEOUT, async () => {
+  // 처음 열었을 때 Tab 의 시작점이 맨 앞이어야 한다: 건너뛰기 링크 -> 윗줄 -> 사이드바 순서
+  const active = (page) =>
+    page.evaluate(() => {
+      const el = document.activeElement;
+      return { skip: el.matches('.skip-link'), brand: el.matches('.brand'), label: el.tagName.toLowerCase() + '.' + el.className };
+    });
+  for (const hash of ['#/', '#/day/fa-d01', '#/day/fa-d02', '#/project/fa', '#/settings']) {
+    await withPage(async (page, app) => {
+      await visit(page, app, hash);
+      await page.locator('main h1').waitFor();
+      await page.keyboard.press('Tab');
+      const first = await active(page);
+      assert.equal(first.skip, true, `${hash}: 첫 Tab 이 건너뛰기 링크가 아니라 ${first.label} 로 갔어요`);
+      await page.keyboard.press('Tab');
+      const second = await active(page);
+      assert.equal(second.brand, true, `${hash}: 둘째 Tab 은 윗줄 제목이어야 해요 (${second.label})`);
+    });
+  }
+});
+
+test('sidebar shows the current link without moving the Tab start', TIMEOUT, async () => {
+  // 낮은 창에서는 현재 Day 링크가 사이드바 아래쪽에 가려진다: 사이드바만 스크롤돼야 하고 Tab 시작점은 그대로여야 한다
+  await withPage(
+    async (page, app) => {
+      await visit(page, app, '#/day/fa-d02');
+      await page.locator('main h1').waitFor();
+      const fit = await page.evaluate(() => {
+        const sidebar = document.getElementById('sidebar');
+        const box = sidebar.getBoundingClientRect();
+        const link = document.querySelector('#sidebar a[aria-current="page"]').getBoundingClientRect();
+        return { scrollTop: sidebar.scrollTop, top: box.top, bottom: box.bottom, linkTop: link.top, linkBottom: link.bottom, pageScroll: window.scrollY };
+      });
+      assert.ok(fit.scrollTop > 0, '현재 링크가 보이도록 사이드바가 스크롤돼야 해요');
+      assert.ok(fit.linkTop >= fit.top - 1 && fit.linkBottom <= fit.bottom + 1, `현재 링크가 사이드바 안에 보여야 해요 (${JSON.stringify(fit)})`);
+      assert.equal(fit.pageScroll, 0, '본문 쪽은 스크롤되지 않아요');
+      await page.keyboard.press('Tab');
+      assert.equal(await page.evaluate(() => document.activeElement.matches('.skip-link')), true);
+    },
+    { viewport: { width: 1280, height: 200 } },
+  );
+});
+
+test('settings theme radios follow the top-bar toggle', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/settings');
+    const checked = () => page.evaluate(() => document.querySelector('input[name="theme"]:checked')?.value ?? null);
+    const theme = () => page.locator('html').getAttribute('data-theme');
+    assert.equal(await checked(), 'system');
+
+    await page.getByTestId('theme-toggle').click();
+    assert.equal(await theme(), 'dark');
+    assert.equal(await checked(), 'dark', '윗줄 버튼으로 바꾸면 설정의 선택도 따라가요');
+    await page.getByTestId('theme-toggle').click();
+    assert.equal(await theme(), 'light');
+    assert.equal(await checked(), 'light');
+
+    // 설정에서 직접 고르면 반대로 윗줄 버튼 쪽이 따라간다
+    await page.getByLabel('어둡게').check();
+    assert.equal(await theme(), 'dark');
+    assert.match((await page.getByTestId('theme-toggle').getAttribute('aria-label')) ?? '', /라이트/);
+    await page.getByLabel('기기 설정 따르기').check();
+    assert.equal(await theme(), null);
+    assert.equal(await checked(), 'system');
+
+    // 설정 화면을 떠났다 돌아와도 현재 값으로 그려진다
+    await page.getByTestId('theme-toggle').click();
+    await visit(page, app, '#/');
+    await visit(page, app, '#/settings');
+    assert.equal(await checked(), await theme());
+  });
+});
+
+test('page anchor that points outside the page body falls back to the top', TIMEOUT, async () => {
+  // #main, #sidebar 처럼 문서에는 있지만 이 페이지 본문 안이 아닌 id, 없는 id 는 맨 위로 간다
+  await withPage(
+    async (page, app) => {
+      for (const anchor of ['main', 'sidebar', 'nope']) {
+        await visit(page, app, '#/day/fa-d01');
+        await page.evaluate(() => window.scrollTo(0, 400));
+        assert.ok((await page.evaluate(() => window.scrollY)) > 0, '먼저 아래로 스크롤해 둬요');
+        await visit(page, app, `#/page/start/${anchor}`);
+        await page.locator('main h1').waitFor();
+        assert.equal(await page.evaluate(() => window.scrollY), 0, `#/page/start/${anchor}: 맨 위로 가야 해요`);
+        assert.equal(await page.locator('.is-target').count(), 0);
+      }
+      // 본문 안의 id 는 그 자리로 간다 (용어 사전)
+      await visit(page, app, '#/page/glossary/term-픽스처용어');
+      assert.equal(await page.locator('#term-픽스처용어.is-target').count(), 1);
+    },
+    { viewport: { width: 1280, height: 300 } },
+  );
+});
+
+test('early theme script applies the stored theme before the page body is parsed', TIMEOUT, async () => {
+  // 깜빡임 방지: head 의 작은 스크립트가 저장된 테마를 본문(#main)이 만들어지기 전에 html 에 붙여야 한다.
+  // 앱 번들이 붙이는 것과 구별하려고, data-theme 가 처음 붙는 순간 #main 이 이미 있었는지 기록한다.
+  const seed = (stored) => {
+    localStorage.setItem('wzh:v1:progress', JSON.stringify({ version: 1, completed: {}, checks: {}, lastDay: null, theme: stored }));
+    window.__themeEarly = null;
+    new MutationObserver(() => {
+      const root = document.documentElement;
+      if (!window.__themeEarly && root.hasAttribute('data-theme')) {
+        window.__themeEarly = { value: root.getAttribute('data-theme'), mainExisted: Boolean(document.getElementById('main')) };
+      }
+    }).observe(document, { subtree: true, attributes: true, attributeFilter: ['data-theme'] });
+  };
+  for (const [stored, colorScheme] of [['dark', 'light'], ['light', 'dark']]) {
+    await withPage(
+      async (page, app) => {
+        await visit(page, app, '#/');
+        const early = await page.evaluate(() => window.__themeEarly);
+        assert.deepEqual(early, { value: stored, mainExisted: false }, `${stored}: 본문을 읽기 전에 테마가 붙어야 해요`);
+        assert.equal(await page.locator('html').getAttribute('data-theme'), stored);
+      },
+      { init: seed, initArg: stored, colorScheme },
+    );
+  }
 });

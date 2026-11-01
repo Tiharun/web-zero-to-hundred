@@ -2,6 +2,16 @@
 import { isUnlocked } from '../progress.js';
 import { breadcrumb, getPage, h, lockScreen, notFoundScreen } from './common.js';
 
+/**
+ * #/page/<id>/<anchor> 의 anchor 가 가리키는, 페이지 본문 안의 요소. 본문 밖의 id(#main, #sidebar …)나 없는 id 면 null.
+ * 화면을 그린 뒤에 부른다 (root 안에 .page-body 가 있어야 한다)
+ */
+export function anchorTarget(root, anchor) {
+  const body = root.querySelector('.page-body');
+  const target = anchor && body ? document.getElementById(anchor) : null;
+  return target && body.contains(target) ? target : null;
+}
+
 export function renderPage(ctx, id, anchor, root) {
   const { cur } = ctx;
   const page = getPage(cur, id);
@@ -20,8 +30,8 @@ export function renderPage(ctx, id, anchor, root) {
   root.append(h('article', { class: 'page-article', dataset: { page: id } }, breadcrumb({ text: '홈', href: '#/' }, { text: page.title }), h('h1', null, page.title), body));
 
   // 용어 사전 항목처럼 #/page/<id>/<anchor> 로 온 경우 그 자리로 간다
-  const target = anchor ? document.getElementById(anchor) : null;
-  if (target && body.contains(target)) {
+  const target = anchorTarget(root, anchor);
+  if (target) {
     target.classList.add('is-target');
     target.scrollIntoView();
   }
