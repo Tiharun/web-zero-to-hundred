@@ -44,13 +44,14 @@ function makeSnippet(text, terms) {
 /**
  * @param {{ id: string, kind: string, project: string|null, title: string, text: string }[]} index
  * @param {string} query 공백으로 나눈 모든 단어가 제목이나 본문에 있어야 한다
- * @param {(pid: string) => boolean} [isProjectUnlocked] 잠긴 프로젝트의 결과는 snippet 을 null 로 한다
- *   (project 가 null 인 페이지는 묻지 않고 열린 것으로 본다)
+ * @param {(item: { id: string, kind: string, project: string|null, title: string, text: string }) => boolean} [isItemLocked]
+ *   색인 항목이 잠겨 있으면 true. 잠긴 항목(잠긴 프로젝트의 Day, 잠긴 페이지)은 제목·본문으로 찾아지지만
+ *   snippet 을 null 로 한다. 잠금 여부는 부르는 쪽이 progress.isUnlocked 로 계산한다
  * @param {number} [limit]
  * @returns {{ id: string, kind: string, project: string|null, title: string, snippet: string|null }[]}
  *   점수 = 제목에 나온 횟수 × 10 + 본문에 나온 횟수 (단어별 합). 점수가 같으면 색인 순서
  */
-export function search(index, query, isProjectUnlocked = () => true, limit = 30) {
+export function search(index, query, isItemLocked = () => false, limit = 30) {
   if (!Array.isArray(index) || typeof query !== 'string') return [];
   const terms = fold(query).split(/\s+/).filter(Boolean);
   if (terms.length === 0) return [];
@@ -75,13 +76,12 @@ export function search(index, query, isProjectUnlocked = () => true, limit = 30)
 
   hits.sort((a, b) => b.score - a.score); // 안정 정렬: 같은 점수는 색인 순서 그대로
   return hits.slice(0, limit).map(({ item }) => {
-    const locked = item.project != null && !isProjectUnlocked(item.project);
     return {
       id: item.id,
       kind: item.kind,
       project: item.project,
       title: item.title,
-      snippet: locked ? null : makeSnippet(item.text, terms),
+      snippet: isItemLocked(item) ? null : makeSnippet(item.text, terms),
     };
   });
 }

@@ -40,28 +40,31 @@ function parse(text) {
 }
 
 /**
+ * 읽기와 쓰기를 따로 본다: 쓰기만 막힌 저장소(용량 초과·읽기 전용)에서도 이미 저장된 진도는 읽는다.
  * @param {Storage} [storage] 생략하면 globalThis.localStorage
  * @returns {{ readonly available: boolean, load(): unknown|null, save(p: unknown): boolean }}
- *   available: 영구 저장소를 쓸 수 있는가. 중간에 실패하면 false 로 바뀐다(배너용)
- *   load: 저장된 값(검증 전). 없거나 읽을 수 없으면 null
+ *   available: 영구 저장소에 쓰고 읽을 수 있는가. 중간에 실패하면 false 로 바뀐다(배너용)
+ *   load: 저장된 값(검증 전). 없거나 읽을 수 없으면 null. 영구 저장소에 못 쓴 최신 값이 있으면 그 값
  *   save: 저장했으면 true. 영구 저장소가 안 돼도 메모리에는 보관하므로 true. 직렬화할 수 없는 값만 false
  */
 export function createStore(storage) {
   const backing = storage === undefined ? defaultStorage() : storage;
-  let usable = canWrite(backing);
+  let writable = canWrite(backing);
+  let readable = backing != null; // getItem 이 던지면 false
   let memory = null; // 마지막으로 저장한 값의 JSON 글자 (복사본을 돌려주려고 글자로 둔다)
+  let memoryIsNewer = false; // 마지막 save 가 영구 저장소에 닿지 못해서 최신 값이 메모리에만 있다
 
   return {
     get available() {
-      return usable;
+      return writable && readable;
     },
     load() {
-      if (usable) {
+      if (readable && !memoryIsNewer) {
         try {
           const text = backing.getItem(STORAGE_KEY);
           return text == null ? null : parse(text);
         } catch {
-          usable = false;
+          readable = false;
         }
       }
       return memory == null ? null : parse(memory);
@@ -75,11 +78,13 @@ export function createStore(storage) {
       }
       if (typeof text !== 'string') return false; // JSON.stringify(undefined) 등
       memory = text;
-      if (usable) {
+      memoryIsNewer = true;
+      if (writable) {
         try {
           backing.setItem(STORAGE_KEY, text);
+          memoryIsNewer = false;
         } catch {
-          usable = false;
+          writable = false;
         }
       }
       return true;

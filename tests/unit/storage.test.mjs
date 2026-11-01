@@ -82,6 +82,41 @@ test('storage that fails after startup flips to memory and keeps the latest valu
   assert.deepEqual(store.load(), sample(), '방금 저장한 값을 돌려준다');
 });
 
+test('load still reads when writes fail', () => {
+  // 용량 초과·읽기 전용: setItem 은 던지지만 이미 저장된 진도는 getItem 으로 읽을 수 있다
+  const stored = { ...sample(), theme: 'light' };
+  const storage = memoryStorage({ [STORAGE_KEY]: JSON.stringify(stored) });
+  storage.setItem = () => {
+    throw new Error('QuotaExceededError');
+  };
+  const store = createStore(storage);
+  assert.equal(store.available, false, '쓸 수 없으니 배너용 available 은 false');
+  assert.deepEqual(store.load(), stored, '저장된 진도는 읽는다');
+
+  // 이 세션에서 새로 저장한 값은 영구 저장소에 못 썼으니 메모리의 최신 값을 돌려준다
+  assert.equal(store.save(sample()), true);
+  assert.deepEqual(store.load(), sample());
+  assert.deepEqual(JSON.parse(storage.map.get(STORAGE_KEY)), stored, '영구 저장소에는 예전 값이 그대로');
+  assert.equal(store.available, false);
+});
+
+test('writes that start failing mid-session keep older stored data readable until a newer save', () => {
+  const stored = sample();
+  const storage = memoryStorage({ [STORAGE_KEY]: JSON.stringify(stored) });
+  const store = createStore(storage);
+  assert.equal(store.available, true);
+  const real = storage.setItem;
+  storage.setItem = () => {
+    throw new Error('QuotaExceededError');
+  };
+  assert.deepEqual(store.load(), stored, '아직 새로 저장한 것이 없으면 저장소 값');
+  assert.equal(store.save({ ...stored, theme: 'dark' }), true);
+  assert.equal(store.available, false);
+  assert.equal(store.load().theme, 'dark');
+  storage.setItem = real; // 다시 쓸 수 있게 돼도 이번 세션은 메모리 기준으로 계속 동작한다
+  assert.equal(store.load().theme, 'dark');
+});
+
 test('storage whose getItem throws after startup does not break load', () => {
   const storage = memoryStorage({ [STORAGE_KEY]: JSON.stringify(sample()) });
   const store = createStore(storage);

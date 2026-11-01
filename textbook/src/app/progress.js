@@ -34,52 +34,55 @@ export function emptyProgress() {
   return { version: 1, completed: {}, checks: {}, lastDay: null, theme: 'system' };
 }
 
-/** normalizeProgress 와 importBackup 이 같이 쓴다. dropped = 버려진 서로 다른 모르는 Day 수 */
+/**
+ * normalizeProgress 와 importBackup 이 같이 쓴다. dropped = 버려진 서로 다른 모르는 Day 수.
+ * 값이 이상한 것은 버리지만, cur 가 깨져서 읽을 수 없는 경우에는 던진다 — 부르는 쪽이 정한다
+ */
 function normalizeWithStats(raw, cur) {
-  try {
-    if (!isPlainObject(raw)) return { progress: emptyProgress(), dropped: 0 };
+  if (!isPlainObject(raw)) return { progress: emptyProgress(), dropped: 0 };
 
-    const checkCounts = new Map(); // dayId → checkCount
-    for (const project of projectsOf(cur)) for (const day of project.days) checkCounts.set(day.id, day.checkCount);
+  const checkCounts = new Map(); // dayId → checkCount
+  for (const project of projectsOf(cur)) for (const day of project.days) checkCounts.set(day.id, day.checkCount);
 
-    const unknown = new Set();
-    const progress = emptyProgress();
+  const unknown = new Set();
+  const progress = emptyProgress();
 
-    if (isPlainObject(raw.completed)) {
-      for (const [id, at] of Object.entries(raw.completed)) {
-        if (!checkCounts.has(id)) {
-          unknown.add(id);
-        } else if (typeof at === 'string' && !Number.isNaN(Date.parse(at))) {
-          progress.completed[id] = at;
-        }
+  if (isPlainObject(raw.completed)) {
+    for (const [id, at] of Object.entries(raw.completed)) {
+      if (!checkCounts.has(id)) {
+        unknown.add(id);
+      } else if (typeof at === 'string' && !Number.isNaN(Date.parse(at))) {
+        progress.completed[id] = at;
       }
     }
-
-    if (isPlainObject(raw.checks)) {
-      for (const [id, list] of Object.entries(raw.checks)) {
-        if (!checkCounts.has(id)) {
-          unknown.add(id);
-          continue;
-        }
-        if (!Array.isArray(list)) continue;
-        const count = checkCounts.get(id);
-        const kept = [...new Set(list.filter((i) => Number.isInteger(i) && i >= 0 && i < count))].sort((a, b) => a - b);
-        if (kept.length > 0) progress.checks[id] = kept;
-      }
-    }
-
-    if (typeof raw.lastDay === 'string' && checkCounts.has(raw.lastDay)) progress.lastDay = raw.lastDay;
-    if (THEMES.includes(raw.theme)) progress.theme = raw.theme;
-
-    return { progress, dropped: unknown.size };
-  } catch {
-    return { progress: emptyProgress(), dropped: 0 };
   }
+
+  if (isPlainObject(raw.checks)) {
+    for (const [id, list] of Object.entries(raw.checks)) {
+      if (!checkCounts.has(id)) {
+        unknown.add(id);
+        continue;
+      }
+      if (!Array.isArray(list)) continue;
+      const count = checkCounts.get(id);
+      const kept = [...new Set(list.filter((i) => Number.isInteger(i) && i >= 0 && i < count))].sort((a, b) => a - b);
+      if (kept.length > 0) progress.checks[id] = kept;
+    }
+  }
+
+  if (typeof raw.lastDay === 'string' && checkCounts.has(raw.lastDay)) progress.lastDay = raw.lastDay;
+  if (THEMES.includes(raw.theme)) progress.theme = raw.theme;
+
+  return { progress, dropped: unknown.size };
 }
 
 /** 저장소·백업에서 읽은 값을 믿을 수 있는 Progress 로 바꾼다. 실패하면 빈 진도 */
 export function normalizeProgress(raw, cur) {
-  return normalizeWithStats(raw, cur).progress;
+  try {
+    return normalizeWithStats(raw, cur).progress;
+  } catch {
+    return emptyProgress();
+  }
 }
 
 // ───────── 해금·상태 ─────────
@@ -191,7 +194,7 @@ export function importBackup(text, cur) {
   let data;
   try {
     if (typeof text !== 'string') throw new TypeError('not text');
-    data = JSON.parse(text.replace(/^﻿/, '')); // 메모장이 붙이는 BOM 은 무시
+    data = JSON.parse(text.replace(/^\uFEFF/, '')); // 메모장이 붙이는 BOM 은 무시
   } catch {
     return { ok: false, error: 'JSON 파일이 아니에요. 이 교재에서 내보낸 백업 파일(.json)을 골라 주세요.' };
   }
@@ -205,6 +208,19 @@ export function importBackup(text, cur) {
   if (!isPlainObject(data.progress)) {
     return { ok: false, error: '백업 파일 안에 진도 정보가 없거나 형식이 잘못됐어요.' };
   }
-  const { progress, dropped } = normalizeWithStats(data.progress, cur);
+  let result;
+  try {
+    result = normalizeWithStats(data.progress, cur);
+  } catch {
+    // 빈 진도로 "성공"시키면 기존 진도를 지워 버린다. 실패로 알리고 기존 진도는 그대로 둔다
+    return { ok: false, error: '백업 파일을 읽는 중에 문제가 생겼어요. 파일이 손상됐을 수 있어요. 지금 진도는 그대로 두었어요.' };
+  }
+  const { progress, dropped } = result;
+  if (dropped > 0 && Object.keys(progress.completed).length === 0 && Object.keys(progress.checks).length === 0) {
+    return {
+      ok: false,
+      error: `백업 파일의 Day ${dropped}개가 모두 이 교재에 없어요. 다른 교재나 다른 버전에서 내보낸 파일일 수 있어요. 가져올 진도가 없어서 지금 진도는 그대로 두었어요.`,
+    };
+  }
   return { ok: true, progress, dropped };
 }

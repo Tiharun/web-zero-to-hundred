@@ -332,9 +332,42 @@ test('importBackup drops unknown days', () => {
   });
 });
 
+test('importBackup fails when every day in the backup is unknown', () => {
+  const cur = makeCur();
+  const text = JSON.stringify({
+    app: 'web-zero-to-hundred',
+    schema: 1,
+    exportedAt: T3,
+    progress: { version: 1, completed: { 'old-d01': T1, 'old-d02': T2 }, checks: { 'old-d01': [0] }, lastDay: 'old-d02', theme: 'dark' },
+  });
+  const res = importBackup(text, cur);
+  assert.equal(res.ok, false, '가져올 진도가 없으면 빈 진도로 덮어쓰지 않는다');
+  assert.match(res.error, /[가-힣]/);
+  assert.match(res.error, /교재/);
+  assert.match(res.error, /2개/, '몇 개가 안 맞았는지 알려 준다');
+  assert.equal('progress' in res, false);
+});
+
+test('importBackup still imports a backup that has no days at all', () => {
+  const cur = makeCur();
+  const res = importBackup(exportBackup({ ...emptyProgress(), theme: 'dark' }, T3), cur);
+  assert.deepEqual(res, { ok: true, progress: { ...emptyProgress(), theme: 'dark' }, dropped: 0 });
+});
+
+test('importBackup fails instead of returning an empty progress when normalizing throws', () => {
+  const text = exportBackup(completed(makeCur(), 'fa-d01'), T3);
+  const brokenCur = { projects: [{ id: 'fa', order: 1, track: 'main', requires: [], days: null }], pages: [] };
+  const res = importBackup(text, brokenCur);
+  assert.equal(res.ok, false);
+  assert.match(res.error, /[가-힣]/);
+  assert.match(res.error, /그대로/, '기존 진도는 그대로라고 알려 준다');
+  // normalizeProgress 는 같은 상황에서 빈 진도를 돌려준다(저장소 값 읽기용)
+  assert.deepEqual(normalizeProgress({ completed: { 'fa-d01': T1 } }, brokenCur), emptyProgress());
+});
+
 test('importBackup accepts a UTF-8 BOM and reports zero dropped for a clean file', () => {
   const cur = makeCur();
-  const text = '﻿' + exportBackup(completed(cur, 'fa-d01'), T3);
+  const text = '\uFEFF' + exportBackup(completed(cur, 'fa-d01'), T3);
   const res = importBackup(text, cur);
   assert.equal(res.ok, true);
   assert.equal(res.dropped, 0);
