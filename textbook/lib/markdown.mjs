@@ -80,7 +80,7 @@ const decode = (s) =>
 const countNewlines = (s) => (s.match(/\n/g) ?? []).length;
 
 /** BOM 제거, 줄바꿈을 \n으로 통일 */
-export const normalizeSource = (src) => String(src).replace(/^﻿/, '').replace(/\r\n?/g, '\n');
+export const normalizeSource = (src) => String(src).replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
 
 // ───────────────────────── 줄 단위 구조 (펜스·컨테이너) ─────────────────────────
 
@@ -88,6 +88,8 @@ const FENCE_OPEN = /^(\s*)(`{3,}|~{3,})(.*)$/;
 const FENCE_CLOSE = /^\s*(`{3,}|~{3,})\s*$/;
 const CONTAINER_OPEN = /^:::[ \t]*([^\s:]\S*)(?:[ \t]+(.*?))?[ \t]*$/;
 const CONTAINER_CLOSE = /^:::[ \t]*$/;
+const INDENTED_MARKER = /^\s+:::/;
+const EXTRA_COLONS = /^:{4,}/;
 const CAPTION = /^\s*📄[ \t]+(\S.*?)\s*$/;
 const CAPTION_MARK = /\s*⟦cap:(\d+)⟧\s*$/;
 
@@ -164,6 +166,13 @@ function splitBlocks(lines, state) {
       target.push(out);
       fence = { ...open, line: no };
       continue;
+    }
+
+    // 들여쓴 ':::'나 4개 이상의 콜론은 컨테이너로 인식되지 않아 글자로 남으므로 오류로 알린다
+    if (INDENTED_MARKER.test(line)) {
+      state.error('E_CONTAINER_INDENT', no, '::: 는 줄 맨 앞(들여쓰기 없이)에 써야 해요.');
+    } else if (EXTRA_COLONS.test(line)) {
+      state.error('E_CONTAINER_INDENT', no, '::: 는 콜론이 정확히 3개예요. 4개 이상(::::)은 쓸 수 없어요.');
     }
 
     if (line.startsWith(':::')) {
@@ -423,6 +432,12 @@ function createMarked(state, { terms, routes, prefixed }) {
 // ───────────────────────── 공개 함수 ─────────────────────────
 
 /**
+ * Markdown 원문을 교재용 HTML로 바꾼다. 원문 속 HTML은 전부 글자로 escape한다.
+ *
+ * 주의: `headings[].text`와 `text`는 escape하지 않은 순수 글자다(`<`, `&`가 그대로 들어 있다).
+ * HTML에 넣을 때는 반드시 escape하거나 textContent로 넣을 것. `html`만 그대로 넣어도 안전하다.
+ * `text`는 검색용이며 `:::answer` 블록 안의 글자도 포함한다(코드 내용 포함, 복사 버튼 글자 제외).
+ *
  * @param {string} src Markdown 원문
  * @param {{ idPrefix: string, terms: Map<string,string>, routes: Set<string> }} ctx
  * @returns {{ html: string, text: string, checkCount: number, answerCount: number,

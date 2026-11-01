@@ -224,10 +224,10 @@ test('unsafe or unsupported links and images are errors, not output', () => {
 });
 
 test('headings get prefixed ids', () => {
-  const r = render('## 🛠️ 따라하기\n\n### Node.js 설치');
+  const r = render('## 🛠\uFE0F 따라하기\n\n### Node.js 설치');
   assert.ok(r.html.includes('<h2 id="p1-d01-따라하기">'), r.html);
   assert.deepEqual(r.headings, [
-    { level: 2, text: '🛠️ 따라하기', id: 'p1-d01-따라하기' },
+    { level: 2, text: '🛠\uFE0F 따라하기', id: 'p1-d01-따라하기' },
     { level: 3, text: 'Node.js 설치', id: 'p1-d01-nodejs-설치' },
   ]);
 });
@@ -248,7 +248,7 @@ test('heading text is plain text without markup', () => {
 });
 
 test('slugify lowercases, hyphenates whitespace and strips other characters', () => {
-  assert.equal(slugify('🛠️ 따라하기'), '따라하기');
+  assert.equal(slugify('🛠\uFE0F 따라하기'), '따라하기');
   assert.equal(slugify('Hello World'), 'hello-world');
   assert.equal(slugify('  Node.js   v22 설치!  '), 'nodejs-v22-설치');
   assert.equal(slugify('a - - b'), 'a-b');
@@ -268,6 +268,43 @@ test('container markers inside code fences are ignored', () => {
   const inBox = render(':::answer 정답\n```md\n:::tip x\n:::\n```\n:::');
   assert.deepEqual(inBox.errors, []);
   assert.equal(inBox.answerCount, 1);
+
+  // 들여쓴 표식과 콜론 4개도 펜스 안에서는 그냥 코드다
+  const indented = render('1. 단계\n   ```md\n   :::warn 주의\n   내용\n   :::\n   ::::tip\n   ```');
+  assert.deepEqual(indented.errors, []);
+  assert.ok(!indented.html.includes('callout'), indented.html);
+  const colons = render('~~~md\n::::tip 꿀팁\n    :::\n~~~');
+  assert.deepEqual(colons.errors, []);
+});
+
+test('indented container marker is an error', () => {
+  const step = render('1. 단계\n   :::warn 주의\n   내용\n   :::');
+  assert.deepEqual(codes(step), ['E_CONTAINER_INDENT', 'E_CONTAINER_INDENT']);
+  assert.deepEqual(step.errors.map((e) => e.line), [2, 4]);
+  assert.match(step.errors[0].message, /맨 앞/);
+  assert.ok(!step.html.includes('callout'), step.html);
+
+  const top = render('문단\n\n  :::tip 꿀팁\n  내용\n:::');
+  assert.equal(top.errors[0].code, 'E_CONTAINER_INDENT');
+  assert.equal(top.errors[0].line, 3);
+
+  // 탭 들여쓰기도 같다
+  assert.deepEqual(codes(render('문단\n\t:::info')), ['E_CONTAINER_INDENT']);
+  // 문장 속의 콜론 세 개는 문제 없다
+  assert.deepEqual(render('비율은 1:::2 가 아니에요').errors, []);
+  assert.deepEqual(render('설명 :::tip 은 줄 맨 앞에서만').errors, []);
+});
+
+test('four colons is an error', () => {
+  const r = render('::::tip 꿀팁\n내용\n::::');
+  assert.deepEqual(codes(r), ['E_CONTAINER_INDENT', 'E_CONTAINER_INDENT']);
+  assert.deepEqual(r.errors.map((e) => e.line), [1, 3]);
+  assert.match(r.errors[0].message, /[가-힣]/);
+  assert.ok(!r.html.includes('callout'), r.html);
+  // 정상 컨테이너 안에서도 잡힌다
+  const inBox = render(':::tip\n::::\n:::');
+  assert.deepEqual(codes(inBox), ['E_CONTAINER_INDENT']);
+  assert.equal(inBox.errors[0].line, 2);
 });
 
 test('nested container is an error', () => {

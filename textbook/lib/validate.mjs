@@ -6,8 +6,8 @@ import { fenceMask, normalizeSource, parseContainerOpen } from './markdown.mjs';
 const REQUIRED_SECTIONS = [
   '🎯 오늘의 목표',
   '📖 개념 이해',
-  '🛠️ 따라하기',
-  '✍️ 과제',
+  '🛠\uFE0F 따라하기',
+  '✍\uFE0F 과제',
   '✅ 정답',
   '🧯 자주 막히는 곳',
   '📝 오늘의 체크리스트',
@@ -21,7 +21,7 @@ const MIN_CHECKLIST_ITEMS = 3;
 const PLACEHOLDER = /\b(?:TODO|TBD|FIXME)\b|작성 예정/;
 const TASK_ITEM = /^\s*(?:[-*+]|\d+[.)])\s+\[[ xX]\]\s+\S/;
 
-const key = (title) => title.replace(/️/g, '').replace(/\s+/g, ' ').trim();
+const key = (title) => title.replace(/\uFE0F/g, '').replace(/\s+/g, ' ').trim();
 const REQUIRED_KEYS = REQUIRED_SECTIONS.map(key);
 const OPTIONAL_KEY = key(OPTIONAL_LAST_SECTION);
 const countNewlines = (s) => (s.match(/\n/g) ?? []).length;
