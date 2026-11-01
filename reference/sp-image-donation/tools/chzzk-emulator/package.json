@@ -1,0 +1,11 @@
+{
+  "name": "chzzk-emulator",
+  "private": true,
+  "description": "치지직 세션 소켓(Socket.IO 2.x, EIO=3)을 흉내 내는 로컬 에뮬레이터. 실제 치지직이 아니다.",
+  "scripts": {
+    "start": "node emulator.cjs 5099"
+  },
+  "dependencies": {
+    "socket.io": "2.5.0"
+  }
+}

@@ -1,0 +1,43 @@
+# 이미지 후원 서비스: API(React 화면 포함) + PostgreSQL 18
+# 준비: .env.example을 .env로 복사하고 값을 바꾼다
+# 실행: docker compose up --build -d   →  http://localhost:8080
+# 끄기: docker compose down            (데이터까지 지우려면 docker compose down -v)
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-imagedonation}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?.env 파일에 POSTGRES_PASSWORD를 정해 주세요}
+      POSTGRES_DB: ${POSTGRES_DB:-image_donation}
+    volumes:
+      # PostgreSQL 18 이미지: /var/lib/postgresql 에 붙인다 (17 이하처럼 .../data 에 붙이면 안 된다)
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      args:
+        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION:-Release}
+        SIXLABORS_LICENSE_KEY: ${SIXLABORS_LICENSE_KEY:-}
+    ports:
+      - "8080:8080"
+    environment:
+      ConnectionStrings__Default: "Host=db;Port=5432;Database=${POSTGRES_DB:-image_donation};Username=${POSTGRES_USER:-imagedonation};Password=${POSTGRES_PASSWORD};GSS Encryption Mode=Disable"
+      Security__IpHashKey: ${IP_HASH_KEY:?.env 파일에 IP_HASH_KEY를 정해 주세요}
+      Chzzk__ClientId: ${CHZZK_CLIENT_ID:-}
+      Chzzk__ClientSecret: ${CHZZK_CLIENT_SECRET:-}
+      Chzzk__RedirectUri: ${CHZZK_REDIRECT_URI:-http://localhost:8080/api/chzzk/callback}
+    volumes:
+      - appdata:/data # 업로드 이미지(/data/media)와 Data Protection 키(/data/keys)
+    depends_on:
+      db:
+        condition: service_healthy # DB가 준비된 뒤에 API를 켠다
+
+volumes:
+  pgdata:
+  appdata:

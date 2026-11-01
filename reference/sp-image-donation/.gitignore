@@ -1,0 +1,11 @@
+# 빌드 결과물·의존성
+**/bin/
+**/obj/
+**/node_modules/
+client/dist/
+server/ImageDonation.Api/wwwroot/
+# 업로드된 이미지 (개발 실행 시 server/ImageDonation.Api/media)
+server/ImageDonation.Api/media/
+# 비밀 값
+.env
+*.lic

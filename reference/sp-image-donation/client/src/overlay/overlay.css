@@ -1,0 +1,77 @@
+/* OBS 브라우저 소스용: 배경을 투명하게 둬야 방송 화면 위에 이미지만 겹쳐 보인다 */
+html,
+body {
+  margin: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: system-ui, 'Segoe UI', 'Malgun Gothic', sans-serif;
+}
+
+.donation {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  /* 나타날 때 0.4초, 사라지기 0.4초 전부터 흐려진다 (--show-seconds는 표시 시간) */
+  animation:
+    pop-in 0.4s ease-out,
+    fade-out 0.4s ease-in calc(var(--show-seconds) - 0.4s) forwards;
+}
+
+.donation img {
+  max-width: 60vw;
+  max-height: 65vh;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.35);
+}
+
+.donation figcaption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 60vw;
+  padding: 0.5rem 1.2rem;
+  border-radius: 12px;
+  background: rgb(0 0 0 / 0.6);
+  color: #fff;
+  font-size: 2rem;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.donation figcaption span {
+  font-size: 1.5rem;
+}
+
+.overlay-error {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  margin: 0;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  background: rgb(214 51 74 / 0.85);
+  color: #fff;
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}

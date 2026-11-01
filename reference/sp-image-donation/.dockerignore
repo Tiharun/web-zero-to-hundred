@@ -1,0 +1,9 @@
+# 이미지에 넣지 않을 것: 빌드 결과물, 의존성 폴더, 업로드 파일, 비밀 값
+**/node_modules
+**/bin
+**/obj
+server/ImageDonation.Api/wwwroot
+server/ImageDonation.Api/media
+server/ImageDonation.Tests
+tools
+.env
