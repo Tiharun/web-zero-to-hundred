@@ -153,7 +153,7 @@ export async function build({ contentDir, srcDir = path.join(HERE, 'src'), only 
   const data = {
     title: curriculum.title,
     writtenAt: curriculum.writtenAt,
-    builtAt: new Date().toISOString(),
+    builtAt: new Date().toISOString().slice(0, 10), // 날짜만: 같은 날 다시 빌드해도 index.html 이 바뀌지 않는다
     projects: curriculum.projects.map((p) => ({
       id: p.id,
       order: p.order,
@@ -184,12 +184,13 @@ export async function build({ contentDir, srcDir = path.join(HERE, 'src'), only 
   const bundle = await bundleJs(path.join(srcDir, 'app', 'main.js'));
   if (bundle.errors.length) return { ok: false, errors: bundle.errors, warnings };
 
-  let css = '';
+  let css;
   try {
     css = await readFile(path.join(srcDir, 'styles.css'), 'utf8');
   } catch (e) {
     if (e.code !== 'ENOENT') throw e;
-    warnings.push(issue('W_NO_CSS', 'styles.css 가 없어서 CSS 없이 만들어요.', { file: path.join(srcDir, 'styles.css') }));
+    // 스타일 없는 교재는 읽을 수 없으므로 조용히 만들지 않고 멈춘다
+    return { ok: false, errors: [issue('E_NO_CSS', 'styles.css 가 없어요. 스타일 없이는 교재를 만들 수 없어요.', { file: path.join(srcDir, 'styles.css') })], warnings };
   }
   const templateHtml = await readFile(path.join(srcDir, 'template.html'), 'utf8');
 

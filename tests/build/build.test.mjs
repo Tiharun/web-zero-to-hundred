@@ -105,7 +105,7 @@ test('fixture builds to single file', async () => {
     const data = embeddedData(html);
     assert.equal(data.title, '픽스처 교재');
     assert.equal(data.writtenAt, '2026-11');
-    assert.ok(!Number.isNaN(Date.parse(data.builtAt)));
+    assert.match(data.builtAt, /^\d{4}-\d{2}-\d{2}$/, 'builtAt is the date only, so rebuilding on the same day does not change index.html');
     assert.deepEqual(
       data.projects.map((p) => p.id),
       ['fa', 'fb'],
@@ -392,4 +392,21 @@ test('a broken script is reported as E_JS_BUNDLE with file and line', async () =
   assert.equal(r.errors[0].code, 'E_JS_BUNDLE');
   assert.match(r.errors[0].file, /main\.js$/);
   assert.equal(r.errors[0].line, 2);
+});
+
+test('a missing styles.css is an error (E_NO_CSS), not a silent unstyled build', async () => {
+  const r = await buildWithSrc({ 'app/main.js': 'window.__wzh = 1;' });
+  assert.equal(r.ok, false);
+  assert.deepEqual(r.errors.map((e) => e.code), ['E_NO_CSS']);
+  assert.match(r.errors[0].file, /styles\.css$/);
+  assert.match(r.errors[0].message, /styles\.css/);
+  assert.equal(r.html, undefined);
+});
+
+test('the real src builds the fixture without warnings and without churn on rebuild', async () => {
+  const first = await build({ contentDir: FIXTURE });
+  assert.equal(first.ok, true, JSON.stringify(first.errors));
+  assert.deepEqual(first.warnings, []);
+  const second = await build({ contentDir: FIXTURE });
+  assert.equal(second.html, first.html, 'two builds on the same day are byte-identical');
 });

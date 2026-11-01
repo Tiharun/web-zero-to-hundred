@@ -6,21 +6,23 @@
 <meta name="color-scheme" content="light dark">
 <title>웹 제로 투 헌드레드</title>
 <!--WZH:CSS-->
+<script id="theme-init">try{var t=JSON.parse(localStorage.getItem("wzh:v1:progress")).theme;if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
 <a class="skip-link" href="#main">본문으로 건너뛰기</a>
 <header class="topbar">
-  <button id="menu-toggle" class="topbar-btn" type="button" aria-controls="sidebar" aria-expanded="false">메뉴</button>
+  <button id="menu-toggle" class="topbar-btn" type="button" aria-controls="sidebar" aria-expanded="false"><span class="icon" aria-hidden="true">☰</span><span class="label">메뉴</span></button>
   <a class="brand" href="#/">웹 제로 투 헌드레드</a>
-  <input id="search-input" class="topbar-search" type="search" placeholder="검색" aria-label="교재 검색" autocomplete="off">
-  <button id="theme-toggle" class="topbar-btn" type="button">테마</button>
-  <a id="settings-link" class="topbar-btn" href="#/settings">설정</a>
+  <input id="search-input" data-testid="search-input" class="topbar-search" type="search" placeholder="검색" aria-label="교재 검색" autocomplete="off" enterkeyhint="search">
+  <button id="theme-toggle" data-testid="theme-toggle" class="topbar-btn" type="button"><span class="icon" aria-hidden="true">🌙</span><span class="label">테마</span></button>
+  <a id="settings-link" class="topbar-btn" href="#/settings"><span class="icon" aria-hidden="true">⚙</span><span class="label">설정</span></a>
 </header>
 <nav id="sidebar" aria-label="교재 목차"></nav>
 <main id="main" tabindex="-1">
   <noscript>이 교재는 JavaScript가 켜져 있어야 볼 수 있어요.</noscript>
 </main>
-<div id="storage-banner" role="status" hidden></div>
+<div id="storage-banner" data-testid="storage-banner" role="status" hidden></div>
+<div id="live" class="sr-only" role="status" aria-live="polite"></div>
 <!--WZH:DATA-->
 <!--WZH:TEMPLATES-->
 <!--WZH:JS-->
