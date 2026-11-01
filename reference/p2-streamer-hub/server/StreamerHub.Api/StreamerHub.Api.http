@@ -1,0 +1,133 @@
+# 스트리머 허브 API 연습 파일 (Day 16~)
+# VS Code의 REST Client 확장 또는 Visual Studio에서 요청 위의 "Send Request"를 눌러요.
+# 먼저 서버를 켜 두세요: cd server\StreamerHub.Api 다음에 dotnet watch
+# 요청 사이의 ### 줄이 "요청 하나"의 경계예요. 로그인 쿠키는 확장이 기억해서 다음 요청에 붙여 줘요.
+
+@host = http://localhost:5250
+
+### 스트리머 목록 (누구나)
+GET {{host}}/api/streamers
+
+### 이름으로 검색 (?q=)
+GET {{host}}/api/streamers?q=곰
+
+### 스트리머 한 명 + 다가오는 일정
+GET {{host}}/api/streamers/1
+
+### 방송 일정: 시각은 UTC(끝에 Z). 한국 시간 11/2 0시 = UTC 11/1 15시
+GET {{host}}/api/schedules?from=2026-11-01T15:00:00Z&to=2026-11-08T15:00:00Z
+
+### 게시판 목록 (페이지)
+GET {{host}}/api/posts?page=1&pageSize=20
+
+### 지금 공지 (없으면 204)
+GET {{host}}/api/notices/current
+
+### 내 정보 (로그인하지 않았으면 204)
+GET {{host}}/api/me
+
+
+### ---------- 팬으로 가입·로그인 ----------
+# 연습용 계정이에요. 비밀번호 규칙: 6자 이상, 영어 대문자·소문자·숫자·기호를 하나 이상
+
+### 가입
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "fan1@example.com",
+  "password": "Fan-Passw0rd!"
+}
+
+### 로그인 (?useCookies=true → 쿠키로 로그인)
+POST {{host}}/api/auth/login?useCookies=true
+Content-Type: application/json
+
+{
+  "email": "fan1@example.com",
+  "password": "Fan-Passw0rd!"
+}
+
+### 닉네임 바꾸기
+PUT {{host}}/api/me
+Content-Type: application/json
+
+{
+  "displayName": "첫번째팬"
+}
+
+### 글쓰기 (로그인 필요 → 201 Created)
+POST {{host}}/api/posts
+Content-Type: application/json
+
+{
+  "title": "안녕하세요",
+  "body": "첫 글이에요!"
+}
+
+### 글 고치기 (작성자 또는 관리자만, 아니면 403)
+PUT {{host}}/api/posts/1
+Content-Type: application/json
+
+{
+  "title": "안녕하세요 (수정)",
+  "body": "고친 글이에요."
+}
+
+### 로그아웃
+POST {{host}}/api/auth/logout
+
+
+### ---------- 관리자 ----------
+# 관리자 계정은 user-secrets에 넣은 값이에요. 아래 비밀번호 칸을 직접 바꿔서 보내고, 바꾼 채로 저장(커밋)하지 마세요.
+
+### 관리자 로그인
+POST {{host}}/api/auth/login?useCookies=true
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "여기에-관리자-비밀번호"
+}
+
+### 스트리머 등록 (관리자 → 201, 팬 → 403, 로그인 안 함 → 401)
+POST {{host}}/api/streamers
+Content-Type: application/json
+
+{
+  "name": "별빛여우",
+  "platform": "chzzk",
+  "channelUrl": "https://example.com/starfox",
+  "bio": "별 보며 수다 떠는 여우예요.",
+  "avatarUrl": null
+}
+
+### 검증 실패 예: 이름이 비어 있으면 400 + errors
+POST {{host}}/api/streamers
+Content-Type: application/json
+
+{
+  "name": "",
+  "platform": "twitch",
+  "channelUrl": "javascript:alert(1)",
+  "bio": ""
+}
+
+### 방송 일정 등록: 한국 시간 11/7 20시 = UTC 11/7 11시
+POST {{host}}/api/schedules
+Content-Type: application/json
+
+{
+  "streamerId": 1,
+  "title": "주말 특집 방송",
+  "startsAt": "2026-11-07T11:00:00Z",
+  "durationMinutes": 120
+}
+
+### 공지 올리기 → 열려 있는 오버레이에 바로 떠요
+POST {{host}}/api/notices
+Content-Type: application/json
+
+{
+  "message": "10분 뒤 방송 시작해요!"
+}

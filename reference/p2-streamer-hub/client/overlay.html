@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>공지 오버레이</title>
+    <style>
+      /* OBS 브라우저 소스용: 배경을 투명하게 해서 방송 화면 위에 공지만 보이게 해요 */
+      html,
+      body {
+        margin: 0;
+        background: transparent;
+      }
+
+      body {
+        display: flex;
+        align-items: flex-end;
+        min-height: 100vh;
+        padding: 24px;
+        box-sizing: border-box;
+        font-family: system-ui, 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+      }
+
+      .notice {
+        margin: 0;
+        padding: 16px 24px;
+        border-radius: 16px;
+        background: rgba(29, 27, 46, 0.85);
+        color: #ffffff;
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1.4;
+        word-break: keep-all;
+        animation: pop-in 0.4s ease-out;
+      }
+
+      .notice[hidden] {
+        display: none;
+      }
+
+      @keyframes pop-in {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- OBS 주소 예: 개발 중 http://localhost:5173/overlay.html, 빌드 후 http://localhost:5250/overlay.html -->
+    <p id="notice" class="notice" role="status" aria-live="polite" hidden></p>
+    <script type="module" src="/src/overlay.ts"></script>
+  </body>
+</html>

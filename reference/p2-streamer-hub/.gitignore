@@ -1,0 +1,11 @@
+# SQLite 데이터베이스 파일: 서버를 실행하면 생겨요. 사용자 데이터라서 커밋하지 않아요
+*.db
+*.db-shm
+*.db-wal
+
+# 빌드한 클라이언트를 복사해 넣는 곳 (Day 38). 원본은 client/에 있어요
+server/StreamerHub.Api/wwwroot/
+
+# dotnet 빌드 결과
+bin/
+obj/

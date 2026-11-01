@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>스트리머 허브</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="logo" href="#/">스트리머 허브</a>
+      <nav aria-label="주 메뉴">
+        <ul class="nav-links">
+          <li><a href="#/">홈</a></li>
+          <li><a href="#/streamers">스트리머</a></li>
+          <li><a href="#/schedule">방송 일정</a></li>
+          <li><a href="#/board">팬 게시판</a></li>
+          <!-- 관리자에게만 보여요(main.ts). 진짜로 막는 일은 서버가 해요 -->
+          <li id="admin-link" hidden><a href="#/admin">관리자</a></li>
+        </ul>
+      </nav>
+      <!-- 로그인 상태에 따라 main.ts가 채워요 -->
+      <div id="auth-menu" class="auth-menu"></div>
+    </header>
+
+    <!-- 화면(페이지)은 모두 여기에 그려져요. 주소의 # 뒤를 보고 router.ts가 골라요 -->
+    <main id="app" class="container"></main>
+
+    <footer class="site-footer">
+      <p>스트리머 허브 · 시간은 모두 한국 시간이에요</p>
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

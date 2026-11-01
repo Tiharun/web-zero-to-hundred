@@ -1,0 +1,428 @@
+/* ==========================================================
+   style.css - 스트리머 허브 전체 스타일
+   P1의 색 변수와 카드 모양을 그대로 가져왔어요. 순서: 변수 → 기본 → 머리말 → 공통 부품 → 화면별
+   ========================================================== */
+
+/* ---------- 1. 색 변수 ---------- */
+:root {
+  --bg: #ffffff;
+  --surface: #f4f2ff;
+  --text: #1d1b2e;
+  --muted: #5a5775;
+  --accent: #5b4bdb;
+  --accent-text: #ffffff;
+  --link: #4a3bc7;
+  --border: #d9d6ee;
+  --error: #b3261e;
+  --danger: #b3261e;
+  --highlight: #fff3c4;
+  --radius: 12px;
+  color-scheme: light dark;
+}
+
+/* 컴퓨터가 다크 모드면 변수 값만 바꿔요 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14121f;
+    --surface: #1f1c33;
+    --text: #ece9ff;
+    --muted: #b3aed6;
+    --accent: #8f83ff;
+    --accent-text: #14121f;
+    --link: #b0a8ff;
+    --border: #3a3660;
+    --error: #ff8a80;
+    --danger: #ff8a80;
+    --highlight: #4a3f12;
+  }
+}
+
+/* ---------- 2. 기본 ---------- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  line-height: 1.7;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+a {
+  color: var(--link);
+}
+
+h1,
+h2 {
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 1.75rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+  margin-top: 2rem;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1rem 3rem;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* ---------- 3. 머리말·꼬리말 ---------- */
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-links a {
+  text-decoration: none;
+}
+
+.nav-links a[aria-current='page'] {
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+
+.auth-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+
+.site-footer {
+  padding: 1.5rem 1rem;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* ---------- 4. 공통 부품 ---------- */
+.button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button.secondary {
+  background: transparent;
+  color: var(--link);
+}
+
+.button.danger {
+  border-color: var(--danger);
+  background: transparent;
+  color: var(--danger);
+}
+
+.button.small {
+  padding: 0.2rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.status:empty {
+  display: none;
+}
+
+.status.error {
+  color: var(--error);
+  font-weight: 600;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0 0.6rem;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+
+.badge.chzzk {
+  border-color: #00c73c;
+}
+
+.badge.youtube {
+  border-color: #ff0033;
+}
+
+.badge.soop {
+  border-color: #0545b1;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 1.75rem;
+  font-weight: 700;
+  object-fit: cover;
+}
+
+/* 폼: 이름표와 입력칸을 위아래로 */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-width: 640px;
+}
+
+.form.narrow {
+  max-width: 400px;
+}
+
+.form label {
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+input,
+select,
+textarea {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+
+.hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* 목록: 한 줄에 하나씩, 사이에 선 */
+.item-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+/* 카드: 화면 폭에 맞춰 칸 수가 저절로 바뀌어요 */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.card h2 {
+  margin: 0.5rem 0 0.25rem;
+  font-size: 1.15rem;
+}
+
+.bio {
+  margin: 0.5rem 0 0;
+}
+
+/* ---------- 5. 화면별 ---------- */
+.hero {
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.hero h1 {
+  margin-top: 0;
+}
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.profile-head {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-head h1 {
+  margin: 0;
+}
+
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.post-list .post-title {
+  font-weight: 600;
+}
+
+.post-body {
+  white-space: pre-wrap; /* 글쓴이가 넣은 줄바꿈을 그대로 보여 줘요 */
+  padding: 1rem 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* 주간 일정: 넓은 화면에서는 7칸, 좁으면 한 줄에 하나 */
+.week-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.week {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 900px) {
+  .week {
+    grid-template-columns: repeat(7, 1fr);
+  }
+}
+
+.day {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.day.today {
+  background: var(--highlight);
+}
+
+.day h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.slot {
+  margin: 0 0 0.5rem;
+}
+
+.slot-time {
+  font-weight: 700;
+}
+
+.slot-title {
+  display: block;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.panel {
+  margin-top: 2rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.panel h2 {
+  margin-top: 0;
+}
+
+.admin-list li {
+  align-items: center;
+}
+
+.admin-row-text {
+  flex: 1;
+}

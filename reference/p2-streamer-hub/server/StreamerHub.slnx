@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="StreamerHub.Api/StreamerHub.Api.csproj" />
+  <Project Path="StreamerHub.Tests/StreamerHub.Tests.csproj" />
+</Solution>
