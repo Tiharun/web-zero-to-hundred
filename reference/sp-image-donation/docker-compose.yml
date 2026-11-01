@@ -19,11 +19,7 @@ services:
       retries: 20
 
   api:
-    build:
-      context: .
-      args:
-        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION:-Release}
-        SIXLABORS_LICENSE_KEY: ${SIXLABORS_LICENSE_KEY:-}
+    build: .
     ports:
       - "8080:8080"
     environment:

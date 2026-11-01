@@ -1,12 +1,28 @@
 using System.Text;
 using ImageDonation.Api.Services;
-using SixLabors.ImageSharp;
+using SkiaSharp;
 
 namespace ImageDonation.Tests;
 
 public class ImageProcessorTests
 {
     private readonly ImageProcessor _processor = new();
+
+    private static bool Contains(byte[] bytes, string text) => bytes.AsSpan().IndexOf(Encoding.ASCII.GetBytes(text)) >= 0;
+
+    // 결과 파일을 다시 읽어 형식·크기·방향을 확인한다
+    private static (SKEncodedImageFormat Format, int Width, int Height, SKEncodedOrigin Origin, int Frames) Inspect(byte[] file)
+    {
+        using var data = SKData.CreateCopy(file);
+        using var codec = SKCodec.Create(data);
+        return (codec.EncodedFormat, codec.Info.Width, codec.Info.Height, codec.EncodedOrigin, codec.FrameCount);
+    }
+
+    private static SKColor PixelAt(byte[] file, int x, int y)
+    {
+        using var bitmap = SKBitmap.Decode(file);
+        return bitmap.GetPixel(x, y);
+    }
 
     [Fact]
     public void MagicNumber_RejectsRenamedTextFile()
@@ -42,29 +58,54 @@ public class ImageProcessorTests
     public void ImageProcessor_StripsExif_AndResizes()
     {
         var input = TestImages.JpegWithExif(2000, 1000);
-        Assert.NotNull(Image.Identify(input).Metadata.ExifProfile); // 전제: 원본에는 EXIF가 있다
+        // 전제: 원본에는 EXIF가 들어 있다 (바이트에 "Exif"와 소프트웨어 이름이 보인다)
+        Assert.True(Contains(input, "Exif"));
+        Assert.True(Contains(input, TestImages.SecretSoftware));
 
         var result = _processor.Process(input);
 
-        var info = Image.Identify(result.Content);
+        var (format, width, height, _, _) = Inspect(result.Content);
         Assert.Equal(".webp", result.Extension);
-        Assert.Equal("Webp", info.Metadata.DecodedImageFormat?.Name, ignoreCase: true);
-        Assert.Equal(1280, info.Width);  // 긴 변이 1280px로 줄고
-        Assert.Equal(640, info.Height);  // 비율(2:1)은 유지된다
-        Assert.Null(info.Metadata.ExifProfile);
-        Assert.DoesNotContain(TestImages.SecretSoftware, Encoding.ASCII.GetString(result.Content));
+        Assert.Equal(SKEncodedImageFormat.Webp, format);
+        Assert.Equal((1280, 640), (width, height)); // 긴 변이 1280px로 줄고 비율(2:1)은 유지된다
+        Assert.Equal((1280, 640), (result.Width, result.Height));
+        // 재인코딩한 파일에는 EXIF·색 프로필 조각도, 소프트웨어 이름도 없다
+        Assert.False(Contains(result.Content, "EXIF"));
+        Assert.False(Contains(result.Content, "Exif"));
+        Assert.False(Contains(result.Content, "ICCP"));
+        Assert.False(Contains(result.Content, TestImages.SecretSoftware));
+    }
+
+    [Fact]
+    public void ImageProcessor_AppliesExifOrientation()
+    {
+        // 가로 200 × 세로 100, 왼쪽 빨강·오른쪽 파랑. EXIF 방향 6(시계 방향 90도로 돌려서 볼 것)
+        var input = TestImages.JpegWithExif(200, 100, orientation: 6);
+        Assert.Equal(SKEncodedOrigin.RightTop, Inspect(input).Origin); // 전제: 디코더가 EXIF 방향을 읽는다
+
+        var result = _processor.Process(input);
+
+        var (_, width, height, origin, _) = Inspect(result.Content);
+        Assert.Equal((100, 200), (width, height));          // 돌려서 세로 사진이 됐다
+        Assert.Equal(SKEncodedOrigin.TopLeft, origin);       // 방향 정보는 남지 않는다 (이미 픽셀에 적용)
+        var top = PixelAt(result.Content, 50, 20);           // 왼쪽(빨강)이 위로 간다
+        var bottom = PixelAt(result.Content, 50, 180);       // 오른쪽(파랑)이 아래로 간다
+        Assert.True(top.Red > 200 && top.Blue < 60, $"위쪽 색 {top}");
+        Assert.True(bottom.Blue > 200 && bottom.Red < 60, $"아래쪽 색 {bottom}");
     }
 
     [Fact]
     public void ImageProcessor_AnimatedGif_KeepsFirstFrameOnly()
     {
         var input = TestImages.AnimatedGif();
-        Assert.Equal(3, Image.Identify(input).FrameCount); // 전제: 원본은 3장면
+        Assert.Equal(3, Inspect(input).Frames); // 전제: 원본은 3장면(빨강 → 초록 → 파랑)
 
         var result = _processor.Process(input);
 
-        using var decoded = Image.Load(result.Content); // 정지 WebP는 Identify의 FrameCount가 0이라 직접 디코딩해서 센다
-        Assert.Single(decoded.Frames);                  // 정책: 첫 장면만 정지 이미지로
+        // 정책: 정지 이미지 1장 (Skia는 정지 WebP의 장면 수를 0으로 알려 주므로 "1 이하"로 확인한다)
+        Assert.InRange(Inspect(result.Content).Frames, 0, 1);
+        var pixel = PixelAt(result.Content, 20, 15);
+        Assert.True(pixel.Red > 200 && pixel.Green < 60 && pixel.Blue < 60, $"첫 장면(빨강)이어야 해요: {pixel}");
     }
 
     [Fact]

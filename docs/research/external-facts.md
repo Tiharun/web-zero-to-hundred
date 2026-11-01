@@ -34,7 +34,7 @@
 | `dotnet-ef` | **10.0.14** | `dotnet tool install --global dotnet-ef` |
 | Npgsql.EntityFrameworkCore.PostgreSQL | **10.0.3** | NuGet |
 | SocketIOClient (.NET) | **4.0.5** | `EIO = EngineIO.V3` 필수 |
-| SixLabors.ImageSharp | **4.1.3** | 이미지 처리 선택 |
+| SkiaSharp / SkiaSharp.NativeAssets.Linux.NoDependencies | **4.154.0** / **4.154.0** | 이미지 처리 선택(MIT). ImageSharp는 쓰지 않음(12절, Ruling R28) |
 | `@microsoft/signalr` (npm) | **10.0.11** | |
 | TypeScript | **7.0.2** | 네이티브 구현. `tsc` 동작 변경 있음(7절) |
 | Vite / create-vite | **8.3.5** / **9.3.3** | |
@@ -402,24 +402,33 @@
 
 | 항목 | SixLabors.ImageSharp 4.1.3 | SkiaSharp 4.154.0 | Magick.NET (Q8-AnyCPU) 15.0.0 |
 | :-- | :-- | :-- | :-- |
-| 라이선스 | **Six Labors Split License 1.0**: 오픈소스/소스 공개 소프트웨어, 전이 의존성, **연 매출 100만 달러 미만 영리 개인·회사**, 비영리는 **Apache-2.0**. 그 외는 유료 상용 라이선스 | **MIT** | **Apache-2.0** |
-| 네이티브 바이너리 | 없음(100% 관리 코드) | 필요(Windows·macOS는 의존 패키지로 자동, Linux는 `SkiaSharp.NativeAssets.Linux.*` 별도) | 필요(ImageMagick 네이티브, 용량 큼) |
-| 매직 넘버(헤더) 기반 형식 판별 | `Image.DetectFormat(bytes)`, `Image.Identify(bytes)` — 확장자를 보지 않고 헤더로 판별. 이미지가 아니면 `UnknownImageFormatException` | `SKCodec.Create`로 판별(미실행 확인) | `MagickFormatInfo`로 판별(미실행 확인) |
-| EXIF 제거 | `image.Metadata.ExifProfile = null` 후 재인코딩 → 출력에 EXIF 없음 | 재인코딩 시 메타데이터 미복사(미실행 확인) | `Strip()`(미실행 확인) |
-| WebP 인코딩 | `WebpEncoder { Quality = 80 }` 내장 | `SKEncodedImageFormat.Webp`(미실행 확인) | 지원(미실행 확인) |
-| 확인일 / 출처 | NuGet nuspec·LICENSE·`[실행]` | NuGet nuspec | NuGet nuspec |
+| 라이선스 | **Six Labors Split License 1.0**: 오픈소스/소스 공개 소프트웨어, 전이 의존성, **연 매출 100만 달러 미만 영리 개인·회사**, 비영리는 **Apache-2.0**. 그 외는 유료 상용 라이선스 | **MIT** (`SkiaSharp`, `SkiaSharp.NativeAssets.Linux.NoDependencies` 모두) | **Apache-2.0** |
+| 빌드 시 라이선스 키 | **필요(3.2.0+·4.0.0+)**. 키가 없으면 Debug는 경고, **Release는 빌드 오류** `[실행]` | 없음(패키지에 빌드 확인 단계가 없음) `[레지스트리]` | (확인 안 함) |
+| 네이티브 바이너리 | 없음(100% 관리 코드) | 필요. net10.0의 `SkiaSharp`가 `SkiaSharp.NativeAssets.Win32`·`.macOS`를 **자동 의존성**으로 받음(Windows는 추가 설치 없음). Linux는 `SkiaSharp.NativeAssets.Linux.NoDependencies`(의존성 없음)를 직접 참조 `[레지스트리]` `[실행]` | 필요(ImageMagick 네이티브, 용량 큼) |
+| 매직 넘버(헤더) 기반 형식 판별 | `Image.DetectFormat(bytes)`, `Image.Identify(bytes)` — 확장자를 보지 않고 헤더로 판별. 이미지가 아니면 `UnknownImageFormatException` | `SKCodec.Create(SKData)` → 이미지가 아니면 `null`(텍스트·"`FF D8 FF`+쓰레기" 모두 `null`), `codec.EncodedFormat`·`codec.Info`(폭·높이)를 디코딩 전에 읽음 `[실행]` | `MagickFormatInfo`로 판별(미실행 확인) |
+| EXIF 제거 | `image.Metadata.ExifProfile = null` 후 재인코딩 → 출력에 EXIF 없음 | 재인코딩은 픽셀만 씀 → 출력에 `Exif`·`ICCP` 조각 없음(색 공간 없는 비트맵으로 인코딩). EXIF 방향은 `codec.EncodedOrigin`으로 읽고 직접 회전 `[실행]` | `Strip()`(미실행 확인) |
+| WebP 인코딩 | `WebpEncoder { Quality = 80 }` 내장 | `SKImage.Encode(SKEncodedImageFormat.Webp, 80)` → `RIFF…WEBPVP8` `[실행]`. JPEG·PNG도 인코딩, **GIF 인코딩은 `null`(미지원)** `[실행]` | 지원(미실행 확인) |
+| 확인일 / 출처 | NuGet nuspec·LICENSE·`[실행]` | NuGet nuspec·`[실행]` | NuGet nuspec |
 
-- ImageSharp 실행 확인 내용(`[실행]`): EXIF(`Software`, `Make`)를 넣은 JPEG(839바이트, 매직 `FF-D8-FF`) 생성 → `Image.DetectFormat` = `JPEG (image/jpeg)` → `Image.Identify` = 120x80, EXIF 있음 → HTML 텍스트를 넣으면 `UnknownImageFormatException` → `AutoOrient()` + `ExifProfile = null` + `IccProfile = null` → WebP 인코딩 100바이트, 헤더 `RIFF…WEBP` → 다시 읽으면 EXIF 없음.
-- ImageSharp **4.x API 변경**: `new Image<Rgba32>(width, height, Color)` 생성자는 없어 컴파일 오류(CS1503). `new Image<Rgba32>(w, h)` 후 `Mutate(x => x.BackgroundColor(Color.CornflowerBlue))`를 쓴다 `[실행]`
-- 출처: https://github.com/SixLabors/ImageSharp/blob/main/LICENSE , https://www.nuget.org/packages/SixLabors.ImageSharp/4.1.3 , https://www.nuget.org/packages/SkiaSharp/4.154.0 , https://www.nuget.org/packages/Magick.NET-Q8-AnyCPU/15.0.0 | 확인일 2026-11-01 `[원문]` `[레지스트리]`
-- 일반 파일 시그니처(표준): JPEG `FF D8 FF`, PNG `89 50 4E 47 0D 0A 1A 0A`, GIF `47 49 46 38`("GIF8"), WebP `52 49 46 46 …(4바이트 크기)… 57 45 42 50`("RIFF"+크기+"WEBP"). 이 중 JPEG와 WebP는 위 실행에서 직접 확인
+- **ImageSharp 빌드 시 라이선스 키 강제** | https://docs.sixlabors.com/articles/imagesharp/index.html | 확인일 2026-11-01 `[원문: SixLabors/docs articles/imagesharp/index.md]` `[실행]`: 문서 원문 "Projects that directly reference ImageSharp require a valid Six Labors license key at build time from version 3.2.0 in the previous major and 4.0.0 in the current major. Enforcement applies to direct dependencies only." 패키지의 `build/SixLabors.ImageSharp.targets`(`SixLabors_ValidateLicense`, `CoreCompile` 전에 실행)가 확인한다. 4.1.3을 직접 참조한 프로젝트를 키 없이 빌드하면 Debug는 `warning : No Six Labors license found. This Debug build can continue, but Release builds require a valid license.`, **`dotnet build -c Release`와 Docker의 `dotnet publish -c Release`는 `error : No Six Labors license found. Set $(SixLaborsLicenseKey), set $(SixLaborsLicenseFile), or add a 'sixlabors.lic' file to the project/workspace.`로 실패**했다(SDK 10.0.114). 3.1.12 패키지에는 이 `.targets`가 없다 `[레지스트리]`.
+- ImageSharp 실행 확인 내용(`[실행]`, 비교용으로 남김): EXIF(`Software`, `Make`)를 넣은 JPEG(839바이트, 매직 `FF-D8-FF`) 생성 → `Image.DetectFormat` = `JPEG (image/jpeg)` → `Image.Identify` = 120x80, EXIF 있음 → HTML 텍스트를 넣으면 `UnknownImageFormatException` → `AutoOrient()` + `ExifProfile = null` + `IccProfile = null` → WebP 인코딩 100바이트, 헤더 `RIFF…WEBP` → 다시 읽으면 EXIF 없음. 4.x에는 `new Image<Rgba32>(width, height, Color)` 생성자가 없다(CS1503).
+- **SkiaSharp 4.154.0 실행 확인 내용**(`[실행]`, Linux x64 SDK 10.0.114 + Docker `mcr.microsoft.com/dotnet/aspnet:10.0` Release 이미지, SP 레퍼런스 `ImageProcessor`와 테스트):
+  - 패키지 그래프: `SkiaSharp` net10.0 의존성 = `SkiaSharp.NativeAssets.macOS`·`SkiaSharp.NativeAssets.Win32` 4.154.0. `dotnet publish -c Release` 결과에 `runtimes/win-x64/native/libSkiaSharp.dll`(+win-x86, win-arm64)과 `runtimes/linux-x64/native/libSkiaSharp.so`(Linux 패키지에서)가 들어감. Release 빌드 경고 0 `[레지스트리]` `[실행]`. Windows에서 실제 실행은 미확인.
+  - 디코딩: `codec.GetPixels(info, bitmap.GetPixels(), new SKCodecOptions(0))` → 3장면 GIF(`codec.FrameCount` = 3)의 **첫 장면만** 디코딩. 정지 WebP는 `FrameCount`가 **0**으로 나온다(1이 아님).
+  - EXIF 방향: APP1 EXIF(Orientation=6)를 넣은 JPEG에서 `codec.EncodedOrigin` = `RightTop`. 디코딩은 방향을 적용하지 않으므로 `SKCanvas`의 `Translate`/`RotateDegrees`/`Scale`로 직접 돌려야 한다(200×100 → 100×200, 왼쪽이 위로).
+  - 리사이즈: `SKBitmap.Resize(SKImageInfo, new SKSamplingOptions(SKCubicResampler.Mitchell))` 2000×1000 → 1280×640.
+  - API 변경 주의: `SKCanvas.DrawBitmap(bitmap, x, y)`(샘플링 옵션 없는 오버로드)는 **CS0618 obsolete** → `DrawBitmap(bitmap, x, y, SKSamplingOptions.Default, null)`.
+  - Docker `aspnet:10.0`(Debian 기반)에서 `NativeAssets.Linux.NoDependencies`의 `libSkiaSharp.so`가 추가 패키지 설치 없이 로드되고 업로드 이미지를 WebP로 변환함.
+- 출처: https://github.com/SixLabors/ImageSharp/blob/main/LICENSE , https://www.nuget.org/packages/SixLabors.ImageSharp/4.1.3 , https://www.nuget.org/packages/SkiaSharp/4.154.0 , https://www.nuget.org/packages/SkiaSharp.NativeAssets.Linux.NoDependencies/4.154.0 , https://www.nuget.org/packages/Magick.NET-Q8-AnyCPU/15.0.0 | 확인일 2026-11-01 `[원문]` `[레지스트리]`
+- 일반 파일 시그니처(표준): JPEG `FF D8 FF`, PNG `89 50 4E 47 0D 0A 1A 0A`, GIF `47 49 46 38`("GIF8"), WebP `52 49 46 46 …(4바이트 크기)… 57 45 42 50`("RIFF"+크기+"WEBP"). 네 형식 모두 SP 레퍼런스 테스트에서 확인
 
-**선택: SixLabors.ImageSharp 4.1.3**
-- 이유: ① 네이티브 바이너리가 없어 Windows 개발 환경과 Linux Docker 컨테이너에서 같은 코드·같은 패키지로 동작, ② 판별(`DetectFormat`/`Identify`), EXIF 제거, WebP 인코딩을 모두 실행으로 확인, ③ `Identify`로 디코딩 전에 폭·높이를 검사해 과대 이미지를 거절할 수 있음, ④ 독자가 만드는 개인·학습용 서비스는 Apache-2.0 조건(오픈소스 공개 또는 연 매출 100만 달러 미만)에 해당.
-- 라이선스 주의를 `:::warn`으로 둔다: 연 매출 100만 달러 이상 영리 조직이 직접 의존성으로 쓰면 상용 라이선스가 필요. 대안은 **SkiaSharp(MIT)** 이며, 네이티브 자산 구성을 직접 해야 하고 이번 조사에서 실행 검증은 하지 못함.
+**선택: SkiaSharp 4.154.0 + SkiaSharp.NativeAssets.Linux.NoDependencies 4.154.0** (Ruling R28, 처음 선택이던 ImageSharp 4.1.3을 바꿈)
+- 이유: ① **MIT**라 학습자가 나중에 회사를 차려도 매출 기준 상용 라이선스가 걸리지 않음, ② **빌드 시 라이선스 키 단계가 없음**: ImageSharp 3.2+/4.x는 키 없이 Release·Docker 빌드가 실패해서 0% 초보자가 막히는 지점이 됨, ③ 판별(`SKCodec`)·첫 장면 디코딩·EXIF 방향·리사이즈·WebP 인코딩을 모두 실행으로 확인, ④ Windows는 패키지 하나로 네이티브까지 자동, Docker는 Linux 네이티브 패키지 하나만 추가.
+- 비용: 네이티브 라이브러리를 쓰므로 `SKData`·`SKCodec`·`SKBitmap`·`SKImage`·`SKCanvas`를 `using`으로 해제해야 하고, EXIF 방향 적용을 직접 코드로 써야 한다(ImageSharp의 `AutoOrient` 같은 한 줄이 없음).
 
 **교재 반영 결정**
-- SP 업로드 파이프라인은 "크기 제한 → `Image.Identify`(형식·폭·높이 검사, 헤더 판별) → 허용 형식만 통과 → `Load` → `AutoOrient` → 메타데이터 제거 → WebP 재인코딩 저장" 순서로 쓰고, 확장자·`Content-Type`을 믿지 않는다는 이유를 설명한다.
+- SP 업로드 파이프라인은 "크기 제한 → 매직 넘버 → `SKCodec.Create`(형식·폭·높이 검사, 이미지가 아니면 null) → 첫 장면 디코딩(`SKCodecOptions(0)`, 움직이는 GIF는 첫 장면만) → 긴 변 1280px 리사이즈 → EXIF 방향(`EncodedOrigin`)을 캔버스로 적용 → 색 공간 없는 비트맵을 WebP(품질 80)로 재인코딩해 메타데이터 제거" 순서로 쓰고, 확장자·`Content-Type`을 믿지 않는 이유와 네이티브 객체를 `using`으로 해제하는 습관을 설명한다.
+- 라이브러리 선택 Day에 "ImageSharp 3.2+/4.x는 빌드 시 라이선스 키가 필요하고 Split License라 매출 기준이 있다 → 이 교재는 MIT인 SkiaSharp을 쓴다"를 `:::info`로 한 번 설명한다. 테스트용 GIF는 SkiaSharp이 GIF를 저장하지 못하므로 바이트로 직접 만든다.
 
 ---
 

@@ -8,4 +8,3 @@ server/ImageDonation.Api/wwwroot/
 server/ImageDonation.Api/media/
 # 비밀 값
 .env
-*.lic

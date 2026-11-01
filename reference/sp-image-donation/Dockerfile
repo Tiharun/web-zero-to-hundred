@@ -11,14 +11,11 @@ RUN npm run build
 
 # ── 2단계: API 빌드
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS server
-# ImageSharp 4.x는 Release 빌드에 Six Labors 라이선스 키가 필요하다 (README "이미지 라이브러리 라이선스")
-ARG BUILD_CONFIGURATION=Release
-ARG SIXLABORS_LICENSE_KEY=""
 WORKDIR /src/server
 COPY server/ImageDonation.Api/ImageDonation.Api.csproj ImageDonation.Api/
 RUN dotnet restore ImageDonation.Api/ImageDonation.Api.csproj
 COPY server/ImageDonation.Api/ ImageDonation.Api/
-RUN dotnet publish ImageDonation.Api/ImageDonation.Api.csproj -c "$BUILD_CONFIGURATION" -o /app --no-restore
+RUN dotnet publish ImageDonation.Api/ImageDonation.Api.csproj -c Release -o /app --no-restore
 
 # ── 3단계: 실행 이미지 (SDK 없이 런타임만)
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
