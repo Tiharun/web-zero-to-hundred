@@ -1,0 +1,37 @@
+# 워크스페이스: 크레이트 세 개를 한 번에 빌드·테스트한다.
+#   game-core : 게임 규칙·물리·프로토콜 (IO 없음, 서버와 WASM이 같이 쓴다)
+#   server    : Axum + Tokio 게임 서버 (WebSocket, 방, 랭킹)
+#   game-wasm : game-core의 이동 예측을 브라우저(WebAssembly)에 내보낸다
+[workspace]
+resolver = "3"
+members = ["crates/game-core", "crates/server", "crates/game-wasm"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.94" # sqlx 0.9가 요구하는 최소 버전
+publish = false
+
+# 버전은 '=x.y.z'로 정확히 고정한다(교재와 같은 결과를 내기 위해).
+# 각 크레이트는 `이름 = { workspace = true }`로 여기 버전을 가져다 쓴다.
+[workspace.dependencies]
+game-core = { path = "crates/game-core" }
+
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.154"
+rand = { version = "=0.10.3", default-features = false }
+
+axum = { version = "=0.8.9", features = ["ws"] }
+tokio = { version = "=1.54.1", features = ["full"] }
+tower-http = { version = "=0.7.1", features = ["fs"] }
+sqlx = { version = "=0.9.0", default-features = false, features = ["runtime-tokio", "postgres", "macros", "migrate"] }
+tracing = "=0.1.44"
+tracing-subscriber = { version = "=0.3.23", features = ["env-filter"] }
+dotenvy = "=0.15.7"
+
+wasm-bindgen = "=0.2.130"
+
+# 테스트 전용
+tokio-tungstenite = "=0.29.0"
+futures-util = "=0.3.34"
+reqwest = { version = "=0.13.5", default-features = false, features = ["json"] }

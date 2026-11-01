@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko" class="transparent">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Viewer Arena · 관전 화면</title>
+  </head>
+  <!-- OBS 브라우저 소스용: 배경이 투명해서 방송 화면 위에 아레나만 겹쳐 보여요(권장 크기 1920×1080). -->
+  <body class="page-host">
+    <canvas id="arena" data-players="0" aria-label="아레나"></canvas>
+
+    <div class="hud top-left">
+      <div id="phase" class="big">연결 중…</div>
+      <div id="time"></div>
+      <div id="count"></div>
+    </div>
+
+    <aside id="board" class="hud top-right panel" hidden>
+      <h2>오늘의 랭킹</h2>
+      <ol id="board-list"></ol>
+    </aside>
+
+    <aside class="hud bottom-right panel join-box">
+      <canvas id="qr" width="200" height="200" aria-label="참가 QR 코드"></canvas>
+      <div>휴대폰으로 참가</div>
+      <div id="code" class="room-code"></div>
+      <div id="join-url" class="small"></div>
+    </aside>
+
+    <section id="result" class="result panel" hidden>
+      <h2>라운드 결과</h2>
+      <ol id="result-list"></ol>
+    </section>
+
+    <p id="status" class="hud bottom-left status" role="status"></p>
+    <script type="module" src="/src/host.ts"></script>
+  </body>
+</html>

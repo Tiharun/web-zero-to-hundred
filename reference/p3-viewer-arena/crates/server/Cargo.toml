@@ -1,0 +1,28 @@
+# server: 권위 서버. 방마다 게임 루프(액터)를 돌리고 WebSocket으로 스냅샷을 보낸다.
+[package]
+name = "server"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+game-core = { workspace = true }
+axum = { workspace = true }
+tokio = { workspace = true }
+tower-http = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sqlx = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+dotenvy = { workspace = true }
+# 서버에서는 운영체제 난수(방 코드·월드 시드)가 필요하므로 thread_rng를 켠다.
+rand = { workspace = true, features = ["thread_rng"] }
+
+[dev-dependencies]
+# test-util: 테스트에서 tokio 시계를 멈추고 빨리 감는다(#[tokio::test(start_paused = true)])
+tokio = { workspace = true, features = ["test-util"] }
+tokio-tungstenite = { workspace = true }
+futures-util = { workspace = true }
+reqwest = { workspace = true }

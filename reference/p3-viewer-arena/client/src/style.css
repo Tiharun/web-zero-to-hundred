@@ -1,0 +1,275 @@
+/* 세 페이지가 같이 쓰는 스타일. 외부 글꼴·CDN 없이 시스템 글꼴만 써요(OBS에서도 바로 뜨게). */
+
+:root {
+  --bg: #0f172a;
+  --panel: rgba(15, 23, 42, 0.78);
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #4dabf7;
+  --warn: #ffd43b;
+  font-family: system-ui, -apple-system, 'Segoe UI', 'Malgun Gothic', sans-serif;
+  color: var(--text);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* hidden 속성은 언제나 숨겨요. (display: grid 같은 규칙이 hidden을 이기지 못하게) */
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+}
+
+h1,
+h2 {
+  margin: 0 0 0.5rem;
+}
+
+button,
+input {
+  font: inherit;
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #334155;
+}
+
+button {
+  background: var(--accent);
+  color: #0b1220;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+a {
+  color: var(--accent);
+  word-break: break-all;
+}
+
+.card {
+  background: #1e293b;
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.row input {
+  flex: 1;
+  min-width: 0;
+  text-transform: uppercase;
+}
+
+.room-code {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+
+.small {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.tip {
+  color: var(--warn);
+  font-size: 0.9rem;
+}
+
+.status {
+  min-height: 1.5em;
+  color: var(--warn);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+/* ---------- index.html ---------- */
+
+.page-home main {
+  max-width: 32rem;
+  margin: 2rem auto;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.page-home section {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.lead {
+  color: var(--muted);
+  margin: 0;
+}
+
+/* ---------- host.html (OBS) ---------- */
+
+/* OBS 브라우저 소스는 페이지 배경을 그대로 합성해요. 투명해야 방송 화면이 비쳐요. */
+html.transparent,
+.page-host {
+  background: transparent;
+}
+
+.page-host {
+  height: 100vh;
+  overflow: hidden;
+  /* 어떤 배경 위에서도 글자가 읽히도록 그림자를 둬요 */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+.page-host #arena {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.hud {
+  position: fixed;
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.hud .big {
+  font-size: 2.2rem;
+}
+
+.top-left {
+  top: 1.5rem;
+  left: 1.5rem;
+}
+
+.top-right {
+  top: 1.5rem;
+  right: 1.5rem;
+}
+
+.bottom-right {
+  bottom: 1.5rem;
+  right: 1.5rem;
+}
+
+.bottom-left {
+  bottom: 1.5rem;
+  left: 1.5rem;
+  max-width: 40vw;
+  font-size: 1rem;
+}
+
+.panel {
+  background: var(--panel);
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+}
+
+.panel ol {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.join-box {
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.join-box canvas {
+  width: 200px;
+  height: 200px;
+  image-rendering: pixelated; /* QR 칸 경계를 흐리게 하지 않아요 */
+}
+
+.result {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 22rem;
+  font-size: 1.6rem;
+}
+
+.result ol {
+  list-style: none;
+  padding: 0;
+}
+
+/* ---------- play.html (휴대폰) ---------- */
+
+.page-play {
+  overscroll-behavior: none; /* 당겨서 새로 고침 막기 */
+}
+
+.page-play main {
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 0.75rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.play-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-weight: 700;
+}
+
+.page-play form {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.page-play #game {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+}
+
+.page-play #arena {
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.stick {
+  position: relative;
+  width: 11rem;
+  height: 11rem;
+  border-radius: 50%;
+  background: #1e293b;
+  border: 3px solid #334155;
+  touch-action: none; /* 손가락으로 끌어도 화면이 스크롤되지 않게 */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.knob {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  background: var(--accent);
+  pointer-events: none;
+}

@@ -1,0 +1,14 @@
+# game-core: 순수한 게임 로직. 파일·네트워크·스레드를 쓰지 않아서
+# 서버(네이티브)와 브라우저(wasm32) 양쪽에서 그대로 컴파일된다.
+[package]
+name = "game-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+# std_rng만 켠다: 시드로 만드는 난수(StdRng)만 필요하고, 운영체제 난수(getrandom)는 필요 없다.
+rand = { workspace = true, features = ["std_rng"] }

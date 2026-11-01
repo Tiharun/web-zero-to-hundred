@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Viewer Arena</title>
+  </head>
+  <body class="page-home">
+    <main class="card">
+      <h1>Viewer Arena</h1>
+      <p class="lead">시청자가 휴대폰으로 참가하는 실시간 아레나 게임</p>
+
+      <section>
+        <h2>스트리머: 방 만들기</h2>
+        <button id="create" type="button">방 만들기</button>
+        <p id="lan-tip" class="tip" hidden>
+          지금은 이 PC 전용 주소(127.0.0.1)로 열었어요. 휴대폰이 QR로 들어오게 하려면 서버를
+          <code>HOST=0.0.0.0</code>으로 켜고, 이 페이지를 PC의 IP 주소(예: http://192.168.0.10:8080)로 열어 주세요.
+        </p>
+        <div id="created" hidden>
+          <p>방 코드 <strong id="room-code" class="room-code"></strong></p>
+          <p>OBS 브라우저 소스 주소<br /><a id="host-link" target="_blank" rel="noopener"></a></p>
+          <p>참가 주소<br /><a id="play-link" target="_blank" rel="noopener"></a></p>
+        </div>
+      </section>
+
+      <section>
+        <h2>시청자: 참가하기</h2>
+        <form id="join-form" class="row">
+          <label for="code" class="visually-hidden">방 코드</label>
+          <input id="code" maxlength="4" placeholder="방 코드 (예: ABCD)" autocomplete="off" required />
+          <button type="submit">참가</button>
+        </form>
+      </section>
+
+      <p id="status" class="status" role="status"></p>
+    </main>
+    <script type="module" src="/src/home.ts"></script>
+  </body>
+</html>
