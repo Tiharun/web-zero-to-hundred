@@ -366,6 +366,34 @@ test('code content in search text is decoded', () => {
   assert.ok(r.text.includes('<p>x & y</p>'), r.text);
 });
 
+test('unrendered bold before Korean particle is an error', () => {
+  const r = render('**x)**는');
+  assert.deepEqual(codes(r), ['E_BOLD_UNRENDERED']);
+  assert.equal(r.errors[0].line, 1);
+  assert.match(r.errors[0].message, /굵게/);
+
+  // 줄 번호는 원문 기준이고, 제목·목록·표·컨테이너 안에서도 잡힌다
+  const deep = render('문단\n\n- 목록 **a)**가\n\n:::tip\n표는 **b)**를\n:::\n\n## 제목 **c)**는');
+  assert.deepEqual(codes(deep), ['E_BOLD_UNRENDERED', 'E_BOLD_UNRENDERED', 'E_BOLD_UNRENDERED']);
+  assert.deepEqual(deep.errors.map((e) => e.line), [3, 6, 9]);
+});
+
+test('rendered bold is fine', () => {
+  const r = render('**용어**는 이런 뜻이에요. **x)** 는 괜찮고, **a** 와 **b** 도 괜찮아요.');
+  assert.deepEqual(r.errors, []);
+  assert.ok(r.html.includes('<strong>용어</strong>는'), r.html);
+  // 백슬래시로 막은 별표는 작성자가 글자로 쓴 것이다
+  assert.deepEqual(render('\\*\\*리터럴').errors, []);
+});
+
+test('asterisks in code are fine', () => {
+  const r = render('인라인 `a ** b` 와\n\n```js\nconst x = 2 ** 3;\n```\n\n[링크](https://example.com/a**b)');
+  assert.deepEqual(r.errors, []);
+  assert.ok(r.html.includes('<code>a ** b</code>'), r.html);
+  assert.ok(r.html.includes('</span> ** <span'), r.html);
+  assert.ok(r.html.includes('href="https://example.com/a**b"'), r.html);
+});
+
 test('result has the documented shape', () => {
   const r = render('안녕');
   assert.deepEqual(Object.keys(r).sort(), [

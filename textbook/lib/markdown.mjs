@@ -334,7 +334,16 @@ function createMarked(state, { terms, routes, prefixed }) {
 
     // marked의 text는 raw HTML 블록 안에서 escape를 건너뛰므로(escaped 플래그) 직접 처리한다
     text(token) {
-      return token.tokens ? this.parser.parseInline(token.tokens) : escText(token.text);
+      if (token.tokens) return this.parser.parseInline(token.tokens);
+      // CommonMark 한글 함정: `**x)**는` 처럼 닫는 ** 앞이 문장부호이고 뒤가 글자면 굵게가 안 되고 ** 가 그대로 남는다
+      if (token.text.includes('**')) {
+        state.error(
+          'E_BOLD_UNRENDERED',
+          token._line,
+          '굵게(**)가 적용되지 않았어요. 닫는 ** 바로 뒤에 조사가 오고 앞이 문장부호면 깨져요. 굵게를 글자로 끝내거나 괄호를 굵게 밖으로 빼세요. (글자 그대로 ** 를 보여 주려면 `**` 처럼 코드로 쓰세요.)',
+        );
+      }
+      return escText(token.text);
     },
 
     code(token) {
