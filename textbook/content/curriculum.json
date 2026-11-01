@@ -1,0 +1,206 @@
+{
+  "version": 1,
+  "title": "웹 제로 투 헌드레드",
+  "writtenAt": "2026-11",
+  "validation": { "minDayChars": 4000 },
+  "projects": [
+    {
+      "id": "p1",
+      "order": 1,
+      "track": "main",
+      "title": "나의 크리에이터 홈페이지",
+      "subtitle": "첫 웹사이트 — HTML·CSS·JavaScript로 처음부터 만들어 인터넷에 공개해요",
+      "folder": "C:\\dev\\my-creator-site",
+      "stack": ["HTML", "CSS", "JavaScript", "Git", "GitHub", "GitHub Pages"],
+      "requires": [],
+      "summary": "컴퓨터와 웹의 첫걸음부터 시작해 HTML·CSS·JavaScript로 내 방송 홈페이지를 만들고, Git·GitHub로 관리하며 GitHub Pages로 공개해요.",
+      "outcome": "인터넷에 공개된 나의 크리에이터 홈페이지(소개·영상 목록·방송 일정·문의 폼, 다크 모드·반응형)와 OBS 카운트다운 오버레이",
+      "days": [
+        {
+          "title": "컴퓨터와 웹의 첫걸음",
+          "minutes": 90,
+          "summary": "인터넷·브라우저·웹사이트가 무엇인지 알고, 파일 확장명을 보이게 한 뒤 C:\\dev 폴더에 메모장으로 첫 HTML 파일을 만들어 브라우저로 열어요.",
+          "keywords": ["인터넷", "웹", "브라우저", "서버", "웹사이트", "파일", "폴더", "확장자", "경로", "C:\\dev", "메모장", "HTML"]
+        },
+        {
+          "title": "개발 도구 설치",
+          "minutes": 90,
+          "summary": "VS Code(한국어 팩, Live Preview)와 Chrome을 설치하고, 폴더를 열어 파일을 저장·자동 저장하는 법을 익혀요.",
+          "keywords": ["VS Code", "한국어 팩", "Live Preview", "Chrome", "폴더 열기", "저장", "자동 저장"]
+        },
+        {
+          "title": "HTML 기본 구조",
+          "minutes": 90,
+          "summary": "태그·요소·속성과 <!DOCTYPE>, head/body 구조를 배우고 제목·문단·주석을 쓰며 Emmet !로 뼈대를 빠르게 만들어요.",
+          "keywords": ["태그", "요소", "속성", "<!DOCTYPE>", "head", "body", "제목", "문단", "주석", "Emmet"]
+        },
+        {
+          "title": "텍스트·목록·링크",
+          "minutes": 90,
+          "summary": "strong/em, ul/ol 목록, <a> 링크를 쓰고 절대 경로와 상대 경로의 차이를 익혀 여러 페이지를 서로 이어요.",
+          "keywords": ["strong", "em", "ul", "ol", "li", "a", "href", "절대 경로", "상대 경로", "여러 페이지"]
+        },
+        {
+          "title": "이미지와 경로 완전정복",
+          "minutes": 90,
+          "summary": "<img>와 images 폴더, ./ 와 ../ 상대 경로, 파일 이름 규칙, 이미지 형식을 익혀 사진과 그림을 넣어요.",
+          "keywords": ["img", "alt", "images 폴더", "./", "../", "파일 이름 규칙", "이미지 형식", "SVG"]
+        },
+        {
+          "title": "시맨틱 구조",
+          "minutes": 90,
+          "summary": "header·nav·main·section·footer로 페이지 뼈대를 의미 있게 나누고, div/span과 비교하며 개발자 도구 Elements 패널로 살펴봐요.",
+          "keywords": ["시맨틱", "header", "nav", "main", "section", "footer", "div", "span", "개발자 도구", "Elements"]
+        },
+        {
+          "title": "Git·GitHub 시작",
+          "minutes": 120,
+          "summary": "Git을 설치하고 사용자 정보를 설정한 뒤 GitHub에 가입해 저장소를 만들고 첫 커밋과 푸시를 해요.",
+          "keywords": ["Git", "GitHub", "저장소", "커밋", "푸시", "git config", "버전 관리"]
+        },
+        {
+          "title": "표·폼·미디어",
+          "minutes": 100,
+          "summary": "table로 방송 일정표를, form으로 연락 폼을 만들고 iframe으로 YouTube 영상을 넣어요.",
+          "keywords": ["table", "tr", "th", "td", "form", "input", "label", "button", "iframe", "YouTube"]
+        },
+        {
+          "title": "CSS 시작",
+          "minutes": 90,
+          "summary": "css/style.css를 만들어 link로 연결하고 선택자, 색, 글꼴로 첫 스타일을 입혀요.",
+          "keywords": ["CSS", "link", "선택자", "클래스", "색", "글꼴", "css/style.css"]
+        },
+        {
+          "title": "박스 모델",
+          "minutes": 90,
+          "summary": "margin·padding·border와 box-sizing, px·rem·% 단위를 익혀 여백과 크기를 다듬어요.",
+          "keywords": ["박스 모델", "margin", "padding", "border", "box-sizing", "px", "rem", "%"]
+        },
+        {
+          "title": "Flexbox",
+          "minutes": 100,
+          "summary": "Flexbox로 내비게이션 바를 만들고 정렬, gap, wrap을 익혀요.",
+          "keywords": ["Flexbox", "display: flex", "justify-content", "align-items", "gap", "flex-wrap", "내비게이션 바"]
+        },
+        {
+          "title": "Grid",
+          "minutes": 100,
+          "summary": "Grid의 repeat, minmax, auto-fit으로 화면 폭에 맞춰 늘어나는 콘텐츠 카드 그리드를 만들어요.",
+          "keywords": ["Grid", "display: grid", "grid-template-columns", "repeat", "minmax", "auto-fit", "카드"]
+        },
+        {
+          "title": "반응형 웹",
+          "minutes": 100,
+          "summary": "viewport와 미디어 쿼리, 모바일 우선 방식으로 휴대폰에서도 보기 좋게 만들고 개발자 도구 기기 모드로 확인해요.",
+          "keywords": ["반응형", "viewport", "미디어 쿼리", "모바일 우선", "기기 모드", "breakpoint"]
+        },
+        {
+          "title": "꾸미기 + 첫 배포",
+          "minutes": 120,
+          "summary": "CSS 변수와 hover·transition으로 꾸민 뒤 GitHub Pages로 내 사이트를 인터넷에 처음 공개해요.",
+          "keywords": ["CSS 변수", "hover", "transition", "GitHub Pages", "배포", "공개 저장소"]
+        },
+        {
+          "title": "JavaScript 시작",
+          "minutes": 90,
+          "summary": "script와 defer로 JavaScript를 연결하고 Console에서 let/const, 자료형, 연산자를 실험해요.",
+          "keywords": ["JavaScript", "script", "defer", "Console", "let", "const", "자료형", "연산자"]
+        },
+        {
+          "title": "조건문",
+          "minutes": 90,
+          "summary": "if/else, ===, 논리 연산, 템플릿 리터럴로 시간대별 인사말을 만들어요.",
+          "keywords": ["if", "else", "===", "논리 연산", "템플릿 리터럴", "Date", "인사말"]
+        },
+        {
+          "title": "반복문과 배열",
+          "minutes": 90,
+          "summary": "for, for…of와 배열 기본으로 여러 값을 차례로 꺼내 다뤄요.",
+          "keywords": ["for", "for...of", "배열", "length", "push", "인덱스"]
+        },
+        {
+          "title": "함수",
+          "minutes": 100,
+          "summary": "함수 선언, 매개변수, return, 화살표 함수, 스코프를 익혀 되풀이되는 코드를 묶어요.",
+          "keywords": ["함수", "매개변수", "return", "화살표 함수", "스코프"]
+        },
+        {
+          "title": "객체와 배열 메서드",
+          "minutes": 100,
+          "summary": "객체로 영상 목록 데이터를 만들고 map, filter, forEach로 다뤄요.",
+          "keywords": ["객체", "속성", "영상 목록", "map", "filter", "forEach"]
+        },
+        {
+          "title": "DOM 다루기",
+          "minutes": 120,
+          "summary": "querySelector, textContent, classList, createElement로 데이터에서 영상 카드를 화면에 그려요.",
+          "keywords": ["DOM", "querySelector", "textContent", "classList", "createElement", "append", "카드 그리기"]
+        },
+        {
+          "title": "이벤트",
+          "minutes": 100,
+          "summary": "addEventListener로 모바일 햄버거 메뉴를 만들고 이벤트 위임을 익혀요.",
+          "keywords": ["이벤트", "addEventListener", "click", "햄버거 메뉴", "aria-expanded", "이벤트 위임"]
+        },
+        {
+          "title": "다크 모드와 localStorage",
+          "minutes": 100,
+          "summary": "테마 토글 버튼을 만들어 선택을 localStorage에 저장하고 prefers-color-scheme을 반영해요.",
+          "keywords": ["다크 모드", "테마 토글", "localStorage", "prefers-color-scheme", "data 속성"]
+        },
+        {
+          "title": "필터와 검색",
+          "minutes": 100,
+          "summary": "input 이벤트와 카테고리 버튼으로 영상 목록을 걸러 보여 줘요.",
+          "keywords": ["input 이벤트", "필터", "검색", "카테고리", "includes"]
+        },
+        {
+          "title": "폼 검증",
+          "minutes": 100,
+          "summary": "required·pattern 속성과 JavaScript 검증, aria-live 피드백으로 문의 폼을 다듬어요.",
+          "keywords": ["폼 검증", "required", "pattern", "submit", "preventDefault", "aria-live"]
+        },
+        {
+          "title": "JSON과 fetch",
+          "minutes": 120,
+          "summary": "data/videos.json을 fetch와 async/await로 불러오고, file:// 제약과 오류 처리를 익혀요.",
+          "keywords": ["JSON", "fetch", "async", "await", "data/videos.json", "file://", "오류 처리", "Live Preview"]
+        },
+        {
+          "title": "날짜와 타이머",
+          "minutes": 100,
+          "summary": "Date로 오늘 요일을 강조하고 setInterval로 다음 방송까지 남은 시간을 세는 카운트다운을 만들어요.",
+          "keywords": ["Date", "요일", "setInterval", "카운트다운", "schedule.json"]
+        },
+        {
+          "title": "OBS 오버레이 위젯",
+          "minutes": 120,
+          "summary": "투명 배경의 overlay/countdown.html을 만들어 URL 파라미터로 설정하고 OBS 브라우저 소스에 띄워요.",
+          "keywords": ["OBS", "오버레이", "브라우저 소스", "투명 배경", "URL 파라미터", "URLSearchParams"]
+        },
+        {
+          "title": "품질 높이기",
+          "minutes": 100,
+          "summary": "접근성, SEO·Open Graph·파비콘, 성능을 점검하고 Lighthouse로 확인해요.",
+          "keywords": ["접근성", "SEO", "Open Graph", "파비콘", "성능", "Lighthouse"]
+        },
+        {
+          "title": "디버깅과 정리",
+          "minutes": 100,
+          "summary": "개발자 도구 디버거의 중단점과 흔한 오류를 익히고, 폴더를 정리해 README.md를 써요.",
+          "keywords": ["디버깅", "중단점", "Sources", "흔한 오류", "폴더 정리", "README.md"]
+        },
+        {
+          "title": "최종 배포와 회고",
+          "minutes": 90,
+          "summary": "최종 점검표로 사이트를 확인하고 배포한 주소에서 다시 점검한 뒤 회고를 쓰면 P2가 열려요.",
+          "keywords": ["최종 점검표", "배포 확인", "회고", "P2 해금"]
+        }
+      ]
+    }
+  ],
+  "pages": [
+    { "id": "glossary", "title": "용어 사전", "generated": "glossary" },
+    { "id": "troubleshooting", "title": "문제 해결 모음", "generated": "troubleshooting" }
+  ]
+}
