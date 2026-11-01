@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#5b4bdb"/>
+  <!-- 초승달: 노란 원 위에 배경색 원을 겹쳐서 만들어요 -->
+  <circle cx="30" cy="34" r="18" fill="#ffd66b"/>
+  <circle cx="40" cy="27" r="16" fill="#5b4bdb"/>
+</svg>

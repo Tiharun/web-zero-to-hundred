@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="320" height="180">
+  <rect width="320" height="180" fill="#a8325e"/>
+  <!-- 음표 -->
+  <path d="M138 128V54l64-14v70" fill="none" stroke="#ffffff" stroke-width="10" stroke-linejoin="round"/>
+  <ellipse cx="120" cy="130" rx="22" ry="16" fill="#ffffff"/>
+  <ellipse cx="184" cy="116" rx="22" ry="16" fill="#ffffff"/>
+</svg>

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>달빛곰 방송국 - 게임·토크·음악 스트리머</title>
+  <meta name="description" content="게임, 토크, 음악 방송을 하는 스트리머 달빛곰의 공식 홈페이지예요. 방송 일정과 지난 영상을 확인해 보세요.">
+  <!-- Open Graph: 링크를 공유할 때 보이는 제목과 설명이에요 (Day 28) -->
+  <meta property="og:title" content="달빛곰 방송국 - 게임·토크·음악 스트리머">
+  <meta property="og:description" content="게임, 토크, 음악 방송을 하는 스트리머 달빛곰의 공식 홈페이지예요. 방송 일정과 지난 영상을 확인해 보세요.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ko_KR">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">본문 바로가기</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="index.html">
+        <img src="images/logo.svg" alt="" width="36" height="36">
+        <span>달빛곰 방송국</span>
+      </a>
+
+      <!-- 모바일에서만 보이는 메뉴 버튼. main.js가 aria-expanded 값을 바꿔요 -->
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">☰ 메뉴</button>
+
+      <nav id="site-nav" class="site-nav" aria-label="주 메뉴">
+        <ul class="menu-list">
+          <li><a href="index.html" aria-current="page">홈</a></li>
+          <li><a href="about.html">소개</a></li>
+          <li><a href="contents.html">영상</a></li>
+          <li><a href="schedule.html">방송 일정</a></li>
+          <li><a href="contact.html">문의</a></li>
+          <li><button class="theme-toggle" type="button" aria-pressed="false">🌙 다크 모드</button></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="container hero">
+      <img class="hero-image" src="images/profile.svg" alt="헤드셋을 쓴 곰 캐릭터, 달빛곰" width="240" height="240">
+      <div>
+        <h1>안녕하세요, 달빛곰이에요!</h1>
+        <!-- main.js가 시간대에 맞는 인사말을 넣어 줘요 (Day 16) -->
+        <p id="greeting" class="greeting"></p>
+        <p>게임, 토크, 음악을 넘나드는 버라이어티 스트리머예요. 매주 월·수·금·토에 방송해요.</p>
+        <p class="hero-actions">
+          <a class="button" href="contents.html">영상 보러 가기</a>
+          <a class="button button-outline" href="schedule.html">방송 일정 보기</a>
+        </p>
+      </div>
+    </section>
+
+    <section class="container" aria-labelledby="what-title">
+      <h2 id="what-title">이런 방송을 해요</h2>
+      <div class="card-grid">
+        <article class="card">
+          <img src="images/thumb-game.svg" alt="게임 방송을 나타내는 컨트롤러 그림" width="320" height="180" loading="lazy">
+          <div class="card-body">
+            <h3>게임 방송</h3>
+            <p>신작부터 레트로 게임까지, 시청자와 함께 즐겨요.</p>
+          </div>
+        </article>
+        <article class="card">
+          <img src="images/thumb-talk.svg" alt="토크 방송을 나타내는 말풍선 그림" width="320" height="180" loading="lazy">
+          <div class="card-body">
+            <h3>토크 방송</h3>
+            <p>사연을 읽고 수다를 떨어요. 편하게 놀러 오세요.</p>
+          </div>
+        </article>
+        <article class="card">
+          <img src="images/thumb-music.svg" alt="음악 방송을 나타내는 음표 그림" width="320" height="180" loading="lazy">
+          <div class="card-body">
+            <h3>음악 방송</h3>
+            <p>기타를 치며 신청곡을 불러 드려요.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="container" aria-labelledby="featured-title">
+      <h2 id="featured-title">대표 영상</h2>
+      <!-- YouTube 공유 → 퍼가기에서 복사한 iframe이에요. loading="lazy"는 화면에 가까워질 때 불러와요 -->
+      <iframe class="video-frame" src="https://www.youtube.com/embed/aqz-KE-bpKQ" title="달빛곰 대표 영상 (예시 영상이에요)" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2026 달빛곰 방송국 · 연습용으로 만든 사이트예요.</p>
+    </div>
+  </footer>
+</body>
+</html>

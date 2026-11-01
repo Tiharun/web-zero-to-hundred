@@ -1,0 +1,49 @@
+/* ==========================================================
+   countdown.css - OBS 오버레이 스타일
+   배경은 transparent(투명)라서 OBS에서 게임 화면 위에 글자만 떠 보여요.
+   ========================================================== */
+
+html,
+body {
+  margin: 0;
+  background: transparent; /* 투명 배경: 이 한 줄이 오버레이의 핵심이에요 */
+  overflow: hidden;        /* 스크롤바가 생기지 않게 해요 */
+}
+
+body {
+  font-family: system-ui, "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  color: #ffffff;
+  /* 밝은 화면 위에서도 읽히도록 어두운 그림자를 둘러요 */
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.9), 0 2px 12px rgba(0, 0, 0, 0.8);
+  text-align: center;
+}
+
+.overlay {
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  margin: 0 0 0.5rem;
+  max-width: 100%;
+  overflow-wrap: anywhere; /* 긴 제목은 줄을 바꿔요 */
+  font-size: clamp(1.25rem, 6vw, 2.5rem); /* 화면 폭에 맞춰 커지고 작아져요 */
+}
+
+.countdown {
+  margin: 0;
+  font-size: clamp(2.5rem, 16vw, 6rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums; /* 숫자 폭을 같게 해서 흔들리지 않아요 */
+}
+
+/* 주소를 잘못 썼을 때 나오는 안내 문장은 작게 보여요 */
+.countdown.hint {
+  font-size: 1rem;
+  font-weight: 400;
+}

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>문의하기 - 달빛곰 방송국</title>
+  <meta name="description" content="협업 제안이나 궁금한 점이 있다면 문의 폼으로 남겨 주세요. 달빛곰이 확인하고 답해 드려요.">
+  <!-- Open Graph: 링크를 공유할 때 보이는 제목과 설명이에요 (Day 28) -->
+  <meta property="og:title" content="문의하기 - 달빛곰 방송국">
+  <meta property="og:description" content="협업 제안이나 궁금한 점이 있다면 문의 폼으로 남겨 주세요. 달빛곰이 확인하고 답해 드려요.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ko_KR">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/main.js" defer></script>
+  <script src="js/contact.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">본문 바로가기</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="index.html">
+        <img src="images/logo.svg" alt="" width="36" height="36">
+        <span>달빛곰 방송국</span>
+      </a>
+
+      <!-- 모바일에서만 보이는 메뉴 버튼. main.js가 aria-expanded 값을 바꿔요 -->
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">☰ 메뉴</button>
+
+      <nav id="site-nav" class="site-nav" aria-label="주 메뉴">
+        <ul class="menu-list">
+          <li><a href="index.html">홈</a></li>
+          <li><a href="about.html">소개</a></li>
+          <li><a href="contents.html">영상</a></li>
+          <li><a href="schedule.html">방송 일정</a></li>
+          <li><a href="contact.html" aria-current="page">문의</a></li>
+          <li><button class="theme-toggle" type="button" aria-pressed="false">🌙 다크 모드</button></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <h1>문의하기</h1>
+    <p>협업 제안, 영상 요청, 궁금한 점을 남겨 주세요. 이 사이트는 연습용이라 실제로 전송되지는 않아요.</p>
+
+    <!-- novalidate: 브라우저 기본 말풍선 대신 contact.js의 안내 문장을 보여 줘요 (Day 24) -->
+    <form id="contact-form" class="contact-form" novalidate>
+      <div class="field">
+        <label for="name">이름</label>
+        <input id="name" name="name" type="text" autocomplete="name" required aria-describedby="name-error">
+        <p id="name-error" class="field-error"></p>
+      </div>
+
+      <div class="field">
+        <label for="email">이메일</label>
+        <input id="email" name="email" type="email" autocomplete="email" required aria-describedby="email-error">
+        <p id="email-error" class="field-error"></p>
+      </div>
+
+      <div class="field">
+        <label for="topic">문의 종류</label>
+        <select id="topic" name="topic">
+          <option value="general">일반 문의</option>
+          <option value="collab">협업 제안</option>
+          <option value="request">영상 요청</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="message">내용 (10글자 이상)</label>
+        <textarea id="message" name="message" rows="6" required aria-describedby="message-error"></textarea>
+        <p id="message-error" class="field-error"></p>
+      </div>
+
+      <button type="submit">보내기</button>
+
+      <!-- aria-live: 이 칸의 글자가 바뀌면 스크린 리더가 알려 줘요 -->
+      <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
+    </form>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2026 달빛곰 방송국 · 연습용으로 만든 사이트예요.</p>
+    </div>
+  </footer>
+</body>
+</html>

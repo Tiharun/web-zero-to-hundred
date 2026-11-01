@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>소개 - 달빛곰 방송국</title>
+  <meta name="description" content="스트리머 달빛곰은 어떤 사람일까요? 방송 소개와 방송 규칙을 알려 드려요.">
+  <!-- Open Graph: 링크를 공유할 때 보이는 제목과 설명이에요 (Day 28) -->
+  <meta property="og:title" content="소개 - 달빛곰 방송국">
+  <meta property="og:description" content="스트리머 달빛곰은 어떤 사람일까요? 방송 소개와 방송 규칙을 알려 드려요.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ko_KR">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">본문 바로가기</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="index.html">
+        <img src="images/logo.svg" alt="" width="36" height="36">
+        <span>달빛곰 방송국</span>
+      </a>
+
+      <!-- 모바일에서만 보이는 메뉴 버튼. main.js가 aria-expanded 값을 바꿔요 -->
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">☰ 메뉴</button>
+
+      <nav id="site-nav" class="site-nav" aria-label="주 메뉴">
+        <ul class="menu-list">
+          <li><a href="index.html">홈</a></li>
+          <li><a href="about.html" aria-current="page">소개</a></li>
+          <li><a href="contents.html">영상</a></li>
+          <li><a href="schedule.html">방송 일정</a></li>
+          <li><a href="contact.html">문의</a></li>
+          <li><button class="theme-toggle" type="button" aria-pressed="false">🌙 다크 모드</button></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <h1>달빛곰을 소개해요</h1>
+
+    <section class="about-intro">
+      <img class="about-image" src="images/profile.svg" alt="헤드셋을 쓴 곰 캐릭터, 달빛곰" width="240" height="240">
+      <div>
+        <p>안녕하세요! <strong>달빛곰</strong>이에요. 2026년에 방송을 시작한 <em>버라이어티 스트리머</em>예요.</p>
+        <p>밤에 방송하는 걸 좋아해서 이름에 달빛이 들어갔어요. 시청자분들과 수다 떠는 시간이 가장 즐거워요.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>어떤 방송을 하나요?</h2>
+      <ul>
+        <li><strong>게임</strong>: 신작 게임을 첫 방송에서 같이 해 봐요.</li>
+        <li><strong>토크</strong>: 사연을 읽고 이야기를 나눠요.</li>
+        <li><strong>음악</strong>: 기타 연주와 신청곡 라이브를 해요.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>방송 규칙</h2>
+      <ol>
+        <li>서로 존중하는 말을 써 주세요.</li>
+        <li>스포일러는 미리 말해 주세요.</li>
+        <li>개인 정보는 채팅에 올리지 마세요.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>함께해요</h2>
+      <p>방송 시간은 <a href="schedule.html">방송 일정</a>에서 확인하고, 협업이나 궁금한 점은 <a href="contact.html">문의 페이지</a>로 보내 주세요.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2026 달빛곰 방송국 · 연습용으로 만든 사이트예요.</p>
+    </div>
+  </footer>
+</body>
+</html>

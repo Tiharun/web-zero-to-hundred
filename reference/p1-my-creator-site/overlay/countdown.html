@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>방송 카운트다운 오버레이</title>
+  <!-- ../ 는 "한 단계 위 폴더"라는 뜻이에요. overlay 폴더 밖에 있는 favicon.svg를 가리켜요 (Day 5) -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="countdown.css">
+  <script src="countdown.js" defer></script>
+</head>
+<body>
+  <!-- OBS 브라우저 소스 주소 예: .../overlay/countdown.html?title=저녁 방송&start=20:00 -->
+  <main class="overlay">
+    <h1 id="title" class="title">방송 시작까지</h1>
+    <p id="countdown" class="countdown" role="timer">--:--:--</p>
+  </main>
+</body>
+</html>

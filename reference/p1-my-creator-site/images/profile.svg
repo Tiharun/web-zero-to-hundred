@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240">
+  <rect width="240" height="240" fill="#ddd9ff"/>
+  <!-- 귀 -->
+  <circle cx="64" cy="64" r="28" fill="#8a6a4b"/>
+  <circle cx="176" cy="64" r="28" fill="#8a6a4b"/>
+  <circle cx="64" cy="64" r="14" fill="#e9c9a8"/>
+  <circle cx="176" cy="64" r="14" fill="#e9c9a8"/>
+  <!-- 얼굴 -->
+  <circle cx="120" cy="124" r="78" fill="#a47c57"/>
+  <ellipse cx="120" cy="148" rx="38" ry="30" fill="#e9c9a8"/>
+  <!-- 눈, 코, 입 -->
+  <circle cx="92" cy="110" r="8" fill="#2b2140"/>
+  <circle cx="148" cy="110" r="8" fill="#2b2140"/>
+  <ellipse cx="120" cy="138" rx="12" ry="9" fill="#2b2140"/>
+  <path d="M104 156Q120 170 136 156" fill="none" stroke="#2b2140" stroke-width="5" stroke-linecap="round"/>
+  <!-- 헤드셋 -->
+  <path d="M44 120A76 76 0 0 1 196 120" fill="none" stroke="#5b4bdb" stroke-width="10" stroke-linecap="round"/>
+  <rect x="34" y="112" width="20" height="40" rx="8" fill="#5b4bdb"/>
+  <rect x="186" y="112" width="20" height="40" rx="8" fill="#5b4bdb"/>
+</svg>
