@@ -28,7 +28,7 @@
 
 | 항목 | 값 | 비고 |
 | :-- | :-- | :-- |
-| Node.js LTS | **v26.13.0** (npm 11.20.0) | 2026-10-28 LTS 승격. 교재 최소 요구 Node 22.22.2 이상 |
+| Node.js LTS | **v26.13.0** (npm 11.20.0) | 2026-10-28 LTS 승격. 교재가 지원하는 Node 계열은 **LTS 22.22.2+ / 24.15+ / 26+** (권장: 현재 LTS인 26) |
 | .NET SDK / 런타임 | **10.0.403** / 10.0.14 | LTS, 지원 종료 2028-11-14 |
 | EF Core Sqlite, Identity.EntityFrameworkCore, OpenApi | **10.0.14** | NuGet |
 | `dotnet-ef` | **10.0.14** | `dotnet tool install --global dotnet-ef` |
@@ -50,7 +50,8 @@
 | wasm-bindgen / wasm-bindgen-cli | **0.2.130** / **0.2.130** | 두 버전은 반드시 같아야 함 |
 | web-sys / js-sys / wasm-bindgen-futures | **0.3.107** / **0.3.107** / **0.4.80** | |
 | console_error_panic_hook / rand / getrandom | **0.1.7** / **0.10.3** / **0.4.3** (`wasm_js`) | |
-| wasm-pack | 0.15.1 (**교재에서 사용하지 않음**) | 8절 결정 참고 |
+| wasm-pack | 0.15.1 (**교재에서 사용하지 않음**) | 폐기된 도구가 아님. 담당자 1인 + 권고 미정이라 제외(8절) |
+| Rust wasm 대상 | `rustup target add wasm32-unknown-unknown` | **기본 설치에 없음.** 빌드 전에 반드시 한 번 실행(8절) |
 | PostgreSQL 공식 이미지 | **`postgres:18`** (18.6) | `latest`와 같은 이미지. 19는 `19rc1`(미정식) |
 | Git for Windows | **2.56.0.windows.4** (`Git-2.56.0.4-64-bit.exe`) | |
 | OBS Studio | **33.0.1** (`OBS-Studio-33.0.1-Windows-x64-Installer.exe`) | |
@@ -70,10 +71,17 @@
 - 설치 확인 명령: `node --version`, `npm --version` | 확인일 2026-11-01 `[실행]`
 - 이 교재의 다른 도구가 요구하는 Node 범위(`engines`): vite 8.3.5 `^20.19.0 || >=22.12.0`, vitest 5.0.5 `^22.12.0 || ^24.0.0 || >=26.0.0`, jsdom 30.1.3 `^22.22.2 || ^24.15.0 || >=26.0.0`, react-router 8.5.1 `>=22.22.0`, @testing-library/jest-dom 7.0.1 `>=22`, marked 18.1.2 `>=20`, esbuild 0.28.2 `>=18` | `npm view <pkg> engines` | 확인일 2026-11-01 `[레지스트리]`
 - `.ts` 파일 직접 실행: Node v22.23.4에서 플래그 없이 `node hello.ts`가 동작함(타입 표기만 있는 단순 파일 기준. enum 등 런타임 구문은 확인하지 않음) | https://nodejs.org/api/typescript.html | 확인일 2026-11-01 `[실행]` (해당 문서 본문은 직접 읽지 못함)
+- **PowerShell 실행 정책 (Node 설치 직후 PowerShell에서 `npm`이 막히는 경우)**
+  - Node의 Windows 배포(ZIP)에는 `npm`, `npm.cmd`, `npm.ps1`, `npx`, `npx.cmd`, `npx.ps1`이 같은 폴더에 들어 있다(ZIP 목록을 직접 확인). `.ps1`은 PowerShell 스크립트라서 실행 정책의 대상이다 | https://nodejs.org/dist/v26.13.0/node-v26.13.0-win-x64.zip | 확인일 2026-11-01 `[레지스트리]`
+  - Windows PowerShell 5.1(Windows 11의 기본 `powershell.exe`) 문서: `Restricted`는 "The default execution policy for Windows client computers." 이고 "Permits individual commands, but doesn't allow scripts."; 모든 범위가 `Undefined`이면 유효 정책은 Windows 클라이언트에서 `Restricted`. PowerShell 7.x 문서는 Windows 클라이언트 기본을 `RemoteSigned`로 적어, `pwsh`에서는 이 문제가 없을 수 있다 | https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies | 확인일 2026-11-01 `[원문: MicrosoftDocs/PowerShell-Docs reference/5.1, reference/7.5 …/about_Execution_Policies.md]`
+  - 차단되면 PowerShell이 영어 원문 "File {0} cannot be loaded because running scripts is disabled on this system. For more information, see about_Execution_Policies at https://go.microsoft.com/fwlink/?LinkID=135170." 를 낸다. 한국어 UI에서는 이 문장이 번역되어 `npm.ps1` 경로가 들어간 "이 시스템에서 스크립트를 실행할 수 없으므로 … 파일을 로드할 수 없습니다" 형태로 보인다(검토자 보고 `[교차]`). 오류 분류는 `PSSecurityException`, `FullyQualifiedErrorId : UnauthorizedAccess`(Set-ExecutionPolicy 문서의 오류 예시와 같은 형식) | https://github.com/PowerShell/PowerShell/blob/master/src/System.Management.Automation/resources/Authenticode.resx (`Reason_RestrictedMode`), https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy | 확인일 2026-11-01 `[원문]` (한국어 번역 문구는 공개 저장소에 없어 정확한 표기는 미확인)
+  - **공식 해결**: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` (about_Execution_Policies의 예시 그대로). 문서가 "Run as administrator"를 요구하는 것은 `LocalMachine` 범위 변경뿐이므로 `CurrentUser` 범위는 관리자 권한 없이 쓸 수 있다. 현재 값 확인은 `Get-ExecutionPolicy -Scope CurrentUser`(문서 예시) | 위와 같은 문서 | 확인일 2026-11-01 `[원문]`
+  - **정책을 바꾸지 않는 대안**: PowerShell 문서는 실행 파일을 확장자까지 적어 정확히 지정해 실행할 수 있다고 설명한다(예: `where` 대신 `where.exe`). 같은 방식으로 `npm.cmd`, `npx.cmd`를 쓰면 `.cmd`는 PowerShell 스크립트가 아니므로 정책 대상이 아닐 것으로 **추정**한다. 명령 프롬프트(cmd.exe)에서 `npm`을 실행하는 경우도 같은 이유로 영향이 없을 것으로 추정 | https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_command_precedence | 확인일 2026-11-01 `[원문]` (확장 없는 `npm`이 `.ps1`을 우선 선택하는 규칙과 `.cmd`가 정책을 받지 않는다는 문장은 공식 문서에서 확인 못 함 → 추정, 실기 미확인. 이 샌드박스에는 Windows PowerShell이 없어 재현하지 못함)
 
 **교재 반영 결정**
-- 설치 안내는 nodejs.org의 **LTS 버튼**(작성 기준 v26.13.0)과 `winget install OpenJS.NodeJS.LTS`를 함께 쓴다. LTS 승격 4일차이므로 "화면에 보이는 LTS 번호가 달라도 정상"이라고 적고, 최소 요구는 `node --version`이 **v22.22.2 이상**(24.15+, 26+ 포함)임을 확인하게 한다.
-- MSI의 "Tools for Native Modules"는 체크하지 않게 안내한다. `node 파일.ts` 직접 실행은 보조 팁으로만 쓰고, 본선은 `tsc`/Vite로 간다.
+- 설치 안내는 nodejs.org의 **LTS 버튼**(작성 기준 v26.13.0, **현재 LTS인 26 계열 권장**)과 `winget install OpenJS.NodeJS.LTS`를 함께 쓴다. 교재가 지원하는 Node는 정확히 **LTS 22.22.2+ / 24.15+ / 26+** 이다(가장 엄격한 jsdom 30.1.3의 `engines` `^22.22.2 || ^24.15.0 || >=26.0.0`에 맞춤. 홀수 계열 23·25는 비LTS라 제외). 설치 직후 `node --version`으로 이 범위를 확인시키고, LTS 승격 4일차이므로 "화면의 LTS 번호가 달라도 정상"이라고 적는다.
+- Node 설치를 다루는 Day의 점검 단계에 PowerShell에서 `npm --version`을 실행해 보는 단계를 넣고, 빨간 오류(`npm.ps1` … `UnauthorizedAccess`)가 나면 `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` 한 줄을 안내한다(대안은 `npm.cmd`, 추정 표기). MSI의 "Tools for Native Modules"는 체크하지 않게 안내한다.
+- `node 파일.ts` 직접 실행은 보조 팁으로만 쓰고, 본선은 `tsc`/Vite로 간다.
 
 ---
 
@@ -200,9 +208,19 @@
 - **TypeScript 7.0.2** (`latest`). 네이티브 구현이며 `tsc` 하나만 제공하는 패키지(플랫폼별 `@typescript/typescript-*` 의존성) | https://www.npmjs.com/package/typescript | 확인일 2026-11-01 `[레지스트리]`
   - `npx tsc --init`이 만드는 `tsconfig.json` 기본값: `module: nodenext`, `target: esnext`, `types: []`, `strict: true`, `noUncheckedIndexedAccess: true`, `exactOptionalPropertyTypes: true`, `verbatimModuleSyntax: true`, `isolatedModules: true`, `jsx: react-jsx`, `skipLibCheck: true`, `sourceMap`/`declaration`/`declarationMap: true` `[실행]`
   - **함정**: `tsconfig.json`이 있는 폴더에서 `npx tsc hello.ts`처럼 파일을 지정하면 `error TS5112: tsconfig.json is present but will not be loaded if files are specified on commandline. Use '--ignoreConfig' to skip this error.`가 난다. 파일을 직접 컴파일하려면 `npx tsc --ignoreConfig hello.ts --outDir out` `[실행]`
+  - **함정 2 (`types: []`)**: `tsc --init` 결과는 `"types": []`라서 Node API를 쓰면 ``error TS2591: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.``가 난다(`import … from "node:fs"`도 같은 TS2591). 해결은 `npm i -D @types/node`(새 프로젝트에서 26.6.6이 설치됨)와 tsconfig의 `"types": ["node"]`. 생성된 `tsconfig.json`의 주석(`// For nodejs: … "types": ["node"] … and npm install -D @types/node`)도 같은 안내다 `[실행]`
+  - **함정 3 (`verbatimModuleSyntax` + CommonJS)**: 같은 기본 설정에서 `package.json`에 `"type": "module"`이 없으면 `.ts` 파일의 `import`가 `error TS1295: ECMAScript imports and exports cannot be written in a CommonJS file under 'verbatimModuleSyntax'. …`로 막힌다. `npm pkg set type=module`(또는 `package.json`에 `"type": "module"` 추가)로 해결한다. 함정 2·3 조치 후 `npx tsc --noEmit`이 통과함(typescript 7.0.2 + @types/node 26.6.6 새 프로젝트) `[실행]`
 - **Vite 8.3.5**, 요구 Node `^20.19.0 || >=22.12.0` | https://vite.dev/guide/ | 확인일 2026-11-01 `[레지스트리]`
-- 프로젝트 생성: `npm create vite@latest <이름> -- --template vanilla-ts` (또는 `react-ts`). `create-vite` **9.3.3**이 제공하는 템플릿에 `vanilla`, `vanilla-ts`, `react`, `react-ts`, `react-compiler`, `react-compiler-ts` 등이 있음 | https://vite.dev/guide/#scaffolding-your-first-vite-project | 확인일 2026-11-01 `[레지스트리: create-vite 패키지 README·template-* 폴더]` `[실행]`(비대화 모드로 실행해 생성됨. 대화형 질문 문구는 미확인)
+- 프로젝트 생성: `npm create vite@latest <이름> -- --template vanilla-ts` (또는 `react-ts`). `create-vite` **9.3.3**이 제공하는 템플릿에 `vanilla`, `vanilla-ts`, `react`, `react-ts`, `react-compiler`, `react-compiler-ts` 등이 있음 | https://vite.dev/guide/#scaffolding-your-first-vite-project | 확인일 2026-11-01 `[레지스트리: create-vite 패키지 README·template-* 폴더]` `[실행]`(비대화 모드 실행으로 생성 확인. 대화형 질문은 아래 하위 항목)
   - `vanilla-ts` 템플릿: devDependencies `typescript ~7.0.2`, `vite ^8.3.5`, 스크립트 `dev`/`build`(`tsc && vite build`)/`preview`. `tsconfig`에 `erasableSyntaxOnly: true`, `allowArbitraryExtensions: true`, `verbatimModuleSyntax: true`, `noUnusedLocals: true`. **`enum`과 매개변수 속성(`constructor(public x)`)은 `error TS1294: This syntax is not allowed when 'erasableSyntaxOnly' is enabled.`로 막힌다** `[실행]`
+  - **`create-vite` 9.3.3 대화형 질문**: 패키지 `dist/index.js` 원문에서 확인했다. 터미널(TTY)에서 실행하면 대화형이고 `--no-interactive`로 끌 수 있다. 화면 렌더링은 TTY가 필요해 실행하지 못했으므로 문구와 순서만 소스 기준이다 | https://vite.dev/guide/#scaffolding-your-first-vite-project | 확인일 2026-11-01 `[레지스트리: npm pack create-vite@9.3.3]`
+    - ① 폴더 이름을 인자로 안 주면 `Project name:`
+    - ② 대상 폴더가 비어 있지 않으면 `Target directory "<이름>" is not empty. Please choose how to proceed:` (현재 폴더 `.`이면 `Current directory is not empty. …`), 선택지 `Cancel operation` / `Remove existing files and continue` / **`Ignore files and continue`**
+    - ③ 폴더 이름이 `package.json` 이름 규칙에 맞지 않으면 `Package name:` (틀리면 `Invalid package.json name`)
+    - ④ `--template`을 안 주면 `Select a framework:` → `Select a variant:` (이름이 틀리면 `"<이름>" isn't a valid template. Please choose from below:`)
+    - ⑤ React 템플릿(`react`, `react-ts`)이면 `Which linter to use?` — `Oxlint` / `ESLint`
+    - ⑥ 마지막에 **`Install with npm and start now?`** (예/아니오). `--template`을 줘도 대화형이면 이 질문이 나온다. `예`면 의존성 설치 후 개발 서버를 바로 시작하고, `아니오`면 `Done. Now run:` 아래에 `cd <폴더>` / `npm install` / `npm run dev`를 보여 준다(마지막 출력은 비대화 실행에서 확인)
+    - 옵션: `-t, --template`, `-i, --immediate`(설치 후 개발 서버 시작)/`--no-immediate`, `--eslint`/`--no-eslint`(React만), `--overwrite`(기존 파일 삭제), `--interactive`/`--no-interactive`
   - `react-ts` 템플릿: `react`/`react-dom` `^19.3.1`, `@vitejs/plugin-react ^6.1.2`, `@types/react ^19.3.0`, `@types/node ^24.19.2`, 린터는 ESLint가 아니라 **`oxlint`**, 스크립트 `lint`: `oxlint`, `build`: `tsc -b && vite build`
 - **React 19.3.1**, react-dom 19.3.1 (`latest`) | https://react.dev/ | 확인일 2026-11-01 `[레지스트리]`
 - **React Router 8.5.1** (패키지명 `react-router`, import도 `"react-router"`에서). `react-router-dom`은 7.18.5로 남아 있으나 교재는 쓰지 않음. 요구: Node `>=22.22.0`, 피어 `react`/`react-dom` `>=19.2.7` | https://reactrouter.com/ | 확인일 2026-11-01 `[레지스트리]`
@@ -212,7 +230,8 @@
 - SignalR 클라이언트 `@microsoft/signalr` **10.0.11**(`latest`) | https://www.npmjs.com/package/@microsoft/signalr | 확인일 2026-11-01 `[레지스트리]`
 
 **교재 반영 결정**
-- P2 TypeScript 입문은 `npm i -D typescript@7.0.2` + `npx tsc --init`으로 시작하고, "파일 지정 컴파일은 `--ignoreConfig`" 함정을 `:::warn`에 넣는다. Vite 템플릿에서는 `enum` 대신 유니온 타입을 쓰게 한다(`erasableSyntaxOnly`).
+- P2 TypeScript 입문은 `npm init -y` → `npm pkg set type=module` → `npm i -D typescript@7.0.2 @types/node` → `npx tsc --init`(+ `"types": ["node"]`)으로 시작하고, "파일 지정 컴파일은 `--ignoreConfig`", "`types: []`면 Node API 오류", "`type: module` 없으면 TS1295" 세 함정을 `:::warn`에 넣는다. Vite 템플릿에서는 `enum` 대신 유니온 타입을 쓰게 한다(`erasableSyntaxOnly`).
+- `npm create vite@latest <이름> -- --template vanilla-ts`를 안내할 때는 마지막 질문 `Install with npm and start now?`에 대한 답(예 → 자동 설치·실행, 아니오 → `cd`/`npm install`/`npm run dev`)을 함께 적고, 폴더가 비어 있지 않을 때의 3지선다(`Ignore files and continue` 포함)를 `:::tip`으로 둔다.
 - SP React는 `npm create vite@latest image-donation-web -- --template react-ts` 기반, 라우팅은 **Declarative 모드(`BrowserRouter`)** 로 단순하게 간다(Data 모드는 "더 알아보기"). 테스트는 Vitest 5 + Testing Library + jsdom 30 조합을 쓴다.
 
 ---
@@ -224,30 +243,44 @@
 - 수동/winget 설치 시 필요한 구성: "Desktop Development with C++" 워크로드(또는 개별 구성요소 `MSVC v143 … x64/x86 build tools (Latest)` + `Windows 11 SDK (10.0.22621.0)`), 언어 팩에 **English 추가 권장**. winget 예: `winget install --id Microsoft.VisualStudio.Community --source winget --force --override "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows11SDK.22621 --addProductLang En-us"` (Build Tools 라이선스가 있으면 `Community`를 `BuildTools`로) | 위와 같은 문서 | 확인일 2026-11-01 `[원문]`
 - Windows 기본 툴체인은 MSVC ABI(`x86_64-pc-windows-msvc`) | https://rust-lang.github.io/rustup/installation/windows.html | 확인일 2026-11-01 `[원문]`
 - **Rust 안정 버전 1.99.1** (rustc 58cf8f9c3 2026-10-13, 채널 날짜 2026-10-15). 샌드박스는 1.97.0 | https://static.rust-lang.org/dist/channel-rust-stable.toml | 확인일 2026-11-01 `[레지스트리]` 확인 명령 `rustc --version`, `cargo --version`
+- **wasm32 대상은 기본 설치에 없다. 빌드 전에 `rustup target add wasm32-unknown-unknown`을 한 번 실행해야 한다.** rustup 문서는 툴체인을 처음 설치하면 "it can already compile to that same target, because it comes with the target support for the host tuple preinstalled"라고 적는다. 즉 **호스트 대상만** 들어 있다. 격리된 새 환경에 `rustup toolchain install stable --profile minimal`(rustc 1.99.1)만 설치하고 `cargo build --target wasm32-unknown-unknown --release`를 실행하면 ``error[E0463]: can't find crate for `core` ``, ``note: the `wasm32-unknown-unknown` target may not be installed``, ``help: consider downloading the target with `rustup target add wasm32-unknown-unknown` ``로 실패했고, `rustup target add wasm32-unknown-unknown` 뒤에는 같은 빌드가 성공했다. 이 샌드박스의 기본 환경에는 이 대상이 미리 설치되어 있어 이 공백이 가려져 있었다. 설치 확인은 `rustup target list --installed` | https://rust-lang.github.io/rustup/cross-compilation.html | 확인일 2026-11-01 `[원문: rust-lang/rustup doc/user-guide/src/cross-compilation.md]` `[실행]`
 - 크레이트 최신 버전: axum **0.8.9**(최소 Rust 1.80), tokio **1.54.1**(최소 1.85), serde **1.0.229**, serde_json **1.0.154**, sqlx **0.9.0**(최소 Rust **1.94.0**), tracing **0.1.44**, tracing-subscriber **0.3.23**, tower-http 0.7.1, reqwest 0.13.5, wasm-bindgen **0.2.130**(최소 1.81), web-sys/js-sys **0.3.107**, wasm-bindgen-futures **0.4.80**, console_error_panic_hook **0.1.7**, rand **0.10.3**, getrandom **0.4.3** | https://crates.io/ | 확인일 2026-11-01 `[레지스트리: cargo info/search]`
-- **위 조합이 컴파일됨**: `axum = { version = "0.8.9", features = ["ws"] }`, `tokio = { version = "1.54.1", features = ["full"] }`, `serde = { version = "1.0.229", features = ["derive"] }`, `serde_json = "1.0.154"`, `sqlx = { version = "0.9.0", features = ["runtime-tokio", "sqlite", "postgres"] }`, `tracing = "0.1.44"`, `tracing-subscriber = "0.3.23"` (edition 2024, Rust 1.97.0에서 `cargo check` 통과) `[실행]`
+- **위 조합이 컴파일됨**: `axum = { version = "0.8.9", features = ["ws"] }`, `tokio = { version = "1.54.1", features = ["full"] }`, `serde = { version = "1.0.229", features = ["derive"] }`, `serde_json = "1.0.154"`, `sqlx = { version = "0.9.0", features = ["runtime-tokio", "sqlite", "postgres"] }`, `tracing = "0.1.44"`, `tracing-subscriber = "0.3.23"` (edition 2024, Rust 1.97.0과 새로 설치한 1.99.1 모두에서 `cargo check` 통과) `[실행]`
   - sqlx 0.9 기능 이름: 런타임 `runtime-tokio`, DB `sqlite`·`postgres`, TLS `tls-rustls`(= `tls-rustls-ring`) 등. 기본 기능에 `macros`, `migrate`, `json`, `any`가 포함 | `~/.cargo` 크레이트 `Cargo.toml` `[실행]`
 - **Axum WebSocket 사용법**: Cargo 기능 이름은 **`ws`** (`axum = { version = "0.8.9", features = ["ws"] }`). 핸들러는 `WebSocketUpgrade`를 받아 `ws.on_upgrade(handle_socket)`을 반환하고, 라우트는 `any(handler)`로 등록(`GET` 업그레이드). 소켓은 `socket.recv().await` / `socket.send(Message::Text(t)).await`. 메시지 타입은 `Message::Text(Utf8Bytes)`. **0.8의 경로 매개변수 문법은 `/items/{id}`** (예전 `/:id`는 패닉) | https://docs.rs/axum/0.8.9/axum/extract/ws/index.html | 확인일 2026-11-01 `[원문: axum-0.8.9 크레이트 소스·CHANGELOG]` `[실행]`
 - **wasm-bindgen / wasm-pack 관리 상태**:
-  - wasm-bindgen은 `rustwasm` 조직 폐쇄(2025-09 보관 예정 공지)에 맞춰 **`github.com/wasm-bindgen/wasm-bindgen`** 조직으로 이전되어 새 유지보수자(daxpedda, guybedford 등)가 활발히 관리 중. 크레이트 0.2.130 | https://blog.rust-lang.org/inside-rust/2025/07/21/sunsetting-the-rustwasm-github-org/ | 확인일 2026-11-01 `[검색요약]` , https://github.com/wasm-bindgen/wasm-bindgen | `[레지스트리]`
+  - wasm-bindgen은 `rustwasm` 조직 폐쇄(2025-09 보관 예정 공지)에 맞춰 **`github.com/wasm-bindgen/wasm-bindgen`** 조직으로 이전되어 새 유지보수자(daxpedda, guybedford; 이슈 #4533)가 관리 중이며 크레이트는 0.2.130 | https://blog.rust-lang.org/inside-rust/2025/07/21/sunsetting-the-rustwasm-github-org/ | 확인일 2026-11-01 `[검색요약]` , https://github.com/wasm-bindgen/wasm-bindgen | `[레지스트리]`
   - wasm-pack은 **`github.com/wasm-bindgen/wasm-pack`** 으로 옮겨졌고 크레이트 0.15.1이 현재 최신, 변경 기록에 최근 수정이 이어짐. 저장소는 보관(archived) 상태가 아님. 그러나 README는 "maintained by drager"(개인)라고 하고, **wasm-bindgen 팀은 "not maintained by us and maybe unmaintained, I believe we should not recommend it either way"(2025-09-11)** 라고 적었으며 wasm-pack 담당자는 **"I intend to maintain wasm-pack, but I only spend my limited free time on it currently"(2025-11-25)** 라고 답함. 대체 도구는 아직 확정되지 않음 | https://github.com/wasm-bindgen/wasm-bindgen/issues/4634 , https://github.com/wasm-bindgen/wasm-pack | 확인일 2026-11-01 `[검색요약]`(이슈 본문) `[원문]`(README·CHANGELOG)
-  - 결론: wasm-pack은 **쓸 수는 있으나 관리가 1인 담당으로 불안정**하고, wasm-bindgen 배포 가이드는 `wasm-bindgen --target …` CLI 기준으로 서술한다(같은 이슈에 따르면 wasm-bindgen 문서에 wasm-pack 언급이 남아 있어 정리 논의 중).
-- **권장 도구와 빌드 흐름(실행 검증)**: `cargo build --target wasm32-unknown-unknown --release` 후 `wasm-bindgen --target web --out-dir pkg target/wasm32-unknown-unknown/release/<크레이트>.wasm`. CLI 설치는 `cargo install wasm-bindgen-cli --version 0.2.130`(**크레이트의 `wasm-bindgen` 버전과 정확히 같아야 함**; 이 샌드박스에서 컴파일 약 5분). 출력은 `<이름>.js`, `<이름>.d.ts`, `<이름>_bg.wasm`, `<이름>_bg.wasm.d.ts`. `Cargo.toml`에는 `crate-type = ["cdylib"]` | https://wasm-bindgen.github.io/wasm-bindgen/reference/deployment.html | 확인일 2026-11-01 `[원문: wasm-bindgen guide deployment.md]` `[실행]`
+  - 결론: wasm-pack은 **폐기(deprecated)된 도구가 아니다.** 저장소는 wasm-bindgen 조직 아래에 있고 보관되지 않았으며 0.15.1이 최근 릴리스이고, wasm-bindgen 가이드 예제에도 아직 `wasm-pack build --target web`이 남아 있다 | https://github.com/wasm-bindgen/wasm-bindgen/blob/main/guide/src/examples/without-a-bundler.md | 확인일 2026-11-01 `[원문]`. 그래도 교재가 쓰지 않는 이유는 두 가지다. ① 유지보수자가 개인 1명이고 본인이 "limited free time"이라고 밝혔다. ② wasm-bindgen 팀의 권장 여부가 정해지지 않았다(이슈 #4634가 열려 있고 대체 도구도 미정). 초보자가 따라 하는 교재는 이 두 불확실성의 영향을 덜 받는 `cargo` + `wasm-bindgen` CLI 조합이 안전하다는 설계 판단이다.
+- **권장 도구와 빌드 흐름(실행 검증)**: `rustup target add wasm32-unknown-unknown`(위 항목, 필수) → `cargo build --target wasm32-unknown-unknown --release` 후 `wasm-bindgen --target web --out-dir pkg target/wasm32-unknown-unknown/release/<크레이트>.wasm`. CLI 설치는 `cargo install wasm-bindgen-cli --version 0.2.130`(**크레이트의 `wasm-bindgen` 버전과 정확히 같아야 함**; 이 샌드박스에서 컴파일 약 5분). 출력은 `<이름>.js`, `<이름>.d.ts`, `<이름>_bg.wasm`, `<이름>_bg.wasm.d.ts`. `Cargo.toml`에는 `crate-type = ["cdylib"]` | https://wasm-bindgen.github.io/wasm-bindgen/reference/deployment.html | 확인일 2026-11-01 `[원문: wasm-bindgen guide deployment.md]` `[실행]`
   - `--target` 값: `bundler`(기본, webpack 전제), `web`(번들러 없이 ES 모듈로 직접 로드), `nodejs`, `deno`, `no-modules`, `module`
   - 생성된 `init`은 `init()` 호출 가능, 객체 인자는 `init({ module_or_path })`이며 **`init(url)`처럼 값을 직접 넘기는 방식은 deprecated** 표기 `[실행]`
-- **Vite에서 wasm 불러오기(실행 검증)**: `--target web` 출력(`pkg`)을 `src/wasm/`에 복사하고 `import init, { add, greet } from './wasm/hello_wasm.js'; await init();`. Vite 8.3.5 `vite build`가 `_bg.wasm`을 자산(21.5 kB)으로 내보내고 Chromium(Playwright)에서 `안녕, Vite! (from Rust) / add(2,3)=5`가 정상 출력, 콘솔 오류 0건. Vite 자체는 `.wasm` 직접 import(ESM 통합)와 `?init`도 지원 | https://vite.dev/guide/features.html#webassembly | 확인일 2026-11-01 `[원문: vitejs/vite docs/guide/features.md]` `[실행]`
-- 무작위 수 빌드: `rand = "0.10.3"`(확장 트레이트 `rand::RngExt` 필요: `rand::rng().random_range(1..=6)`) + `getrandom = { version = "0.4.3", features = ["wasm_js"] }`로 `wasm32-unknown-unknown` **빌드는 성공**. 브라우저 실행은 확인하지 못함 | https://docs.rs/getrandom | 확인일 2026-11-01 `[실행]`
+- **Vite에서 wasm 불러오기(실행 검증)**: `--target web` 출력(`pkg`)을 `src/wasm/`에 복사하고 `import init, { add, greet } from './wasm/hello_wasm.js'; await init();`. Vite 8.3.5 `vite build`가 `_bg.wasm`을 자산(21.5 kB)으로 내보내고 Chromium(Playwright)에서 `안녕, Vite! (from Rust) / add(2,3)=5`가 정상 출력, 콘솔 오류 0건. **개발 서버도 확인**: `npm run dev`와 같은 `vite` 개발 서버(`vite --port 5199`)로 띄운 페이지를 Chromium에서 열어도 같은 문구가 나오고 콘솔 오류 0건, `.wasm`은 `200 application/wasm`으로 서빙됨 `[실행]`. Vite 자체는 `.wasm` 직접 import(ESM 통합)와 `?init`도 지원 | https://vite.dev/guide/features.html#webassembly | 확인일 2026-11-01 `[원문: vitejs/vite docs/guide/features.md]` `[실행]`
+- 무작위 수 빌드: `rand = "0.10.3"`(확장 트레이트 `rand::RngExt` 필요: `rand::rng().random_range(1..=6)`) + `getrandom = { version = "0.4.3", features = ["wasm_js"] }`로 `wasm32-unknown-unknown` 빌드가 성공하고, `--target web` 출력을 정적 서버(`python3 -m http.server`)로 서빙해 Chromium(Playwright)에서 `roll()`을 30번 호출하자 모두 1~6 범위에 6가지 값이 모두 나왔고 콘솔 오류 0건이었다 | https://docs.rs/getrandom | 확인일 2026-11-01 `[실행]`
 
 **교재 반영 결정**
-- P3는 **wasm-pack을 쓰지 않는다.** `cargo` + `wasm-bindgen-cli`(0.2.130 고정) + `--target web` + Vite import로 가고, "wasm-pack은 관리 담당이 1인이라 쓰지 않는다"를 `:::info`로 한 줄 설명한다.
-- Rust는 `rustup`이 시키는 대로 설치(MSVC 자동 설치 1번)하고 `rustc --version`이 1.94 이상(sqlx 0.9 요구)인지 확인시킨다. 크레이트는 7절 고정표 버전을 `Cargo.toml`에 그대로 쓴다.
+- P3는 **wasm-pack을 쓰지 않는다.** 순서는 `rustup target add wasm32-unknown-unknown`(필수, 기본 설치에 없음) → `cargo build --target wasm32-unknown-unknown --release` → `wasm-bindgen-cli`(0.2.130 고정) `--target web` → Vite import이다. 이유는 "폐기돼서"가 아니라 "유지보수자 1인 + 팀의 권고 미정"이라고 `:::info`에 한 줄로 쓴다.
+- 첫 Rust Day의 설치 점검에 `rustup target list --installed`에 `wasm32-unknown-unknown`이 보이는지를 넣고, 빌드 오류 `E0463 can't find crate for core`를 "자주 막히는 곳"에 그대로 싣는다(해결: `rustup target add wasm32-unknown-unknown`).
+- Rust는 `rustup`이 시키는 대로 설치(MSVC 자동 설치 1번)하고 `rustc --version`이 1.94 이상(sqlx 0.9 요구)인지 확인시킨다. 크레이트는 0.3절 고정표 버전을 `Cargo.toml`에 그대로 쓴다.
 
 ---
 
 ## 9. Docker Desktop과 PostgreSQL 이미지
 
 - 요구 사항(WSL 2 백엔드, x86_64): **WSL 2.1.5 이상**, Windows 11 64비트는 **Enterprise·Pro·Education 23H2(빌드 22631) 이상**, 64비트 프로세서(SLAT 지원), **RAM 8 GB**, **BIOS/UEFI에서 하드웨어 가상화 활성화**, Windows의 WSL 2 기능 켜기, Windows Server 서비스(LanmanServer)가 자동 시작 | https://docs.docker.com/desktop/setup/install/windows-install/ | 확인일 2026-11-01 `[원문: docker/docs content/manuals/desktop/setup/install/windows-install.md]`
-- **Home 에디션은 미확인**: 요구 사항 목록에 Windows 11 Home이 없고, 같은 문서의 별도 주의에 "Windows Home or Education editions only allow you to run Linux containers"라고만 적혀 있어 Home 지원 여부를 단정할 수 없다. 대안: Home 사용자가 Docker Desktop 설치에 실패하면 SP의 PostgreSQL을 Windows용 PostgreSQL 공식 설치 프로그램으로 대신 설치하는 경로를 안내(이번 조사에서 postgresql.org가 차단되어 해당 경로는 미확인)
+- **Windows 11 Home 지원 여부: 현행 공식 보증은 미확인(간접 근거만 있음)**
+  - 현행 설치 문서의 Windows 11 요구 목록은 "Enterprise, Pro, or Education version 23H2 (build 22631) or higher"뿐이고 **Home이 없다**. 같은 문서의 별도 주의는 "Windows Home or Education editions only allow you to run Linux containers" | https://docs.docker.com/desktop/setup/install/windows-install/ | 확인일 2026-11-01 `[원문: docker/docs …/windows-install.md]`
+  - 간접 근거(Home이 WSL 2 백엔드·Linux 컨테이너로 동작한다는 전제): 문제 해결 문서에 소제목 "WSL 2 and Windows Home"(필수 기능 Virtual Machine Platform, Windows Subsystem for Linux, BIOS 가상화, 시작 시 하이퍼바이저 활성화 나열) `[원문: docker/docs …/troubleshoot/topics.md]`, 과거 릴리스 노트 "Windows Home users will not be able to start Docker Desktop as WSL 2 is the only supported backend"(4.5.0)와 "If you are running Docker Desktop on Windows Home, installing 4.5.1 will switch it back to WSL 2 automatically" `[원문: docker/docs …/release-notes.md]`, Docker 블로그(2020-03-05) "Docker Desktop for WSL 2 Windows Home is a full version of Docker Desktop for Linux container development" | https://docs.docker.com/desktop/release-notes/ , https://www.docker.com/blog/docker-desktop-for-windows-home-is-here/ | 확인일 2026-11-01
+  - WSL 2 자체는 에디션 제한이 없다: Microsoft WSL 설치 문서의 전제 조건은 "Windows 10 version 2004 and higher (Build 19041 and higher) or Windows 11"뿐이다 | https://learn.microsoft.com/en-us/windows/wsl/install | 확인일 2026-11-01 `[원문: MicrosoftDocs/WSL WSL/install.md]`
+  - 현재 Docker Desktop 최신 릴리스는 4.97.0(2026-10-26)이다. 이 교재는 버전을 고정하지 않는다 | https://docs.docker.com/desktop/release-notes/ | 확인일 2026-11-01 `[원문]`
+  - 결론: Home에서 WSL 2 + Linux 컨테이너로 동작해 왔다는 공식 자료는 있지만, **현행 요구 목록이 Home을 명시하지 않으므로 "지원된다"고 단정하지 않는다.** 안 되는 경우를 위해 Docker 없는 경로(아래)를 반드시 함께 둔다.
+- **에디션·버전 확인 방법**: Windows 로고 키+R을 누르고 `winver`를 입력하는 방법은 Windows **버전·빌드** 확인법으로 Microsoft WSL 문서가 안내한다(Docker 요구 사항과 비교: 23H2/빌드 22631 이상). **에디션(Home/Pro)** 은 설정 → 시스템 → 정보의 "Windows 사양 → 에디션"에서 보는 것이 일반적이나, 이 화면을 설명하는 Microsoft 지원 문서를 열지 못해 출처는 미확인이다. 대안으로 PowerShell `(Get-CimInstance Win32_OperatingSystem).Caption`을 쓸 수 있다(`Caption`·`BuildNumber`는 Win32_OperatingSystem 공식 클래스 문서에 있는 속성이며, 출력 문자열 예시는 확인 못 함) | https://learn.microsoft.com/en-us/windows/wsl/compare-versions , https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/win32-operatingsystem | 확인일 2026-11-01 `[원문: MicrosoftDocs/WSL compare-versions.md, MicrosoftDocs/win32 win32-operatingsystem.md]`
+- **Docker 없는 경로: PostgreSQL을 Windows에 직접 설치** (공식 다운로드 페이지 `https://www.postgresql.org/download/windows/`는 이 환경에서 직접 열지 못해 `[검색요약]`과 winget 매니페스트로 확인)
+  - 공식 안내: Windows 설치 프로그램은 **EDB가 제공**한다("hosted by EDB")고 PostgreSQL 다운로드 페이지가 설명한다 | https://www.postgresql.org/download/windows/ | 확인일 2026-11-01 `[검색요약]`
+  - winget ID **`PostgreSQL.PostgreSQL.18`** (최신 매니페스트 `18.6-5`, 설치 파일 `postgresql-18.6-5-windows-x64.exe`를 `https://get.enterprisedb.com/postgresql/`에서 받음, `Scope: machine`이라 **관리자 권한 필요**, 라이선스 PostgreSQL License, 무인 설치 스위치 `--mode unattended`) | https://github.com/microsoft/winget-pkgs/tree/master/manifests/p/PostgreSQL/PostgreSQL/18 | 확인일 2026-11-01 `[원문]` 설치 명령 `winget install PostgreSQL.PostgreSQL.18`
+  - 설치 마법사(EDB 문서): 슈퍼유저/관리자 권한 필요, 설치 폴더 선택, 구성 요소 선택(PostgreSQL Server, pgAdmin 4, Stack Builder, Command Line Tools), **슈퍼유저 비밀번호 입력**, **포트 입력(기본 5432)** 순서. Command Line Tools가 `psql` 등을 설치한다 | https://www.enterprisedb.com/docs/supported-open-source/postgresql/installing/windows/ | 확인일 2026-11-01 `[검색요약]`
+  - 기본 포트 **5432**: PostgreSQL 공식 문서 "The TCP port the server listens on; 5432 by default." | https://www.postgresql.org/docs/current/runtime-config-connection.html | 확인일 2026-11-01 `[원문: postgres/postgres doc/src/sgml/config.sgml]`
+  - `psql` 위치: 설치 프로그램은 **시스템 PATH를 기본적으로 바꾸지 않는다**. EDB 문서의 PATH 예시는 `C:\Program Files\postgresql\<메이저 버전>\bin`(문서 예: 15, 16)이므로 18 설치본은 `C:\Program Files\PostgreSQL\18\bin\psql.exe`일 것으로 **추정**한다. 교재는 PowerShell에서 `& "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -h localhost -p 5432`처럼 전체 경로로 안내하거나, 시작 메뉴의 SQL Shell(psql)을 쓰게 한다 | https://www.enterprisedb.com/docs/dev-guides/deploy/windows/ | 확인일 2026-11-01 `[검색요약]` (실제 설치 경로 대소문자·`18` 폴더명은 실기 미확인, 슈퍼유저 이름이 `postgres`라는 점도 EDB PostgreSQL 문서에서 직접 확인 못 함 → 미확인)
 - WSL 확인·설치 명령: `wsl --version`, `wsl --install`, `wsl --update` | https://docs.docker.com/desktop/setup/install/windows-install/ | 확인일 2026-11-01 `[원문]`
 - 설치 경로: 설치 파일 `Docker Desktop Installer.exe`(문서의 다운로드 링크), 설치 모드는 **per-user(기본·권장)** → `%LOCALAPPDATA%\Programs\DockerDesktop`, 관리자 권한 불필요. all-users는 `C:\Program Files\Docker\Docker`, 관리자 권한 필요. 명령행 설치 `"Docker Desktop Installer.exe" install --user`. 설정 화면의 백엔드 선택은 "**Use WSL 2 instead of Hyper-V**". 4.97 이후 버전은 Configuration 화면에 백엔드를 선택지로 보여 줌 | 위와 같은 문서 | 확인일 2026-11-01 `[원문]` winget ID **`Docker.DockerDesktop`**(매니페스트 존재) | https://github.com/microsoft/winget-pkgs/tree/master/manifests/d/Docker/DockerDesktop `[원문]`
 - 개인 사용 무료 조건: Docker Desktop은 개인·교육·비상업 오픈소스·**직원 250명 미만 AND 연매출 1천만 달러 미만** 사업체에서 구독 없이 사용 가능. 직원 250명 초과 **또는** 연매출 1천만 달러 초과 기업의 상업적 사용은 유료 구독(Pro·Team·Business)이 필요. 설치 문서 상단 배너에도 같은 문구 | https://www.docker.com/legal/docker-subscription-service-agreement/ , https://docs.docker.com/desktop/setup/install/windows-install/ | 확인일 2026-11-01 `[검색요약]` `[원문]`
@@ -255,8 +288,9 @@
 - **PostgreSQL 18 이미지 함정**: PGDATA가 버전별 경로(`/var/lib/postgresql/18/docker`)로 바뀌었고 선언된 `VOLUME`이 **`/var/lib/postgresql`** 로 바뀜. 볼륨은 `/var/lib/postgresql`에 마운트해야 하고, 17 이하처럼 `/var/lib/postgresql/data`에 마운트하면 안 된다 | https://github.com/docker-library/docs/blob/master/postgres/content.md | 확인일 2026-11-01 `[원문]`
 
 **교재 반영 결정**
-- SP Day의 Compose는 `image: postgres:18`, 볼륨 마운트 `- pgdata:/var/lib/postgresql`로 쓴다. Docker Desktop 요구 사항(WSL 2 / 가상화 / 8 GB)을 사전 점검 체크리스트에 넣고, 개인 학습은 무료임을 한 줄로 밝힌다.
-- Windows 11 Home은 "시도해 보고 안 되면 Pro로 업그레이드하거나 PostgreSQL을 직접 설치"를 `:::warn`으로 두되, 지원 여부를 단정하는 문장은 쓰지 않는다.
+- **Docker가 기본 경로**다. SP Day의 Compose는 `image: postgres:18`, 볼륨 마운트 `- pgdata:/var/lib/postgresql`로 쓰고, Docker Desktop 요구 사항(WSL 2 / 가상화 / 8 GB)을 사전 점검 체크리스트에 넣으며, 개인 학습은 무료임을 한 줄로 밝힌다.
+- **Docker에 의존하는 모든 Day에 Docker 없는 경로를 함께 둔다**: PostgreSQL은 `winget install PostgreSQL.PostgreSQL.18`(관리자 권한 필요, 포트 5432, `psql` 전체 경로) 또는 EDB 설치 프로그램으로 직접 설치하고, 서버(ASP.NET Core·Rust)는 컨테이너 없이 `dotnet run`/`cargo run`으로 직접 실행하게 한다.
+- Docker 설치 Day는 **에디션·버전 점검으로 시작**한다: Win+R `winver`로 버전·빌드(23H2/22631 이상), 설정 → 시스템 → 정보로 에디션(Home/Pro)을 확인시키고, Home이면 "Docker Desktop이 안 될 수 있으니 안 되면 Docker 없는 경로로 진행"을 `:::warn`으로 두되 지원 여부를 단정하는 문장은 쓰지 않는다.
 
 ---
 
@@ -308,7 +342,7 @@
 - 공식 문서 문구(검색 요약 인용): "Socket.IO-client 1.0.0+ 2.0.3 버전까지 지원합니다."(비공식 표는 "1.0.0+ ~ 2.0.3"로 표기). 즉 **Socket.IO 2.x 서버 계열 = Engine.IO 프로토콜 v3(EIO=3)** | https://chzzk.gitbook.io/chzzk/chzzk-api/session | 확인일 2026-11-01 `[검색요약]` `[교차]` — 문서에는 "v4 클라이언트는 비호환 가능"이라는 직접 문구는 확인하지 못했고, 지원 상한이 2.0.3이라는 것만 확인됨
 - 연결 URL 형식: `https://ssio{NN}.nchat.naver.com:443?auth={토큰}` (문서 예시 `https://ssio08.nchat.naver.com:443?auth=TOKEN`). 권장 옵션: `reconnection: false`, `'force new connection': true`, `'connect timeout': 3000`, `transports: ['websocket']`. 연결되면 `connect` 핸들러 호출 `[검색요약]`
 - 실측(비공식): 핸드셰이크는 `GET {origin}/socket.io/?EIO=3&transport=polling&auth=…`로 성공해 `sid`와 `upgrades:["websocket"]`를 받음. 서버 ping 타임아웃은 약 85초 `[교차]`
-- 이벤트 이름: `SYSTEM`, `CHAT`, `DONATION`, `SUBSCRIPTION`. **페이로드는 JSON 문자열**이라 `JSON.parse`가 필요(이 조사의 로컬 에뮬레이터 실험에서도 문자열로 수신됨) `[교차]` `[실행]`
+- 이벤트 이름: `SYSTEM`, `CHAT`, `DONATION`, `SUBSCRIPTION`. 페이로드는 비공식 자료에서 **JSON 문자열**로 전달된다고 보고된다(`JSON.parse` 필요) `[교차]`. 공식 문서 원문과는 이 점을 직접 대조하지 못했으므로, 구현은 **문자열이면 JSON으로 파싱하고, 이미 객체이면 그대로 쓰는 관대한 파서**로 한다(`payAmount`가 문자열이든 숫자든 받는 것과 같은 이유). 이 조사의 로컬 에뮬레이터는 두 형태를 모두 보내 클라이언트 코드가 둘 다 처리함을 확인했지만(부록 C), 이것은 CHZZK 실서버 동작의 증거가 아니다.
 - SYSTEM 메시지: `{ type, data }`, `type`은 `connected`(`{sessionKey}`), `subscribed`/`unsubscribed`/`revoked`(`{eventType, channelId}`; `revoked`는 동의 철회·스코프 변경 등 권한 회수) | 위와 같은 문서 | 확인일 2026-11-01 `[검색요약]` `[교차]`
 
 ### 10.7 후원 이벤트(DONATION) 페이로드
@@ -341,7 +375,7 @@
 `WisdomIT/chzzk-open-sdk`의 검증표(2026-07-22 실측)는 다음을 보고한다 `[교차]`: `expiresIn`은 문서(String)와 달리 number(86400), CHAT 이벤트의 `userRoleCode`는 최상위가 아니라 `profile` 안, 응답에 문서에 없는 `page`/`totalCount`/`totalPages` 메타가 있음, 세션 목록의 `disconnectedDate`는 연결 중인 세션에는 필드가 없음. SP는 DONATION만 쓰므로 영향은 `payAmount`·`expiresIn` 두 곳이다.
 
 **교재 반영 결정**
-- SP의 CHZZK 연동은 "유저 로그인(account-interlock) → 서버가 토큰 발급·보관 → `GET /open/v1/sessions/auth`로 URL 획득 → **EIO=3 소켓 연결** → `SYSTEM connected`의 `sessionKey`로 `subscribe/donation` 호출 → `DONATION` 수신 → SignalR로 오버레이에 중계" 순서로 쓴다. Scope는 후원 조회·유저 정보 조회만 요청한다.
+- SP의 CHZZK 연동은 "유저 로그인(account-interlock) → 서버가 토큰 발급·보관 → `GET /open/v1/sessions/auth`로 URL 획득 → **EIO=3 소켓 연결** → `SYSTEM connected`의 `sessionKey`로 `subscribe/donation` 호출 → `DONATION` 수신 → SignalR로 오버레이에 중계" 순서로 쓴다. Scope는 후원 조회·유저 정보 조회만 요청한다. 이 소켓 흐름은 **로컬 에뮬레이터에서만 검증했고 실서버 연결은 미확인**이므로, 실제 CHZZK 연동은 선택 실습에서 확인시키고 실패하면 브라우저/Node 중계 대안으로 간다(11절).
 - 승인·약관 불확실성(10.2, 10.9)이 남으므로 SP 전체 흐름은 **테스트 모드(가짜 DONATION 이벤트)** 로 완결되게 하고, 실제 CHZZK 연동 Day는 "선택·계정 필요"로 분리한다. 토큰 수명(1일/30일, 일회용 refresh)과 문서 변경 가능성을 `:::warn`에 쓴다.
 
 ---
@@ -349,18 +383,18 @@
 ## 11. .NET용 Socket.IO 클라이언트 (EIO v3)
 
 - 선택 패키지 **`SocketIOClient` 4.0.5** (NuGet, 작성자 doghappy, 라이선스 **MIT**, 2026-07-24). README가 "supports socket.io server v2/v3/v4"라고 밝히며, 옵션 표에 "`EIO` — Default `V4` — For Socket.IO server v2.x, please set EIO = 3."이라고 적음. 의존성: `SocketIOClient.Common` 4.0.0, `SocketIOClient.Serializer` 4.0.0.1, `Microsoft.Extensions.*` 10.0.3, `System.Text.Json` 10.0.3. 대상 프레임워크 net8.0과 netstandard2.0 | https://www.nuget.org/packages/SocketIOClient/4.0.5 , https://github.com/doghappy/socket.io-client-csharp | 확인일 2026-11-01 `[레지스트리]` `[원문]`
-- **EIO=3은 Socket.IO 2.x 서버 계열이다. 이 패키지는 EIO=3을 지원한다(README 명시 + 실행 확인).** 로컬 Socket.IO 2.5.0 서버(EIO=3, 서버가 `?EIO=3`을 확인)에 `SocketIOClient 4.0.5`를 `EIO = EngineIO.V3`, `Transport = TransportProtocol.WebSocket`으로 연결하자 연결 성공, `SYSTEM`·`DONATION` 이벤트를 JSON 문자열로 수신 `[실행]`. **CHZZK 실서버와의 연결은 계정·네트워크가 없어 확인하지 못함(미확인).** 비공식 SDK는 실서버에서 EIO=3 프로토콜 흐름(`40` 네임스페이스 연결 → `42["SYSTEM",…]`)이 동작함을 보고했다 `[교차]`.
+- **EIO=3은 Socket.IO 2.x 서버 계열이다. 이 패키지는 EIO=3을 지원한다(README 명시 + 실행 확인).** 로컬 Socket.IO 2.5.0 서버(EIO=3, 서버가 `?EIO=3`을 확인)에 `SocketIOClient 4.0.5`를 `EIO = EngineIO.V3`, `Transport = TransportProtocol.WebSocket`으로 연결하자 연결 성공, `SYSTEM`·`DONATION` 이벤트를 수신했다(페이로드가 JSON 문자열일 때와 이미 객체일 때 모두 처리 확인) `[실행]`. **CHZZK 실서버와의 연결은 계정·네트워크가 없어 확인하지 못함(미확인).** 비공식 SDK는 실서버에서 EIO=3 프로토콜 흐름(`40` 네임스페이스 연결 → `42["SYSTEM",…]`)이 동작함을 보고했다 `[교차]`.
 - 옵션·네임스페이스 (실행 확인):
   - 네임스페이스 `using SocketIOClient;` + **`using SocketIOClient.Common;`** (`EngineIO`, `TransportProtocol`은 `SocketIOClient.Common` 안에 있음. `SocketIOClient.Transport`라는 네임스페이스는 **없음** → CS0234)
   - `new SocketIO(Uri, SocketIOOptions)`, 옵션: `EIO = EngineIO.V3`, `Transport = TransportProtocol.WebSocket`, `Reconnection = false`, `ConnectionTimeout = TimeSpan.FromSeconds(3)`, `Query = new NameValueCollection { ["auth"] = token }`
-  - 이벤트: `client.On("DONATION", ctx => … ctx.GetValue<string>(0) …)`(페이로드가 JSON 문자열이므로 `string`으로 받아 `System.Text.Json`으로 파싱), `ctx.RawText` = `["SYSTEM","{\"type\":\"connected\",…}"]`, 연결 이벤트 `client.OnConnected`, 시작 `await client.ConnectAsync()`, 종료 `await client.DisconnectAsync()`
+  - 이벤트: `client.On("DONATION", ctx => … ctx.GetValue<JsonElement>(0) …)`로 받고 `ValueKind`가 `String`이면 `JsonDocument.Parse(el.GetString()!)`, `Object`이면 그대로 쓴다(두 형태 모두 실행 확인). `payAmount`는 `Number`/`String` 모두 `decimal`로 변환. `ctx.RawText` = `["SYSTEM","{\"type\":\"connected\",…}"]`, 연결 이벤트 `client.OnConnected`, 시작 `await client.ConnectAsync()`, 종료 `await client.DisconnectAsync()`
   - README: `Auth` 옵션은 **EIO=3에서 지원 안 됨** → 인증 토큰은 `Auth`가 아니라 `Query["auth"]`로 보낸다
   - **함정(실행 확인)**: CHZZK가 주는 URL처럼 `Uri`에 쿼리(`/?auth=…`)를 붙여 `new SocketIO(uri, opts)`를 만들면 **쿼리가 서버로 전달되지 않는다**(서버가 `auth=undefined`로 받음). URL을 분해해 origin만 `Uri`에 넣고 `auth` 값을 `Query`에 넣어야 한다.
 - 대안(중계): 공식 문서의 지원 상한에 맞춘 **`socket.io-client@2.0.3`** (npm에 존재, 의존성 engine.io-client ~3.1.0). `2.5.0`도 npm `v2-latest`이고 EIO=3(engine.io-client ~3.5.0). 최신 4.8.4(`latest`)는 공식 지원 범위 밖이므로 사용하지 않음 | https://www.npmjs.com/package/socket.io-client | 확인일 2026-11-01 `[레지스트리]`. 다른 대안으로 비공식 SDK는 **의존성 없는 자체 EIO=3 클라이언트**(WebSocket 우선, 폴링 폴백)를 구현해 실서버 e2e를 통과했다고 보고 `[교차]`.
 
 **교재 반영 결정**
-- SP 백엔드(C#)는 **`SocketIOClient 4.0.5` + `EIO = V3` + `Transport = WebSocket` + `Query["auth"]`** 로 CHZZK에 직접 연결한다(중계 서버 불필요). SP의 CHZZK 연동 Day 코드는 위 함정 세 가지(네임스페이스, `Auth` 미지원, URL 쿼리 분해)를 반영한다.
-- 실서버에서 막히는 경우를 위해 "Node `socket.io-client@2.0.3` 중계"를 `:::info` 대안으로만 소개한다. 테스트 모드 수신기는 로컬 `socket.io@2.5.0` 에뮬레이터(부록 C)로 같은 코드 경로를 검증한다.
+- SP 백엔드(C#)는 **`SocketIOClient 4.0.5` + `EIO = V3` + `Transport = WebSocket` + `Query["auth"]`** 로 CHZZK에 연결하는 코드를 쓴다. **로컬 에뮬레이터에서 검증했고 실서버 연결은 미확인**이므로, 실서버 연결은 선택 실습에서 확인시키고 실패하면 브라우저 중계 대안으로 간다. 코드는 위 함정 세 가지(네임스페이스, `Auth` 미지원, URL 쿼리 분해)와 문자열/객체 모두 받는 파서를 반영한다.
+- 실서버 연결이 막힐 때를 위해 "Node 또는 브라우저 `socket.io-client@2.0.3` 중계"를 `:::info`에 최소 코드와 함께 소개한다. 테스트 모드 수신기는 로컬 `socket.io@2.5.0` 에뮬레이터(부록 C)로 같은 코드 경로를 검증한다.
 
 ---
 
@@ -431,8 +465,17 @@
 | CHZZK 실서버에 `SocketIOClient 4.0.5` 연결 | 미확인(계정·네트워크 없음) | 로컬 Socket.IO 2.5.0 에뮬레이터로 코드 경로 검증, 대안 `socket.io-client@2.0.3` 중계 |
 | CHZZK 리디렉션 URL의 `http://localhost` 허용 여부 | 미확인 | 개발자 센터 입력칸 안내 문구를 독자가 확인 |
 | `payAmount`의 실제 타입(문자열/숫자) | 미확인 | 두 타입 모두 파싱 |
-| Docker Desktop의 Windows 11 Home 지원 | 요구 사항 표에 없음(모호) | 실패 시 PostgreSQL 직접 설치 경로(미확인) 또는 Pro 사용 |
+| Docker Desktop의 Windows 11 Home 지원 | 현행 요구 목록에 Home 없음. 역사적·간접 공식 근거(WSL 2 백엔드, Linux 컨테이너)만 있어 **현행 보증은 미확인** | Docker 없는 경로(PostgreSQL 직접 설치 + `dotnet run`/`cargo run`)를 모든 Docker Day에 병행, 설치 Day는 에디션 점검으로 시작(9절) |
+| PostgreSQL 네이티브 설치: 슈퍼유저 이름, 실제 설치 경로·대소문자, Windows 서비스 등록, SQL Shell 메뉴 이름 | EDB 문서·winget 매니페스트로는 확인 못 함(포트 5432는 확인) | 전체 경로 `psql.exe`를 `Get-ChildItem "C:\Program Files\PostgreSQL"`로 찾게 하고, 설치 마법사에서 입력한 값을 그대로 쓰게 안내 |
+| Windows 11 에디션(Home/Pro)을 확인하는 화면의 공식 문서 | 미확인(Microsoft 지원 호스트 차단) | 설정 → 시스템 → 정보 + `(Get-CimInstance Win32_OperatingSystem).Caption` 병기, 출력 예시는 실기 확인 필요 |
 | C# Dev Kit 개인 무료 사용 조건 | 미확인(문서 표현 불일치) | C# 확장 + `dotnet` CLI |
+| Git for Windows 릴리스 빌드의 "Let Git decide"가 쓰는 기본 브랜치 이름 | 설치 스크립트의 기본 정의는 `master`이나 릴리스 빌드 값은 미확인(3절) | 설치 화면에서 반드시 "Override the default branch name… → `main`"을 고르게 하고, 설치 직후 `git config --global init.defaultBranch`로 확인, 비어 있으면 `git config --global init.defaultBranch main` 실행(Git 2.43.0에서 이 설정이 `git init` 결과 브랜치를 바꾸는 것을 확인, 설정이 없으면 `master`와 안내 힌트가 나옴) |
+| CHZZK 공식 문서에서 "미션 후원은 Open API로 받을 수 없다"는 문장 | 미확인(비공식 SDK 문서의 보고뿐, 10.7절) | DONATION의 `donationType`을 `CHAT`/`VIDEO`로만 가정하고 그 외 값은 무시·로그 처리 |
+| VS Code User setup의 Copilot CLI 페이지 한국어 문구와 선택지 순서 | 영어 원문 소스 기준, 한국어 문구 미확인(2절) | "Don't add the copilot command" 계열(세 번째 선택지)을 고르라고만 안내하고 문구 의존을 피함 |
+| PowerShell 한국어 오류 문구("이 시스템에서 스크립트를 실행할 수 없으므로 … npm.ps1 …")의 정확한 표기, `.cmd`가 실행 정책을 받지 않는다는 공식 문장, 확장자 없는 `npm`이 `.ps1`을 우선 선택하는 규칙 | 미확인(영어 원문·정책 설명만 확인, 1절) | 증상을 `npm.ps1`·`UnauthorizedAccess` 키워드로 설명하고, 해결은 공식 예시의 `Set-ExecutionPolicy … -Scope CurrentUser`를 1순위, `npm.cmd`는 "추정" 표기의 보조 |
+| `create-vite` 대화형 화면의 실제 렌더링(색상·커서 이동 방식) | 문구·순서만 소스 기준, TTY 실행은 못 함(7절) | 질문 문구를 그대로 적고 "방향키와 Enter"만 안내 |
+| `rand`+`getrandom(wasm_js)`의 브라우저 실행 | **해소**: Chromium에서 `roll()` 30회 실행 확인(8절) | 필요 없음 |
+| Vite 개발 서버(`npm run dev`)에서의 wasm 동작 | **해소**: `vite` 개발 서버에서도 확인(8절) | 필요 없음 |
 | Windows 설치 마법사 한국어 화면 문구 전반(Git, Node, Docker, VS Code Copilot 페이지) | 영어 원문 소스 기준, 실기 미확인 | 텍스트 안내 + "같은 위치의 선택지" 문구 |
 | Render 무료 인스턴스 카드 요구, Cloudflare Pages 카드·대역폭 | 공식 문서 직접 확인 못 함 | 가입 화면에서 확인하도록 안내 |
 | Azure F1에서 SQLite 파일 영속성 | 미확인 | P2 배포는 선택 실습, 본선은 로컬 |
@@ -445,14 +488,16 @@
 - `apt-get install -y dotnet-sdk-10.0` → SDK 10.0.114 / 런타임 10.0.14. `dotnet new list`, `dotnet new sln|web|webapi|console|xunit`, 기능 확인 프로젝트에서 `AddValidation`(public 레코드·쿼리 매개변수 → 400, internal 레코드 → 검증 없음), `TypedResults.ServerSentEvents`, `MapIdentityApi` + `/login?useCookies=true`(쿠키 발급·보호 엔드포인트 200), `AddFixedWindowLimiter`(200 200 200 429 429), `dotnet tool install … dotnet-ef`(10.0.14)
 - 로컬 `socket.io@2.5.0` 서버(포트 5099, 서버 로그 `EIO= 3`) ↔ `SocketIOClient 4.0.5` 콘솔 앱: `Query["auth"]` 전달 성공 / `Uri` 쿼리는 전달 안 됨 / `SYSTEM`·`DONATION` JSON 문자열 수신
 - `SixLabors.ImageSharp 4.1.3` 콘솔 앱: 형식 판별, `Identify`, 비이미지 예외, EXIF 제거, WebP 인코딩
+- 보정 라운드 추가 실행(2026-11-01): ① 격리된 `RUSTUP_HOME`에 `rustup toolchain install stable --profile minimal`(rustc 1.99.1)만 설치 → `cargo build --target wasm32-unknown-unknown --release`가 `E0463 can't find crate for core`로 실패 → `rustup target add wasm32-unknown-unknown` 후 성공, 같은 환경에서 axum/tokio/serde/sqlx/tracing 조합 `cargo check` 통과 ② 위 wasm 앱을 `vite --port 5199` 개발 서버로 띄워 Playwright Chromium에서 출력 확인, `.wasm`은 `200 application/wasm` ③ `rand`+`getrandom(wasm_js)` wasm을 `python3 -m http.server`로 서빙해 `roll()` 30회 호출(전부 1~6, 6가지 값, 콘솔 오류 0) ④ `socket.io@2.5.0` 에뮬레이터가 문자열·객체 두 형태의 `DONATION`을 보내고 `SocketIOClient 4.0.5`가 `GetValue<JsonElement>(0)`로 둘 다 처리(`payAmount` 문자열 `1000`, 숫자 `2500`) ⑤ TS 7 새 프로젝트: `types: []`에서 TS2591, `type: module` 없을 때 TS1295, `@types/node@26.6.6` + `"types": ["node"]` + `"type": "module"` 후 `tsc --noEmit` 통과 ⑥ `create-vite@9.3.3` `dist/index.js`에서 대화형 질문 문구 추출 ⑦ Node 26.13.0 Windows ZIP 목록에서 `npm.ps1`/`npm.cmd` 확인 ⑧ 스크래치 저장소(프로젝트 밖)에서 `git -c init.defaultBranch=main init` 확인
 - Rust 1.97.0: `cargo install wasm-bindgen-cli --version 0.2.130`, `cargo build --target wasm32-unknown-unknown --release`, `wasm-bindgen --target web`, `npm create vite@latest app -- --template vanilla-ts` + `vite build` + Playwright Chromium에서 wasm 출력 확인, `rand 0.10.3` + `getrandom 0.4.3(wasm_js)` wasm32 빌드, axum 0.8.9(ws)/tokio/serde/sqlx 0.9.0/tracing 조합 `cargo check` 통과
 
 ## 부록 C. 검증에 쓴 코드 조각 (이후 Task가 인용)
 
-### C.1 .NET: CHZZK 형식의 EIO=3 소켓 수신 (실행 확인)
+### C.1 .NET: CHZZK 형식의 EIO=3 소켓 수신 (로컬 에뮬레이터에서 실행 확인, 실서버 미확인)
 
 ```csharp
 using System.Collections.Specialized;
+using System.Text.Json;
 using SocketIOClient;
 using SocketIOClient.Common; // EngineIO, TransportProtocol
 
@@ -467,8 +512,30 @@ var opts = new SocketIOOptions
     Query = new NameValueCollection { ["auth"] = authToken },
 };
 var client = new SocketIO(new Uri(originOnly), opts);
-client.On("SYSTEM", ctx => { var json = ctx.GetValue<string>(0); /* type == "connected" 이면 sessionKey */ return Task.CompletedTask; });
-client.On("DONATION", ctx => { var json = ctx.GetValue<string>(0); /* JSON 문자열을 파싱 */ return Task.CompletedTask; });
+
+// 페이로드가 JSON 문자열이든 이미 객체든 받는다. payAmount도 문자열/숫자 모두 받는다.
+static JsonElement ToObject(JsonElement e) =>
+    e.ValueKind == JsonValueKind.String ? JsonDocument.Parse(e.GetString()!).RootElement : e;
+static decimal ToAmount(JsonElement e) => e.ValueKind switch
+{
+    JsonValueKind.Number => e.GetDecimal(),
+    JsonValueKind.String => decimal.Parse(e.GetString()!),
+    _ => 0m,
+};
+
+client.On("SYSTEM", ctx =>
+{
+    var el = ToObject(ctx.GetValue<JsonElement>(0));
+    // el.GetProperty("type") == "connected" 이면 el.GetProperty("data").GetProperty("sessionKey")
+    return Task.CompletedTask;
+});
+client.On("DONATION", ctx =>
+{
+    var el = ToObject(ctx.GetValue<JsonElement>(0));
+    var nickname = el.GetProperty("donatorNickname").GetString();
+    var amount = ToAmount(el.GetProperty("payAmount"));
+    return Task.CompletedTask;
+});
 await client.ConnectAsync();
 ```
 
@@ -480,10 +547,12 @@ const io = require('socket.io')(5099, { transports: ['websocket', 'polling'] });
 io.on('connection', (socket) => {
   console.log('auth=', socket.handshake.query.auth, 'EIO=', socket.handshake.query.EIO);
   socket.emit('SYSTEM', JSON.stringify({ type: 'connected', data: { sessionKey: 'sess-123' } }));
-  setTimeout(() => socket.emit('DONATION', JSON.stringify({
+  const d = {
     donationType: 'CHAT', channelId: 'c1', donatorChannelId: 'd1',
     donatorNickname: '테스터', payAmount: '1000', donationText: '안녕', emojis: {},
-  })), 500);
+  };
+  setTimeout(() => socket.emit('DONATION', JSON.stringify(d)), 500);        // JSON 문자열 형태
+  setTimeout(() => socket.emit('DONATION', { ...d, payAmount: 2500 }), 800); // 객체 + 숫자 payAmount 형태
 });
 ```
 
@@ -498,6 +567,7 @@ wasm-bindgen = "0.2.130"
 ```
 
 ```powershell
+rustup target add wasm32-unknown-unknown   # 기본 설치에는 없다. 없으면 E0463 can't find crate for `core`
 cargo install wasm-bindgen-cli --version 0.2.130
 cargo build --target wasm32-unknown-unknown --release
 wasm-bindgen --target web --out-dir pkg target\wasm32-unknown-unknown\release\hello_wasm.wasm
