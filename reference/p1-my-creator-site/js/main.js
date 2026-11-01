@@ -8,7 +8,7 @@
 const menuToggle = document.querySelector('.menu-toggle');
 const siteNav = document.querySelector('#site-nav');
 
-menuToggle.addEventListener('click', function () {
+menuToggle.addEventListener('click', () => {
   // classList.toggle: open 클래스가 없으면 붙이고(true), 있으면 떼요(false)
   const isOpen = siteNav.classList.toggle('open');
   // 스크린 리더가 메뉴가 열렸는지 알 수 있게 aria-expanded도 같이 바꿔요
@@ -18,7 +18,8 @@ menuToggle.addEventListener('click', function () {
 // ---------- 2. 다크 모드 (Day 22) ----------
 const themeButton = document.querySelector('.theme-toggle');
 
-// 저장된 테마를 꺼내요. 브라우저 설정 때문에 저장소를 못 쓰면 오류가 나서 try/catch로 감싸요
+// 저장된 테마를 꺼내요.
+// (try/catch는 Day 25에서 자세히 배워요) 브라우저 설정 때문에 저장소를 못 쓰면 오류가 나서, 사이트가 멈추지 않게 감싸 둬요.
 function getSavedTheme() {
   try {
     return localStorage.getItem('theme'); // 'light' 또는 'dark', 없으면 null
@@ -36,10 +37,10 @@ function saveTheme(theme) {
 }
 
 // 테마를 화면에 적용해요: <html data-theme="dark"> → style.css의 다크 변수가 켜져요
+// 버튼 글자("다크 모드")는 그대로 두고, 켜졌는지는 aria-pressed로 알려 줘요
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
   themeButton.setAttribute('aria-pressed', String(theme === 'dark'));
-  themeButton.textContent = theme === 'dark' ? '☀️ 라이트 모드' : '🌙 다크 모드';
 }
 
 // 처음 방문이면 컴퓨터의 다크 모드 설정(prefers-color-scheme)을 따라가요
@@ -52,7 +53,7 @@ if (savedTheme === 'light' || savedTheme === 'dark') {
   applyTheme(systemPrefersDark ? 'dark' : 'light');
 }
 
-themeButton.addEventListener('click', function () {
+themeButton.addEventListener('click', () => {
   const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
   applyTheme(nextTheme);
   saveTheme(nextTheme); // 다음에 와도 같은 테마가 되도록 저장해요

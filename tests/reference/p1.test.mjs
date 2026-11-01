@@ -164,12 +164,17 @@ test('theme toggle persists', async (t) => {
   const toggle = page.locator('.theme-toggle');
 
   assert.equal(await theme(), 'light');
+  assert.equal(await toggle.getAttribute('aria-pressed'), 'false');
   const lightBackground = await bodyBackground();
+  const label = (await toggle.textContent()).trim();
+  assert.match(label, /다크 모드/);
 
   await toggle.click();
   assert.equal(await theme(), 'dark');
   assert.equal(await stored(), 'dark');
+  // 켜졌는지는 aria-pressed로 알리고, 버튼 글자는 그대로 둔다
   assert.equal(await toggle.getAttribute('aria-pressed'), 'true');
+  assert.equal((await toggle.textContent()).trim(), label);
   // 배경색은 0.2초 동안 부드럽게 바뀌므로(transition) 다크 배경색(#14121f)이 될 때까지 기다린다
   await page.waitForFunction(() => getComputedStyle(document.body).backgroundColor === 'rgb(20, 18, 31)');
   assert.notEqual(await bodyBackground(), lightBackground);
@@ -183,6 +188,8 @@ test('theme toggle persists', async (t) => {
   await page.locator('.theme-toggle').click();
   assert.equal(await theme(), 'light');
   assert.equal(await stored(), 'light');
+  assert.equal(await page.locator('.theme-toggle').getAttribute('aria-pressed'), 'false');
+  assert.equal((await page.locator('.theme-toggle').textContent()).trim(), label);
 });
 
 test('theme follows the system preference until a choice is saved', async (t) => {
@@ -257,39 +264,124 @@ test('contents shows a friendly message when the json cannot be loaded', async (
   assert.equal(await page.locator('#video-list .card').count(), 0);
 });
 
+test('contents keeps the loading state until videos.json arrives', async (t) => {
+  const { page, context } = await openContext(t);
+  // videos.json 응답을 우리가 풀어 줄 때까지 붙잡아 둔다
+  let release;
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+  t.after(() => release());
+  await context.route('**/data/videos.json', async (route) => {
+    await gate;
+    await route.continue();
+  });
+
+  await page.goto(server.url + 'contents.html');
+  const loading = page.locator('#load-status');
+  await loading.waitFor();
+
+  // 불러오는 중에 버튼을 누르고 검색해도 "영상 0개" 같은 잘못된 안내가 나오면 안 된다
+  await page.click('#category-filters button[data-category="game"]');
+  await page.fill('#search', '신작');
+  assert.equal(await page.locator('#empty-message').isVisible(), false);
+  assert.equal((await page.locator('#result-count').textContent()).trim(), '');
+  assert.equal(await loading.isVisible(), true);
+
+  // 데이터가 오면, 그 사이에 고른 카테고리와 검색어가 바로 적용된다
+  release();
+  await page.waitForSelector('#video-list .card');
+  const expected = videos.filter((video) => video.category === 'game' && video.title.includes('신작'));
+  assert.ok(expected.length > 0);
+  assert.equal(await page.locator('#video-list .card').count(), expected.length);
+  assert.equal(await loading.isVisible(), false);
+  assert.match(await page.locator('#result-count').textContent(), new RegExp(String(expected.length)));
+});
+
 test('contact shows validation errors then success', async (t) => {
   const { page, errors } = await openContext(t);
   await gotoPage(page, 'contact.html');
 
   const status = page.locator('#form-status');
   const error = (id) => page.locator(`#${id}-error`);
+  const submit = () => page.click('#contact-form button[type="submit"]');
 
-  // 1) 빈 채로 보내면 모든 칸에 오류가 보인다
-  await page.click('#contact-form button[type="submit"]');
+  // role="status"는 이미 aria-live 영역이라 aria-live를 또 쓰지 않는다
+  assert.equal(await status.getAttribute('role'), 'status');
+  assert.equal(await status.getAttribute('aria-live'), null);
+
+  // 1) 빈 채로 보내면 필수 칸 3개에 오류가 보인다 (닉네임은 선택이라 괜찮다)
+  await submit();
   for (const id of ['name', 'email', 'message']) {
     assert.ok((await error(id).textContent()).trim().length > 0, `${id} 오류 메시지`);
     assert.equal(await page.locator(`#${id}`).getAttribute('aria-invalid'), 'true');
   }
-  assert.match(await status.textContent(), /확인/);
-  assert.equal(await status.getAttribute('aria-live'), 'polite');
+  assert.equal((await error('nickname').textContent()).trim(), '');
+  assert.equal(await page.locator('#nickname').getAttribute('aria-invalid'), null);
+  assert.match(await status.textContent(), /3군데/);
   assert.equal(await page.evaluate(() => document.activeElement.id), 'name', '첫 오류 칸으로 포커스가 가요');
 
-  // 2) 이메일 형식이 틀리면 그 칸만 오류가 남는다
+  // 2) 고치는 동안 오류 문장과 맨 아래 안내의 개수가 함께 줄어든다
   await page.fill('#name', '시청자');
+  assert.equal((await error('name').textContent()).trim(), '');
+  assert.match(await status.textContent(), /2군데/);
   await page.fill('#email', 'abc');
+  assert.match(await error('email').textContent(), /형식/);
+  assert.match(await status.textContent(), /2군데/);
   await page.fill('#message', '방송 잘 보고 있어요! 응원합니다.');
-  await page.click('#contact-form button[type="submit"]');
+  assert.match(await status.textContent(), /1군데/);
+
+  // 3) 다시 보내도 이메일 칸만 오류가 남는다
+  await submit();
   assert.equal((await error('name').textContent()).trim(), '');
   assert.match(await error('email').textContent(), /형식/);
   assert.equal((await error('message').textContent()).trim(), '');
+  assert.match(await status.textContent(), /1군데/);
 
-  // 3) 고치면 오류가 사라지고 성공 메시지가 나온다
+  // 4) 마지막 오류를 고치면 "고칠 곳이 N군데" 안내가 사라진다
   await page.fill('#email', 'viewer@example.com');
   assert.equal((await error('email').textContent()).trim(), '', '입력하면 바로 오류가 지워져요');
-  await page.click('#contact-form button[type="submit"]');
+  assert.equal((await status.textContent()).trim(), '');
+  assert.equal(await status.getAttribute('class'), 'form-status');
+
+  // 5) 보내면 성공 메시지가 나오고 폼이 비워진다
+  await submit();
   assert.match(await status.textContent(), /감사/);
   assert.equal(await page.inputValue('#name'), '', '성공 뒤에는 폼을 비워요');
   assert.equal(await page.locator('#name').getAttribute('aria-invalid'), null);
+
+  assert.deepEqual(errors, []);
+});
+
+test('contact validates the optional nickname with the pattern attribute', async (t) => {
+  const { page, errors } = await openContext(t);
+  await gotoPage(page, 'contact.html');
+
+  const nickname = page.locator('#nickname');
+  const status = page.locator('#form-status');
+  assert.equal(await nickname.getAttribute('pattern'), '[A-Za-z0-9가-힣_]{2,20}');
+
+  await page.fill('#name', '시청자');
+  await page.fill('#email', 'viewer@example.com');
+  await page.fill('#message', '방송 잘 보고 있어요! 응원합니다.');
+
+  // 규칙에 맞지 않는 닉네임: 너무 짧음, 공백, 특수문자, 너무 김
+  for (const bad of ['가', 'a b', 'a!b', 'a'.repeat(21)]) {
+    await nickname.fill(bad);
+    await page.click('#contact-form button[type="submit"]');
+    assert.equal(await nickname.getAttribute('aria-invalid'), 'true', `"${bad}"는 오류여야 해요`);
+    assert.match(await page.locator('#nickname-error').textContent(), /닉네임/);
+    assert.match(await status.textContent(), /1군데/);
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'nickname');
+  }
+
+  // 규칙에 맞게 고치면 오류와 안내가 지워지고, 보내면 성공한다
+  await nickname.fill('달빛_곰2');
+  assert.equal((await page.locator('#nickname-error').textContent()).trim(), '');
+  assert.equal((await status.textContent()).trim(), '');
+  await page.click('#contact-form button[type="submit"]');
+  assert.match(await status.textContent(), /감사/);
+  assert.equal(await nickname.inputValue(), '');
 
   assert.deepEqual(errors, []);
 });
@@ -312,10 +404,10 @@ test('schedule table matches schedule.json', async (t) => {
   }
 });
 
-test('schedule highlights today and counts down to the next broadcast (Korea time)', async (t) => {
-  // 일부러 미국 시간대로 열어도 "한국 시간" 기준으로 동작해야 한다.
-  // 2026-11-01 16:00 UTC = 한국 시간 월요일 01:00 (UTC 기준으로는 아직 일요일)
-  const { page } = await openContext(t, { timezoneId: 'America/Los_Angeles' });
+test('schedule highlights today and counts down to the next broadcast', async (t) => {
+  // 컴퓨터 시간이 한국 시간(Asia/Seoul)이라고 가정하는 코드다. 시계를 고정해서 확인한다.
+  // 2026-11-01 16:00 UTC = 한국 시간 월요일 01:00
+  const { page } = await openContext(t);
   await page.clock.setFixedTime(new Date('2026-11-01T16:00:00Z'));
   await gotoPage(page, 'schedule.html');
 
@@ -353,7 +445,7 @@ test('overlay shows countdown and transparent background', async (t) => {
 
 test('overlay counts down to a start time 2 minutes ahead', async (t) => {
   // 시계를 한국 시간 14:00:00으로 고정하고, 지금(한국 시간) + 2분을 start로 넘긴다.
-  const { page } = await openContext(t, { timezoneId: 'America/New_York' });
+  const { page } = await openContext(t);
   const now = new Date('2026-11-01T05:00:00Z');
   await page.clock.install({ time: now });
   await page.clock.pauseAt(new Date(now.getTime() + 1000));
@@ -385,8 +477,19 @@ test('overlay explains how to use the url when parameters are missing', async (t
   await page.goto(server.url + OVERLAY_PATH);
   const hint = await page.locator('#countdown').textContent();
   assert.match(hint, /start=/);
-  await page.goto(server.url + overlayUrl('잘못된 시간', '25:99'));
-  assert.match(await page.locator('#countdown').textContent(), /start=/);
+
+  // 시(0~23)와 분(0~59) 범위를 벗어나거나 HH:MM 모양이 아니면 모두 안내 문장이 나온다
+  for (const bad of ['25:99', '24:00', '12:60', '-1:30', 'abc', 'ab:cd', '20:', ':30', '1230', '10:30:00']) {
+    await page.goto(server.url + overlayUrl('잘못된 시간', bad));
+    assert.match(await page.locator('#countdown').textContent(), /start=/, `start=${bad}`);
+  }
+
+  // 범위 안의 값은 안내가 아니라 카운트다운(또는 "곧 시작해요!")이다
+  for (const good of ['00:00', '07:05', '23:59']) {
+    await page.goto(server.url + overlayUrl('올바른 시간', good));
+    const text = (await page.locator('#countdown').textContent()).trim();
+    assert.match(text, /^(\d{2}:\d{2}:\d{2}|곧 시작해요!)$/, `start=${good}`);
+  }
   assert.deepEqual(errors, []);
 });
 
@@ -423,6 +526,7 @@ test('accessibility and SEO basics on every page', async (t) => {
       mainCount: document.querySelectorAll('main').length,
       imagesWithoutAlt: [...document.querySelectorAll('img')].filter((img) => !img.hasAttribute('alt')).length,
       images: document.querySelectorAll('img').length,
+      headingLevels: [...document.querySelectorAll('h1, h2, h3, h4, h5, h6')].map((heading) => Number(heading.tagName[1])),
       unlabeledFields: [...document.querySelectorAll('input, select, textarea')].filter((field) => !field.labels || field.labels.length === 0).length,
     }));
 
@@ -437,5 +541,11 @@ test('accessibility and SEO basics on every page', async (t) => {
     assert.ok(info.images > 0, `${path}: 이미지가 있어야 해요`);
     assert.equal(info.imagesWithoutAlt, 0, `${path}: alt 없는 img`);
     assert.equal(info.unlabeledFields, 0, `${path}: label 없는 입력칸`);
+
+    // 제목 단계는 건너뛰지 않는다 (h1 다음에 h3이 바로 오면 안 돼요)
+    info.headingLevels.forEach((level, index) => {
+      const previous = index === 0 ? 0 : info.headingLevels[index - 1];
+      assert.ok(level <= previous + 1, `${path}: h${previous} 다음에 h${level}이 와요`);
+    });
   }
 });
