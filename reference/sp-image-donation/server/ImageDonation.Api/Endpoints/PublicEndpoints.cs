@@ -89,6 +89,9 @@ public static class PublicEndpoints
     // DB에 없는 파일이면 404 → 신고된 이미지는 증거로 남아 있지만 오버레이·시청자 누구에게도 나가지 않는다(격리)
     private static async Task<IResult> GetMedia(string file, IImageStorage storage, AppDbContext db, HttpContext http)
     {
+        // 우리가 만든 이름 형식(GUID 32자리 + .webp)이 아니면 DB를 부르기 전에 바로 404
+        if (!LocalImageStorage.IsValidFileName(file)) return Results.NotFound();
+
         var status = await db.Donations.AsNoTracking()
             .Where(d => d.ImageFile == file)
             .Select(d => (DonationStatus?)d.Status)

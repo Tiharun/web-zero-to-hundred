@@ -14,6 +14,7 @@ export interface Donation {
   cheeseAmount: number | null
   createdAt: string
   expiresAt: string | null
+  reported: boolean // 신고된 후원 (이미지는 증거로 7일 동안 보관되고 화면에는 나오지 않는다)
 }
 
 export interface PublicStreamer {

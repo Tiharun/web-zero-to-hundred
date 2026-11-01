@@ -140,7 +140,7 @@ public sealed class DonationService(
             await transaction.CommitAsync(); // 여기까지 모두 성공해야 한꺼번에 반영된다
         }
 
-        return await NotifyUpdatedAsync(await db.Donations.AsNoTracking().SingleAsync(d => d.Id == donationId));
+        return await NotifyUpdatedAsync(await db.Donations.AsNoTracking().SingleAsync(d => d.Id == donationId), reported: true);
     }
 
     // 6) 오버레이가 다 보여 줬다: Approved → Shown
@@ -152,10 +152,13 @@ public sealed class DonationService(
         }
     }
 
-    // 7) 긴급 정지: 아직 다 보여 주지 못한 승인 후원을 모두 Cleared로 바꾸고(DB에 남김), 오버레이 화면과 대기열을 비운다.
+    // 7) 긴급 정지: 오버레이 화면과 대기열을 "가장 먼저" 비우고, 그다음 아직 다 보여 주지 못한 승인 후원을 모두 Cleared로 바꾼다(DB에 남김).
+    //    방송 사고를 막는 기능이라 화면 비우기가 DB·파일 작업 실패에 막히면 안 된다. 끝에서 한 번 더 비운다(아래 설명).
     //    DB에 남겨야 오버레이가 다시 연결돼도 같은 이미지를 또 보내지 않는다. 바꾼 개수를 돌려준다
     public async Task<int> ClearOverlayAsync(Streamer streamer)
     {
+        await overlay.Clients.Group(OverlayHub.GroupName(streamer.OverlayToken)).Clear();
+
         var approved = await db.Donations.AsNoTracking()
             .Where(d => d.StreamerId == streamer.Id && d.Status == DonationStatus.Approved)
             .ToListAsync();
@@ -163,14 +166,23 @@ public sealed class DonationService(
         var cleared = 0;
         foreach (var donation in approved)
         {
-            // 하나씩 조건부 전이: 그 사이 Shown이 된 후원은 건드리지 않는다
-            if (!await TransitionAsync(streamer.Id, donation.Id, DonationStatus.Approved, DonationStatus.Cleared)) continue;
-            await storage.DeleteAsync(donation.ImageFile);
-            donation.Status = DonationStatus.Cleared;
-            await NotifyUpdatedAsync(donation);
-            cleared++;
+            // 하나가 실패해도(DB 오류, 파일이 다른 프로그램에 잠김 등) 나머지는 계속 처리하고, 실패는 기록만 남긴다
+            try
+            {
+                // 하나씩 조건부 전이: 그 사이 Shown이 된 후원은 건드리지 않는다
+                if (!await TransitionAsync(streamer.Id, donation.Id, DonationStatus.Approved, DonationStatus.Cleared)) continue;
+                cleared++;
+                donation.Status = DonationStatus.Cleared;
+                await NotifyUpdatedAsync(donation);
+                await storage.DeleteAsync(donation.ImageFile); // 실패해도 Cleared라서 /media로는 나가지 않고, 7일 뒤 정리된다
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "긴급 정지 중 후원 {DonationId} 정리 실패", donation.Id);
+            }
         }
 
+        // 한 번 더 비운다: 정리하는 사이에 막 연결된 오버레이는 첫 Clear를 못 받고, 아직 Approved이던 후원을 받았을 수 있다
         await overlay.Clients.Group(OverlayHub.GroupName(streamer.OverlayToken)).Clear();
         return cleared;
     }
@@ -268,9 +280,9 @@ public sealed class DonationService(
         streamer.Settings.DisplaySeconds,
         streamer.Settings.MinIntervalSeconds);
 
-    private async Task<DonationDto> NotifyUpdatedAsync(Donation donation)
+    private async Task<DonationDto> NotifyUpdatedAsync(Donation donation, bool reported = false)
     {
-        var dto = DonationDto.From(donation);
+        var dto = DonationDto.From(donation, reported);
         await dashboard.Clients.Group(DashboardHub.GroupName(donation.StreamerId)).DonationUpdated(dto);
         return dto;
     }

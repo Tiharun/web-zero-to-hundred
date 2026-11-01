@@ -6,6 +6,7 @@ using ImageDonation.Api.Dtos;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
@@ -25,10 +26,13 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
     public static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web) { Converters = { new JsonStringEnumConverter() } };
 
     private readonly int _donationsPerMinute;
+    private readonly Action<IServiceCollection>? _replaceServices;
 
-    public ApiFactory(int donationsPerMinute = 1000)
+    // replaceServices: 테스트에서 서비스 하나를 가짜로 바꿀 때 (예: 지우기가 실패하는 저장소)
+    public ApiFactory(int donationsPerMinute = 1000, Action<IServiceCollection>? replaceServices = null)
     {
         _donationsPerMinute = donationsPerMinute;
+        _replaceServices = replaceServices;
         using var connection = new NpgsqlConnection(BaseConnectionString);
         connection.Open();
         using var command = new NpgsqlCommand($"CREATE SCHEMA \"{Schema}\"", connection);
@@ -47,6 +51,10 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("Security:IpHashKey", "test-only-ip-hash-key");
         builder.UseSetting("RateLimit:DonationsPerMinute", _donationsPerMinute.ToString());
         builder.UseSetting("Retention:IntervalSeconds", "3600"); // 테스트 중에는 자동 정리가 돌지 않게
+        if (_replaceServices is not null)
+        {
+            builder.ConfigureTestServices(_replaceServices); // 앱이 등록한 뒤에 덮어쓴다
+        }
     }
 
     // 개발용 로컬 계정으로 가입·로그인하고 온보딩까지 마친 클라이언트(쿠키 유지)
@@ -97,6 +105,15 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
             })
             .AddJsonProtocol(o => o.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
             .Build();
+
+    // 오버레이를 연결하고, 서버가 그룹 가입(OnConnectedAsync)까지 끝냈음을 확인한다.
+    // SignalR은 연결 응답을 먼저 보내고 OnConnectedAsync를 나중에 실행하므로 StartAsync만으로는 그룹 가입이 끝났다고 볼 수 없다.
+    // 허브 메서드 호출은 OnConnectedAsync가 끝난 뒤에 처리되므로, 아무 일도 하지 않는 호출(없는 후원 0번의 MarkShown)을 한 번 보내고 기다린다
+    public static async Task StartOverlayAsync(HubConnection overlay)
+    {
+        await overlay.StartAsync();
+        await overlay.InvokeAsync("MarkShown", 0);
+    }
 
     public override async ValueTask DisposeAsync()
     {

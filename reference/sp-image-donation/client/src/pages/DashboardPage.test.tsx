@@ -20,7 +20,7 @@ vi.mock('../hooks/useDashboardHub', () => ({ useDashboardHub: () => 'connected' 
 
 const pending: Donation = {
   id: 42, status: 'Pending', nickname: '시청자', message: '<b>굵게?</b>', imageUrl: '/media/abc.webp',
-  code: null, cheeseAmount: null, createdAt: '2026-11-01T12:00:00Z', expiresAt: null,
+  code: null, cheeseAmount: null, createdAt: '2026-11-01T12:00:00Z', expiresAt: null, reported: false,
 }
 
 describe('DashboardPage', () => {
@@ -40,7 +40,7 @@ describe('DashboardPage', () => {
 
   it('report asks for a reason and calls the API', async () => {
     vi.mocked(api.listDonations).mockResolvedValue([{ ...pending, status: 'Shown' }])
-    vi.mocked(api.reportDonation).mockResolvedValue({ ...pending, status: 'Rejected', imageUrl: null })
+    vi.mocked(api.reportDonation).mockResolvedValue({ ...pending, status: 'Rejected', imageUrl: null, reported: true })
     vi.spyOn(window, 'prompt').mockReturnValue('  부적절한 이미지  ')
     const user = userEvent.setup()
     render(<MemoryRouter><DashboardPage /></MemoryRouter>)
@@ -50,7 +50,36 @@ describe('DashboardPage', () => {
 
     expect(api.reportDonation).toHaveBeenCalledWith(42, '부적절한 이미지')
     expect(await within(card).findByText('거절됨')).toBeInTheDocument()
-    expect(await screen.findByText('신고했어요.')).toBeInTheDocument()
+    expect(await screen.findByText(/신고했어요/)).toBeInTheDocument()
+    expect(within(card).getByText('증거로 보관 중 (7일 뒤 삭제)')).toBeInTheDocument()
+    expect(within(card).queryByRole('button', { name: '신고' })).not.toBeInTheDocument() // 이미 신고함
+  })
+
+  it('report failure shows the error, not a success message', async () => {
+    vi.mocked(api.listDonations).mockResolvedValue([{ ...pending, status: 'Shown' }])
+    vi.mocked(api.reportDonation).mockRejectedValue(new api.ApiError(500, '서버 오류로 신고하지 못했어요.'))
+    vi.spyOn(window, 'prompt').mockReturnValue('부적절한 이미지')
+    const user = userEvent.setup()
+    render(<MemoryRouter><DashboardPage /></MemoryRouter>)
+
+    const card = (await screen.findByText('시청자')).closest('article')!
+    await user.click(within(card).getByRole('button', { name: '신고' }))
+
+    expect(await screen.findByText('서버 오류로 신고하지 못했어요.')).toBeInTheDocument()
+    expect(screen.queryByText(/신고했어요/)).not.toBeInTheDocument()
+  })
+
+  it('hides report when the image is already gone', async () => {
+    vi.mocked(api.listDonations).mockResolvedValue([
+      { ...pending, id: 1, nickname: '거절', status: 'Rejected', imageUrl: null },
+      { ...pending, id: 2, nickname: '정지', status: 'Cleared', imageUrl: null },
+      { ...pending, id: 3, nickname: '만료', status: 'Expired', imageUrl: null },
+    ])
+    render(<MemoryRouter><DashboardPage /></MemoryRouter>)
+
+    await screen.findByText('거절')
+    expect(screen.queryByRole('button', { name: '신고' })).not.toBeInTheDocument()
+    expect(screen.getAllByText('이미지 삭제됨')).toHaveLength(3)
   })
 
   it('emergency stop calls clear', async () => {

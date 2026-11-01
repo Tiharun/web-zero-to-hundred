@@ -54,7 +54,9 @@ public static class DashboardEndpoints
         }
 
         var list = await query.OrderByDescending(d => d.Id).Take(100).ToListAsync(); // 최신 100건
-        return Results.Ok(list.Select(DonationDto.From));
+        var ids = list.Select(d => d.Id).ToList();
+        var reported = (await db.Reports.Where(r => ids.Contains(r.DonationId)).Select(r => r.DonationId).ToListAsync()).ToHashSet();
+        return Results.Ok(list.Select(d => DonationDto.From(d, reported.Contains(d.Id))));
     }
 
     // 승인·거절·차단·신고 공통: 없거나 다른 스트리머의 후원이면 404, 지금 상태에서 할 수 없으면 409

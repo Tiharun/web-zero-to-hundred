@@ -43,7 +43,11 @@ overlay.html(OBS) ◀──SignalR(토큰)──┘
   정리 작업(30분 만료)이 고른 후보가 그 사이 코드 확인으로 Pending이 됐다면 만료시키지 않아요(시청자가 낸 후원을 지킴).
 - **오버레이가 늦게 연결될 때**: 승인은 그 순간 연결된 오버레이로 보내고, 오버레이가 나중에 연결되거나 새로고침하면 **최근 30분 안에 승인됐지만 아직 보여 주지 못한 후원**(Approved)을
   승인한 순서대로 다시 보내요. 30분보다 오래된 승인은 방송이 끝났을 수 있어 다시 보내지 않고 "승인됨"으로 남아요(7일 뒤 삭제).
-- **긴급 정지**는 화면을 비우는 것과 함께 아직 나가지 않은 승인 후원을 모두 **Cleared**로 바꾸고 이미지를 지워요. 그래서 오버레이를 다시 연결해도 다시 나오지 않아요.
+- **긴급 정지**는 오버레이 화면과 대기열을 **가장 먼저** 비운 뒤(`Clear()`), 아직 나가지 않은 승인 후원을 하나씩 **Cleared**로 바꾸고 이미지를 지워요.
+  그래서 오버레이를 다시 연결해도 다시 나오지 않아요. 한 건의 정리가 실패해도(DB 오류, Windows에서 다른 프로그램이 파일을 잡고 있음 등) 화면 비우기는 이미 끝났고,
+  나머지 후원은 계속 처리하며 실패는 로그에 남겨요. 파일을 못 지운 Cleared 후원도 `/media`로는 나가지 않고 7일 뒤 정리돼요.
+  정리가 끝나면 `Clear()`를 한 번 더 보내요: 정리하는 사이에 막 연결된 오버레이는 첫 `Clear()`를 못 받고 아직 Approved이던 후원을 받았을 수 있기 때문이에요
+  (SignalR은 연결 응답을 먼저 보내고 그룹 가입(`OnConnectedAsync`)을 나중에 해요).
 - 거절·만료·긴급 정지된 후원의 이미지는 바로 지워요. **신고된 후원의 이미지는 운영자가 볼 증거라 지우지 않고 격리해요**:
   저장소에는 남지만 `GET /media/{file}`은 Rejected 상태라 누구에게도(오버레이·시청자·로그인한 스트리머 모두) 404를 주고 다시 보내지도 않아요. 7일 보관 기간이 지나면 정리 작업이 지워요.
 
@@ -56,7 +60,7 @@ overlay.html(OBS) ◀──SignalR(토큰)──┘
 | `GET /media/{file}` | 처리된 이미지(`GUID.webp`) |
 | `GET /api/dashboard/donations?status=` | 내 후원 목록 (로그인 필요) |
 | `POST /api/dashboard/donations/{id}/approve` · `/reject` · `/block` | 승인 · 거절 · 보낸 사람 차단 (다른 스트리머의 후원이면 404) |
-| `POST /api/dashboard/donations/{id}/report` | 신고: 본문 `{"reason": "…"}`(1~200자). 신고 기록 + 거절 + 차단을 한 트랜잭션으로 |
+| `POST /api/dashboard/donations/{id}/report` | 신고: 본문 `{"reason": "…"}`(1~200자). 신고 기록 + 거절 + 차단을 한 트랜잭션으로. 대시보드는 이미지가 남아 있는 후원에만 "신고" 버튼을 보여 줘요(API로는 이미지가 없는 후원도 신고할 수 있지만 그때는 증거 이미지가 없어요). 목록의 `reported`로 신고 여부를 알 수 있어요 |
 | `POST /api/dashboard/overlay/clear` | 긴급 정지 (승인 대기열도 Cleared로) |
 | `GET`·`PUT /api/dashboard/settings` | 설정 (`Mode`, `MinCheese`, `AutoApprove`, `DisplaySeconds` 3~30, `MinIntervalSeconds`, `MaxFileMb` ≤10, `BannedWords`) |
 | `GET /api/dashboard/overlay-token` · `POST /api/dashboard/overlay-token/rotate` | 오버레이 토큰 보기 · 재발급 |
@@ -179,7 +183,7 @@ docker compose up --build -d
 
 - **움직이는 GIF·WebP 정책: 첫 장면만** 정지 이미지로 저장해요(디코딩 비용·메모리 폭탄 방지, 결과 형식을 하나로 단순화).
 - 거절·만료·긴급 정지된 후원의 이미지는 바로 지우고, 나머지(신고된 이미지 포함)는 **7일 뒤** `RetentionService`가 이미지 파일·후원 기록·치즈 이벤트 기록을 지워요.
-- `GET /media/{file}`은 파일이 있어도 DB에서 그 후원의 상태를 확인해, 보여 줄 수 있는 상태(치즈 대기·검수 대기·승인·방송 완료)일 때만 이미지를 줘요. DB에 없는 파일도 404예요.
+- `GET /media/{file}`은 먼저 이름 형식(GUID 32자리 + `.webp`)을 확인하고(틀리면 DB를 부르지 않고 404), 파일이 있어도 DB에서 그 후원의 상태를 확인해, 보여 줄 수 있는 상태(치즈 대기·검수 대기·승인·방송 완료)일 때만 이미지를 줘요. DB에 없는 파일도 404예요.
 
 ## 개인정보 최소 수집
 
@@ -235,7 +239,7 @@ ORDER BY r."CreatedAt" DESC;
 
 | 무엇 | 명령 | 준비물 |
 | :-- | :-- | :-- |
-| 서버 단위·통합 (53개) | `cd C:\dev\image-donation\server` → `dotnet test` | PostgreSQL. 환경 변수 `TEST_DATABASE_URL`(기본 `Host=127.0.0.1;Port=5432;Database=image_donation_test;Username=wzh;Password=wzh`). Node(치지직 에뮬레이터 테스트가 처음 한 번 `tools/chzzk-emulator`에서 `npm ci`를 실행) |
+| 서버 단위·통합 (54개) | `cd C:\dev\image-donation\server` → `dotnet test` | PostgreSQL. 환경 변수 `TEST_DATABASE_URL`(기본 `Host=127.0.0.1;Port=5432;Database=image_donation_test;Username=wzh;Password=wzh`). Node(치지직 에뮬레이터 테스트가 처음 한 번 `tools/chzzk-emulator`에서 `npm ci`를 실행) |
 | 화면 (Vitest + Testing Library) | `cd C:\dev\image-donation\client` → `npm ci` → `npx tsc -b` → `npm test` → `npm run build` | Node |
 | e2e (이 저장소에서) | 저장소 루트에서 `node --test tests/reference/sp.e2e.test.mjs` | .NET, Node, `psql`, PostgreSQL, Playwright Chromium |
 
@@ -254,8 +258,8 @@ ORDER BY r."CreatedAt" DESC;
 
 | 항목 | 결과 |
 | :-- | :-- |
-| `dotnet test` (SDK 10.0.114, PostgreSQL 16 로컬 서버) | 53개 통과. 단위: 매직 넘버, EXIF 제거·리사이즈, EXIF 방향 6, GIF 첫 장면, 해상도 상한·큰 JPEG 축소 디코딩, 코드 매칭, 금지어, 페이로드 해석 / 통합(PostgreSQL): 무료 후원, 승인→오버레이 그룹, 늦게 연결한 오버레이가 미표시 승인 후원을 받음, 긴급 정지가 Cleared로 남고 재연결해도 안 나옴, 긴급 정지는 그 스트리머 오버레이에만, 잘못된 토큰 401, 토큰 재발급(옛 연결은 MarkShown에서 끊김), 테스트 후원 매칭, 이벤트 최소 저장, 413, 429, 설정 범위·null 금지어 400, 거절 시 이미지 삭제, 차단 후 403, 신고(기록·거절·차단, 이미지는 증거로 남지만 /media 404 → 7일 뒤 삭제), 다른 스트리머 후원 404, 보관 기간 정리, 30분 만료, 만료와 매칭 경합(매칭이 이김), 토큰 회전, 동시 갱신 1회 / 에뮬레이터: 수신, 구독 실패·revoked·서버 끊김 시 정리, 깨진 페이로드·처리기 예외 후에도 계속 수신. `dotnet build -c Release` 경고 0 |
-| 화면 `npm ci && npx tsc -b && npm test && npm run build` (Node 22.23.4, TypeScript 7.0.2, Vite 8.3.5, Vitest 5.0.5) | 테스트 6개 통과, 빌드 성공, `npm run lint`(Oxlint) 경고 0 |
+| `dotnet test` (SDK 10.0.114, PostgreSQL 16 로컬 서버) | 54개 통과. 단위: 매직 넘버, EXIF 제거·리사이즈, EXIF 방향 6, GIF 첫 장면, 해상도 상한·큰 JPEG 축소 디코딩, 코드 매칭, 금지어, 페이로드 해석 / 통합(PostgreSQL): 무료 후원, 승인→오버레이 그룹, 늦게 연결한 오버레이가 미표시 승인 후원을 받음, 긴급 정지가 Cleared로 남고 재연결해도 안 나옴, 파일 삭제가 실패해도 화면은 먼저 비워짐, 긴급 정지는 그 스트리머 오버레이에만, 잘못된 토큰 401, 토큰 재발급(옛 연결은 MarkShown에서 끊김), 테스트 후원 매칭, 이벤트 최소 저장, 413, 429, 설정 범위·null 금지어 400, 거절 시 이미지 삭제, 차단 후 403, 신고(기록·거절·차단, 이미지는 증거로 남지만 /media 404 → 7일 뒤 삭제), 다른 스트리머 후원 404, 보관 기간 정리, 30분 만료, 만료와 매칭 경합(매칭이 이김), 토큰 회전, 동시 갱신 1회 / 에뮬레이터: 수신, 구독 실패·revoked·서버 끊김 시 정리, 깨진 페이로드·처리기 예외 후에도 계속 수신. `dotnet build -c Release` 경고 0 |
+| 화면 `npm ci && npx tsc -b && npm test && npm run build` (Node 22.23.4, TypeScript 7.0.2, Vite 8.3.5, Vitest 5.0.5) | 테스트 8개 통과, 빌드 성공, `npm run lint`(Oxlint) 경고 0 |
 | e2e `tests/reference/sp.e2e.test.mjs` (Chromium) | 통과: 개발 로그인 → 온보딩 → 치즈 모드 → 업로드 → 코드 → 테스트 후원 → 검수 대기 → 승인 → 오버레이 표시 → 긴급 정지 → 사라짐 → 카드가 "긴급 정지됨", 콘솔 오류 0 |
 | `ChzzkSessionSource` ↔ 로컬 Socket.IO 2.5.0 에뮬레이터 | 통과: `EIO=3`, `auth` 쿼리 전달, `SYSTEM connected`의 `sessionKey`, 문자열·객체 두 형태의 `DONATION`과 문자열·숫자 `payAmount` |
 | Docker (`postgres:18`, `node:26-slim`, `mcr.microsoft.com/dotnet/sdk:10.0`·`aspnet:10.0`) | Release로 빌드 → `docker compose up` → `/healthz` 200, 가입·로그인·온보딩·업로드(컨테이너 안의 `libSkiaSharp.so`로 WebP 변환)·`/media` 200, 텍스트 파일 업로드 400, 승인 → 긴급 정지 → `Cleared`·이미지 404, 신고 → 같은 곳의 다음 업로드 403(이 검증은 신고 이미지 보존 변경 전), 마이그레이션 2개 적용 → `down -v`. 컨테이너를 다시 만든 뒤에도 쿠키·이미지가 유지되는 것은 이전 라이브러리로 만든 이미지에서 확인(볼륨 구성은 같음) |

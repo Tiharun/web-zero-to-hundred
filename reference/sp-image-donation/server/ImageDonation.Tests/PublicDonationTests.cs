@@ -36,6 +36,11 @@ public class PublicDonationTests
         Assert.Equal(HttpStatusCode.OK, media.StatusCode);
         Assert.Equal("image/webp", media.Content.Headers.ContentType?.MediaType);
         Assert.Equal("nosniff", media.Headers.GetValues("X-Content-Type-Options").Single());
+        Assert.False(item.Reported);
+
+        // 이름 형식이 틀린 요청은 DB를 부르기 전에 404 (경로 조작·끝 줄바꿈 포함)
+        Assert.Equal(HttpStatusCode.NotFound, (await viewer.GetAsync("/media/..%2Fappsettings.json")).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await viewer.GetAsync(item.ImageUrl + "%0A")).StatusCode);
     }
 
     [Fact]

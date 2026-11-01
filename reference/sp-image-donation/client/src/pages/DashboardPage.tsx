@@ -53,13 +53,15 @@ export default function DashboardPage() {
     }
   }, [])
 
-  // 승인·거절·차단: 서버가 돌려준 새 상태로 카드를 바꾼다
-  async function act(action: (id: number) => Promise<Donation>, id: number) {
+  // 승인·거절·차단·신고: 서버가 돌려준 새 상태로 카드를 바꾼다. 성공했는지(true/false)를 돌려준다
+  async function act(action: (id: number) => Promise<Donation>, id: number): Promise<boolean> {
     try {
       const updated = await action(id)
       setDonations((list) => upsertDonation(list, updated))
+      return true
     } catch (e) {
       setNotice(e instanceof Error ? e.message : '처리하지 못했어요.')
+      return false
     }
   }
 
@@ -71,7 +73,9 @@ export default function DashboardPage() {
   function handleReport(id: number) {
     const reason = window.prompt('신고 사유를 적어 주세요 (200자까지). 이 후원은 거절되고 보낸 사람은 차단돼요.')?.trim()
     if (!reason) return
-    void act((donationId) => reportDonation(donationId, reason.slice(0, 200)), id).then(() => setNotice('신고했어요.'))
+    void act((donationId) => reportDonation(donationId, reason.slice(0, 200)), id).then((ok) => {
+      if (ok) setNotice('신고했어요. 이미지는 운영자 확인용으로 7일 동안 보관돼요.') // 실패했으면 act가 보여 준 오류를 덮어쓰지 않는다
+    })
   }
 
   async function handleClear() {

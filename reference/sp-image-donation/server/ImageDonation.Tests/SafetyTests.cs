@@ -61,7 +61,9 @@ public class SafetyTests
         var response = await streamer.PostAsJsonAsync($"/api/dashboard/donations/{id}/report", new { reason = "부적절한 이미지" });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal(DonationStatus.Rejected, (await response.Content.ReadFromJsonAsync<DonationDto>(ApiFactory.Json))!.Status);
+        var reported = (await response.Content.ReadFromJsonAsync<DonationDto>(ApiFactory.Json))!;
+        Assert.Equal((DonationStatus.Rejected, true), (reported.Status, reported.Reported));
+        Assert.True((await streamer.GetFromJsonAsync<List<DonationDto>>("/api/dashboard/donations", ApiFactory.Json))!.Single().Reported);
         Assert.Equal(HttpStatusCode.NotFound, (await app.CreateClient().GetAsync(imageUrl)).StatusCode); // 누구에게도 제공하지 않는다
 
         using (var scope = app.Services.CreateScope())

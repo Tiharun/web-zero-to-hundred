@@ -17,9 +17,11 @@ public record DonationDto(
     string? Code,
     int? CheeseAmount,
     DateTimeOffset CreatedAt,
-    DateTimeOffset? ExpiresAt)
+    DateTimeOffset? ExpiresAt,
+    bool Reported)
 {
-    public static DonationDto From(Donation d) => new(
+    // reported: 신고된 후원인가 (신고 표에 있으면 true). 신고된 이미지는 증거로 7일 동안 보관된다
+    public static DonationDto From(Donation d, bool reported = false) => new(
         d.Id,
         d.Status,
         d.Nickname,
@@ -28,7 +30,8 @@ public record DonationDto(
         d.Code,
         d.CheeseAmount,
         d.CreatedAt,
-        d.Status == DonationStatus.AwaitingCheese ? d.CreatedAt + DonationCodeMatcher.CodeLifetime : null);
+        d.Status == DonationStatus.AwaitingCheese ? d.CreatedAt + DonationCodeMatcher.CodeLifetime : null,
+        reported);
 
     public static string MediaUrl(string file) => $"/media/{file}";
 

@@ -2,7 +2,9 @@ using System.Net;
 using System.Net.Http.Json;
 using ImageDonation.Api.Dtos;
 using ImageDonation.Api.Entities;
+using ImageDonation.Api.Services.Storage;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ImageDonation.Tests;
 
@@ -28,8 +30,8 @@ public class OverlayHubTests
         var shownOnB = new List<OverlayDonationDto>();
         overlayA.On<OverlayDonationDto>("ShowDonation", d => shownOnA.TrySetResult(d));
         overlayB.On<OverlayDonationDto>("ShowDonation", d => shownOnB.Add(d));
-        await overlayA.StartAsync();
-        await overlayB.StartAsync();
+        await ApiFactory.StartOverlayAsync(overlayA);
+        await ApiFactory.StartOverlayAsync(overlayB);
 
         var id = await DonateAsync(app, "streamer-a");
         var approve = await streamerA.PostAsync($"/api/dashboard/donations/{id}/approve", null);
@@ -67,7 +69,7 @@ public class OverlayHubTests
         await using var overlay = app.CreateOverlayConnection(await ApiFactory.GetOverlayTokenAsync(streamer));
         var shown = new TaskCompletionSource<OverlayDonationDto>();
         overlay.On<OverlayDonationDto>("ShowDonation", d => shown.TrySetResult(d));
-        await overlay.StartAsync();
+        await ApiFactory.StartOverlayAsync(overlay);
 
         Assert.Equal(id, (await shown.Task.WaitAsync(TimeSpan.FromSeconds(10))).Id);
     }
@@ -94,7 +96,7 @@ public class OverlayHubTests
         await using var overlay = app.CreateOverlayConnection(token);
         var first = new TaskCompletionSource<int>();
         overlay.On<OverlayDonationDto>("ShowDonation", d => first.TrySetResult(d.Id));
-        await overlay.StartAsync();
+        await ApiFactory.StartOverlayAsync(overlay);
         var next = await DonateAsync(app, "panic");
         (await streamer.PostAsync($"/api/dashboard/donations/{next}/approve", null)).EnsureSuccessStatusCode();
 
@@ -102,6 +104,31 @@ public class OverlayHubTests
         // 내린 뒤에는 다 보여 줬다는 신호(MarkShown)가 와도 Shown으로 되살아나지 않는다
         await overlay.InvokeAsync("MarkShown", id);
         Assert.Equal(DonationStatus.Cleared, (await FindAsync(streamer, id)).Status);
+    }
+
+    [Fact]
+    public async Task EmergencyStop_ClearsOverlayFirst_EvenIfFileDeleteFails()
+    {
+        await using var app = new ApiFactory(replaceServices: services => services.AddSingleton<IImageStorage>(sp =>
+            new FailingDeleteStorage(ActivatorUtilities.CreateInstance<LocalImageStorage>(sp))));
+        var streamer = await app.CreateStreamerClientAsync("locked-files");
+        await using var overlay = app.CreateOverlayConnection(await ApiFactory.GetOverlayTokenAsync(streamer));
+        var cleared = new TaskCompletionSource();
+        overlay.On("Clear", () => cleared.TrySetResult());
+        await ApiFactory.StartOverlayAsync(overlay);
+
+        var first = await DonateAsync(app, "locked-files");
+        var second = await DonateAsync(app, "locked-files");
+        (await streamer.PostAsync($"/api/dashboard/donations/{first}/approve", null)).EnsureSuccessStatusCode();
+        (await streamer.PostAsync($"/api/dashboard/donations/{second}/approve", null)).EnsureSuccessStatusCode();
+        var imageUrl = (await FindAsync(streamer, first)).ImageUrl!;
+
+        // 파일 지우기가 매번 실패해도: 화면은 반드시 비워지고, 두 후원 모두 Cleared가 된다
+        Assert.Equal(HttpStatusCode.NoContent, (await streamer.PostAsync("/api/dashboard/overlay/clear", null)).StatusCode);
+        await cleared.Task.WaitAsync(TimeSpan.FromSeconds(10));
+        Assert.Equal(DonationStatus.Cleared, (await FindAsync(streamer, first)).Status);
+        Assert.Equal(DonationStatus.Cleared, (await FindAsync(streamer, second)).Status);
+        Assert.Equal(HttpStatusCode.NotFound, (await app.CreateClient().GetAsync(imageUrl)).StatusCode); // 파일은 남았지만 내보내지 않는다
     }
 
     [Fact]
@@ -118,8 +145,8 @@ public class OverlayHubTests
         overlayA.On("Clear", () => clearedA.TrySetResult());
         overlayB.On("Clear", () => Interlocked.Increment(ref clearsOnB));
         overlayB.On<OverlayDonationDto>("ShowDonation", d => shownOnB.TrySetResult(d.Id));
-        await overlayA.StartAsync();
-        await overlayB.StartAsync();
+        await ApiFactory.StartOverlayAsync(overlayA);
+        await ApiFactory.StartOverlayAsync(overlayB);
 
         (await streamerA.PostAsync("/api/dashboard/overlay/clear", null)).EnsureSuccessStatusCode();
         await clearedA.Task.WaitAsync(TimeSpan.FromSeconds(10));
@@ -145,7 +172,7 @@ public class OverlayHubTests
             closed.TrySetResult();
             return Task.CompletedTask;
         };
-        await oldOverlay.StartAsync();
+        await ApiFactory.StartOverlayAsync(oldOverlay);
 
         var id = await DonateAsync(app, "leaked");
         (await streamer.PostAsync($"/api/dashboard/donations/{id}/approve", null)).EnsureSuccessStatusCode();
@@ -181,7 +208,7 @@ public class OverlayHubTests
         await using var oldOverlay = app.CreateOverlayConnection(oldToken);
         var received = new List<int>();
         oldOverlay.On<OverlayDonationDto>("ShowDonation", d => received.Add(d.Id));
-        await oldOverlay.StartAsync();
+        await ApiFactory.StartOverlayAsync(oldOverlay);
 
         var rotate = await streamer.PostAsync("/api/dashboard/overlay-token/rotate", null);
         var newToken = (await rotate.Content.ReadFromJsonAsync<OverlayTokenResponse>(ApiFactory.Json))!.OverlayToken;
@@ -191,7 +218,7 @@ public class OverlayHubTests
         await using var newOverlay = app.CreateOverlayConnection(newToken);
         var shownOnNew = new TaskCompletionSource<int>();
         newOverlay.On<OverlayDonationDto>("ShowDonation", d => shownOnNew.TrySetResult(d.Id));
-        await newOverlay.StartAsync();
+        await ApiFactory.StartOverlayAsync(newOverlay);
 
         var id = await DonateAsync(app, "rotator");
         (await streamer.PostAsync($"/api/dashboard/donations/{id}/approve", null)).EnsureSuccessStatusCode();
