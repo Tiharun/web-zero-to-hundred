@@ -107,7 +107,7 @@
 - **C# Dev Kit 라이선스 주의**: 공식 시작 문서가 "You are required to sign in to a Visual Studio subscription to use C# Dev Kit"라고 적는 반면, 로그인 문서는 "sign in is not required or enforced by the extension, you might need to sign in using your Visual Studio account to comply with the EULA"라고 적어 서로 표현이 다르다 | https://code.visualstudio.com/docs/csharp/get-started , https://code.visualstudio.com/docs/csharp/signing-in | 확인일 2026-11-01 `[원문]` **실제 라이선스 조건(개인 무료 여부)은 미확인.** 대안: C# 확장(`ms-dotnettools.csharp`) 단독 + `dotnet` CLI 조합. 이 확장도 별도 라이선스 파일(`RuntimeLicenses/license.txt`)이 있음.
 
 **교재 반영 결정**
-- P1 Day 1은 User setup에서 "PATH에 추가"는 유지하고 "Code(으)로 열기" 두 항목은 체크하도록 안내한다(폴더 우클릭으로 여는 습관용). Copilot 명령은 "Don't add the copilot command"를 고르게 한다(별도 제품·구독).
+- P1 Day 2(설계서 3.1: 개발 도구 설치)는 User setup에서 "PATH에 추가"는 유지하고 "Code(으)로 열기" 두 항목은 체크하도록 안내한다(폴더 우클릭으로 여는 습관용). Copilot 명령은 "Don't add the copilot command"를 고르게 한다(별도 제품·구독).
 - 한국어 팩, Live Preview는 P1에서, rust-analyzer는 P3에서, REST Client는 P2에서 설치한다. C# 지원은 P2에서 **C# 확장 + `dotnet` CLI**를 기본으로 하고, C# Dev Kit은 "선택, 로그인·약관 확인 필요"로 둔다.
 
 ---
@@ -133,7 +133,7 @@
 | 11 | Configuring extra options | 파일 시스템 캐싱 선택, 심볼릭 링크 자동 판정 | 기본값 유지 |
 
 **교재 반영 결정**
-- P1 Day 2의 Git 설치는 위 표대로 "VS Code를 먼저 설치한 뒤 Git 설치 → 편집기는 VS Code, 초기 브랜치는 `main`, 나머지는 기본값"으로 쓴다. 설치 직후 `git --version`으로 확인하고, 줄 끝 처리는 기본값을 유지한다고 이유(Windows 체크아웃은 CRLF, 커밋은 LF)를 한 줄로 설명한다.
+- P1 Day 7(설계서 3.1: Git·GitHub 시작)의 Git 설치는 위 표대로 "VS Code를 먼저 설치한 뒤 Git 설치 → 편집기는 VS Code, 초기 브랜치는 `main`, 나머지는 기본값"으로 쓴다. 설치 직후 `git --version`으로 확인하고, 줄 끝 처리는 기본값을 유지한다고 이유(Windows 체크아웃은 CRLF, 커밋은 LF)를 한 줄로 설명한다.
 - 화면 캡처 없이 텍스트 안내만 한다. "화면 문구가 약간 달라도 같은 위치의 선택지를 고르세요"를 `:::info`로 덧붙인다.
 
 ---
