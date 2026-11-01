@@ -79,6 +79,15 @@ const decode = (s) =>
 
 const countNewlines = (s) => (s.match(/\n/g) ?? []).length;
 
+// 굵게(**)가 적용되지 않고 글자로 남았을 때의 안내 (E_BOLD_UNRENDERED)
+const BOLD_PAIR_MESSAGE =
+  '굵게(**)가 적용되지 않았어요. 닫는 ** 바로 뒤에 조사가 오고 앞이 문장부호면 깨져요. 굵게를 글자로 끝내거나 괄호를 굵게 밖으로 빼세요.';
+const BOLD_STRAY_MESSAGE =
+  '짝이 없는 **가 글자로 남았어요. 코드나 수식이면 백틱(`)으로 감싸세요. 굵게를 쓰려면 닫는 **도 써 주세요.';
+const BOLD_TITLE_MESSAGE =
+  '::: 블록 제목에는 굵게(**)를 쓸 수 없어요. 제목은 글자 그대로 나오니 ** 를 빼 주세요.';
+const boldMessage = (text) => (text.split('**').length === 2 ? BOLD_STRAY_MESSAGE : BOLD_PAIR_MESSAGE);
+
 /** BOM 제거, 줄바꿈을 \n으로 통일 */
 export const normalizeSource = (src) => String(src).replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
 
@@ -336,12 +345,11 @@ function createMarked(state, { terms, routes, prefixed }) {
     text(token) {
       if (token.tokens) return this.parser.parseInline(token.tokens);
       // CommonMark 한글 함정: `**x)**는` 처럼 닫는 ** 앞이 문장부호이고 뒤가 글자면 굵게가 안 되고 ** 가 그대로 남는다
-      if (token.text.includes('**')) {
-        state.error(
-          'E_BOLD_UNRENDERED',
-          token._line,
-          '굵게(**)가 적용되지 않았어요. 닫는 ** 바로 뒤에 조사가 오고 앞이 문장부호면 깨져요. 굵게를 글자로 끝내거나 괄호를 굵게 밖으로 빼세요. (글자 그대로 ** 를 보여 주려면 `**` 처럼 코드로 쓰세요.)',
-        );
+      const at = token.text.indexOf('**');
+      if (at >= 0) {
+        // 여러 줄 문단은 글자 덩어리 하나라서, ** 앞의 줄바꿈 수만큼 줄 번호를 더한다
+        const line = token._line == null ? null : token._line + countNewlines(token.text.slice(0, at));
+        state.error('E_BOLD_UNRENDERED', line, boldMessage(token.text));
       }
       return escText(token.text);
     },
@@ -402,7 +410,8 @@ function createMarked(state, { terms, routes, prefixed }) {
 
     link(token) {
       const href = token.href ?? '';
-      const inner = this.parser.parseInline(token.tokens ?? []);
+      // 자동 링크(주소 그대로)의 글자는 본문이 아니라 주소이므로 ** 검사 없이 글자 그대로 낸다
+      const inner = token.autolink ? esc(token.text) : this.parser.parseInline(token.tokens ?? []);
       const title = token.title ? ` title="${esc(token.title)}"` : '';
       if (href.startsWith('#')) {
         if (!routes.has(href)) {
@@ -477,6 +486,10 @@ export function renderMarkdown(src, ctx = {}) {
   };
 
   const renderBox = (box) => {
+    // 제목은 Markdown으로 처리하지 않고 글자 그대로 내므로 ** 가 보이게 된다
+    if (CONTAINER_KINDS.includes(box.kind) && box.title.includes('**')) {
+      state.error('E_BOLD_UNRENDERED', box.line, BOLD_TITLE_MESSAGE);
+    }
     const body = renderChunk(box.lines, box.bodyLine);
     if (box.kind === 'answer') {
       const n = ++state.answerCount;

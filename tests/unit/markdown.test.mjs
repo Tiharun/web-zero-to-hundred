@@ -394,6 +394,48 @@ test('asterisks in code are fine', () => {
   assert.ok(r.html.includes('href="https://example.com/a**b"'), r.html);
 });
 
+test('bare and angle-bracket URLs containing ** are not bold errors', () => {
+  const bare = render('자세한 내용은 https://example.com/a**b 를 보세요.');
+  assert.deepEqual(bare.errors, []);
+  assert.ok(bare.html.includes('>https://example.com/a**b</a>'), bare.html);
+  const angle = render('주소는 <https://example.com/a**b> 예요.');
+  assert.deepEqual(angle.errors, []);
+  assert.ok(angle.html.includes('>https://example.com/a**b</a>'), angle.html);
+});
+
+test('bold markers in container titles are errors', () => {
+  const tip = render('문단\n\n:::tip 이름 **x)**는\n내용\n:::');
+  assert.deepEqual(codes(tip), ['E_BOLD_UNRENDERED']);
+  assert.equal(tip.errors[0].line, 3);
+  const answer = render(':::answer **x)**는\n내용\n:::');
+  assert.deepEqual(codes(answer), ['E_BOLD_UNRENDERED']);
+  assert.equal(answer.errors[0].line, 1);
+  // 별표가 없는 제목은 그대로 괜찮다
+  assert.deepEqual(render(':::tip 꿀팁\n내용\n:::').errors, []);
+});
+
+test('unrendered bold reports the line it is on', () => {
+  const r = render('첫 줄\n둘째 **x)**는');
+  assert.deepEqual(codes(r), ['E_BOLD_UNRENDERED']);
+  assert.equal(r.errors[0].line, 2);
+  // 문단이 시작된 뒤 여러 줄 아래에 있어도 정확하다
+  const deep = render('가\n\n나 나 나\n다 다\n라 **y)**는\n마');
+  assert.equal(deep.errors[0].line, 5);
+  // 앞 줄에 정상 굵게가 있어도 영향이 없다
+  const mixed = render('**정상**이에요\n그리고 **z)**가');
+  assert.equal(mixed.errors[0].line, 2);
+});
+
+test('stray ** gets a code-wrapping hint, broken pair gets the particle hint', () => {
+  const stray = render('식은 2 ** 3 이에요.');
+  assert.deepEqual(codes(stray), ['E_BOLD_UNRENDERED']);
+  assert.match(stray.errors[0].message, /백틱/);
+  assert.match(stray.errors[0].message, /짝이 없는/);
+  const pair = render('**x)**는');
+  assert.match(pair.errors[0].message, /조사/);
+  assert.ok(!pair.errors[0].message.includes('백틱'));
+});
+
 test('result has the documented shape', () => {
   const r = render('안녕');
   assert.deepEqual(Object.keys(r).sort(), [
