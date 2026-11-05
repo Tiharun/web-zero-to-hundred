@@ -517,3 +517,17 @@ reference/sp-image-donation/server/ImageDonation.Tests/OverlayHubTests.cs
 reference/sp-image-donation/server/ImageDonation.Tests/PublicDonationTests.cs
 reference/sp-image-donation/server/ImageDonation.Tests/SafetyTests.cs
 ```
+
+## Fix round 2 — verification (resumed session)
+
+Code check (read-only): (a) `DonationService.ClearOverlayAsync` sends `Clear()` at line 160, per-item try/catch (line 179), second `Clear()` at line 186; `FailingDeleteStorage.cs` exists. (b) `DashboardPage.tsx` shows the success notice only `if (ok)`. (c) `GetMedia` calls `LocalImageStorage.IsValidFileName(file)` before any DB query. (d) `DonationCard.tsx` shows 신고 only when `imageUrl !== null`; reported cards show "증거로 보관 중 (7일 뒤 삭제)". README lines 46-49 already state Clear()-first and the reason for the second Clear() (no change needed).
+
+Commands (from reference/sp-image-donation unless noted):
+- `server: dotnet build -c Release` -> `0 Warning(s) 0 Error(s)`
+- `server: dotnet test` -> `Passed! Failed: 0, Passed: 54, Skipped: 0, Total: 54`
+- `client: npm ci` (0 vulnerabilities); `npx tsc -b` OK; `npm test` -> `Tests 8 passed (8)`; `npm run build` -> `built`; `npm run lint` -> clean
+- repo root: `node --test tests/reference/sp.e2e.test.mjs` -> `# pass 1 # fail 0`
+
+Docker smoke: the repo Dockerfile fails in this sandbox at `dotnet restore` (NU1301 UntrustedRoot, proxy CA not trusted). Built a VERIFICATION COPY of the context in scratchpad t28-verify/ctx (Dockerfile adds the proxy CA; `--network host`), with a scratch compose (project `t28verify`, port 18080, image `t28verify-api`). Result: `/healthz` 200, `/login` 200, `/media/abc.webp` 404; DB migrations ran (the logged `__EFMigrationsHistory` "fail" line is the expected first-run probe on an empty DB). Then `docker compose down -v`, image removed, no containers left. Note: the disk had filled up (0 free) mid-build; freed it with `docker builder prune -af` (build cache only).
+
+Files changed in this verification: none (only this report appended).
