@@ -194,3 +194,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Task 28: fix round 2/5 re-review (sonnet): 4/4 addressed (M1, M2, M4, M5), no new breakage. Waiting on verification agent before marking complete.
 - Task 28: verification (sonnet): Release build 0 warn; dotnet test 54/54; client tsc/test 8/8/build/lint OK; e2e pass 1/0; Docker smoke via scratch Dockerfile copy + proxy CA (repo Dockerfile unchanged; fails here only on proxy CA NU1301): /healthz 200, /login 200, /media/abc.webp 404; cleaned up. Note: disk hit 0 during build → `docker builder prune -af` freed ~12 GB (cache only).
 - Task 28: complete (commits 070f5df..d76194d, review clean)
+- T29 dispatched (opus, a73d162abe7e73591), NO GIT; carries T28 notes + R37 (SP must self-teach Docker/PostgreSQL since P3 is optional; flag P3 overlaps).
