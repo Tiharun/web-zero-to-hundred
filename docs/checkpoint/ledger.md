@@ -197,3 +197,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - T29 dispatched (opus, a73d162abe7e73591), NO GIT; carries T28 notes + R37 (SP must self-teach Docker/PostgreSQL since P3 is optional; flag P3 overlaps).
 - T8 implementer DONE_WITH_CONCERNS (170 P1 glossary terms; minutes raised on Days 2,4,21,24,26,28; UI details marked 실기 미확인). Committed dd9eeef (base 9ff7ac2). Review dispatched (opus, a5fb6009d6e2651c6, prerequisite-order gate).
 - R37 follow-up: messaged T14/T21/T29 that glossary/p1.md is on disk (P1 owns 터미널, PowerShell, 브랜치, 배포, 비동기, async 함수, await, fetch, JSON; P1 does NOT define 포트, localhost, 출처, 상태 코드, Promise → P2 may own).
+- T14 implementer DONE_WITH_CONCERNS (211 P2 terms; renamed C# 클래스; sqlite3 install + Mvc.Testing/xunit runner/Prettier versions + Prettier CRLF not in external-facts; outline ~190k chars). Committed b0ed08d (base 37f03e1). Review dispatched (opus).
