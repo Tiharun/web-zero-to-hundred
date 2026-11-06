@@ -94,7 +94,7 @@ Uncaught TypeError: Cannot set properties of null (setting 'textContent')
 Uncaught ReferenceError: menuToogle is not defined
 ```
 
-없는 이름(변수·함수)을 썼어요. 철자 오타가 가장 흔한 원인이에요(오늘 4단계 이후 절에서 확인해요).
+없는 이름(변수·함수)을 썼어요. 철자 오타가 가장 흔한 원인이에요.
 
 ```text
 Uncaught SyntaxError: missing ) after argument list
@@ -141,7 +141,7 @@ JSON 파일에 쉼표가 하나 더 있는 것처럼 문법이 틀렸어요([Day
 
 ### Markdown과 README
 
-**[[Markdown]]**은 `#`, `-`, `` ` `` 같은 간단한 기호로 제목·목록·코드를 표시하는 글쓰기 형식이에요. `.md` 파일로 저장하고, GitHub와 VS Code가 보기 좋은 문서로 바꿔 보여 줘요. 이 교재의 본문도 Markdown으로 쓰여 있어요.
+**[[Markdown]]**(마크다운)은 `#`, `-`, `` ` `` 같은 간단한 기호로 제목·목록·코드를 표시하는 글쓰기 형식이에요. `.md` 파일로 저장하고, GitHub와 VS Code가 보기 좋은 문서로 바꿔 보여 줘요. 이 교재의 본문도 Markdown으로 쓰여 있어요.
 
 | 쓰는 법 | 화면에서 |
 |---|---|
@@ -152,7 +152,7 @@ JSON 파일에 쉼표가 하나 더 있는 것처럼 문법이 틀렸어요([Day
 | `[글자](주소)` | 링크 |
 | `\| a \| b \|` 줄 모음 | 표 |
 
-**[[README]]**는 프로젝트 폴더 맨 위에 두는 설명서 파일로, 보통 `README.md`라는 이름의 Markdown 파일이에요. 무엇을 만든 프로젝트인지, 어떻게 열고 쓰는지, 폴더 구조가 어떤지 적어요. GitHub는 저장소 첫 화면에 README 내용을 자동으로 보여 줘요. 처음 온 사람(미래의 나 포함)이 가장 먼저 읽는 글이에요.
+**[[README]]**(리드미)는 프로젝트 폴더 맨 위에 두는 설명서 파일로, 보통 `README.md`라는 이름의 Markdown 파일이에요. 무엇을 만든 프로젝트인지, 어떻게 열고 쓰는지, 폴더 구조가 어떤지 적어요. GitHub는 저장소 첫 화면에 README 내용을 자동으로 보여 줘요. 처음 온 사람(미래의 나 포함)이 가장 먼저 읽는 글이에요.
 
 ## 🛠️ 따라하기
 
