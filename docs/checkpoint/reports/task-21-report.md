@@ -181,3 +181,95 @@ Corrections I made after `p2.md` appeared: 환경 변수 is P2 D3 (my spec guess
   - the label for `.git`/`.env` in the 생성물 line;
   - the 4 duplicate terms;
   - the P2 Day links above.
+
+---
+
+# Fix round 1
+
+Status: **DONE**. NO GIT. I touched only my 3 files:
+- `textbook/content/p3/_outline.md`
+- `textbook/content/p3/_meta.json`
+- `textbook/content/glossary/p3.md`
+
+Method: I did not hand-edit the outputs. The fixes are a patch layer, `days_fix.py`, plus `shapes.py` (§4 shape tables) and `sec345.py` (§3/§5 text) in my scratchpad, applied on top of the existing Day data. The generator then re-checks that every start state equals the previous Day's end state, that all 50 reference files appear by Day 45, that no term is duplicated across the p1/p2/sp/p3 glossaries, and the new preview and link checks. Line numbers below refer to the new `_outline.md`.
+
+## Changes per finding
+
+1. **R39 (Day 45, line 2476).** The `#/page/roadmap` link is gone. The 목표 now says: last line "졸업 로드맵이 열렸다" with no link (T35 adds it), plus the SP overview link.
+2. **OBS was assumed installed.**
+   - §0 (line ~17) now states that OBS was optional in P1 Day 27.
+   - Day 30 (line 1465) has an install-if-missing step: obsproject.com, `OBS-Studio-33.0.1-Windows-x64-Installer.exe`, the UAC prompt, the first-run wizard, and the browser-source steps (소스 목록 + → 브라우저 → URL `http://localhost:5173/host.html?room=CODE`, 1920×1080, default 800×600). OBS 33.0.1 is added to the tools line, with OBS install pitfalls and a browser-tab fallback.
+   - Day 43 (line 2336) teaches recording itself (설정 → 출력 녹화 경로, 제어 패널 녹화 시작/중지, finding the file) and credits Day 30 instead of P1. Two recording pitfalls are added.
+   - Day 1's back-link is marked "(선택)… 없으면 Day 30에서 설치".
+3. **§4 map and back-links.**
+   - The P1/P2 map is now §5 (line 175). I re-derived it from the committed `p1/_outline.md`, `p2/_outline.md` and the glossaries' 처음 등장 lines, and removed the "병렬 작성" hedge.
+   - §5 also lists the things P3 introduces itself because P1/P2 never teach them.
+   - Line fixes:
+     - Day 4 (360): `format!` added to 목표. The "C# 참조 타입 / JS 참조" credit is replaced by "introduced today".
+     - Day 8 (453): `trim` is introduced on Day 8, and the Day 5 claim is removed.
+     - Day 13 (579): `performance.now()` and `element.style` added to 목표, and the `style` credit removed.
+     - Day 14 (616): `getBoundingClientRect` introduced, and the type assertion `!` credited to P2 D7.
+     - Day 16 (697): the `Math.round` and object-mutation one-liners replace the false P1 credit.
+     - Day 18 (785): `Math.random()` and the JS `sort` comparator introduced; `Math.ceil` credited to P2 D31 and `slice` to P2 D5; the P1 credit for sort is removed.
+     - Day 21 (938): `setTimeout` → P2 D8, plus `Number()` (P1 D15) and `??` (P2 D5).
+     - Day 23 (1046): `if let` → Day 7.
+     - Day 24 (1105): `JSON.stringify` credited to P2 D32; `JSON.parse` introduced.
+     - Day 25 (1164): the `std::mem` claim removed; `mem::take` introduced.
+     - Day 26 (1226): `hidden` attribute → P1 D23.
+     - Day 27 (1292): TS `class`/`private` and `.at()` introduced; `Map` → P2 D29; spread → P2 D8.
+     - Day 30 (1465): `setTimeout` → P2 D8; `fetch` POST → P2 D31/D32 (moved here with `createRoom`); `location.href` introduced; regex → P1 D24.
+     - Day 32 (1605): `matches!` introduced.
+     - Day 33 (1666): `winver`/`Get-CimInstance` are new; Day 31 taught only `ipconfig`.
+     - Day 34 (1725): JOIN credit removed.
+     - Day 36 (1854): JOIN and GROUP BY introduced, since P2 used only EF `Include`.
+     - Day 37 (1922): a one-line note on argument-position `impl Fn` (short form of Day 10's `<T: Trait>`); secrets → P2 D26 user-secrets.
+     - Day 39 (2063): `process.argv` introduced.
+     - Day 41: secrets → P2 D26.
+     - §5 now has `npm ci` → P2 D3 and DTO → P2 D22.
+4. **R42 shape tables.** New §4 (lines 119–174) fixes names, signatures, order, and which functions each Day adds or changes:
+   - §4.1 `rust-basics\src\main.rs` Days 6–10: Day 7 uses `find_score(…) -> Option<u32>`, which avoids a lifetime that would otherwise be needed before Day 12. Day 8 has `parse_input`/`parse_input_q`; Day 9 has `Player::new(id, name)`; Day 10 removes `scaled`, and tasks use `Item`/`Settings`.
+   - §4.2 `local/*.ts` Days 16–20: the `Vec2` interface and function signatures, `Body`, `integrate`, `keepInsideArena`, `moveBody`, `circlesOverlap`, `separateCircles`, `LocalPlayer`/`LocalItem`/`LocalWorld`, `createWorld`, `addPlayer`, `stepWorld(world, inputs: [number, Direction][], dt)`, `ranking`, `snapshotOf`, private helpers, and Day 20's `MoveFn` parameter.
+   - §4.3 `play.ts` Days 13–24: a fixed skeleton (`update`/`render`/`frame`), then per Day exactly which constants and functions are added or changed (`ball`/`TRACK`, `me`/`items`, `readStick`, `meBody`, `dummies`/`bodies`, `world`/`myId`/`resultText`/`showHud`, `wasmMove`/`start()`, `LAG_MS`/`laggedInput(now)`, `connection`/`showLatency`).
+   - §4.4 server interim code: Days 22–25 `app.rs`/`main.rs`/`ws.rs`, and Day 31 `main.rs`.
+   - Every affected Day block has a "중간 코드 모양(R42)" line pointing to its row. Day 20 also gains the `local\world.ts` change.
+5. **R43 density.** The moves are listed under "Spec deviations" below.
+   - Day 19 (832) keeps only `step_is_deterministic`, so it has 9 tests. The `run` helper and the other 7 world.rs tests move to Day 21 (938), framed as "권위 서버가 믿을 규칙 확인"; Day 21 goes from 90 to 120 min and has 16 tests.
+   - Day 24 (1105) receives the `NAME_MAX_CHARS`/`NameError{Empty,TooLong}`/`validate_name`/`names_are_validated` port (20 tests). Day 26 (1226) no longer changes protocol.rs.
+   - Day 29 (1401, 110 min) holds the server room system plus minimal client changes: `RoomInfo`; `net.ts` `normalizeCode`/`roomFromUrl`/`fetchRoom`/`connect(room, …)`; `play.ts ?room=`/`fetchRoom`/`joinFailed`. Rooms are created with `curl.exe -X POST`.
+   - Day 30 (1465, 120 min) holds the home page (`index.html`/`home.ts` plus `createRoom`) together with host/qr/`host_session` and the common/index/host CSS. OBS loads `http://localhost:5173/host.html`.
+   - Day 31 (1533, 110 → 120 min) holds the multi-page `vite.config` build, tower-http (both Cargo.toml files), `router(state, static_dir)`, the `main.rs` static path, and `npm run build`, plus the existing LAN/firewall work. The build pitfalls moved here from Day 30.
+   - Days 24, 25, 30 and 32 now say to copy the reference block and then explain it; Day 32 limits hand-typing to `RateLimiter::check` and the banned-word part.
+   - Day 13's task numbers changed (600 px track).
+   - Cross-references updated: §3 evolution text, test counts (3 → 9 → 16 → 20 → 24), and the Day 13/22/23/40 mentions of the old Day numbers.
+6. **R44 glossary owners.**
+   - 데이터베이스 인덱스 now belongs to Day 35 (p3.md line 680; Day 35 목표 defines it, Day 36 refers back).
+   - derive stays with Day 10 and is marked "예고만" on Day 6.
+   - Each Day block now has an "예고만(정의는 담당 Day)" line, and the generator fails if a previewed term isn't owned by a later Day. Previews added: D1 WebAssembly, D2 panic, D4 Drop, D5/D7 수명, D6 derive, D12 액터 패턴, D19 스냅샷/클라이언트 예측/WebAssembly, D21 스냅샷/보간/클라이언트 예측/WebSocket/PostgreSQL, D22 tracing, D23 broadcast 채널, D26 쓰기 마감 시간, D33 PostgreSQL, D35 TLS.
+   - The §6 table (line 241), the Day lines and p3.md are generated from the same data, so they stay in sync.
+   - "링크만" lines added on Day 30 (`[[OBS Studio]]`, `[[브라우저 소스]]`, `[[오버레이]]`) and Day 31 (`[[정적 파일]]`, `[[빌드]]`).
+
+Kept as ruled: (a) minimal input sending on Day 26, (b) `println!` until Day 37.
+
+## Spec deviations (spec §3.3 vs this outline)
+
+1. Day 26 sends minimal input; Day 28 completes input sending and adds prediction. This was in fix round 0 and is accepted.
+2. Server logs use `println!` until Day 37. Also from round 0 and accepted.
+3. Day 19's world.rs unit tests: only `step_is_deterministic` is on Day 19; the other 7 tests are on Day 21, "네트워크 게임의 원리", which now runs 120 min.
+4. The game-core nickname validation port (`validate_name`/`NameError`) is on Day 24 ("메시지 프로토콜 — 검증"), no longer on Day 26 (입장/퇴장).
+5. Day 29 "방 시스템" keeps the room server and the minimal play/net changes. The home page (방 만들기 화면) moves to Day 30 "호스트 화면(OBS)".
+6. Rust static serving of `client/dist` and the multi-page build move from Day 30 to Day 31 "플레이어 화면(휴대폰)". On Day 30, OBS uses the Vite dev server.
+7. Minutes changed: Day 21 90 → 120, Day 29 120 → 110, Day 31 110 → 120. The total is now 4940, and every Day is within 60–120.
+
+## Verification (commands and output)
+
+- `python3 -I <scratchpad>/task21/gen.py /home/user/web-zero-to-hundred` → `완료: Day 45개, 용어 162개, 레퍼런스 파일 50개 모두 등장, 개요 271732자`. The checks it ran: start = previous end, all reference files present, no duplicates against p1/p2/sp glossaries, previews valid, links exist, titles match spec, minutes 60–120, no placeholders.
+- Scratch merge: `cp -r textbook/content <scratch>/content`, then I merged **every on-disk `_meta.json`** into the scratch curriculum: p1 (30 days, start/help pages), p2 (40), p3 (45), sp (40). The scratch glossary folder held the current p1.md, p2.md, sp.md and p3.md.
+  - `node textbook/build.mjs --check --allow-missing --content <scratch>/content` → `검사 통과: Day 155개, 페이지 4개, 결과 크기 0.83 MB`, exit 0. `E_TERM_DUPLICATE` count is 0.
+  - A separate heading scan across all 4 glossary files found no duplicate headings (670 total).
+- `_meta.json` minutes equal the outline headings (same source). `git diff --stat`: 3 files, +341/−243.
+
+## Remaining concerns
+
+- The shape tables fix names and signatures but not every expression. Writers still need to verify their code by running it (guide §6).
+- The P1/P2 outlines are getting small parallel fixes. Day numbers are stable, so the back-links should hold.
+- The unverified Windows, OBS and Render items from the first report still apply, and OBS 33.0.1 installer screens are not verified on real hardware.

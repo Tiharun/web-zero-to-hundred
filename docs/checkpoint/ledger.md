@@ -235,3 +235,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Task 14: minor (deferred): section 2 "taught here" list omits Day 27 Object.keys/values/flat; Day 36 .NET names explained inline, not in a 읽기만 box.
 - Task 14: complete (commits 37f03e1..d411c91, review clean)
 - T11 (P1 Days 21–30, sonnet) dispatched, NO GIT.
+- T21 fix round 1 implementer DONE (R39 fixed; OBS install D30 + recording D43; §5 P1/P2 map re-derived; §4 shape tables (R42); R43 rebalance incl. Day 21→120, Day 29 120→110, Day 31 110→120; R44 glossary). Committed f10a2c7; curriculum re-merged (check OK). Re-review dispatched (sonnet).
