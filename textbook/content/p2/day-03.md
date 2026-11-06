@@ -301,7 +301,7 @@ Node.js는 브라우저 없이 JavaScript 파일을 실행해요. 파일 하나�
 
 1. 탐색기의 `TS-PRACTICE` 줄에 마우스를 올리고 **새 파일**(종이에 + 모양) 아이콘을 클릭해요.
 2. 이름 칸에 `hello.js`를 입력하고 `Enter`를 눌러요.
-3. 편집 창에 아래 한 줄을 입력하고 `Ctrl + S`로 저장해요. 줄 맨 앞과 끝의 `` ` ``는 키보드 맨 왼쪽 위의 백틱 키(`₩` 키와 같은 키)예요.
+3. 편집 창에 아래 한 줄을 입력하고 `Ctrl + S`로 저장해요. 줄 안의 `` ` ``(백틱)은 숫자 `1`의 왼쪽 키예요(키보드 배열에 따라 달라요). **영어 입력 상태**에서 눌러요. 한글 상태에서는 `₩`가 입력될 수 있어요.
 
 📄 C:\dev\ts-practice\hello.js
 ```js
@@ -482,7 +482,7 @@ Compressing objects: 100% (3/3), done.
 Writing objects: 100% (3/3), 400 bytes | 400.00 KiB/s, done.
 Total 3 (delta 1), reused 0 (delta 0), pack-reused 0 (from 0)
 To https://github.com/내아이디/streamer-hub.git
-   1a2b3c4..2b3c4d5  main -> main
+   9d8c7b6..2b3c4d5  main -> main
 ```
 
 :::success

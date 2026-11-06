@@ -117,7 +117,7 @@ v26.13.0
 
 ### 2단계 · JavaScript에서 실행해야 알던 실수 보기 (7분)
 
-TypeScript가 왜 필요한지 눈으로 확인해요. 터미널에서 Node.js로 JavaScript를 직접 실행해 봐요.
+TypeScript가 왜 필요한지 눈으로 확인해요. 터미널에서 Node.js로 JavaScript를 직접 실행해 봐요. `node -e "코드"`는 파일을 만들지 않고 따옴표 안의 JavaScript 한 줄을 바로 실행하는 방법이에요. `-e`는 evaluate(계산해 봐요)의 줄임이에요.
 
 **어디서:** VS Code 터미널, 위치 `C:\dev\ts-practice`
 
@@ -258,6 +258,7 @@ console.log(`분류: ${category}, 라이브: ${isLive}, 태그: ${tags.join(', '
 ```
 
 5. `category` 위에 마우스를 올려 보세요. `const category: "게임"`이라고 추론된 타입이 보여요. `const`라서 값이 바뀌지 않으니 `"게임"` 그 글자 자체가 타입이에요. 같은 방법으로 `streamTitle`에 마우스를 올리면 `const streamTitle: string`이라고 보여요.
+   코드 마지막 줄의 `tags.join(', ')`는 배열의 칸들을 `, `(쉼표와 빈칸)로 이어 붙여 글자 하나로 만드는 메서드예요. `['게임', '수다']`가 `게임, 수다`가 돼요. P1의 문자열 메서드처럼 배열 뒤에 `.`을 붙여 써요.
 6. 터미널에서 변환해요. 아무 옵션 없이 `tsc`만 쳐요.
 
 ```powershell
@@ -394,7 +395,7 @@ error TS5112: tsconfig.json is present but will not be loaded if files are speci
 npx tsc --ignoreConfig src\hello.ts --outDir out
 ```
 
-아무것도 나오지 않으면 성공이에요. 탐색기에 `out` 폴더가 생기고 `hello.js`가 있어요. 열어서 `dist\hello.js`와 비교해 봐요. 설정이 달라서 맨 위에 `"use strict";`가 붙고 들여쓰기가 4칸이지만, 타입이 없는 JavaScript인 건 같아요. 확인했으면 지워요.
+아무것도 나오지 않으면 성공이에요. 탐색기에 `out` 폴더가 생기고 `hello.js`가 있어요. 열어서 `dist\hello.js`와 비교해 봐요. 설정이 달라서 맨 위에 `"use strict";` 줄이 붙고 맨 아래의 `export {};` 줄이 없다는 차이가 있지만, 타입이 없는 JavaScript인 건 같아요. 확인했으면 지워요.
 
 :::warn 지울 폴더의 경로를 확인하세요
 `Remove-Item`은 휴지통 없이 바로 지워요. `C:\dev\ts-practice\out`만 지워요.
