@@ -311,3 +311,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Ruling R58: promote all T15 Minors + the missing D1 tip; for the git drift, require "과제 후 커밋" so each Day ends clean — cost if wrong: one longer round.
 - Task 15: fix round 1/5 dispatched (resume a4cb3a28d07200aa3; FIX_BASE 3173b9a).
 - 2026-11-06: usage limit (429) hit again; T12 reviewer ①, T15 fix round 1, T16, T17, T18 terminated early. Resumed after reset via SendMessage (transcripts intact). WIP snapshot taken first.
+- T15 fix round 1 implementer DONE (19 items; Day 8 briefly corrupted by a bad edit and rebuilt). Files at 6115e79. Re-review dispatched (sonnet) incl. Day 8 integrity.

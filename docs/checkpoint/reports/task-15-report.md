@@ -26,3 +26,27 @@ No glossary extra file needed (all owned terms exist in glossary/p2.md; all are 
 ## Concerns for later writers
 - Day 7 end `client` has index.html footer text and main.ts hero buttons from assignments; Day 8 start state assumes them.
 - Day 8 `ui.ts` may contain optional `wait` (assignment 1).
+
+## Fix round 1
+Per-finding changes (textbook/content/p2/):
+0. day-01: added `:::tip 이 교재를 읽는 방법` before 시작 상태.
+1. day-08: 과제 1 now says to add `wait` to the ./ui.ts import; answer shows the import line and removal of the unused import (noUnusedLocals).
+2. day-04 step 4 (item 5): one-sentence explanation of `tags.join(', ')` at first use.
+3. day-08 step 5: new items for `append(...)` vs appendChild and `HTMLLIElement`/`HTMLUListElement`.
+4. day-04 step 2: `node -e` explained.
+5. day-04 step 6: real differences stated ("use strict"; line added, `export {};` absent).
+6. day-08 step 7: unblock path is only the Network request blocking pane (opened via ⋮ → More tools), names hedged.
+7. day-08 end state: blank line between CSS blocks fixed; note that `.card h2` matches nothing until Day 28.
+8. day-06/07/08 end states now show every changed file <=200 lines in full (Day 6 types/data/format; Day 7 favicon/style.css/types/.gitignore; Day 8 JSON x2, ui.ts, api.ts; style.css partial because 244 lines).
+9. day-03 step 8: push line `9d8c7b6..2b3c4d5`.
+10. day-09 step 4: answer "아니요/나중에" to the C# assets prompt, `.vscode` called harmless, Korean text marked 실기 미확인.
+11. day-02 step 6 and day-03 step 5: backtick wording from P1 Day 16; day-02 step 2 mentions `\` shown as ₩.
+12. day-07 step 3: main.ts = automatic full reload, CSS edit step added for real HMR.
+13. day-08 checklist: `npx tsc --noEmit` removed, `npm run build` kept.
+14. day-07 step 7: `Copy-Item` glossed.
+15. day-09: "작성 기준일 2026-11" added next to 10.0.403 (two places).
+16. day-07 and day-08: new "마무리 · 과제 결과도 커밋하기" step (git add -A / commit / push, clean status); Day 8 step 8 commit text and `6 files changed` updated; old "next commit" sentences removed.
+17. day-01 times: steps 5+4+9+4+5+4+9=40, assignments 4+4+2=10 (matches 75).
+18. day-02 step 2: ₩ key inline note (🧯 cap kept).
+Output: `npm run check -- --only p2-d01..p2-d10` -> 검사 통과 (0 errors). Re-executed code blocks for Days 6, 7, 8 (tsc + build pass). Verification doc appended.
+Note: day-08.md was briefly corrupted by a bad edit and rebuilt from the previous content; final file re-checked.
