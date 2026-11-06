@@ -296,3 +296,8 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Ruling R54: a Day 🧯 item and its 문제 해결 모음 entry need not have verbatim-identical headings — a paraphrase covering the same symptom/cause/fix satisfies CONTENT-GUIDE ("🧯 repeats 모음 items") — only genuinely missing items or lost content are defects — cost if wrong: a learner searching the 모음 by the exact Day heading may not find it by text search.
 - Task 11: fix round 3/5 dispatched (resume a8a09e53510e4c0d4; FIX_BASE 0411826) — add Day 26 entry, restore Day 27 guidance.
 - T11 fix round 3 implementer DONE. Files at 5302192. Re-review dispatched (haiku).
+- Task 11: fix round 3/5 (2 addressed, 0 open; commits 0411826..5302192)
+- Task 11: complete (commits 342c1ed..5302192, review clean)
+- P1 Days 1–30 all reviewed (T6 Day 1, T9, T10, T11).
+- Ruling R55: T12 smoke test covers every Day that has a content file (all h2/copy/console/360px checks) plus every page; Days without a file are checked to render the "준비 중" screen with 0 console errors. The preview index.html sent to the user is built from a scratch content copy containing only REVIEWED Day files (P1 1–30; unreviewed P2 WIP files removed → "준비 중"); the repo-root index.html is built the same way for the T12 commit — cost if wrong: preview hides in-progress P2 Days (intended).
+- T12 step 1 dispatched (sonnet): smoke test + Day 1 deferred fixes + CONTENT-GUIDE §1.5 heading + preview build. NO GIT.
