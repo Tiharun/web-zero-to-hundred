@@ -93,3 +93,81 @@ Total 170 (15 kept + 155 new). Note: CSS breakpoint is "브레이크포인트" (
 4. help.md compare procedure (§3) follows VS Code's documented command but the exact quick-pick contents for an untitled editor were not run here; a fallback via the Explorer "열려 있는 편집기" list is given.
 5. Brief Step 3 says `npm run check` → 0 errors; that command cannot pass until Day files exist (R4), so verification used outline-rules item 6 as instructed.
 6. The reference README's facts were followed; no reference defects found. `.sr-only` exists in the reference CSS but is unused in the reference HTML — the outline (Day 28) teaches it as a utility class "kept for later", which matches the reference as-is.
+
+## Fix round 1
+
+NO GIT. Touched only `textbook/content/p1/_outline.md` (regenerated from scratch `_outline.src.md` via `gen.py`, so start states stay chained) and `textbook/content/glossary/p1.md`. `_meta.json`, `pages/start.md`, `pages/help.md` unchanged. Line numbers below are in the new files.
+
+### Per-finding changes
+
+1. **CSS selector combinators (Important).**
+   - `_outline.md:383` Day 9 목표: comma group `h1, h2, h3` explained explicitly.
+   - `_outline.md:421` Day 10 목표: **자손 선택자** `.site-footer p`, `.schedule-table thead th`, mixed with comma `.schedule-table th, .schedule-table td`, space vs comma.
+   - `_outline.md:466` Day 11 이미 배운 것: 자손 선택자 (Day 10), 쉼표 묶음 (Day 9).
+   - `_outline.md:866` Day 21 목표: **복합 선택자** `.site-nav.open` (vs the spaced `.site-nav .open`), element+class `tr.today`, forward note to Days 24/27.
+   - Later 이미 배운 것 updated: Day 23 `:958` (descendant `.search-box label`), Day 24 `:1002` (복합 `.form-status.is-error`, 자손 `.field label`, 의사 클래스), Day 26 `:1090` (복합 `tr.today`, 자손 `.next-box h2`), Day 27 `:1138` (복합 `.countdown.hint`).
+   - Glossary: new terms **자손 선택자** (Day 10, `glossary/p1.md:371`) and **복합 선택자** (Day 21, `glossary/p1.md:703`). §3 table `_outline.md:130`/`:141` and Day lines `:455`/`:903` are in sync. Terms are now 172.
+2. **Developer tools on Live Preview pages (Important).**
+   - New §0.2 rule at `_outline.md:21`. The VS Code preview pane can't open the browser's devtools. 1st choice: copy the Live Preview address into Edge (or Chrome). 2nd choice: `Live Preview: Show Preview (External Browser)`, marked 실기 미확인. Pages opened by double-click use `F12` directly.
+   - Referenced from Day 6 `:282`, Day 9 `:385`, Day 10 `:415`, Day 13 `:538`, Day 15 `:623`, Day 22 `:911`, Day 25 `:1043` (also covers Days 26/28/29), Day 26 `:1089`, Day 28 `:1183` and Day 29 `:1232`.
+   - The Live Preview glossary entry (`glossary/p1.md:103`) also says to open the address in Edge or Chrome for devtools.
+3. **Day 8 day names** — `_outline.md:369`: `월요일`…`일요일`, the full names as in the reference.
+4. **Day 9 head comment vs §0.1** — new rule in §0.5 at `_outline.md:54`.
+   - Section-heading comments are written verbatim when their section is created. Other comments go in with their code.
+   - The head comment is built in three steps:
+     - Day 9 (`:405`): the title line only.
+     - Day 13 (`:567`): adds the 모바일 먼저 line.
+     - Day 14 (`:609`): adds the 순서 line, which completes the comment.
+   - The table row at `:43` now says "9 (Day 13·14에 한 줄씩 더해 완성)".
+5. **768px comment** — what each Day writes:
+   - Day 13 (`_outline.md:571`) writes only `/* 메뉴 목록은 가로로 늘어놔요 */`, above `.site-nav`.
+   - Day 21 (`:898`) replaces it with the reference text `/* 메뉴 버튼은 숨기고, 메뉴 목록은 가로로 늘어놔요 */` and moves it directly after `h1`. It then adds `.menu-toggle { display: none; }` under the comment and `display: block;` to `.site-nav`.
+6. **contents.js layout, Days 19–25** — new placement spec in §0.6 at `_outline.md:60`–`:66`.
+   - Where things go:
+     - `allVideos` stays under the `// 지금 상태` comment, directly below `thumbnails` (Day 19).
+     - Day 20 inserts its element block **between** `thumbnails` and that comment.
+     - Each later Day adds its elements at the end of the element block and its state variables in a fixed order.
+   - The state comment and the head comment change on fixed Days:
+
+     | Day | 상태 주석 | 머리 주석 둘째 줄 |
+     |---|---|---|
+     | 19 | 전체 영상 | 콘솔에서 살펴봐요 |
+     | 20 | (그대로) | 영상 데이터로 카드를 그려요 |
+     | 21 | + 선택한 카테고리 | (그대로) |
+     | 23 | + 검색어 | 카드로 그리고, 카테고리 버튼과 검색창으로 걸러서 보여 줘요 |
+     | 25 | 레퍼런스 원문 | 레퍼런스 원문 |
+
+   - The Day file lines are aligned: Day 19 `:812`, Day 20 `:855`, Day 21 `:900`, Day 23 `:984`, Day 25 `:1072`.
+7. **Day 7 shortcuts** — `_outline.md:314`: New Terminal is `` Ctrl + Shift + ` ``. `` Ctrl + ` `` shows or hides the terminal panel.
+8. **Live Preview details marked 실기 미확인.**
+   - `_outline.md:21` (default port), `:178` (`Show Preview` command name, possible `(Internal Browser)`/`(External Browser)` variants), `:188` (exercise answer).
+   - Learner-facing glossary text is hedged instead of using the 실기 미확인 tag:
+     - `glossary/p1.md:93`: the command palette example is now `Live Preview` + "명령 이름은 버전에 따라 조금 다를 수 있어요".
+     - `glossary/p1.md:103`: "끝의 숫자는 컴퓨터마다 다를 수 있어요".
+9. **Day 27 labels** — `_outline.md:1138`: `!==` → Day 16. `classList.add` → Day 20, compound selector → Day 21. The wrong "Day 22 classList" is removed.
+10. **Trivial fixes.**
+    - Day 7 `:314`: `cd C:\dev\my-creator-site` (cd = 지금 위치 바꾸기) added to the 목표.
+    - Day 23 `:952`: `placeholder` (and `autocomplete="off"` as a review) added to the 목표.
+
+### Commands and output
+
+- Consistency script (scratch). Result: `172 172` / `extra set()` / `collisions []`.
+  - Glossary headings equal the §3 table and each Day's 용어 line.
+  - Each term's 처음 등장 Day matches its owner.
+  - None of the 172 p1 terms collides (case-insensitive) with `glossary/p2.md` or `glossary/p3.md`.
+- Placeholder grep on all my files: no matches.
+- Scratch merge as asked: p1 `_meta.json` + all three glossaries + the current curriculum. Command: `node textbook/build.mjs --check --allow-missing --content <scratch>/task-8/merge/content` → `오류 373개: 빌드를 멈췄어요.`
+  - All 373 are `E_LINK_UNKNOWN` from `glossary/p2.md`/`p3.md` "처음 등장" links (e.g. `#/day/p2-d38`, `#/day/p3-d41`). Those Days don't exist until p2/p3 are merged.
+  - `grep -o " E_[A-Z_]*" | uniq -c` → `373 E_LINK_UNKNOWN`, `1 E_CUR_FILE_MISSING` (warning). There is no `E_TERM_DUPLICATE` and no p1 error.
+- Scratch merge with the p1, p2 and p3 `_meta.json` projects (read-only use of the sibling metas, pages `start, help, glossary, troubleshooting`): `node textbook/build.mjs --check --allow-missing --content <scratch>/task-8/merge2/content` →
+  ```text
+  경고 E_CUR_FILE_MISSING p1: Day 파일 29개가 없어 "준비 중" 화면으로 대신해요 …
+  경고 E_CUR_FILE_MISSING p2: Day 파일 40개가 없어 …
+  경고 E_CUR_FILE_MISSING p3: Day 파일 45개가 없어 …
+  검사 통과: Day 115개, 페이지 4개, 결과 크기 0.72 MB
+  ```
+  → **0 errors**.
+- `cd textbook && npm test` → `# tests 168 # pass 168 # fail 0`.
+
+### Note
+A p1-only scratch merge can't be error-free while `glossary/p2.md` and `glossary/p3.md` are on disk and the p2/p3 projects aren't in `curriculum.json`. Their Day links need those projects. Once the controller merges all three `_meta.json` files, the check passes (run 2 above).
