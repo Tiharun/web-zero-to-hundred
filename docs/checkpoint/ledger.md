@@ -301,3 +301,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - P1 Days 1–30 all reviewed (T6 Day 1, T9, T10, T11).
 - Ruling R55: T12 smoke test covers every Day that has a content file (all h2/copy/console/360px checks) plus every page; Days without a file are checked to render the "준비 중" screen with 0 console errors. The preview index.html sent to the user is built from a scratch content copy containing only REVIEWED Day files (P1 1–30; unreviewed P2 WIP files removed → "준비 중"); the repo-root index.html is built the same way for the T12 commit — cost if wrong: preview hides in-progress P2 Days (intended).
 - T12 step 1 dispatched (sonnet): smoke test + Day 1 deferred fixes + CONTENT-GUIDE §1.5 heading + preview build. NO GIT.
+- T12 step 1 implementer: sonnet, a8e0e53b32baeb609. BASE da77b87.
