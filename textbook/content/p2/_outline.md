@@ -7,7 +7,19 @@
 - Day 블록 형식은 모든 개요가 같아요: `## Day N — 제목 (분)` 아래 **목표 / 이미 배운 것 / 시작 상태 / 오늘 만들·바꿀 파일 / 끝 상태 확인 / 과제 → 정답 요지 / 용어(사전 담당) / 자주 막히는 곳 후보 / 레퍼런스 대응**.
 - **시작 상태**는 앞 Day의 끝 상태와 똑같아요(생성 스크립트로 계산). 폴더마다 한 줄로 `전체 폴더 경로: 파일, 파일`처럼 묶었어요. Day 본문의 `:::path 📂 시작 상태`에는 이것을 파일마다 전체 경로로 풀어 써요. `node_modules\`·`bin\`·`obj\`·`dist\`·`wwwroot\`·`*.db`처럼 도구가 만드는 것은 "건드리지 않는 생성물"로 짧게 언급만 해요. 연습 폴더(프로젝트 밖)는 그 Day가 쓸 때만 보여 줘요.
 - **오늘 만들·바꿀 파일**: `새로` = 새 파일, `바꿈` = 고침, `삭제` = 지움. 괄호 안은 대응하는 레퍼런스 파일이에요.
-- **레퍼런스 대응**의 "끝"은 그 Day가 끝나면 파일이 레퍼런스와 (글 내용·예시 값 말고는) 같아진다는 뜻이고, "중간 단계"는 뒤 Day가 더 고친다는 뜻이에요(어느 Day인지 적었어요). 레퍼런스 주석의 `(Day N)` 표시와 README의 "Day ↔ 코드 지도"가 이 개요와 같아요.
+- **레퍼런스 대응**의 "끝"은 그 Day가 끝나면 파일이 레퍼런스와 (글 내용·예시 값 말고는) 같아진다는 뜻이고, "중간 단계"는 뒤 Day가 더 고친다는 뜻이에요(어느 Day인지 적었어요).
+- 레퍼런스 코드 주석의 `(Day N)` 표시와 레퍼런스 README의 "Day ↔ 코드 지도"는 대부분 이 개요와 같지만 **다른 곳이 있어요. 다르면 이 개요를 따라요**(레퍼런스는 고치지 않아요). 알려진 차이:
+  - `Services/ScheduleQuery.cs` 주석 `(Day 29)` → 개요는 Day 23에 만들고 Day 29에 UTC 검사와 함께 다시 써요.
+  - `Services/PostService.cs` 주석 `(Day 23, 30)`, `Program.cs` 주석 "우리가 만든 서비스 (Day 23)", README 23행 `AddScoped<PostService>()` → 개요는 Day 23에 서비스 계층·수명 개념만, `PostService`와 `AddScoped`는 Day 30, `AddSingleton<NoticeBroadcaster>`는 Day 33.
+  - README 9~15행의 `PostService`(생성자·async Task·enum)·`NoticeBroadcaster`(List·lock) → Day 9~15는 같은 문법을 연습 폴더에서 배우는 Day이고, 두 파일은 Day 30·33에 만들어요(`lock`은 Day 33에서 처음 가르쳐요).
+  - README 7행 `vite.config.ts` → 개요는 Day 27(프록시)·Day 38(빌드 입력).
+  - README 8행 `api.ts`의 `ApiError` → 개요는 Day 8에 `getJson<T>`만, `ApiError` 클래스는 Day 27.
+  - README 4~6행 `ui.ts`의 `createElementWithText` → 개요는 Day 8(4~6일은 연습 폴더).
+  - `Dtos/HttpUrlAttribute.cs` 주석 `(Day 23, 34)` → 개요는 Day 34에만 만들어요(Day 23은 기본 `[Url]`).
+  - `Dtos/StreamerDtos.cs` 주석 "DTO (Day 23)" → 응답 DTO는 Day 22, 요청 DTO·검증은 Day 23.
+  - `Data/SeedData.cs`의 MigrateAsync 주석 `(Day 20)` → 개요는 Day 20에 `dotnet ef database update`, Day 21에 `SeedData`와 `MigrateAsync`.
+  - `Entities/Streamer.cs` 주석 `(Day 20)` → 클래스는 Day 18에 메모리 저장용으로 만들고 Day 20에 엔티티(`[MaxLength]`)가 돼요.
+  - `Endpoints/ScheduleEndpoints.cs` 주석 `(Day 22, 29)` → Day 22에는 `Program.cs` 안에 GET만, 파일은 Day 23, UTC 검사는 Day 29.
 - **과제 정답도 끝 상태에 들어가요**(CONTENT-GUIDE 규칙 d). 그래서 레퍼런스에 없는 코드를 남기는 과제는 "해 보고 되돌리기"로 설계했어요.
 - "작성자 원문 확인"이라고 적은 오류 문장은 이 개요가 실제 실행으로 얻은 것이 아니에요. Day 작성자가 실행해서 원문을 확정해요(CONTENT-GUIDE 규칙 e).
 
@@ -54,31 +66,31 @@ P2 Day 1은 빈 폴더에서 시작하고 P1 전체를 알고 있다고 가정�
 | [P1 Day 3](#/day/p1-d03) | HTML 태그·요소·속성, 문서 구조 | 7 |
 | [P1 Day 4](#/day/p1-d04) | 절대 경로·상대 경로 | 2 |
 | [P1 Day 5](#/day/p1-d05) | `./`·`../` | 2 |
-| [P1 Day 6](#/day/p1-d06) | 시맨틱 구조, 개발자 도구 Elements, `aria-current` | 1, 7, 28 |
+| [P1 Day 6](#/day/p1-d06) | 시맨틱 구조, 개발자 도구 Elements | 1, 7 |
 | [P1 Day 7](#/day/p1-d07) | Git 설치·사용자 설정·GitHub 저장소·커밋·푸시(줄바꿈 설정 기본값) | 2, 37 |
-| [P1 Day 8](#/day/p1-d08) | 표(행·열), 폼 | 19 |
+| [P1 Day 8](#/day/p1-d08) | 표(행·열), 폼·`label`·`select`/`option`·`textarea` | 19, 29, 31 |
 | [P1 Day 9](#/day/p1-d09) | CSS 연결·선택자 | 7 |
-| [P1 Day 11](#/day/p1-d11) | Flexbox | 7 |
+| [P1 Day 11](#/day/p1-d11) | Flexbox, `aria-current`·속성 선택자 | 7, 28 |
 | [P1 Day 12](#/day/p1-d12) | Grid 카드 | 8 |
 | [P1 Day 14](#/day/p1-d14) | CSS 변수·hover, GitHub Pages 배포 | 7, 16, 39 |
 | [P1 Day 15](#/day/p1-d15) | `let`/`const`·자료형(`null` 포함)·연산자·Console | 3, 4, 5 |
-| [P1 Day 16](#/day/p1-d16) | `if`/`===`·템플릿 리터럴 | 4, 5, 10 |
+| [P1 Day 16](#/day/p1-d16) | `if`/`===`·템플릿 리터럴, `Date` 맛보기(`new Date()`·`getHours`) | 4, 5, 10, 29 |
 | [P1 Day 17](#/day/p1-d17) | 반복문·배열 | 4, 10, 11 |
-| [P1 Day 18](#/day/p1-d18) | 함수·화살표 함수·스코프, `createElementWithText` 도우미 | 4, 6, 8, 11, 14 |
+| [P1 Day 18](#/day/p1-d18) | 함수·화살표 함수·스코프 | 4, 6, 11, 14 |
 | [P1 Day 19](#/day/p1-d19) | 객체, `map`/`filter`/`forEach` | 5, 6, 12, 14 |
-| [P1 Day 20](#/day/p1-d20) | DOM: `querySelector`·`textContent`·`classList`·`createElement` | 7, 8, 34 |
+| [P1 Day 20](#/day/p1-d20) | DOM: `querySelector`·`textContent`·`classList`·`createElement`, `createElementWithText` 도우미 | 7, 8, 34 |
 | [P1 Day 21](#/day/p1-d21) | `addEventListener`, 이벤트 위임 | 28 |
 | [P1 Day 22](#/day/p1-d22) | `prefers-color-scheme`, `localStorage` | 7 |
-| [P1 Day 23](#/day/p1-d23) | `input`·`change` 이벤트, 필터 | 29 |
-| [P1 Day 24](#/day/p1-d24) | 폼 검증(`required`·`pattern`), `preventDefault`, `role="status"`·`aria-live` | 8, 28, 31 |
-| [P1 Day 25](#/day/p1-d25) | JSON, `fetch`, `async`/`await`, `try`/`catch`, `response.ok`·`response.status`, `file://` 제약 | 1, 8, 15, 16 |
-| [P1 Day 26](#/day/p1-d26) | `Date`, `setInterval`, 컴퓨터 시계 기준 카운트다운 | 8, 29, 33 |
+| [P1 Day 23](#/day/p1-d23) | `input` 이벤트, `trim`·`toLowerCase`·`includes`, `hidden`, 필터(`change` 이벤트는 가르치지 않음 → P2 Day 29) | 21, 28, 29, 31 |
+| [P1 Day 24](#/day/p1-d24) | 폼 검증(`required`·`pattern`), `preventDefault`, `role="status"`·`aria-live`, `focus` (`minlength`·`maxlength`는 가르치지 않음 → P2 Day 31) | 8, 28, 31 |
+| [P1 Day 25](#/day/p1-d25) | JSON, `fetch`, `async`/`await`, `try`/`catch`·`throw new Error`, `response.ok`·`response.status`, `file://` 제약, 개발자 도구 Network 패널 | 1, 8, 15, 16 |
+| [P1 Day 26](#/day/p1-d26) | `Date` 깊게(`getDay`·`setHours`·밀리초), `setInterval`, `Math.floor`·`padStart`·`split`, 컴퓨터 시계 기준 카운트다운 | 8, 29, 33 |
 | [P1 Day 27](#/day/p1-d27) | `URLSearchParams`·`location.search`(URL 파라미터), OBS 브라우저 소스, 투명 배경 오버레이 | 18, 27, 28, 33 |
 | [P1 Day 28](#/day/p1-d28) | 접근성, 파비콘 | 7 |
 | [P1 Day 29](#/day/p1-d29) | 디버깅, README.md·마크다운 | 1, 40 |
 | [P1 Day 30](#/day/p1-d30) | 최종 점검·회고 | 40 |
 
-P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요): `innerHTML`(Day 7), `setTimeout`(Day 8), 구조 분해 할당·전개 구문(Day 8), JS 클래스 문법(Day 27, C# Day 12~13과 비교), JS `Map`(Day 29), `encodeURIComponent`(Day 27).
+P1 개요(현재 `textbook/content/p1/_outline.md`)를 기준으로, P1이 가르치지 않아서 P2가 그 Day 목표에서 처음 정의하는 것: 문자열 `slice`(Day 5), `innerHTML`(Day 7), `setTimeout`·구조 분해 할당·전개 구문(Day 8), JS 클래스 문법·`instanceof`·`encodeURIComponent`(Day 27, C# Day 12~13과 비교), `startsWith`·`decodeURIComponent`·`replaceChildren`(Day 28), `change` 이벤트·`getTime`·`toISOString`·`Date.UTC`·`getUTC…`·`Number.isNaN`·JS `Map`(Day 29), `minlength`·`maxlength`·`disabled`·`confirm()`·`Math.ceil`·`Math.max`·`Number.isInteger`·`in` 연산자(Day 31), `.then()`/`.catch()` 이어 쓰기(Day 33). JS `switch`는 쓰지 않아요(C# `switch`는 Day 10).
 
 ## 3. Windows·초보자 함정 배정표
 
@@ -207,7 +219,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
 ## Day 1 — 풀스택 큰 그림 (75분)
 
 - 목표: 스트리머 허브가 "브라우저 화면(클라이언트) ↔ C# 서버 ↔ SQLite DB" 세 부분으로 움직인다는 큰 그림을 `text` 그림으로 설명한다. P1 사이트(배포 주소 또는 Live Preview)를 열고 개발자 도구 **Network** 탭에서 `index.html`·`style.css`·`data/videos.json` 요청의 메서드·상태 코드·응답 본문을 본다(요청/응답 체험). 완성본 미리보기는 그림 대신 화면별 `text` 와이어프레임(홈, 스트리머 목록·상세, 주간 방송 일정, 팬 게시판, 로그인·가입, 관리자, OBS 공지 오버레이)과 "주소 → 화면" 표로 보여 준다(레퍼런스 README의 폴더 구조·API 표를 쉬운 말로). 40일 지도(TS 4~8 → C# 9~15 → 서버 16~26 → 화면 27~33 → 품질·배포 34~40)를 보여 주고, `C:\dev\streamer-hub` 폴더를 파일 탐색기로 만들어 VS Code로 열고 `README.md` 초안을 쓴다. 설치는 하지 않는다(터미널은 Day 2).
-- 이미 배운 것: 파일·폴더·확장자·`C:\dev` 규칙 [P1 Day 1](#/day/p1-d01); VS Code 폴더 열기·저장·Live Preview [P1 Day 2](#/day/p1-d02); HTML 문서 구조 [P1 Day 3](#/day/p1-d03); 개발자 도구 Elements [P1 Day 6](#/day/p1-d06); GitHub Pages 배포 주소 [P1 Day 14](#/day/p1-d14); JSON·`fetch`·`file://` 제약 [P1 Day 25](#/day/p1-d25); OBS 브라우저 소스·오버레이 [P1 Day 27](#/day/p1-d27); README.md·마크다운 [P1 Day 29](#/day/p1-d29)
+- 이미 배운 것: 파일·폴더·확장자·`C:\dev` 규칙 [P1 Day 1](#/day/p1-d01); VS Code 폴더 열기·저장·Live Preview [P1 Day 2](#/day/p1-d02); HTML 문서 구조 [P1 Day 3](#/day/p1-d03); 개발자 도구 Elements [P1 Day 6](#/day/p1-d06); GitHub Pages 배포 주소 [P1 Day 14](#/day/p1-d14); JSON·`fetch`·`file://` 제약·개발자 도구 Network 패널 [P1 Day 25](#/day/p1-d25); OBS 브라우저 소스·오버레이 [P1 Day 27](#/day/p1-d27); README.md·마크다운 [P1 Day 29](#/day/p1-d29)
 - 시작 상태: 새 프로젝트예요. `C:\dev\streamer-hub`는 아직 없어요.
   - P1 결과물 `C:\dev\my-creator-site\`(과 GitHub Pages 주소)이 있으면 좋아요. 없어도 오늘 따라 할 수 있게 Live Preview 경로를 둬요.
   - 설치되어 있어야 할 것: VS Code·한국어 팩·Live Preview(P1), Chrome 또는 Edge(P1), Git(`git --version`), GitHub 계정(P1)
@@ -292,7 +304,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
 
 ## Day 5 — 타입 설계 (90분)
 
-- 목표: `src\streamer.ts`에서 레퍼런스와 **같은 이름·칸**으로 타입을 설계한다: `type Platform = 'chzzk' | 'youtube' | 'soop' | 'other'`(유니온 + 리터럴), `interface Streamer { id; name; platform: Platform; channelUrl; bio; avatarUrl: string | null; createdAt: string }`, `interface StreamerDetail extends Streamer { schedules: Schedule[] }`, `interface Schedule { id; streamerId; streamerName; title; startsAt: string; durationMinutes }`. `?`(선택적 프로퍼티)와 `string | null`의 차이(레퍼런스는 "서버가 늘 보내지만 비어 있을 수 있음"이라 `| null`), `interface`와 `type` 별칭의 차이, `'twitch'`를 넣으면 TS2322가 나는 것. 타입 좁히기(`if (x !== null)`, `typeof`), `??`와 `?.`(JS에도 있는 연산자). 예시 데이터 3명(달빛곰·픽셀토끼·노을고양이, `example.com` 주소)을 `Streamer[]`로 만들어 `for…of`로 출력한다.
+- 목표: `src\streamer.ts`에서 레퍼런스와 **같은 이름·칸**으로 타입을 설계한다: `type Platform = 'chzzk' | 'youtube' | 'soop' | 'other'`(유니온 + 리터럴), `interface Streamer { id; name; platform: Platform; channelUrl; bio; avatarUrl: string | null; createdAt: string }`, `interface StreamerDetail extends Streamer { schedules: Schedule[] }`, `interface Schedule { id; streamerId; streamerName; title; startsAt: string; durationMinutes }`. `?`(선택적 프로퍼티)와 `string | null`의 차이(레퍼런스는 "서버가 늘 보내지만 비어 있을 수 있음"이라 `| null`), `interface`와 `type` 별칭의 차이, `'twitch'`를 넣으면 TS2322가 나는 것. 타입 좁히기(`if (x !== null)`, `typeof`), `??`와 `?.`(JS에도 있는 연산자), 문자열 메서드 `slice(시작, 끝)`(앞에서부터 잘라 내기 — `'달빛곰'.slice(0, 1)`은 `'달'`, P1 Day 23의 `trim`처럼 문자열에 붙는 메서드. 과제 3과 Day 28 `createAvatar`가 씀). 예시 데이터 3명(달빛곰·픽셀토끼·노을고양이, `example.com` 주소)을 `Streamer[]`로 만들어 `for…of`로 출력한다.
 - 이미 배운 것: 객체·배열 메서드 [P1 Day 19](#/day/p1-d19); 조건문·`===` [P1 Day 16](#/day/p1-d16); `null`·`undefined` 자료형 [P1 Day 15](#/day/p1-d15); 타입 표기·추론·`tsc` [Day 4](#/day/p2-d04)
 - 시작 상태: [Day 4](#/day/p2-d04)의 끝 상태와 같아요.
   - `C:\dev\streamer-hub\`: `README.md`, `.git\`
@@ -306,7 +318,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
 - 끝 상태 확인: `node dist\streamer.js` → `달빛곰 (chzzk) 사진 없음` 같은 줄 3개. `platform: 'twitch'`로 바꾸면 `error TS2322: Type '"twitch"' is not assignable to type 'Platform'.`(작성자 원문 확인).
 - 과제:
   1) 게시판 목록 한 줄 `PostListItem`(id, title, authorName, createdAt) 설계 (쉬움) → 레퍼런스 `types.ts`의 `PostListItem`과 같은 4칸
-  2) `platformName(platform: Platform): string`을 `if`/`switch`로 작성 (보통) → 치지직·YouTube·SOOP·기타. Day 28에서 `Record`로 바꾼다고 예고
+  2) `platformName(platform: Platform): string`을 `if`/`else if`로 작성 (보통) → 치지직·YouTube·SOOP·기타(JS `switch`는 쓰지 않음 — switch는 C# Day 10에서). Day 28에서 `Record`로 바꾼다고 예고
   3) `avatarUrl`이 `null`이면 이름 첫 글자를 쓰기 (보통) → `streamer.avatarUrl ?? streamer.name.slice(0, 1)`
 - 용어(사전 담당): 인터페이스, 타입 별칭, 유니온 타입, 리터럴 타입, 선택적 프로퍼티, 타입 좁히기, null 병합 연산자, 옵셔널 체이닝
 - 자주 막히는 곳 후보: `exactOptionalPropertyTypes`(tsc --init 기본값) 때문에 `?` 칸에 `undefined`를 직접 넣으면 오류 → 작성자가 원문 확인, 이 교재는 `| null`을 씀 / 리터럴 대소문자 `'Chzzk'` → TS2322 / `'x' is possibly 'null'.`(TS18047) → 좁히기 / 속성 이름 오타 TS2339 / `interface` 안에서 `,`와 `;`가 섞임(둘 다 됨)
@@ -339,7 +351,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
 
 ## Day 7 — Vite 프로젝트 (110분)
 
-- 목표: `cd C:\dev\streamer-hub` → `npm create vite@latest client -- --template vanilla-ts`(대화형 질문 `Install with npm and start now?` → **No**를 권장하고 `cd client`, `npm install`, `npm run dev`를 직접 친다. 질문 문구는 external-facts 7절). 개발 서버 주소 `http://localhost:5173/`의 **localhost**와 **포트** 뜻, 저장하면 바로 바뀌는 HMR. 템플릿 정리: `src\counter.ts`, `src\assets\`(hero.png·typescript.svg·vite.svg), `public\icons.svg`를 지운다. `public\favicon.svg`는 레퍼런스 아이콘으로 바꾼다. `index.html`: `lang="ko"`, `<title>스트리머 허브</title>`, `header.site-header`(`a.logo`, `nav` 안 `ul.nav-links`: 홈 `#/`, 스트리머 `#/streamers`, 방송 일정 `#/schedule`, 팬 게시판 `#/board` — 누르면 주소만 바뀌고 화면은 Day 28부터), `main#app.container`, `footer.site-footer`. `src\main.ts`: `import './style.css';`, `document.querySelector<HTMLElement>('#app')!`(제네릭 + `!` 타입 단언), **`innerHTML`**(HTML 글자를 요소로 바꿔 넣는 속성 — P1에서 안 썼으니 처음 소개, "우리가 쓴 고정 글자만 넣는다"는 규칙과 이유를 Day 34 예고와 함께)로 홈 hero(`section.hero`, 버튼 두 개는 과제). `src\style.css`: 레퍼런스 1~3절 + `.hero` + `.button`·`.button.secondary`·`.actions`(P1 색 변수와 같은 이름). `tsconfig.json`에 `"strict": true` 한 줄(레퍼런스와 같게). `src\types.ts`: Day 6 연습의 타입을 복사(이 프로젝트에서는 import 경로에 `.ts`). `npm run build` → `dist\`, `npm run preview`. `git status`로 `node_modules`·`dist`가 안 보이는 것(`client\.gitignore`) 확인 후 커밋·푸시.
+- 목표: `cd C:\dev\streamer-hub` → `npm create vite@latest client -- --template vanilla-ts`(대화형 질문 `Install with npm and start now?` → **No**를 권장하고 `cd client`, `npm install`, `npm run dev`를 직접 친다. 질문 문구는 external-facts 7절). 개발 서버 주소 `http://localhost:5173/`의 **localhost**와 **포트** 뜻, 저장하면 바로 바뀌는 HMR. 템플릿 정리: `src\counter.ts`, `src\assets\`(hero.png·typescript.svg·vite.svg), `public\icons.svg`를 지운다. `public\favicon.svg`는 레퍼런스 아이콘으로 바꾼다. `index.html`: `lang="ko"`, `<title>스트리머 허브</title>`, `header.site-header`(`a.logo`, `nav` 안 `ul.nav-links`: 홈 `#/`, 스트리머 `#/streamers`, 방송 일정 `#/schedule`, 팬 게시판 `#/board` — 누르면 주소만 바뀌고 화면은 Day 28부터), `main#app.container`, `footer.site-footer`. `src\main.ts`: `import './style.css';`, `document.querySelector<HTMLElement>('#app')!`(제네릭 + `!` 타입 단언), **`innerHTML`**(HTML 글자를 요소로 바꿔 넣는 속성 — P1에서 안 썼으니 처음 소개, "우리가 쓴 고정 글자만 넣는다"는 규칙과 이유를 Day 34 예고와 함께)로 홈 hero(`section.hero`, 버튼 두 개는 과제). `src\style.css`: 레퍼런스 `client/src/style.css`의 **1~127줄**(머리 주석, 1. 색 변수, 2. 기본, 3. 머리말의 `.site-header`~`.nav-links a[aria-current='page']`), **135~161줄**(`.site-footer`, 4. 공통 부품 주석, `.button`, `.button.secondary`), **178~183줄**(`.actions`), **304~315줄**(5. 화면별 주석, `.hero`, `.hero h1`). `.auth-menu`(128~134줄)는 Day 31에 넣는다(P1 색 변수와 같은 이름). `tsconfig.json`에 `"strict": true` 한 줄(레퍼런스와 같게). `src\types.ts`: Day 6 연습의 타입을 복사(이 프로젝트에서는 import 경로에 `.ts`). `npm run build` → `dist\`, `npm run preview`. `git status`로 `node_modules`·`dist`가 안 보이는 것(`client\.gitignore`) 확인 후 커밋·푸시.
 - 이미 배운 것: 시맨틱 구조 [P1 Day 6](#/day/p1-d06); CSS·선택자 [P1 Day 9](#/day/p1-d09); Flexbox [P1 Day 11](#/day/p1-d11); CSS 변수·hover [P1 Day 14](#/day/p1-d14); `prefers-color-scheme` [P1 Day 22](#/day/p1-d22); `querySelector`·`textContent`·`classList` [P1 Day 20](#/day/p1-d20); 제네릭·모듈·`import type` [Day 6](#/day/p2-d06); npm·`npm install` [Day 3](#/day/p2-d03); `strict` [Day 4](#/day/p2-d04); 커밋·푸시 [Day 2](#/day/p2-d02)
 - 시작 상태: [Day 6](#/day/p2-d06)의 끝 상태와 같아요.
   - `C:\dev\streamer-hub\`: `README.md`, `.git\`
@@ -356,7 +368,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
   - 새로 `C:\dev\streamer-hub\client\index.html` — 사이트 틀(머리말 메뉴 4개 + `main#app` + 꼬리말) (레퍼런스 `client/index.html`(Day 31·32에 auth-menu·admin-link 추가))
   - 새로 `C:\dev\streamer-hub\client\public\favicon.svg` — 레퍼런스 아이콘으로 바꿈 (레퍼런스 `client/public/favicon.svg`(같음))
   - 새로 `C:\dev\streamer-hub\client\src\main.ts` — 홈 hero를 `innerHTML`로 그림 (레퍼런스 `client/src/main.ts`·`pages/home.ts`의 hero)
-  - 새로 `C:\dev\streamer-hub\client\src\style.css` — 1. 색 변수 · 2. 기본 · 3. 머리말·꼬리말 + `.button`·`.button.secondary`·`.actions`·`.hero` (레퍼런스 `client/src/style.css`의 같은 블록)
+  - 새로 `C:\dev\streamer-hub\client\src\style.css` — 레퍼런스 1~127·135~161·178~183·304~315줄(`.auth-menu` 128~134줄은 Day 31) (레퍼런스 `client/src/style.css`의 같은 블록)
   - 새로 `C:\dev\streamer-hub\client\src\types.ts` — Day 6 연습 타입 복사(Platform·Streamer·StreamerDetail·Schedule·Paged<T>) (레퍼런스 `client/src/types.ts`)
   - 새로 `C:\dev\streamer-hub\client\dist\` — `npm run build` 결과(커밋 안 함) (—)
   - 삭제 `C:\dev\streamer-hub\client\src\counter.ts` — 템플릿 예제 삭제 (—)
@@ -373,8 +385,8 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
 
 ## Day 8 — 비동기 깊게 (110분)
 
-- 목표: Promise = "나중에 올 값의 약속"(대기·이행·거부). 개발자 도구 콘솔에서 `new Promise(resolve => setTimeout(resolve, 1000))`로 만든 `wait(ms)`를 `await`해 본다(`setTimeout`은 처음이니 한 줄 설명). async 함수는 항상 Promise를 돌려준다. `Promise.all`로 두 요청을 **동시에** 보내고 `const [streamers, schedules] = await Promise.all([...])`(구조 분해 할당), `list.append(...items)`(전개 구문). 임시 데이터 `client\public\data\streamers.json`·`schedules.json`(레퍼런스 시드와 같은 3명·4개, 시각은 `Z`가 붙은 UTC 문자열)을 만든다. `src\api.ts`: `async function getJson<T>(url: string): Promise<T>`(`response.ok`가 아니면 `throw new Error(...)`, `as T`는 "믿고 쓰기"일 뿐 실행 중 검사가 아님), `getStreamers()`·`getSchedules()`(임시 주소 `/data/*.json`). `src\ui.ts`: P1 도우미 `createElementWithText(tagName: string, className: string, text: string): HTMLElement`, `setStatus(element, message, isError = false)`, `errorMessage(error: unknown): string`(지금은 한 가지 문장). `main.ts`: hero 아래 `<p class="status" role="status">불러오는 중...</p>` → 카드 그리드(이름·플랫폼 배지·소개)와 "다가오는 방송" 목록(시각은 일단 문자열 그대로 — 한국 시간 표시는 Day 29). 개발자 도구 Network의 **Offline**/느린 네트워크로 로딩·오류 문장을 확인. `style.css`: `.status:empty`, `.status.error`, `.badge`(+플랫폼 색), `.card-grid`, `.card`, `.card h2`, `.bio`, `.item-list`, `.item-list li`, `.muted`.
-- 이미 배운 것: JSON·`fetch`·`async`/`await`·`try`/`catch`·`response.ok` [P1 Day 25](#/day/p1-d25); `setInterval`(타이머) [P1 Day 26](#/day/p1-d26); `createElement`·`textContent` [P1 Day 20](#/day/p1-d20); `createElementWithText` 도우미 [P1 Day 18](#/day/p1-d18); `role="status"` [P1 Day 24](#/day/p1-d24); Grid 카드 [P1 Day 12](#/day/p1-d12); 제네릭 [Day 6](#/day/p2-d06); 타입 단언·Vite 개발 서버·`public` 폴더 [Day 7](#/day/p2-d07)
+- 목표: Promise = "나중에 올 값의 약속"(대기·이행·거부). 개발자 도구 콘솔에서 `new Promise(resolve => setTimeout(resolve, 1000))`로 만든 `wait(ms)`를 `await`해 본다(`setTimeout`은 처음이니 한 줄 설명). async 함수는 항상 Promise를 돌려준다. `Promise.all`로 두 요청을 **동시에** 보내고 `const [streamers, schedules] = await Promise.all([...])`(구조 분해 할당), `list.append(...items)`(전개 구문). 임시 데이터 `client\public\data\streamers.json`·`schedules.json`(레퍼런스 시드와 같은 3명·4개, 시각은 `Z`가 붙은 UTC 문자열)을 만든다. `src\api.ts`: `async function getJson<T>(url: string): Promise<T>`(`response.ok`가 아니면 `throw new Error(...)`, `as T`는 "믿고 쓰기"일 뿐 실행 중 검사가 아님), `getStreamers()`·`getSchedules()`(임시 주소 `/data/*.json`). `src\ui.ts`: P1 도우미 `createElementWithText(tagName: string, className: string, text: string): HTMLElement`, `setStatus(element, message, isError = false)`, `errorMessage(error: unknown): string`(지금은 한 가지 문장). `main.ts`: hero 아래 `<p class="status" role="status">불러오는 중...</p>` → 카드 그리드(이름·플랫폼 배지·소개)와 "다가오는 방송" 목록(시각은 일단 문자열 그대로 — 한국 시간 표시는 Day 29). 개발자 도구 Network의 **Offline**/느린 네트워크로 로딩·오류 문장을 확인. `style.css`: 레퍼런스 **184~213줄**(`.status:empty`, `.status.error`, `.badge`+플랫폼 색 3개)과 **262~303줄**(`.item-list`, `.item-list li`, `.card-grid`, `.card`, `.card h2`, `.bio`)을 레퍼런스와 같은 순서·자리에 넣는다(`.muted`는 Day 7에 이미 있음).
+- 이미 배운 것: JSON·`fetch`·`async`/`await`·`try`/`catch`·`response.ok` [P1 Day 25](#/day/p1-d25); `setInterval`(타이머) [P1 Day 26](#/day/p1-d26); `createElement`·`textContent` [P1 Day 20](#/day/p1-d20); `createElementWithText` 도우미 [P1 Day 20](#/day/p1-d20); `role="status"` [P1 Day 24](#/day/p1-d24); Grid 카드 [P1 Day 12](#/day/p1-d12); 제네릭 [Day 6](#/day/p2-d06); 타입 단언·Vite 개발 서버·`public` 폴더 [Day 7](#/day/p2-d07)
 - 시작 상태: [Day 7](#/day/p2-d07)의 끝 상태와 같아요.
   - `C:\dev\streamer-hub\`: `README.md`, `.git\`
   - `C:\dev\streamer-hub\client\`: `.gitignore`, `package.json`, `package-lock.json`, `node_modules\`, `tsconfig.json`, `index.html`, `dist\`
@@ -388,7 +400,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
   - 새로 `C:\dev\streamer-hub\client\src\api.ts` — `getJson<T>` + `getStreamers()`·`getSchedules()`(임시 주소) (레퍼런스 `client/src/api.ts`의 `getJson<T>`)
   - 새로 `C:\dev\streamer-hub\client\src\ui.ts` — `createElementWithText`, `setStatus`, `errorMessage`(단순) (레퍼런스 `client/src/ui.ts`의 같은 함수)
   - 바꿈 `C:\dev\streamer-hub\client\src\main.ts` — Promise.all로 불러와 카드·다가오는 방송 그리기, 상태 문장 (레퍼런스 `pages/home.ts`의 Promise.all, `pages/streamers.ts`의 카드)
-  - 바꿈 `C:\dev\streamer-hub\client\src\style.css` — 4. 공통 부품 일부(status·badge·card·item-list·muted) (레퍼런스 `style.css`의 같은 블록)
+  - 바꿈 `C:\dev\streamer-hub\client\src\style.css` — 레퍼런스 184~213·262~303줄 (레퍼런스 `style.css`의 같은 블록)
 - 끝 상태 확인: 홈에 "불러오는 중..."이 잠깐 보였다가 카드 3장과 다가오는 방송 줄이 보인다. Network를 Offline으로 두고 새로 고치면 빨간 오류 문장이 보인다. 콘솔 오류는 0개(Offline 실험 제외).
 - 과제:
   1) `wait(ms)`를 만들어 1초 뒤 콘솔에 "1초 지났어요" (쉬움) → `function wait(ms: number): Promise<void> { return new Promise((resolve) => setTimeout(resolve, ms)); }`
@@ -518,7 +530,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
   - 바꿈 `C:\dev\cs-practice\Program.cs` — `List<User>` 다형성, `is` 패턴, 알림 보내기 (없음(연습))
 - 끝 상태 확인: `dotnet run` → 같은 `Describe()` 호출이 팬·관리자마다 다른 문장을 출력하고, `is Admin`으로 관리자만 골라낸다.
 - 과제:
-  1) `Moderator : User` 추가하고 Describe 재정의 (쉬움) → `public override string Describe() => …`(식 본문은 Day 14라 블록 본문으로)
+  1) `Moderator : User` 추가하고 Describe 재정의 (쉬움) → `public override string Describe() { return $"{Name}님은 채팅 관리자예요."; }`(블록 본문 — `=>` 식 본문은 Day 14)
   2) 목록에서 관리자 이름만 출력 (보통) → `foreach (var user in users) { if (user is Admin admin) … }`
   3) `interface IRule { bool IsValid(object? value); }`와 `NotEmptyRule` 구현 (도전) → `return value is string text && text != "";` (Day 34 미리보기)
 - 용어(사전 담당): 상속, virtual, override, 다형성, 패턴 매칭
@@ -628,7 +640,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
   2) `/api/streamers`에 한 명 더 넣었다가 빼기 (쉬움) → 저장 → dotnet watch 반영 → 다시 3명(Day 18에서 클래스로 바뀜)
   3) `.http`로 없는 주소 `GET {{host}}/api/nope` → `404` 확인 (쉬움) → 본문이 비어 있음(Day 24에서 ProblemDetails로 채움)
 - 용어(사전 담당): ASP.NET Core, Minimal API, 라우트, 솔루션, launchSettings.json, dotnet watch, 직렬화
-- 자주 막히는 곳 후보: **포트 충돌**: `Failed to bind to address http://127.0.0.1:5250: address already in use.`(작성자 원문 확인) → 다른 터미널의 `dotnet watch`를 `Ctrl + C`, 찾기 `Get-NetTCPConnection -LocalPort 5250` / **첫 실행 방화벽 창**("Windows 보안 경고" — dotnet.exe) → localhost만 쓰므로 허용하지 않아도 동작, 허용하려면 개인 네트워크만(방화벽 끄지 않기, 문구는 버전에 따라 다를 수 있음) / **HTTPS 개발 인증서**: https 프로필로 실행했거나 브라우저에 "연결이 비공개로 설정되어 있지 않습니다" → 오늘은 http 프로필만 쓰고, 필요하면 `dotnet dev-certs https --trust`(Day 34에서 자세히) / `Couldn't find a project to run.` → `StreamerHub.Api` 폴더에서 실행 / dotnet watch가 다시 시작할지 묻는 문장(rude edit) → 작성자가 원문 확인 후 `y`/`a` 안내 / 서버를 끄지 않고 창을 닫음 → 다음 실행에서 포트 충돌
+- 자주 막히는 곳 후보: **포트 충돌**: `Failed to bind to address http://127.0.0.1:5250: address already in use.`(작성자 원문 확인) → 다른 터미널의 `dotnet watch`를 `Ctrl + C`, 찾기 `Get-NetTCPConnection -LocalPort 5250` / **첫 실행 방화벽 창**("Windows 보안 경고" — dotnet.exe) → localhost만 쓰므로 허용하지 않아도 동작, 허용하려면 개인 네트워크만(방화벽 끄지 않기, 문구는 버전에 따라 다를 수 있음) / **HTTPS 경고**: https 프로필로 실행했거나 브라우저에 "연결이 비공개로 설정되어 있지 않습니다" → 오늘은 http 프로필만 쓴다. 해결 명령 `dotnet dev-certs https --trust`는 "내 PC가 개발용 HTTPS 인증서를 믿게 하는 명령"이라고 한 줄만 적고, 용어 `개발 인증서`의 정의(굵게·사전 링크)와 실습은 Day 34에서 한다 / `Couldn't find a project to run.` → `StreamerHub.Api` 폴더에서 실행 / dotnet watch가 다시 시작할지 묻는 문장(rude edit) → 작성자가 원문 확인 후 `y`/`a` 안내 / 서버를 끄지 않고 창을 닫음 → 다음 실행에서 포트 충돌
 - 레퍼런스 대응: 끝: `Properties/launchSettings.json`은 레퍼런스와 같아요. 중간 단계 — `Program.cs`(Day 18~38), `.gitignore`(Day 20·38), `StreamerHub.slnx`(Day 35), csproj(Day 20·25·26), `appsettings*.json`(Day 20·21·24·34), `StreamerHub.Api.http`(Day 18~34). `MapGet("/")`은 Day 38에 지워요(레퍼런스에 없음).
 
 ## Day 18 — 메모리 CRUD API (110분)
@@ -830,7 +842,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
 
 ## Day 24 — 오류·설정·로깅 (100분)
 
-- 목표: 오류 응답 통일: `builder.Services.AddProblemDetails();`, `if (!app.Environment.IsDevelopment()) { app.UseExceptionHandler(); }`, `app.UseStatusCodePages();` → 본문 없던 404에 `application/problem+json` 본문. 미들웨어 = 요청이 지나가는 관문들(그림), 순서가 중요한 이유(레퍼런스 2부 주석). 일부러 예외를 던지는 임시 엔드포인트로 개발 환경(자세한 오류 화면) vs Production(500 ProblemDetails)을 비교하고 **임시 엔드포인트는 지운다**. 구성: `appsettings.json` 위에 `appsettings.Development.json`이 덮어씀, `builder.Configuration`·`GetConnectionString`. 실행 환경: `launchSettings.json`의 `ASPNETCORE_ENVIRONMENT`, `$env:ASPNETCORE_ENVIRONMENT = "Production"` + `dotnet run --no-launch-profile`(그 창에서만 유지)로 Production 실험 → SQL 로그가 사라짐. 로깅: 로그 수준(Trace~Critical), `appsettings.json`에 `"Microsoft.EntityFrameworkCore": "Warning"`(레퍼런스 값), `app.Logger.LogInformation("스트리머 허브 서버를 시작해요. 환경: {Environment}", app.Environment.EnvironmentName);` — 자리표시자 `{…}` 구조적 로그. 이 한 줄은 **Day 26에 SeedData의 로그로 바꾸며 지운다**.
+- 목표: 오류 응답 통일: `builder.Services.AddProblemDetails();`, `if (!app.Environment.IsDevelopment()) { app.UseExceptionHandler(); }`, `app.UseStatusCodePages();` → 본문 없던 404에 `application/problem+json` 본문. 미들웨어 = 요청이 지나가는 관문들(그림), 순서가 중요한 이유(레퍼런스 2부 주석). 일부러 예외를 던지는 임시 엔드포인트로 개발 환경(자세한 오류 화면) vs Production(500 ProblemDetails)을 비교하고 **임시 엔드포인트는 지운다**. 구성: `appsettings.json` 위에 `appsettings.Development.json`이 덮어씀, `builder.Configuration`·`GetConnectionString`. 실행 환경: `launchSettings.json`의 `ASPNETCORE_ENVIRONMENT`, `$env:ASPNETCORE_ENVIRONMENT = "Production"` + `dotnet run --no-launch-profile --urls http://localhost:5250`(그 창에서만 유지. launchSettings를 읽지 않으면 기본 주소 `http://localhost:5000`에서 켜지므로 `.http`의 5250과 맞추려고 `--urls`를 꼭 붙임)로 Production 실험 → SQL 로그가 사라짐. 로깅: 로그 수준(Trace~Critical), `appsettings.json`에 `"Microsoft.EntityFrameworkCore": "Warning"`(레퍼런스 값), `app.Logger.LogInformation("스트리머 허브 서버를 시작해요. 환경: {Environment}", app.Environment.EnvironmentName);` — 자리표시자 `{…}` 구조적 로그. 이 한 줄은 **Day 26에 SeedData의 로그로 바꾸며 지운다**.
 - 이미 배운 것: 상태 코드·Content-Type [Day 16](#/day/p2-d16); 예외·스택 추적 [Day 15](#/day/p2-d15); 환경 변수 [Day 3](#/day/p2-d03); 연결 문자열·appsettings [Day 20](#/day/p2-d20); SQL 로그 [Day 21](#/day/p2-d21); 구조화·검증 400 [Day 23](#/day/p2-d23)
 - 시작 상태: [Day 23](#/day/p2-d23)의 끝 상태와 같아요.
   - `C:\dev\streamer-hub\`: `README.md`, `.git\`, `.gitignore`
@@ -859,7 +871,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
   2) `Logging:LogLevel:Default`를 `Warning`으로 바꿨다가 되돌리기 (쉬움) → 정보 로그가 사라짐
   3) 검증 400 응답도 ProblemDetails 모양인지 확인 (쉬움) → `title`·`status`·`errors`
 - 용어(사전 담당): 미들웨어, ProblemDetails, 구성, appsettings.json, 실행 환경, 로그 수준, ILogger
-- 자주 막히는 곳 후보: `UseExceptionHandler`를 `AddProblemDetails` 없이 → 시작 오류(작성자 원문 확인) / `$env:` 값이 다른 창에는 없음 / `dotnet run`이 launchSettings의 Development를 먼저 씀 → `--no-launch-profile` / appsettings.json 쉼표 오류 → 시작 실패 `Failed to load configuration from file …`(작성자 원문 확인) / Development 오류 화면이 HTML이라 `.http`에서 길게 보임(정상) / 임시 예외 엔드포인트를 지우지 않음
+- 자주 막히는 곳 후보: `UseExceptionHandler`를 `AddProblemDetails` 없이 → 시작 오류(작성자 원문 확인) / `$env:` 값이 다른 창에는 없음 / `dotnet run`이 launchSettings의 Development를 먼저 씀 → `--no-launch-profile` / `--no-launch-profile`만 쓰면 5000번에서 켜져 `.http`(5250) 요청이 연결 실패 → `--urls http://localhost:5250` / appsettings.json 쉼표 오류 → 시작 실패 `Failed to load configuration from file …`(작성자 원문 확인) / Development 오류 화면이 HTML이라 `.http`에서 길게 보임(정상) / 임시 예외 엔드포인트를 지우지 않음
 - 레퍼런스 대응: 중간 단계 — 레퍼런스와 다름: `Program.cs`의 `app.Logger.LogInformation(...)` 한 줄은 레퍼런스에 없어요(Day 26에 지우고 `SeedData`의 ILogger로 대신). `appsettings.json`은 Day 34에 RateLimit을 더하면 레퍼런스와 같아요.
 
 ## Day 25 — 회원가입·로그인 (120분)
@@ -934,7 +946,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
   - 새로 `%APPDATA%\Microsoft\UserSecrets\<UserSecretsId>\secrets.json` — user-secrets 값(프로젝트 밖이라 커밋되지 않음) (레퍼런스 README "관리자 계정 정하기")
 - 끝 상태 확인: 서버 시작 로그에 "관리자 계정 admin@example.com을(를) 만들었어요." 로그인 안 함 `GET /api/me` → 204, 팬 → 200 `roles: []`, 팬이 `POST /api/streamers` → 403, 관리자 → 201, 로그인 안 함 → 401, `PUT /api/me` → 204.
 - 과제:
-  1) 팬이 관리자 이메일로 먼저 가입해 둔 상황 재현 → 승격 안 됨 경고 로그 (도전) → 개발 DB를 지우고(서버 끔) 팬으로 `admin@example.com` 가입 후 서버 재시작 → "비밀번호가 설정과 달라서 관리자로 올리지 않았어요" → 다시 DB 지우고 원래대로
+  1) 관리자 이메일 선가입 위험 재현(레퍼런스 테스트 `AdminSeed_DoesNotPromote_PreRegisteredAccountWithWrongPassword`와 같은 순서) (도전) → ① 서버를 끄고 `streamerhub.db*` 삭제 ② `dotnet user-secrets remove "Admin:Password"`로 설정을 잠깐 비움 ③ 서버를 켜면 "Admin:Email과 Admin:Password 설정이 없어서 관리자 계정을 만들지 않았어요." 경고가 나오고 관리자 계정이 없음 ④ `.http`로 팬이 `admin@example.com`(설정과 다른 비밀번호)으로 가입 ⑤ 서버를 끄고 `dotnet user-secrets set "Admin:Password" '<원래 비밀번호>'`로 되돌린 뒤 다시 켜면 "admin@example.com로 이미 가입한 계정이 있지만 비밀번호가 설정과 달라서 관리자로 올리지 않았어요." 경고, 그 계정으로 로그인한 `GET /api/me`의 `roles`는 `[]` ⑥ 서버를 끄고 DB를 다시 지운 뒤 켜서 "관리자 계정 admin@example.com을(를) 만들었어요."로 원래 상태 복구 (서버 시작 때 시드가 먼저 관리자를 만들기 때문에, 설정을 비우지 않고 가입하면 `DuplicateUserName`으로 재현되지 않아요)
   2) 닉네임 한 글자로 `PUT /api/me` → 400 (쉬움) → `StringLength(MinimumLength = 2)` 메시지
   3) `dotnet user-secrets list`로 값 확인하고 secrets.json 위치를 탐색기로 찾기 (쉬움) → `%APPDATA%` 주소 표시줄 입력
 - 용어(사전 담당): 역할, 권한 정책, 클레임, user-secrets
@@ -943,7 +955,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
 
 ## Day 27 — 프론트↔백 연결 (120분)
 
-- 목표: 터미널 두 개(서버 `dotnet watch` 5250, 클라이언트 `npm run dev` 5173). 출처 = 스킴+호스트+포트. 5173 페이지의 콘솔에서 `fetch('http://localhost:5250/api/streamers')` → CORS 오류 원문(작성자 캡처) → 뜻 풀이. 서버에 CORS를 여는 대신 **Vite 프록시**를 쓰는 이유: 브라우저에게는 같은 출처(5173)라 CORS가 필요 없고 로그인 쿠키도 그대로 붙음, 배포하면 서버 하나(Day 38). `:::info 실무에서는` 다른 출처가 꼭 필요하면 `AddCors`로 정해진 출처만(자격 증명과 `*` 금지) — 코드는 남기지 않음. `client\vite.config.ts`(`defineConfig`, `server.proxy: { '/api': 'http://localhost:5250' }`, 빌드 설정은 Day 38) → dev 서버 재시작. `api.ts`를 진짜 API로: `request(method, url, body?)`(JSON일 때만 Content-Type), TS 클래스 `ApiError extends Error`(필드 선언 → constructor → `super`, C# Day 12~13과 비교, `erasableSyntaxOnly` 때문에 `constructor(public status…)` 축약 금지), `ProblemDetails` 인터페이스, `toApiError`(401·403·404·429·400 검증 문장), `getJson<T>`, `getStreamers(q = '')`(`encodeURIComponent`), `getStreamer(id)`. `types.ts`를 서버 DTO 모양으로(`createdAt` 문자열, `avatarUrl: string | null`). `ui.ts` `errorMessage`에 `instanceof ApiError` 분기와 "서버에 연결하지 못했어요…"(fetch 실패는 TypeError). `main.ts`는 진짜 스트리머 카드만(다가오는 방송은 Day 29). `public\data\`를 지운다.
+- 목표: 터미널 두 개(서버 `dotnet watch` 5250, 클라이언트 `npm run dev` 5173). 출처 = 스킴+호스트+포트. 5173 페이지의 콘솔에서 `fetch('http://localhost:5250/api/streamers')` → CORS 오류 원문(작성자 캡처) → 뜻 풀이. 서버에 CORS를 여는 대신 **Vite 프록시**를 쓰는 이유: 브라우저에게는 같은 출처(5173)라 CORS가 필요 없고 로그인 쿠키도 그대로 붙음, 배포하면 서버 하나(Day 38). `:::info 실무에서는` 다른 출처가 꼭 필요하면 `AddCors`로 정해진 출처만(자격 증명과 `*` 금지) — 코드는 남기지 않음. `client\vite.config.ts`(`defineConfig`, `server.proxy: { '/api': 'http://localhost:5250' }`, 빌드 설정은 Day 38) → dev 서버 재시작. `api.ts`를 진짜 API로: `request(method, url, body?)`(JSON일 때만 Content-Type), TS 클래스 `ApiError extends Error`(필드 선언 → constructor → `super`, C# Day 12~13과 비교, `erasableSyntaxOnly` 때문에 `constructor(public status…)` 축약 금지), `ProblemDetails` 인터페이스, `toApiError`(401·403·404·429·400 검증 문장. 처음 쓰는 `Object.keys`·`Object.values`·배열 `flat()`은 그 자리에서 한 줄씩 설명), `getJson<T>`, `getStreamers(q = '')`(`encodeURIComponent`), `getStreamer(id)`. `types.ts`를 서버 DTO 모양으로(`createdAt` 문자열, `avatarUrl: string | null`). `ui.ts` `errorMessage`에 `instanceof ApiError` 분기와 "서버에 연결하지 못했어요…"(fetch 실패는 TypeError). `main.ts`는 진짜 스트리머 카드만(다가오는 방송은 Day 29). `public\data\`를 지운다.
 - 이미 배운 것: fetch·Promise·getJson·상태 문장 [Day 8](#/day/p2-d08); C# 클래스·상속·생성자 [Day 12](#/day/p2-d12)·[Day 13](#/day/p2-d13); ProblemDetails [Day 24](#/day/p2-d24); API 서버·포트 5250 [Day 17](#/day/p2-d17)~[Day 26](#/day/p2-d26); 개발 서버·포트 [Day 7](#/day/p2-d07); 제네릭·Record [Day 6](#/day/p2-d06); 쿼리 문자열 [P1 Day 27](#/day/p1-d27)
 - 시작 상태: [Day 26](#/day/p2-d26)의 끝 상태와 같아요.
   - `C:\dev\streamer-hub\`: `README.md`, `.git\`, `.gitignore`
@@ -981,8 +993,8 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
 
 ## Day 28 — 목록·상세 페이지 (120분)
 
-- 목표: SPA와 해시 라우터 원리: `#` 뒤만 바뀌면 페이지를 새로 불러오지 않고 `hashchange` 이벤트가 난다 → 서버에는 `index.html` 하나면 됨(Day 38). `src\router.ts`(레퍼런스와 같음): 타입 `Params = Record<string, string>`, `Page = (view, params, query) => void | Promise<void>`, `addRoute`, `matchRoute`(칸별 비교, `:`로 시작하면 값 받기, `decodeURIComponent`를 try/catch — `%` 같은 잘못된 주소는 "맞지 않음"), `readHash`(`#/board?page=2` → path·`URLSearchParams`), `render`(새 `view` 상자로 통째로 바꿔 끼워 늦게 온 응답이 섞이지 않게, 오류는 안내 문장 + `console.error`), `startRouter`. `main.ts`: `addRoute('/', renderHome)`, `/streamers`, `/streamers/:id`, `markCurrentLink`(`aria-current="page"`), `start()`. `pages\home.ts`(hero만, Day 7 main.ts의 내용을 옮김), `pages\streamers.ts`(레퍼런스와 같음: 검색 폼 → `#/streamers?q=`, 입력값은 `value`로, 카드), `pages\streamerDetail.ts`(프로필·배지·소개·채널 링크 `target="_blank" rel="noopener noreferrer"`, 404면 "없는 스트리머예요." — 다가오는 방송은 Day 29, 주소 검사는 Day 34). `ui.ts`: `platformNames: Record<Platform, string>`, `createLink`, `createAvatar`(지금은 `avatarUrl`이 있으면 img, 없으면 첫 글자). `style.css`: `.avatar`, `.search-form`, `.profile-head`, `.profile-head h1`.
-- 이미 배운 것: `URLSearchParams`·`location` [P1 Day 27](#/day/p1-d27); 이벤트·`addEventListener` [P1 Day 21](#/day/p1-d21); `aria-current` [P1 Day 6](#/day/p1-d06); 폼 submit·`preventDefault` [P1 Day 24](#/day/p1-d24); 함수 타입·Record·제네릭 [Day 6](#/day/p2-d06); api.ts·ApiError [Day 27](#/day/p2-d27); Platform 유니온 [Day 5](#/day/p2-d05); 라우트(서버) [Day 17](#/day/p2-d17)
+- 목표: SPA와 해시 라우터 원리: `#` 뒤만 바뀌면 페이지를 새로 불러오지 않고 `hashchange` 이벤트가 난다 → 서버에는 `index.html` 하나면 됨(Day 38). `src\router.ts`(레퍼런스와 같음): 타입 `Params = Record<string, string>`, `Page = (view, params, query) => void | Promise<void>`, `addRoute`, `matchRoute`(칸별 비교, `:`로 시작하면(`startsWith(':')` — 처음 쓰는 문자열 메서드) 값 받기, `decodeURIComponent`를 try/catch — `%` 같은 잘못된 주소는 "맞지 않음"), `readHash`(`#/board?page=2` → path·`URLSearchParams`), `render`(새 `view` 상자를 `app.replaceChildren(view)`로 통째로 바꿔 끼워 늦게 온 응답이 섞이지 않게, `window.scrollTo(0, 0)`, 오류는 안내 문장 + `console.error`), `startRouter`. `main.ts`: `addRoute('/', renderHome)`, `/streamers`, `/streamers/:id`, `markCurrentLink`(`aria-current="page"`), `start()`. `pages\home.ts`(hero만, Day 7 main.ts의 내용을 옮김), `pages\streamers.ts`(레퍼런스와 같음: 검색 폼 → `#/streamers?q=`, 입력값은 `value`로, 카드), `pages\streamerDetail.ts`(프로필·배지·소개·채널 링크 `target="_blank" rel="noopener noreferrer"`, 404면 "없는 스트리머예요." — 다가오는 방송은 Day 29, 주소 검사는 Day 34). `ui.ts`: `platformNames: Record<Platform, string>`, `createLink`, `createAvatar`(지금은 `avatarUrl`이 있으면 img, 없으면 첫 글자). `style.css`: 레퍼런스 **214~227줄**(`.avatar`), **245~255줄**(`input, select, textarea` — 검색칸이 처음 쓰는 입력칸), **316~333줄**(`.search-form`, `.profile-head`, `.profile-head h1`).
+- 이미 배운 것: `URLSearchParams`·`location` [P1 Day 27](#/day/p1-d27); 이벤트·`addEventListener` [P1 Day 21](#/day/p1-d21); `aria-current`·속성 선택자 [P1 Day 11](#/day/p1-d11); 폼 submit·`preventDefault` [P1 Day 24](#/day/p1-d24); 함수 타입·Record·제네릭 [Day 6](#/day/p2-d06); api.ts·ApiError [Day 27](#/day/p2-d27); Platform 유니온 [Day 5](#/day/p2-d05); 라우트(서버) [Day 17](#/day/p2-d17)
 - 시작 상태: [Day 27](#/day/p2-d27)의 끝 상태와 같아요.
   - `C:\dev\streamer-hub\`: `README.md`, `.git\`, `.gitignore`
   - `C:\dev\streamer-hub\client\`: `.gitignore`, `package.json`, `package-lock.json`, `node_modules\`, `tsconfig.json`, `index.html`, `dist\`, `vite.config.ts`
@@ -1007,7 +1019,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
   - 새로 `C:\dev\streamer-hub\client\src\pages\streamerDetail.ts` — 프로필(일정·주소 검사 없음) (레퍼런스 `pages/streamerDetail.ts`(Day 29·34))
   - 바꿈 `C:\dev\streamer-hub\client\src\main.ts` — 라우터·주소 3개·markCurrentLink (레퍼런스 `main.ts`(Day 29·31·32))
   - 바꿈 `C:\dev\streamer-hub\client\src\ui.ts` — platformNames, createLink, createAvatar(단순) (레퍼런스 `ui.ts`(Day 29·32·34))
-  - 바꿈 `C:\dev\streamer-hub\client\src\style.css` — .avatar, .search-form, .profile-head (레퍼런스 `style.css`)
+  - 바꿈 `C:\dev\streamer-hub\client\src\style.css` — 레퍼런스 214~227·245~255·316~333줄 (레퍼런스 `style.css`)
 - 끝 상태 확인: 메뉴 "스트리머" → 주소 `#/streamers`, 카드 3장, 메뉴에 밑줄. 이름 클릭 → `#/streamers/1` 상세, 뒤로 가기 동작. "곰" 검색 → `#/streamers?q=%EA%B3%B0` 1명. `#/abc`와 `#/streamers/%` → "페이지를 찾을 수 없어요". 콘솔 오류 0.
 - 과제:
   1) `#/streamers/999` → "없는 스트리머예요." (보통) → `error instanceof api.ApiError && error.status === 404` 분기(레퍼런스와 같음)
@@ -1019,8 +1031,8 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
 
 ## Day 29 — 방송 일정 페이지 (120분)
 
-- 목표: UTC vs 한국 시간(KST = UTC+9, 서머타임 없음). P1 Day 26 카운트다운은 "컴퓨터 시계 기준"이라 다른 나라 컴퓨터에서는 틀린다는 비교. ISO 8601 `2026-11-02T11:00:00Z`(끝의 `Z` = UTC). 원칙: **DB와 API는 UTC, 화면만 한국 시간**. 서버: SQLite가 DateTime의 UTC 표시(Kind)를 잃어 JSON에 `Z`가 빠지는 것을 확인 → `AppDbContext.ConfigureConventions` + `UtcDateTimeConverter : ValueConverter<DateTime, DateTime>`(읽을 때 `DateTime.SpecifyKind(…, Utc)`) → 이제 모든 시각에 `Z`. 마이그레이션이 필요 없는지 작성자가 `dotnet ef migrations has-pending-model-changes`로 확인. `ScheduleEndpoints.GetInRange`: Kind가 Utc가 아니면 400 "시각은 UTC로 보내 주세요", `to <= from` 400(이미 있음), Create/Update의 `startsAt` 검사(레퍼런스와 같게). 클라이언트: `ui.ts` 시간 도우미(`KST_OFFSET_MS`, `Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', … })` 3개, `formatKstDateTime`·`formatKstDate`·`formatKstTime`·`toKstDateString`), `api.ts` `getSchedules(from: Date, to: Date)`(`toISOString()` + `URLSearchParams`), `pages\schedule.ts`(레퍼런스와 같음: `startOfKstWeek`, `?week=YYYY-MM-DD`, 지난주·다음 주, 월~일 7칸, 오늘 강조, 스트리머 필터 `select` — JS `Map`으로 중복 없는 이름 목록, 서버에 다시 묻지 않고 거르기), `home.ts`에 다가오는 방송 3개, `streamerDetail.ts`에 다가오는 방송 목록, `main.ts`에 `/schedule`. 개발자 도구에서 시간대를 다른 나라로 바꿔도 같은 한국 시간이 보이는지 확인(방법은 작성자가 Chrome에서 확인).
-- 이미 배운 것: Date·요일 강조·카운트다운(컴퓨터 시계 기준) [P1 Day 26](#/day/p1-d26); select·change 이벤트·필터 [P1 Day 23](#/day/p1-d23); DateTime [Day 12](#/day/p2-d12); 상속·override [Day 13](#/day/p2-d13); ScheduleQuery·Problem [Day 23](#/day/p2-d23); 마이그레이션 [Day 20](#/day/p2-d20); 해시 라우터 [Day 28](#/day/p2-d28); Promise.all [Day 8](#/day/p2-d08)
+- 목표: UTC vs 한국 시간(KST = UTC+9, 서머타임 없음). P1 Day 26 카운트다운은 "컴퓨터 시계 기준"이라 다른 나라 컴퓨터에서는 틀린다는 비교. ISO 8601 `2026-11-02T11:00:00Z`(끝의 `Z` = UTC). 원칙: **DB와 API는 UTC, 화면만 한국 시간**. 서버: SQLite가 DateTime의 UTC 표시(Kind)를 잃어 JSON에 `Z`가 빠지는 것을 확인 → `AppDbContext.ConfigureConventions` + `UtcDateTimeConverter : ValueConverter<DateTime, DateTime>`(읽을 때 `DateTime.SpecifyKind(…, Utc)`) → 이제 모든 시각에 `Z`. 마이그레이션이 필요 없는지 작성자가 `dotnet ef migrations has-pending-model-changes`로 확인. `ScheduleEndpoints.GetInRange`: Kind가 Utc가 아니면 400 "시각은 UTC로 보내 주세요", `to <= from` 400(이미 있음), Create/Update의 `startsAt` 검사(레퍼런스와 같게). 클라이언트: `ui.ts` 시간 도우미(`KST_OFFSET_MS`, `Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', … })` 3개, `formatKstDateTime`·`formatKstDate`·`formatKstTime`·`toKstDateString`), `api.ts` `getSchedules(from: Date, to: Date)`(`toISOString()` + `URLSearchParams`), `pages\schedule.ts`(레퍼런스와 같음: `startOfKstWeek`, `?week=YYYY-MM-DD`, 지난주·다음 주, 월~일 7칸, 오늘 강조, 스트리머 필터 `select` — **`change` 이벤트**를 처음 소개(선택 상자 값이 바뀌어 확정되면 한 번 일어남, P1 Day 23의 `input` 이벤트와 비교), JS `Map`으로 중복 없는 이름 목록, 서버에 다시 묻지 않고 거르기). 이 Day에 처음 쓰는 Date 메서드 `getTime`·`toISOString`·`Date.UTC`·`getUTCDay`/`getUTCFullYear`/`getUTCMonth`/`getUTCDate`와 `Number.isNaN`도 그 자리에서 한 줄씩 설명, `home.ts`에 다가오는 방송 3개, `streamerDetail.ts`에 다가오는 방송 목록, `main.ts`에 `/schedule`. 개발자 도구에서 시간대를 다른 나라로 바꿔도 같은 한국 시간이 보이는지 확인(방법은 작성자가 Chrome에서 확인).
+- 이미 배운 것: Date·요일 강조·카운트다운(컴퓨터 시계 기준) [P1 Day 26](#/day/p1-d26); `select`·`option` [P1 Day 8](#/day/p1-d08); `input` 이벤트·필터 [P1 Day 23](#/day/p1-d23); DateTime [Day 12](#/day/p2-d12); 상속·override [Day 13](#/day/p2-d13); ScheduleQuery·Problem [Day 23](#/day/p2-d23); 마이그레이션 [Day 20](#/day/p2-d20); 해시 라우터 [Day 28](#/day/p2-d28); Promise.all [Day 8](#/day/p2-d08)
 - 시작 상태: [Day 28](#/day/p2-d28)의 끝 상태와 같아요.
   - `C:\dev\streamer-hub\`: `README.md`, `.git\`, `.gitignore`
   - `C:\dev\streamer-hub\client\`: `.gitignore`, `package.json`, `package-lock.json`, `node_modules\`, `tsconfig.json`, `index.html`, `dist\`, `vite.config.ts`
@@ -1049,7 +1061,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
   - 바꿈 `C:\dev\streamer-hub\client\src\pages\home.ts` — 다가오는 방송 3개 (레퍼런스 `home.ts`(Day 31 새 글))
   - 바꿈 `C:\dev\streamer-hub\client\src\pages\streamerDetail.ts` — 다가오는 방송 목록 (레퍼런스(Day 34 isHttpUrl))
   - 바꿈 `C:\dev\streamer-hub\client\src\main.ts` — `/schedule` 주소 (레퍼런스)
-  - 바꿈 `C:\dev\streamer-hub\client\src\style.css` — .week-nav, .week(+미디어 쿼리), .day, .day.today, .slot… (레퍼런스 `style.css` 주간 일정 블록)
+  - 바꿈 `C:\dev\streamer-hub\client\src\style.css` — 레퍼런스 361~410줄(`.week-nav`~`.slot-title`, 900px 미디어 쿼리 포함) (레퍼런스 `style.css` 주간 일정 블록)
 - 끝 상태 확인: `#/schedule`에 월~일 7칸, 오늘 칸 강조, 달빛곰 "오후 8:00"(UTC 11:00). 지난주/다음 주 → `#/schedule?week=…`. 필터로 한 사람만. API JSON의 `startsAt`·`createdAt` 끝에 `Z`. `from=2026-11-02T00:00:00`(Z 없음) → 400.
 - 과제:
   1) 한국 2026-11-02 하루가 UTC로 언제부터 언제까지인지 계산 (보통) → `2026-11-01T15:00:00Z` ~ `2026-11-02T15:00:00Z`(끝은 포함 안 함, 레퍼런스 ScheduleQueryTests)
@@ -1103,8 +1115,8 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
 
 ## Day 31 — 팬 게시판 화면 (120분)
 
-- 목표: 로그인 쿠키는 HttpOnly라 JS가 못 읽으니 "누구인지"는 `/api/me`에 묻는다(204면 null). `src\auth.ts`(isAdmin 빼고 레퍼런스와 같음): `currentUser`, `listeners`(관찰자 패턴), `getCurrentUser`, `onAuthChange`, `loadCurrentUser`, `login`, `registerAndLogin`, `saveDisplayName`, `logout`. `api.ts`: `getJsonOrNull<T>`(204 → null), `postJson<T>`, 게시판 5개, `register`·`login`(`?useCookies=true`)·`logout`·`getMe`·`updateMe`. `types.ts`: `PostListItem`·`PostDetail`·`PostInput`·`Me`(`Paged<T>`는 Day 7부터 있음). `index.html`에 `<div id="auth-menu" class="auth-menu">`. `main.ts`: `renderAuthMenu`(틀은 고정 글자 innerHTML, 닉네임은 `textContent`), `start()`에서 `loadCurrentUser`를 try/catch, 주소 `/board`·`/board/new`(**`/board/:id`보다 먼저**)·`/board/:id`·`/board/:id/edit`·`/login`·`/register`. 화면 5개(모두 레퍼런스와 같음): `login.ts`(401 → "이메일 또는 비밀번호가 맞지 않아요." — 어느 쪽인지 숨김), `register.ts`(닉네임을 **trim한 뒤 2~20자인지 먼저 검사** — 서버는 trim하지 않음, 가입 → 로그인 → `PUT /api/me` 2단계, 닉네임 저장만 실패하면 이메일·비밀번호를 잠그고 "닉네임 다시 저장", Identity 오류 코드 → 한국어), `board.ts`(`?page=`, 이전/다음, 로그인 안 했으면 "로그인하고 글쓰기"), `postDetail.ts`(제목·본문 `textContent`, `canEdit`일 때만 수정·삭제 + `confirm`), `postForm.ts`(새 글·고치기 겸용, `value`로 채우기, 버튼 `disabled`로 두 번 전송 방지). `home.ts`에 새 글 5개(`Promise.all` 두 요청). `style.css`: 폼·게시판·`.button.danger`·`.button:disabled`·`.page-head`·`.pagination`·`.post-body`(`white-space: pre-wrap`).
-- 이미 배운 것: 폼 검증·submit·`preventDefault`·`required`·`minlength` [P1 Day 24](#/day/p1-d24); api.ts·ApiError [Day 27](#/day/p2-d27); 해시 라우터 [Day 28](#/day/p2-d28); Promise.all [Day 8](#/day/p2-d08); 게시판 API·canEdit [Day 30](#/day/p2-d30); /api/me 204·닉네임 [Day 26](#/day/p2-d26); 쿠키 로그인 [Day 25](#/day/p2-d25); 함수 타입 배열 [Day 6](#/day/p2-d06); 한국 시간 표시 [Day 29](#/day/p2-d29)
+- 목표: 로그인 쿠키는 HttpOnly라 JS가 못 읽으니 "누구인지"는 `/api/me`에 묻는다(204면 null). `src\auth.ts`(isAdmin 빼고 레퍼런스와 같음): `currentUser`, `listeners`(관찰자 패턴), `getCurrentUser`, `onAuthChange`, `loadCurrentUser`, `login`, `registerAndLogin`, `saveDisplayName`, `logout`. `api.ts`: `getJsonOrNull<T>`(204 → null), `postJson<T>`, 게시판 5개, `register`·`login`(`?useCookies=true`)·`logout`·`getMe`·`updateMe`. `types.ts`: `PostListItem`·`PostDetail`·`PostInput`·`Me`(`Paged<T>`는 Day 7부터 있음). `index.html`에 `<div id="auth-menu" class="auth-menu">`. `main.ts`: `renderAuthMenu`(틀은 고정 글자 innerHTML, 닉네임은 `textContent`), `start()`에서 `loadCurrentUser`를 try/catch, 주소 `/board`·`/board/new`(**`/board/:id`보다 먼저**)·`/board/:id`·`/board/:id/edit`·`/login`·`/register`. 화면 5개(모두 레퍼런스와 같음): `login.ts`(401 → "이메일 또는 비밀번호가 맞지 않아요." — 어느 쪽인지 숨김), `register.ts`(닉네임을 **trim한 뒤 2~20자인지 먼저 검사** — 서버는 trim하지 않음, 가입 → 로그인 → `PUT /api/me` 2단계, 닉네임 저장만 실패하면 이메일·비밀번호를 잠그고 "닉네임 다시 저장", Identity 오류 코드 → 한국어), `board.ts`(`?page=`, 이전/다음, 로그인 안 했으면 "로그인하고 글쓰기"), `postDetail.ts`(제목·본문 `textContent`, `canEdit`일 때만 수정·삭제 + `confirm`), `postForm.ts`(새 글·고치기 겸용, `value`로 채우기, 버튼 `disabled`로 두 번 전송 방지). `home.ts`에 새 글 5개(`Promise.all` 두 요청). `style.css`: 아래 파일 목록의 줄 범위. 이 Day에 처음 쓰는 것(P1에 없음)은 그 자리에서 정의한다: HTML 속성 **`minlength`·`maxlength`**(입력 글자 수의 최소·최대, `register.ts`의 닉네임·비밀번호, `postForm.ts`의 제목 100·본문 5000, Day 32~33 `admin.ts`도 씀 — 서버 검증과 같은 값), `button.disabled`, `confirm()`, `Math.ceil`·`Math.max`(전체 쪽 수), `Number.isInteger`, `'id' in params`(`in` 연산자).
+- 이미 배운 것: 폼 검증·submit·`preventDefault`·`required`·`pattern` [P1 Day 24](#/day/p1-d24); `trim` [P1 Day 23](#/day/p1-d23); api.ts·ApiError [Day 27](#/day/p2-d27); 해시 라우터 [Day 28](#/day/p2-d28); Promise.all [Day 8](#/day/p2-d08); 게시판 API·canEdit [Day 30](#/day/p2-d30); /api/me 204·닉네임 [Day 26](#/day/p2-d26); 쿠키 로그인 [Day 25](#/day/p2-d25); 함수 타입 배열 [Day 6](#/day/p2-d06); 한국 시간 표시 [Day 29](#/day/p2-d29)
 - 시작 상태: [Day 30](#/day/p2-d30)의 끝 상태와 같아요.
   - `C:\dev\streamer-hub\`: `README.md`, `.git\`, `.gitignore`
   - `C:\dev\streamer-hub\client\`: `.gitignore`, `package.json`, `package-lock.json`, `node_modules\`, `tsconfig.json`, `index.html`, `dist\`, `vite.config.ts`
@@ -1135,7 +1147,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
   - 바꿈 `C:\dev\streamer-hub\client\index.html` — `#auth-menu` (레퍼런스(Day 32 admin-link))
   - 바꿈 `C:\dev\streamer-hub\client\src\main.ts` — 로그인 메뉴·게시판·로그인·가입 주소 (레퍼런스(Day 32))
   - 바꿈 `C:\dev\streamer-hub\client\src\pages\home.ts` — 새 글 5개 + Promise.all (레퍼런스 `home.ts`(같음))
-  - 바꿈 `C:\dev\streamer-hub\client\src\style.css` — 폼·게시판 블록 (레퍼런스(Day 32))
+  - 바꿈 `C:\dev\streamer-hub\client\src\style.css` — 레퍼런스 128~134줄(`.auth-menu`), 162~167(`.button.danger`), 173~177(`.button:disabled`), 228~244(폼 주석, `.form`, `.form.narrow`, `.form label`), 256~261(`.hint`), 334~360(`.page-head`, `.post-list .post-title`, `.post-body`, `.pagination`) (레퍼런스(Day 32))
 - 끝 상태 확인: 가입하면 오른쪽 위에 "닉네임님 로그아웃". 글쓰기 → 상세 화면, 다른 계정으로 보면 수정·삭제 버튼 없음. 제목에 `<b>굵게</b>`를 써도 글자 그대로. 로그아웃하면 "로그인하고 글쓰기". 새로 고쳐도 로그인 유지(쿠키). 콘솔 오류 0(로그인 안 한 상태 포함).
 - 과제:
   1) 닉네임 `" a "`로 가입 시도 → 요청을 보내지 않고 안내 (보통) → trim 후 길이 검사(레퍼런스 register.ts)
@@ -1147,7 +1159,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
 
 ## Day 32 — 관리자 화면 (120분)
 
-- 목표: 역할 기반 UI: `auth.ts`에 `isAdmin()`, `index.html`에 `<li id="admin-link" hidden>`, `main.ts`에서 `adminLink.hidden = !isAdmin()`과 `addRoute('/admin', renderAdmin)`. **숨기는 것은 친절일 뿐, 진짜로 막는 것은 서버(403)** — 팬 계정으로 콘솔 `fetch('/api/streamers', { method: 'POST', … })` → 403 실험. `types.ts` `StreamerInput`·`ScheduleInput`, `api.ts` 스트리머·일정 등록/수정/삭제 6개, `ui.ts` `kstInputToUtcIso`·`utcIsoToKstInput`(`<input type="datetime-local">`은 한국 시간으로 입력받고 서버에는 UTC로). `pages\admin.ts`(공지 패널 빼고 레퍼런스와 같음): 관리자가 아니면 안내 문장, 스트리머 폼(숨은 칸 `type="hidden"`에 id → 비었으면 등록·있으면 수정, 사진 주소 빈칸 → `null`, `select` 값 `as Platform`), 일정 폼, `reloadLists`(Promise.all, 고르던 스트리머 유지), `createAdminRow`(수정·삭제 버튼, `confirm`, 실패하면 `alert`). `style.css`: `.panel`, `.panel h2`, `.admin-list li`, `.admin-row-text`, `.button.small`.
+- 목표: 역할 기반 UI: `auth.ts`에 `isAdmin()`, `index.html`에 `<li id="admin-link" hidden>`, `main.ts`에서 `adminLink.hidden = !isAdmin()`과 `addRoute('/admin', renderAdmin)`. **숨기는 것은 친절일 뿐, 진짜로 막는 것은 서버(403)** — 팬 계정으로 콘솔 `fetch('/api/streamers', { method: 'POST', … })` → 403 실험. `types.ts` `StreamerInput`·`ScheduleInput`, `api.ts` 스트리머·일정 등록/수정/삭제 6개, `ui.ts` `kstInputToUtcIso`·`utcIsoToKstInput`(`<input type="datetime-local">`은 한국 시간으로 입력받고 서버에는 UTC로). `pages\admin.ts`(공지 패널 빼고 레퍼런스와 같음): 관리자가 아니면 안내 문장, 스트리머 폼(숨은 칸 `type="hidden"`에 id → 비었으면 등록·있으면 수정, 사진 주소 빈칸 → `null`, `select` 값 `as Platform`), 일정 폼, `reloadLists`(Promise.all, 고르던 스트리머 유지), `createAdminRow`(수정·삭제 버튼, `confirm`, 실패하면 `alert`). `style.css`: 레퍼런스 168~172줄(`.button.small`)과 411~428줄(`.panel`~`.admin-row-text`). Day 7·8·28·29·31·32에 나눠 넣은 줄 범위를 합치면 레퍼런스 1~428줄 전체가 돼요.
 - 이미 배운 것: 역할·정책·403 [Day 26](#/day/p2-d26); 관리자 API·검증 [Day 23](#/day/p2-d23); 폼 화면·auth.ts [Day 31](#/day/p2-d31); UTC·KST 도우미 [Day 29](#/day/p2-d29); 타입 단언 `as` [Day 7](#/day/p2-d07); 옵셔널 체이닝·null 병합 [Day 5](#/day/p2-d05); Promise.all [Day 8](#/day/p2-d08)
 - 시작 상태: [Day 31](#/day/p2-d31)의 끝 상태와 같아요.
   - `C:\dev\streamer-hub\`: `README.md`, `.git\`, `.gitignore`
@@ -1175,7 +1187,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
   - 바꿈 `C:\dev\streamer-hub\client\src\api.ts` — 관리자 함수 6개 (레퍼런스(Day 33))
   - 바꿈 `C:\dev\streamer-hub\client\src\types.ts` — StreamerInput·ScheduleInput (레퍼런스(Day 33))
   - 바꿈 `C:\dev\streamer-hub\client\src\ui.ts` — datetime-local 변환 2개 (레퍼런스(Day 34))
-  - 바꿈 `C:\dev\streamer-hub\client\src\style.css` — 관리자 블록 (레퍼런스(같음))
+  - 바꿈 `C:\dev\streamer-hub\client\src\style.css` — 레퍼런스 168~172줄(`.button.small`), 411~428줄(`.panel`, `.panel h2`, `.admin-list li`, `.admin-row-text`) — 이제 style.css 전체가 레퍼런스와 같음 (레퍼런스(같음))
 - 끝 상태 확인: 관리자로 로그인하면 메뉴 "관리자"가 보이고, 스트리머 등록 → 목록·스트리머 페이지에 보임. 일정에 한국 시간 20:00 입력 → 방송 일정 페이지에 "오후 8:00". 팬은 메뉴가 없고 `#/admin`은 안내 문장, 콘솔 POST는 403.
 - 과제:
   1) 팬 계정으로 콘솔에서 스트리머 등록 요청 → 403 (보통) → `fetch('/api/streamers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({…}) })`
@@ -1187,7 +1199,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
 
 ## Day 33 — 실시간 공지 오버레이 (120분)
 
-- 목표: 서버: `Entities\Notice.cs`(Message ≤200), `Notices` DbSet, `dotnet ef migrations add AddNotices`, `Dtos\NoticeDtos.cs`(`NoticeRequest`, `NoticeResponse.From`), `Endpoints\NoticeEndpoints.cs`의 `GET /current`(가장 최근, 없으면 204)·`POST /`(Admin, 201). 클라이언트: `client\overlay.html`(레퍼런스와 같음 — 배경 투명, 아래쪽 공지 상자, P1 Day 27 오버레이와 비교), `types.ts` `Notice`, `api.ts` `getCurrentNotice`(getJsonOrNull)·`createNotice`, `admin.ts` 공지 패널(지금 공지, 새 공지 폼, OBS 주소 `${location.origin}/overlay.html`). 첫 `overlay.ts` = **폴링**(`setInterval` 3초마다 `getCurrentNotice`) → Network에 요청이 계속 쌓이는 단점. 다음 = **SSE**: `Services\NoticeBroadcaster.cs`(레퍼런스와 같음 — 오버레이마다 우편함(Channel), `lock`, Subscribe/Unsubscribe/Publish, 서버가 꺼질 때 CloseAll. Channel·`IHostApplicationLifetime`은 `:::info 읽기만 하고 나중에 이해해요` 상자), `builder.Services.AddSingleton<NoticeBroadcaster>();`(앱 전체에 하나), `GET /stream` = `TypedResults.ServerSentEvents(ReadNoticesAsync(…), eventType: "notice")`, `IAsyncEnumerable` + `yield return`(먼저 우편함 등록 → 지금 공지부터 보냄 → 새 공지 기다리기 → finally에서 치우기, `[EnumeratorCancellation]`은 읽기만), POST가 `broadcaster.Publish`. `overlay.ts`를 `EventSource` 버전(레퍼런스와 같음, 폴링 코드는 주석으로 남음)으로 바꾼다. OBS: 소스 추가 → 브라우저 → URL `http://localhost:5173/overlay.html`, 1920×1080.
+- 목표: 서버: `Entities\Notice.cs`(Message ≤200), `Notices` DbSet, `dotnet ef migrations add AddNotices`, `Dtos\NoticeDtos.cs`(`NoticeRequest`, `NoticeResponse.From`), `Endpoints\NoticeEndpoints.cs`의 `GET /current`(가장 최근, 없으면 204)·`POST /`(Admin, 201). 클라이언트: `client\overlay.html`(레퍼런스와 같음 — 배경 투명, 아래쪽 공지 상자, P1 Day 27 오버레이와 비교), `types.ts` `Notice`, `api.ts` `getCurrentNotice`(getJsonOrNull)·`createNotice`, `admin.ts` 공지 패널(지금 공지, 새 공지 폼, OBS 주소 `${location.origin}/overlay.html`. 지금 공지는 `await` 대신 `.then(…).catch(…)`로 이어 받으므로 이 문법을 처음 소개하고 await와 같은 뜻임을 비교). 첫 `overlay.ts` = **폴링**(`setInterval` 3초마다 `getCurrentNotice`) → Network에 요청이 계속 쌓이는 단점. 다음 = **SSE**: `Services\NoticeBroadcaster.cs`(레퍼런스와 같음 — 오버레이마다 우편함(Channel), `lock`, Subscribe/Unsubscribe/Publish, 서버가 꺼질 때 CloseAll. Channel·`IHostApplicationLifetime`·`await foreach`(값이 들어올 때마다 하나씩 꺼내는 비동기 반복)·`CancellationToken`(브라우저가 연결을 끊었다는 신호)은 `:::info 읽기만 하고 나중에 이해해요` 상자에서 이름과 한 줄 뜻만), `builder.Services.AddSingleton<NoticeBroadcaster>();`(앱 전체에 하나), `GET /stream` = `TypedResults.ServerSentEvents(ReadNoticesAsync(…), eventType: "notice")`, `IAsyncEnumerable` + `yield return`(먼저 우편함 등록 → 지금 공지부터 보냄 → 새 공지 기다리기 → finally에서 치우기, `[EnumeratorCancellation]`은 읽기만), POST가 `broadcaster.Publish`. `overlay.ts`를 `EventSource` 버전(레퍼런스와 같음, 폴링 코드는 주석으로 남음)으로 바꾼다. OBS: 소스 추가 → 브라우저 → URL `http://localhost:5173/overlay.html`, 1920×1080.
 - 이미 배운 것: OBS 브라우저 소스·투명 배경·`setInterval` [P1 Day 26](#/day/p1-d26)·[P1 Day 27](#/day/p1-d27); 관리자 화면·api.ts [Day 32](#/day/p2-d32); 서비스 수명 Singleton [Day 23](#/day/p2-d23); Task·async·finally [Day 15](#/day/p2-d15); List [Day 11](#/day/p2-d11); 204·getJsonOrNull [Day 26](#/day/p2-d26)·[Day 31](#/day/p2-d31); 마이그레이션 [Day 20](#/day/p2-d20)
 - 시작 상태: [Day 32](#/day/p2-d32)의 끝 상태와 같아요.
   - `C:\dev\streamer-hub\`: `README.md`, `.git\`, `.gitignore`
@@ -1319,7 +1331,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
 
 ## Day 36 — 통합 테스트 (120분)
 
-- 목표: 통합 테스트 = 진짜 `Program.cs`를 메모리에서 실행해 HTTP로 확인. `cd C:\dev\streamer-hub\server\StreamerHub.Tests` → `dotnet add package Microsoft.AspNetCore.Mvc.Testing --version 10.0.14`(external-facts에 없음 — 작성자가 NuGet에서 확인해 추가). .NET 10에서는 `public partial class Program`이 필요 없다는 점. `TestApp.cs`(레퍼런스와 같음): `WebApplicationFactory<Program>`, `UseEnvironment("Testing")`(개발자 PC의 user-secrets를 읽지 않게), `UseSetting`으로 연결 문자열·관리자 이메일/비밀번호·요청 제한 값, 테스트마다 이름이 다른 공유 메모리 SQLite + 열어 두는 연결, 테스트용 무작위 비밀번호 `NewPassword()`(비밀번호를 코드에 적지 않는 습관), `CreateFanClientAsync`·`CreateAdminClientAsync`. `ApiTests.cs`의 16개(레퍼런스 README 테스트 표): 401·가입→쿠키 로그인(httponly·samesite=lax)→201·403·관리자 201·빈 이름 400·HttpUrl 400·페이지네이션·SSE 이벤트·429 두 개·남의 글 403·작성자 204·관리자 삭제 204·관리자 시드 두 개. 따라하기 단계를 묶음별(인증·권한 / 검증 / 게시판 / SSE·요청 제한 / 관리자 시드)로 나눠 16개를 모두 쓴다. `dotnet test` → 23개. 클라이언트 `npx tsc --noEmit`(타입만 검사)과 `npm run build`.
+- 목표: 통합 테스트 = 진짜 `Program.cs`를 메모리에서 실행해 HTTP로 확인. `cd C:\dev\streamer-hub\server\StreamerHub.Tests` → `dotnet add package Microsoft.AspNetCore.Mvc.Testing --version 10.0.14`(external-facts에 없음 — 작성자가 NuGet에서 확인해 추가). .NET 10에서는 `public partial class Program`이 필요 없다는 점. `TestApp.cs`(레퍼런스와 같음): `WebApplicationFactory<Program>`, `UseEnvironment("Testing")`(개발자 PC의 user-secrets를 읽지 않게), `UseSetting`으로 연결 문자열·관리자 이메일/비밀번호·요청 제한 값, 테스트마다 이름이 다른 공유 메모리 SQLite + 열어 두는 연결, 테스트용 무작위 비밀번호 `NewPassword()`(비밀번호를 코드에 적지 않는 습관), `CreateFanClientAsync`·`CreateAdminClientAsync`. 처음 쓰는 .NET 이름은 그 자리에서 한 줄씩 설명한다: `HttpClient`(C#에서 HTTP 요청을 보내는 객체 — `CreateClient()`가 주는 것은 쿠키를 기억함), `PostAsJsonAsync`·`GetFromJsonAsync`·`ReadFromJsonAsync`(JSON으로 보내기·받기), `HttpStatusCode.Unauthorized` 같은 상태 코드 열거형, `response.Headers`·`Content.Headers`(헤더 읽기). `ApiTests.cs`의 `[Fact]` 15개(레퍼런스 README 테스트 표의 통합 15줄. 단위 8 + 통합 15 = 23): 401·가입→쿠키 로그인(httponly·samesite=lax)→201·403·관리자 201·빈 이름 400·HttpUrl 400·페이지네이션·SSE 이벤트·429 두 개·남의 글 403·작성자 204·관리자 삭제 204·관리자 시드 두 개. 따라하기 단계를 묶음별(인증·권한 / 검증 / 게시판 / SSE·요청 제한 / 관리자 시드)로 나눠 15개를 모두 쓴다. `dotnet test` → 23개. 클라이언트 `npx tsc --noEmit`(타입만 검사)과 `npm run build`.
 - 이미 배운 것: xUnit·TestDb·Assert [Day 35](#/day/p2-d35); 구성·실행 환경 [Day 24](#/day/p2-d24); 요청 제한 [Day 34](#/day/p2-d34); SSE [Day 33](#/day/p2-d33); 쿠키 로그인 [Day 25](#/day/p2-d25); 관리자 시드 [Day 26](#/day/p2-d26); `tsc` [Day 4](#/day/p2-d04); 빌드 [Day 7](#/day/p2-d07)
 - 시작 상태: [Day 35](#/day/p2-d35)의 끝 상태와 같아요.
   - `C:\dev\streamer-hub\`: `README.md`, `.git\`, `.gitignore`
@@ -1343,7 +1355,7 @@ P1이 쓰지 않아서 P2가 처음 가르치는 것(본문에서 정의 필요)
 - 오늘 만들/바꿀 파일:
   - 바꿈 `C:\dev\streamer-hub\server\StreamerHub.Tests\StreamerHub.Tests.csproj` — Mvc.Testing 10.0.14 (레퍼런스(같음))
   - 새로 `C:\dev\streamer-hub\server\StreamerHub.Tests\TestApp.cs` — 테스트용 앱 (레퍼런스(같음))
-  - 새로 `C:\dev\streamer-hub\server\StreamerHub.Tests\ApiTests.cs` — 통합 테스트 16개 (레퍼런스(같음))
+  - 새로 `C:\dev\streamer-hub\server\StreamerHub.Tests\ApiTests.cs` — 통합 테스트 15개 (레퍼런스(같음))
 - 끝 상태 확인: `dotnet test` → `Passed!  - Failed: 0, Passed: 23, Skipped: 0, Total: 23`. `C:\dev\streamer-hub\client`에서 `npx tsc --noEmit` → 출력 없음.
 - 과제:
   1) 401 테스트의 기대값을 `OK`로 바꿔 실패 메시지를 읽고 되돌리기 (쉬움) → Expected OK / Actual Unauthorized

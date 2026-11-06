@@ -1,0 +1,852 @@
+{
+  "project": {
+    "id": "sp",
+    "order": 4,
+    "track": "special",
+    "title": "이미지 도네이션 서비스",
+    "subtitle": "특별 프로젝트 — 시청자가 보낸 이미지를 스트리머가 검수해 방송 화면에 띄우는 서비스를 React·ASP.NET Core·SignalR·PostgreSQL로 만들어요. 운영자는 결제를 다루지 않아요",
+    "folder": "C:\\dev\\image-donation",
+    "stack": [
+      "C#",
+      "ASP.NET Core",
+      "SignalR",
+      "React",
+      "TypeScript",
+      "PostgreSQL",
+      "EF Core (Npgsql)",
+      "Docker",
+      "치지직 Open API",
+      "OAuth 2.0"
+    ],
+    "requires": [
+      "p2"
+    ],
+    "summary": "스트리머가 가입하면 후원 페이지와 비밀 OBS 오버레이 주소가 생기고, 시청자가 보낸 이미지를 검수해 승인한 것만 방송에 띄우는 서비스를 만들어요. 운영자는 결제를 전혀 다루지 않고, 치즈 후원은 치지직이 스트리머에게 직접 정산하며, 치지직 승인이 없어도 테스트 모드로 전체 흐름을 연습해요.",
+    "outcome": "무료 이미지 후원·치즈 후원 연동(선택)·테스트 모드를 갖춘 이미지 후원 서비스(후원 페이지, 실시간 검수 대시보드, OBS 오버레이, 안전 장치, Docker 실행)",
+    "days": [
+      {
+        "title": "서비스 기획",
+        "minutes": 80,
+        "summary": "이미지 후원 서비스의 사용자·기능·화면 흐름과 위험을 정리하고, 운영자는 결제를 전혀 다루지 않는다는 돈 흐름 원칙과 테스트 모드를 README 기획서로 써요.",
+        "keywords": [
+          "서비스 기획",
+          "이미지 후원",
+          "돈 흐름 원칙",
+          "결제 없음",
+          "치즈 후원",
+          "테스트 모드",
+          "검수",
+          "위험",
+          "개인정보",
+          "저작권",
+          "README"
+        ]
+      },
+      {
+        "title": "아키텍처",
+        "minutes": 80,
+        "summary": "React 화면·ASP.NET Core API·SignalR·PostgreSQL·이미지 저장소·치지직(또는 테스트 모드)·OBS 오버레이의 구성도와 요청 흐름을 그리고, 폴더 구조를 정해 Git 저장소를 시작해요.",
+        "keywords": [
+          "아키텍처",
+          "구성도",
+          "React",
+          "ASP.NET Core",
+          "SignalR",
+          "PostgreSQL",
+          "이미지 저장소",
+          "치지직 Open API",
+          "저장소 구조",
+          "포트",
+          "Git",
+          ".gitignore"
+        ]
+      },
+      {
+        "title": "React ①",
+        "minutes": 110,
+        "summary": "Vite의 react-ts 템플릿으로 client 폴더를 만들고, 컴포넌트·TSX·props를 배워 첫 컴포넌트인 후원 카드를 화면에 그려요.",
+        "keywords": [
+          "React",
+          "Vite",
+          "react-ts",
+          "템플릿",
+          "컴포넌트",
+          "JSX",
+          "TSX",
+          "props",
+          "className",
+          "Oxlint",
+          "npm run dev",
+          "npm run lint"
+        ]
+      },
+      {
+        "title": "React ②",
+        "minutes": 100,
+        "summary": "useState와 이벤트, 조건부·목록 렌더링과 key를 배워 예시 후원 목록에서 승인·거절 버튼과 상태 필터가 동작하게 해요.",
+        "keywords": [
+          "useState",
+          "훅",
+          "상태",
+          "이벤트",
+          "onClick",
+          "조건부 렌더링",
+          "목록 렌더링",
+          "key",
+          "불변 업데이트",
+          "map",
+          "filter",
+          "유니온 타입",
+          "Record"
+        ]
+      },
+      {
+        "title": "React ③",
+        "minutes": 110,
+        "summary": "useEffect와 정리 함수로 데이터를 불러오고, 이미지 미리보기 커스텀 훅과 제어 컴포넌트 폼(후원 폼 첫 버전)을 만들어요.",
+        "keywords": [
+          "useEffect",
+          "의존성 배열",
+          "정리 함수",
+          "fetch",
+          "ApiError",
+          "로딩",
+          "오류 처리",
+          "커스텀 훅",
+          "useImagePreview",
+          "FileReader",
+          "제어 컴포넌트",
+          "폼"
+        ]
+      },
+      {
+        "title": "React ④",
+        "minutes": 100,
+        "summary": "React Router 8의 BrowserRouter·Routes·레이아웃(Outlet)으로 후원 페이지(/d/:slug)와 대시보드(/dashboard)를 나누고 공통 메뉴와 없는 페이지 화면을 만들어요.",
+        "keywords": [
+          "React Router",
+          "react-router",
+          "BrowserRouter",
+          "Routes",
+          "Route",
+          "Link",
+          "NavLink",
+          "useParams",
+          "Outlet",
+          "레이아웃",
+          "Navigate",
+          "404"
+        ]
+      },
+      {
+        "title": "Docker + PostgreSQL",
+        "minutes": 120,
+        "summary": "Windows 에디션·버전과 가상화를 점검하고 Docker Desktop을 설치한 뒤 docker-compose.yml로 PostgreSQL 18을 띄워 psql로 접속해요. Docker가 안 되면 PostgreSQL을 직접 설치하는 길로 가요.",
+        "keywords": [
+          "Docker",
+          "Docker Desktop",
+          "WSL 2",
+          "가상화",
+          "winver",
+          "컨테이너",
+          "이미지",
+          "docker compose",
+          "postgres:18",
+          "볼륨",
+          ".env",
+          "psql",
+          "PostgreSQL 직접 설치",
+          "winget"
+        ]
+      },
+      {
+        "title": "API 뼈대",
+        "minutes": 110,
+        "summary": "server 폴더에 솔루션과 ASP.NET Core 프로젝트를 만들고 Npgsql EF Core를 설치해, user-secrets에 넣은 연결 문자열로 PostgreSQL에 붙는지 확인해요.",
+        "keywords": [
+          "dotnet new web",
+          "slnx",
+          "launchSettings",
+          "포트 5080",
+          "Npgsql",
+          "EF Core",
+          "UseNpgsql",
+          "연결 문자열",
+          "user-secrets",
+          "UserSecretsId",
+          "빠른 실패",
+          "DbContext"
+        ]
+      },
+      {
+        "title": "데이터 모델링",
+        "minutes": 120,
+        "summary": "Streamer·StreamerSettings·Donation 엔티티와 7가지 후원 상태의 전이 규칙을 설계하고, 인덱스·글자 저장 enum·배열 열을 넣은 첫 마이그레이션을 PostgreSQL에 적용해요.",
+        "keywords": [
+          "엔티티",
+          "Streamer",
+          "StreamerSettings",
+          "Donation",
+          "DonationStatus",
+          "상태 전이",
+          "enum",
+          "HasConversion",
+          "인덱스",
+          "고유 인덱스",
+          "text[]",
+          "timestamptz",
+          "마이그레이션",
+          "InitialCreate",
+          "Migrate"
+        ]
+      },
+      {
+        "title": "파일 업로드 ①",
+        "minutes": 110,
+        "summary": "multipart/form-data와 IFormFile로 이미지 업로드 API를 만들고, 크기 제한(413)·저장 위치·무작위 파일 이름을 적용해 REST Client로 파일을 보내 봐요.",
+        "keywords": [
+          "파일 업로드",
+          "multipart/form-data",
+          "IFormFile",
+          "FromForm",
+          "크기 제한",
+          "413",
+          "FormOptions",
+          "RequestSizeLimit",
+          "GUID",
+          "파일 이름 무작위화",
+          "경로 조작",
+          "DisableAntiforgery",
+          "REST Client"
+        ]
+      },
+      {
+        "title": "파일 업로드 ② 보안",
+        "minutes": 120,
+        "summary": "확장자를 믿지 않고 매직 넘버와 실제 디코딩으로 이미지를 검증하고, SkiaSharp으로 크기 상한·축소·EXIF 방향 적용을 거쳐 WebP로 재인코딩해 메타데이터를 없애요.",
+        "keywords": [
+          "이미지 보안",
+          "매직 넘버",
+          "파일 시그니처",
+          "SkiaSharp",
+          "SKCodec",
+          "디코딩",
+          "압축 폭탄",
+          "픽셀 상한",
+          "리사이즈",
+          "EXIF",
+          "방향",
+          "재인코딩",
+          "WebP",
+          "메타데이터 제거",
+          "using",
+          "MIT 라이선스"
+        ]
+      },
+      {
+        "title": "이미지 제공과 정리",
+        "minutes": 100,
+        "summary": "저장한 이미지를 /media 주소로 캐시 헤더와 함께 내보내고, BackgroundService로 7일이 지난 후원과 파일을 자동으로 지우는 정리 작업을 만들어요.",
+        "keywords": [
+          "정적 제공",
+          "Results.Stream",
+          "Cache-Control",
+          "캐시",
+          "/media",
+          "BackgroundService",
+          "PeriodicTimer",
+          "TimeProvider",
+          "보관 기간",
+          "7일",
+          "자동 삭제",
+          "IServiceScopeFactory",
+          "로그"
+        ]
+      },
+      {
+        "title": "인증 설계",
+        "minutes": 120,
+        "summary": "개발용 로컬 로그인을 ASP.NET Core Identity로 붙이고, 계정 하나에 스트리머 하나를 연결하는 온보딩 API(후원 페이지 주소·비밀 오버레이 토큰 발급)와 내 정보 API를 만들어요.",
+        "keywords": [
+          "인증",
+          "Identity",
+          "IdentityDbContext",
+          "MapIdentityApi",
+          "쿠키 로그인",
+          "useCookies",
+          "/api/auth/me",
+          "204",
+          "온보딩",
+          "slug",
+          "오버레이 토큰",
+          "RandomNumberGenerator",
+          "Base64Url",
+          "409",
+          "AddValidation",
+          "FindStreamerAsync"
+        ]
+      },
+      {
+        "title": "후원 페이지 API",
+        "minutes": 110,
+        "summary": "후원 페이지가 읽을 스트리머 공개 정보 API를 만들고, 후원 생성 규칙을 서비스로 옮겨 서버 쪽 입력 검증·IP의 HMAC 해시·IP당 요청 제한(429)을 적용해요.",
+        "keywords": [
+          "공개 API",
+          "/d/{slug}",
+          "PublicStreamerDto",
+          "입력 검증",
+          "닉네임 20자",
+          "메시지 100자",
+          "DonationService",
+          "서비스 계층",
+          "HMAC",
+          "SHA256",
+          "IP 해시",
+          "Security:IpHashKey",
+          "요청 제한",
+          "429",
+          "Rate Limiting"
+        ]
+      },
+      {
+        "title": "실시간 통신 원리",
+        "minutes": 110,
+        "summary": "폴링·SSE·WebSocket을 비교하고 SignalR의 허브와 그룹을 배운 뒤, 서버에 오버레이 허브를 붙이고 React 오버레이 페이지가 새 후원을 실시간으로 받게 해요.",
+        "keywords": [
+          "실시간",
+          "폴링",
+          "SSE",
+          "WebSocket",
+          "SignalR",
+          "허브",
+          "그룹",
+          "Hub<T>",
+          "IHubContext",
+          "@microsoft/signalr",
+          "HubConnectionBuilder",
+          "Vite 프록시",
+          "ws",
+          "overlay.html"
+        ]
+      },
+      {
+        "title": "SignalR 허브",
+        "minutes": 110,
+        "summary": "오버레이를 스트리머별 그룹으로 나누고 로그인 대신 비밀 토큰으로 접속하게 하며, 로그인한 스트리머만 쓰는 대시보드 허브와 보안 헤더를 더해요.",
+        "keywords": [
+          "SignalR 그룹",
+          "오버레이 토큰",
+          "토큰 인증",
+          "401",
+          "UseWhen",
+          "OnConnectedAsync",
+          "Context.Items",
+          "DashboardHub",
+          "Authorize",
+          "DonationCreated",
+          "DonationDto",
+          "overlay-token",
+          "보안 헤더",
+          "Referrer-Policy",
+          "X-Frame-Options"
+        ]
+      },
+      {
+        "title": "검수 API",
+        "minutes": 110,
+        "summary": "검수 대기열 조회와 승인·거절 API를 만들고, 조건부 UPDATE로 상태 전이를 안전하게 하며, 승인한 후원만 오버레이로 보내고 늦게 연결된 오버레이에 미표시 후원을 다시 보내요.",
+        "keywords": [
+          "검수",
+          "대기열",
+          "승인",
+          "거절",
+          "조건부 업데이트",
+          "ExecuteUpdateAsync",
+          "경쟁 상태",
+          "404",
+          "409",
+          "ChangeAsync",
+          "MarkShown",
+          "Shown",
+          "백로그",
+          "30분",
+          "자동 승인",
+          "DonationUpdated"
+        ]
+      },
+      {
+        "title": "오버레이 페이지",
+        "minutes": 110,
+        "summary": "OBS 브라우저 소스용 오버레이를 완성해요. 대기열에서 한 장씩 정해진 시간 동안 애니메이션으로 보여 주고, 다 보여 주면 서버에 알리며, 끊겨도 스스로 다시 연결해요.",
+        "keywords": [
+          "오버레이",
+          "OBS",
+          "브라우저 소스",
+          "투명 배경",
+          "큐",
+          "대기열",
+          "표시 시간",
+          "간격",
+          "setTimeout",
+          "CSS 애니메이션",
+          "keyframes",
+          "useRef",
+          "useCallback",
+          "자동 재연결",
+          "MarkShown",
+          "Clear"
+        ]
+      },
+      {
+        "title": "검수 대시보드(React)",
+        "minutes": 120,
+        "summary": "로그인 화면과 로그인 확인 레이아웃을 만들고, 목록 API와 SignalR 대시보드 허브를 합친 실시간 검수 대기열에서 미리보기를 보며 승인·거절과 단축키를 쓰게 해요.",
+        "keywords": [
+          "검수 대시보드",
+          "로그인 화면",
+          "useMe",
+          "보호된 라우트",
+          "Navigate",
+          "로그아웃",
+          "useDashboardHub",
+          "실시간 대기열",
+          "upsertDonation",
+          "필터",
+          "단축키",
+          "keydown",
+          "XSS",
+          "dangerouslySetInnerHTML"
+        ]
+      },
+      {
+        "title": "설정 화면",
+        "minutes": 110,
+        "summary": "후원 방식·자동 승인·표시 시간·간격·파일 크기·금지어를 저장하는 설정 API와 화면을 만들고, 오버레이 주소를 복사하거나 유출됐을 때 재발급하게 해요.",
+        "keywords": [
+          "설정",
+          "SettingsDto",
+          "Range",
+          "검증",
+          "자동 승인",
+          "표시 시간",
+          "간격",
+          "최대 파일 크기",
+          "금지어",
+          "후원 방식",
+          "오버레이 주소",
+          "재발급",
+          "Clipboard API",
+          "useOutletContext"
+        ]
+      },
+      {
+        "title": "OAuth 2.0 원리",
+        "minutes": 100,
+        "summary": "OAuth 2.0 인가 코드 흐름과 토큰·state·스코프·리디렉션 URI를 배우고, 치지직 로그인 화면으로 보내는 /api/chzzk/login과 로그인 화면의 치지직 버튼을 만들어요. 승인이 없어도 끝까지 할 수 있어요.",
+        "keywords": [
+          "OAuth 2.0",
+          "인가 코드",
+          "액세스 토큰",
+          "리프레시 토큰",
+          "state",
+          "CSRF",
+          "스코프",
+          "리디렉션 URI",
+          "account-interlock",
+          "ChzzkOptions",
+          "IOptions",
+          "AddHttpClient",
+          "/api/chzzk/login",
+          "테스트 모드"
+        ]
+      },
+      {
+        "title": "치지직 개발자 센터",
+        "minutes": 90,
+        "summary": "치지직 개발자 센터의 앱 등록·리디렉션 URL·스코프·심사 유의 사항과 Client Secret 보관법을 익히고, 승인과 상관없이 치지직 API 호출의 공통 부분(응답 형식·오류·토큰 교환 요청)을 만들어요.",
+        "keywords": [
+          "치지직 개발자 센터",
+          "애플리케이션 등록",
+          "Client ID",
+          "Client Secret",
+          "리디렉션 URL",
+          "스코프",
+          "후원 조회",
+          "유저 정보 조회",
+          "심사",
+          "90일 삭제",
+          "user-secrets",
+          "공통 응답",
+          "Bearer",
+          "ChzzkApiException"
+        ]
+      },
+      {
+        "title": "치지직 로그인",
+        "minutes": 110,
+        "summary": "OAuth 콜백에서 state를 안전하게 비교하고 인가 코드를 토큰으로 바꾼 뒤, 치지직 채널을 우리 계정에 연결해 같은 로그인 쿠키로 들어오게 해요. 승인 없이도 오류 경로와 화면을 확인할 수 있어요.",
+        "keywords": [
+          "OAuth 콜백",
+          "state 비교",
+          "FixedTimeEquals",
+          "타이밍 공격",
+          "토큰 교환",
+          "users/me",
+          "계정 연결",
+          "ChzzkToken",
+          "UserManager",
+          "SignInManager",
+          "/api/auth/me",
+          "치지직 연결 상태",
+          "마이그레이션"
+        ]
+      },
+      {
+        "title": "토큰 관리",
+        "minutes": 100,
+        "summary": "치지직 토큰을 Data Protection으로 암호화해서만 저장하고, 1회용 리프레시 토큰을 갱신할 때마다 새 값으로 바꾸며, 동시에 두 번 갱신하지 않도록 잠금을 걸어요.",
+        "keywords": [
+          "토큰 관리",
+          "Data Protection",
+          "암호화",
+          "Protect",
+          "Unprotect",
+          "키 링",
+          "SetApplicationName",
+          "토큰 회전",
+          "1회용 리프레시 토큰",
+          "SemaphoreSlim",
+          "잠금",
+          "만료 5분 전",
+          "갱신"
+        ]
+      },
+      {
+        "title": "세션 소켓 이해",
+        "minutes": 120,
+        "summary": "치지직 세션 소켓(Socket.IO 2.x, EIO=3)의 연결·구독 흐름과 .NET 클라이언트의 함정을 배우고, 내 PC의 에뮬레이터에 실제로 붙어 보는 테스트로 연결 코드를 확인해요.",
+        "keywords": [
+          "세션 소켓",
+          "Socket.IO",
+          "Socket.IO 2.x",
+          "Engine.IO",
+          "EIO=3",
+          "SocketIOClient",
+          "sessionKey",
+          "SYSTEM",
+          "DONATION",
+          "구독",
+          "에뮬레이터",
+          "socket.io 2.5.0",
+          "xUnit",
+          "dotnet test",
+          "재연결"
+        ]
+      },
+      {
+        "title": "후원 이벤트 수신",
+        "minutes": 120,
+        "summary": "진짜 치지직 수신기와 테스트 모드의 가짜 후원 발생기가 같은 모양의 이벤트를 내도록 설계하고, 후원 이벤트를 해석해 최소한만 기록해요. 테스트 모드로 승인 없이 이벤트를 받아 볼 수 있어요.",
+        "keywords": [
+          "후원 이벤트",
+          "DONATION",
+          "페이로드",
+          "ParseDonation",
+          "JSON 문자열",
+          "payAmount",
+          "IDonationEventSource",
+          "C# 이벤트",
+          "FakeDonationSource",
+          "테스트 모드",
+          "test-donation",
+          "BackgroundService",
+          "세션 점검",
+          "DonationEvent",
+          "최소 수집",
+          "브라우저 중계"
+        ]
+      },
+      {
+        "title": "후원 코드 매칭",
+        "minutes": 120,
+        "summary": "치즈 모드에서 이미지 후원마다 #AB12 같은 코드를 발급하고, 치즈 후원 메시지에서 코드를 찾아 금액·시간 조건을 확인해 한 번만 매칭하며, 30분이 지나면 만료시켜요.",
+        "keywords": [
+          "후원 코드",
+          "코드 매칭",
+          "AwaitingCheese",
+          "정규 표현식",
+          "GeneratedRegex",
+          "최소 치즈",
+          "30분 만료",
+          "중복 방지",
+          "멱등성",
+          "조건부 업데이트",
+          "RandomNumberGenerator.GetString",
+          "만료",
+          "Expired",
+          "expiresAt"
+        ]
+      },
+      {
+        "title": "테스트 모드·채팅 안내",
+        "minutes": 110,
+        "summary": "대시보드에 가짜 치즈 후원 발생기를 붙여 치지직 없이 전체 흐름을 화면에서 연습하고, 코드 확인을 채팅으로 알리는 선택 기능과 세션 소켓의 실패 처리를 완성해요.",
+        "keywords": [
+          "테스트 모드",
+          "가짜 후원 발생기",
+          "TestDonationPanel",
+          "대기 중인 코드",
+          "채팅 안내",
+          "chats/send",
+          "ChatOnMatch",
+          "채팅 메시지 쓰기",
+          "실패 처리",
+          "revoked",
+          "재연결",
+          "할당량",
+          "429",
+          "에뮬레이터 상황"
+        ]
+      },
+      {
+        "title": "후원 페이지 화면",
+        "minutes": 110,
+        "summary": "시청자용 후원 페이지를 완성해요. 스트리머 정보를 불러오고, 이미지를 골라 미리 보고, 업로드 진행률을 보여 주며, 치즈 모드면 후원 코드를 크게 안내하고 휴대폰 화면에도 맞춰요.",
+        "keywords": [
+          "후원 페이지",
+          "/d/:slug",
+          "이미지 선택",
+          "미리보기",
+          "업로드 진행률",
+          "XMLHttpRequest",
+          "FormData",
+          "크기 미리 검사",
+          "후원 코드 안내",
+          "모바일",
+          "기기 모드",
+          "같은 Wi-Fi",
+          "방화벽"
+        ]
+      },
+      {
+        "title": "스트리머 온보딩",
+        "minutes": 90,
+        "summary": "처음 온 스트리머가 가입 → 후원 페이지 만들기 → OBS 오버레이 연결 → 테스트 후원까지 막히지 않게 온보딩 화면과 시작 가이드를 만들고, 새 계정으로 처음부터 끝까지 따라가 봐요.",
+        "keywords": [
+          "온보딩",
+          "사용자 여정",
+          "후원 페이지 만들기",
+          "시작 가이드",
+          "OBS 오버레이 주소",
+          "테스트 후원",
+          "Navigate",
+          "reload",
+          "pattern",
+          "첫 화면"
+        ]
+      },
+      {
+        "title": "안전 장치",
+        "minutes": 120,
+        "summary": "방송 사고를 막는 금지어·차단·신고·긴급 정지를 만들어요. 신고는 기록·거절·차단을 한 트랜잭션으로 묶고 이미지를 증거로 격리하며, 긴급 정지는 화면부터 비워요.",
+        "keywords": [
+          "안전 장치",
+          "금지어",
+          "BannedWordFilter",
+          "차단",
+          "BlockEntry",
+          "신고",
+          "Report",
+          "트랜잭션",
+          "증거 격리",
+          "긴급 정지",
+          "Cleared",
+          "Clear",
+          "/media 상태 확인",
+          "403",
+          "window.confirm",
+          "window.prompt"
+        ]
+      },
+      {
+        "title": "개인정보·법적 고려",
+        "minutes": 90,
+        "summary": "이 서비스가 모으는 개인정보와 보관 기간을 정리해 최소 수집을 확인하고, 저작권·초상권 정책과 개인정보 처리방침·이용약관 초안을 쓰되 실제 운영 전에는 법률 자문이 필요하다는 점을 분명히 해요.",
+        "keywords": [
+          "개인정보",
+          "최소 수집",
+          "보관 기간",
+          "IP 해시",
+          "EXIF 제거",
+          "개인정보 처리방침",
+          "이용약관",
+          "초안",
+          "법률 자문",
+          "저작권",
+          "초상권",
+          "미성년자",
+          "치지직 약관"
+        ]
+      },
+      {
+        "title": "단위 테스트",
+        "minutes": 110,
+        "summary": "코드 매칭 규칙과 이미지 검증·금지어를 단위 테스트로 지키고, 테스트 이미지를 파일 대신 코드로 만들며, 경계값에서 테스트가 버그를 잡는지 일부러 고장 내 확인해요.",
+        "keywords": [
+          "단위 테스트",
+          "xUnit",
+          "Fact",
+          "Assert",
+          "경계값",
+          "DonationCodeMatcherTests",
+          "ImageProcessorTests",
+          "TestImages",
+          "EXIF",
+          "GIF",
+          "BannedWordFilterTests",
+          "테스트 이미지 생성",
+          "dotnet test"
+        ]
+      },
+      {
+        "title": "통합·프론트 테스트",
+        "minutes": 120,
+        "summary": "진짜 앱과 PostgreSQL로 API·SignalR·토큰 갱신을 확인하는 통합 테스트와, Vitest·Testing Library로 대시보드·후원 페이지를 확인하는 화면 테스트를 갖춰요.",
+        "keywords": [
+          "통합 테스트",
+          "WebApplicationFactory",
+          "ApiFactory",
+          "PostgreSQL 테스트",
+          "테스트 스키마",
+          "Search Path",
+          "TEST_DATABASE_URL",
+          "SignalR 클라이언트",
+          "TestServer",
+          "가짜 HTTP 처리기",
+          "Vitest",
+          "Testing Library",
+          "jsdom",
+          "vi.mock",
+          "npm test"
+        ]
+      },
+      {
+        "title": "관측성",
+        "minutes": 80,
+        "summary": "구조화 로깅과 로그 수준을 정리하고 /healthz 헬스 체크를 붙이며, 운영자 화면 대신 SQL로 통계와 신고를 확인하는 방법을 익혀요.",
+        "keywords": [
+          "관측성",
+          "구조화 로깅",
+          "메시지 템플릿",
+          "로그 수준",
+          "appsettings",
+          "헬스 체크",
+          "/healthz",
+          "AddHealthChecks",
+          "운영자 통계",
+          "SQL",
+          "GROUP BY",
+          "신고 확인"
+        ]
+      },
+      {
+        "title": "저장소 추상화",
+        "minutes": 90,
+        "summary": "이미지 저장소를 인터페이스로 감싸 로컬 폴더 대신 객체 스토리지(S3 호환)로 바꿔 끼울 수 있게 설계하고, 지우기만 실패하는 테스트 대역으로 긴급 정지가 화면부터 비우는지 확인해요.",
+        "keywords": [
+          "저장소 추상화",
+          "인터페이스",
+          "IImageStorage",
+          "LocalImageStorage",
+          "의존성 주입",
+          "객체 스토리지",
+          "S3 호환",
+          "버킷",
+          "테스트 대역",
+          "FailingDeleteStorage",
+          "ConfigureTestServices"
+        ]
+      },
+      {
+        "title": "Docker 이미지",
+        "minutes": 120,
+        "summary": "React 빌드를 서버가 함께 제공하게 하고, 멀티스테이지 Dockerfile과 compose로 API와 PostgreSQL 18을 한 번에 띄워요. 업로드 이미지와 암호화 키는 볼륨에 남겨요. Docker가 없으면 같은 결과를 직접 빌드해 실행해요.",
+        "keywords": [
+          "Docker 이미지",
+          "Dockerfile",
+          "멀티스테이지 빌드",
+          ".dockerignore",
+          "docker compose up --build",
+          "vite build",
+          "wwwroot",
+          "UseStaticFiles",
+          "MapFallbackToFile",
+          "환경 변수",
+          "Data Protection 키",
+          "볼륨",
+          "8080",
+          "dotnet publish"
+        ]
+      },
+      {
+        "title": "배포와 HTTPS",
+        "minutes": 100,
+        "summary": "시청자가 인터넷에서 후원 페이지에 들어오려면 무엇이 필요한지 정리하고, 작성 시점의 배포 선택지와 비용·제약, HTTPS·도메인·리디렉션 URL 갱신, 공개 전 점검표를 만들어요. 실제 배포는 선택이에요.",
+        "keywords": [
+          "배포",
+          "HTTPS",
+          "도메인",
+          "리버스 프록시",
+          "X-Forwarded-For",
+          "Render",
+          "Cloud Run",
+          "휘발성 디스크",
+          "슬립",
+          "비용",
+          "리디렉션 URL 갱신",
+          "LocalLoginEnabled",
+          "환경 변수",
+          "공개 전 점검"
+        ]
+      },
+      {
+        "title": "방송 리허설",
+        "minutes": 90,
+        "summary": "실제 방송 전에 체크리스트로 서버·OBS·설정을 점검하고, 친구나 다른 기기로 후원·검수·표시·사고 대응(거절·차단·신고·긴급 정지)을 처음부터 끝까지 연습해요.",
+        "keywords": [
+          "방송 리허설",
+          "체크리스트",
+          "OBS",
+          "오버레이",
+          "테스트 후원",
+          "긴급 정지",
+          "차단",
+          "신고",
+          "사고 대응",
+          "휴대폰 테스트",
+          "개인정보 노출",
+          "방송 화면"
+        ]
+      },
+      {
+        "title": "회고와 다음 단계",
+        "minutes": 80,
+        "summary": "SP를 돌아보며 운영 비용을 계산하고, 영상 후원·다중 플랫폼 같은 확장 아이디어를 설계해 보고, README를 포트폴리오로 정리해 마무리해요.",
+        "keywords": [
+          "회고",
+          "운영 비용",
+          "확장",
+          "영상 후원",
+          "다중 플랫폼",
+          "관리자 화면",
+          "서버 여러 대",
+          "포트폴리오",
+          "README",
+          "레퍼런스 비교",
+          "Git"
+        ]
+      }
+    ]
+  },
+  "pages": []
+}

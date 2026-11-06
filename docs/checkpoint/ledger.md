@@ -218,3 +218,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Task 21: fix round 1/5 dispatched (resume aa08a953b244403bf; FIX_BASE 8203077).
 - T8 fix round 1 implementer DONE (172 terms; §0.2 Edge DevTools rule). Committed b8a6f7f. Note: p1-only scratch merge can't be 0 errors while p2/p3 glossaries exist; all-three merge = 0 errors. Re-review dispatched (sonnet).
 - T8 fix round 1 re-review dispatched (sonnet, ae552e369fa4aa7d7), FIX_BASE dd9eeef HEAD b8a6f7f.
+- Ruling R45: in-flight agent files may be committed as labelled WIP snapshots ("wip(...)") to survive container restarts (the SP outline was lost once); review ranges always use the recorded BASE/FIX_BASE, never a WIP commit — cost if wrong: noisier history.
