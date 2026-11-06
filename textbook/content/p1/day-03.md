@@ -33,13 +33,15 @@
 
 닫는 태그가 없는 요소도 있어요. `<meta charset="utf-8">`처럼 감쌀 내용이 없는 요소예요. 이런 요소는 여는 태그 하나로 끝나요.
 
-```text
+```html
 <p class="intro">안녕하세요</p>
- │ └────┬─────┘ └──┬───┘ │
- │   속성(이름="값") 내용  닫는 태그
- └ 여는 태그
-└──────────── 요소 전체 ────────────┘
 ```
+
+- 여는 태그: `<p class="intro">`
+- 속성: `class="intro"` (이름 `class`, 값 `intro`)
+- 내용: `안녕하세요`
+- 닫는 태그: `</p>`
+- 요소: 위 네 가지를 모두 합친 줄 전체
 
 ### HTML 문서의 뼈대
 
@@ -312,8 +314,10 @@ C:\dev\
 │  ├─ favorites.html
 │  └─ tools.html
 └─ my-creator-site\
-   └─ index.html     (오늘 새로 만들었어요)
+   └─ index.html
 ```
+
+오늘 새로 만든 파일은 `index.html`이에요.
 
 📄 C:\dev\my-creator-site\index.html
 ```html

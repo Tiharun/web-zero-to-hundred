@@ -524,9 +524,9 @@ a1b2c3d Day 7: 소개 문장 바꾸기
 
 ```text
 C:\dev\my-creator-site\
-├─ .git\               (숨김 폴더, 직접 고치지 않아요)
+├─ .git\
 ├─ index.html
-├─ about.html          (첫 문단을 고쳤어요)
+├─ about.html
 ├─ contents.html
 ├─ schedule.html
 ├─ contact.html
@@ -534,6 +534,8 @@ C:\dev\my-creator-site\
    ├─ profile.svg
    └─ logo.svg
 ```
+
+`.git` 폴더는 Git이 만든 숨김 폴더라서 직접 고치지 않아요. 오늘 바뀐 파일은 `about.html`뿐이에요.
 
 📄 C:\dev\my-creator-site\about.html
 ```html

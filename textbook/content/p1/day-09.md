@@ -301,17 +301,19 @@ h1 {
 
 ```text
 C:\dev\my-creator-site\
-├─ index.html          (link, class 추가)
-├─ about.html          (link, class 추가)
-├─ contents.html       (link, class 추가)
-├─ schedule.html       (link, class 추가)
-├─ contact.html        (link, class 추가)
+├─ index.html
+├─ about.html
+├─ contents.html
+├─ schedule.html
+├─ contact.html
 ├─ css\
-│  └─ style.css        (새 파일)
+│  └─ style.css
 └─ images\
    ├─ profile.svg
    └─ logo.svg
 ```
+
+오늘 새로 만든 파일은 `css\style.css`이고, 다섯 HTML 파일에는 `link`와 `class`를 더했어요.
 
 📄 C:\dev\my-creator-site\css\style.css
 ```css

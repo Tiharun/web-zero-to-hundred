@@ -297,9 +297,9 @@ VS Code에서 새 파일 `C:\dev\hello\tools.html`을 만들어요.
 ```text
 C:\dev\
 └─ hello\
-   ├─ hello.html      (7단계에서 첫 문단을 고쳤어요)
+   ├─ hello.html
    ├─ favorites.html
-   └─ tools.html      (과제 1)
+   └─ tools.html
 ```
 
 오늘 바뀌거나 새로 생긴 파일은 `hello.html`과 `tools.html`이에요. `favorites.html`은 어제와 같아요. `hello.html`의 첫 문단은 사람마다 다를 수 있어서 아래는 예시예요.

@@ -181,7 +181,7 @@ my-creator-site/images/profile.svg
 2번에서는 그림 자리에 작은 깨진 그림 아이콘과 함께 대체 텍스트 "헤드셋을 쓴 곰 캐릭터, 달빛곰"이 글자로 보여요(브라우저에 따라 모양이 달라요). 4번에서는 곰 그림이 다시 보여요. `alt`가 있으면 그림이 깨져도 무슨 그림이 있었는지 알 수 있어요.
 :::
 
-### 5단계 · 내 사진으로 바꾸기 (선택, 6분)
+### 5단계 · 내 사진으로 바꾸기 (6분)
 
 내 사진이나 그림을 쓰고 싶다면 해 봐요. 건너뛰어도 돼요. 교재의 이후 코드는 `profile.svg`를 그대로 써요.
 
@@ -200,7 +200,9 @@ my-creator-site/images/profile.svg
 
 ### 6단계 · 경로 따라가 보기 (8분)
 
-종이와 연필로 해도 좋아요. 위 개념 이해의 폴더 그림을 보고 답해 보세요.
+**어디서:** 종이나 메모장 어디든 괜찮아요. 위 개념 이해의 폴더 그림을 보고 답해요.
+
+**무엇을:** 아래 세 질문의 답을 적어 봐요.
 
 1. `C:\dev\my-creator-site\index.html`에서 `images\profile.svg`로 가는 `src`는?
 2. `C:\dev\hello\pages\back.html`에서 `C:\dev\hello\hello.html`로 가는 `href`는?
@@ -333,16 +335,18 @@ C:\dev\
 │  ├─ tools.html
 │  ├─ links.html
 │  └─ pages\
-│     └─ back.html         (과제 2)
+│     └─ back.html
 └─ my-creator-site\
-   ├─ index.html           (그림 추가)
-   ├─ about.html           (그림 추가)
+   ├─ index.html
+   ├─ about.html
    ├─ contents.html
    ├─ schedule.html
    ├─ contact.html
    └─ images\
-      └─ profile.svg       (새 파일)
+      └─ profile.svg
 ```
+
+오늘 새로 만든 파일은 `images\profile.svg`와 `pages\back.html`이고, `index.html`과 `about.html`에는 그림을 더했어요.
 
 📄 C:\dev\my-creator-site\images\profile.svg
 ```xml

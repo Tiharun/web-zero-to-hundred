@@ -384,14 +384,16 @@ C:\dev\
 │  ├─ hello.html
 │  ├─ favorites.html
 │  ├─ tools.html
-│  └─ links.html           (과제 2)
+│  └─ links.html
 └─ my-creator-site\
-   ├─ index.html           (메뉴 추가)
-   ├─ about.html           (새 파일)
-   ├─ contents.html        (새 파일)
-   ├─ schedule.html        (새 파일)
-   └─ contact.html         (새 파일)
+   ├─ index.html
+   ├─ about.html
+   ├─ contents.html
+   ├─ schedule.html
+   └─ contact.html
 ```
+
+오늘 새로 만든 파일은 `about.html`, `contents.html`, `schedule.html`, `contact.html`, `links.html`이고, `index.html`에는 메뉴를 더했어요.
 
 📄 C:\dev\my-creator-site\index.html
 ```html

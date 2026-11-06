@@ -472,15 +472,17 @@ VS Code 안의 Live Preview 미리 보기 창은 Edge나 Chrome이 아니라서 
 
 ```text
 C:\dev\my-creator-site\
-├─ index.html          (header·main·footer)
-├─ about.html          (header·main·footer)
-├─ contents.html       (header·main·footer)
-├─ schedule.html       (header·main·footer)
-├─ contact.html        (header·main·footer)
+├─ index.html
+├─ about.html
+├─ contents.html
+├─ schedule.html
+├─ contact.html
 └─ images\
    ├─ profile.svg
-   └─ logo.svg         (새 파일)
+   └─ logo.svg
 ```
+
+오늘 새로 만든 파일은 `images\logo.svg`이고, 다섯 HTML 파일은 모두 `header`, `main`, `footer` 구조로 바뀌었어요.
 
 📄 C:\dev\my-creator-site\images\logo.svg
 ```xml
@@ -788,9 +790,9 @@ C:\dev\my-creator-site\
 2. `Ctrl + S`로 저장하고 브라우저에서 `F5`를 눌러요.
 3. 새로 고침해도 고친 글자가 남아 있으면 해결된 거예요.
 
-### 로고가 화면을 가득 채울 만큼 커요
+### 로고가 글자보다 훨씬 크게 보여요
 
-**원인:** 로고 `img`에서 `width="36" height="36"`을 빠뜨렸어요. 크기를 정하지 않으면 SVG가 자기 크기(64×64)보다 커 보이기도 해요. 가장 흔한 경우는 코드를 붙여 넣다가 속성 일부가 잘린 거예요.
+**원인:** 로고 `img`에서 `width="36" height="36"`을 빠뜨렸어요. 크기를 정하지 않으면 SVG가 자기 크기(64×64)로 보여서, 글자 높이에 맞춘 36×36보다 눈에 띄게 커 보여요. 붙여 넣다가 속성 일부가 잘렸을 때 흔해요.
 
 **해결:**
 

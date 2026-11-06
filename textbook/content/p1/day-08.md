@@ -409,15 +409,15 @@ C:\dev\
 │  ├─ favorites.html
 │  ├─ tools.html
 │  ├─ links.html
-│  ├─ plan.html           (과제 2)
+│  ├─ plan.html
 │  └─ pages\
 │     └─ back.html
 └─ my-creator-site\
-   ├─ index.html          (대표 영상 추가)
+   ├─ index.html
    ├─ about.html
    ├─ contents.html
-   ├─ schedule.html       (표 추가)
-   ├─ contact.html        (폼 추가)
+   ├─ schedule.html
+   ├─ contact.html
    └─ images\
       ├─ profile.svg
       └─ logo.svg

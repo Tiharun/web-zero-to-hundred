@@ -697,17 +697,19 @@ CSS가 고르려는 이름표(`container`, `header-inner`, `hero-image` …)를 
 
 ```text
 C:\dev\my-creator-site\
-├─ index.html          (class 추가)
-├─ about.html          (class 추가)
-├─ contents.html       (class 추가)
-├─ schedule.html       (class 추가)
-├─ contact.html        (class 추가)
+├─ index.html
+├─ about.html
+├─ contents.html
+├─ schedule.html
+├─ contact.html
 ├─ css\
-│  └─ style.css        (박스 모델 규칙 추가)
+│  └─ style.css
 └─ images\
    ├─ profile.svg
    └─ logo.svg
 ```
+
+`css\style.css`에는 규칙이 늘었고, 다섯 HTML 파일에는 `class`를 더했어요.
 
 📄 C:\dev\my-creator-site\css\style.css
 ```css
