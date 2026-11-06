@@ -117,6 +117,8 @@ Computed 창 위쪽에 겹겹이 네모 그림이 보여요. 바깥부터 margin
 4. 선택한 부분을 `Delete` 키로 지우고, 아래 코드를 그 자리에 붙여 넣어요.
 5. `Ctrl + S`로 저장해요.
 
+막히면 이렇게 해도 돼요: `Ctrl + A`로 `style.css` 전체를 지우고, 아래 "✅ 정답"의 "오늘 끝 상태 전체 코드"에 있는 `style.css`를 통째로 붙여 넣어요. 그러면 2~4단계가 한 번에 끝나요.
+
 📄 C:\dev\my-creator-site\css\style.css (일부)
 ```css
 /* ---------- 2. 기본 설정 (Day 9, 10) ---------- */
@@ -177,7 +179,7 @@ h3 {
 
 **무엇을:**
 
-1. `h3` 규칙의 닫는 `}` 줄 끝을 클릭하고 `Enter`를 두 번 눌러 빈 줄을 만들어요. 그 자리에 아래 코드를 붙여 넣어요. 붙여 넣은 코드와 `/* ---------- 4. 헤더와 내비게이션 (Day 11) ---------- */` 주석 사이에는 빈 줄이 하나 있어야 해요.
+1. `h3` 규칙의 닫는 `}` 줄 끝을 클릭하고 `Enter`를 두 번 눌러 빈 줄을 만들어요. 그 자리에 아래 코드를 붙여 넣어요. 붙여 넣은 코드와 `/* ---------- 4. 헤더와 내비게이션 (Day 11) ---------- */` 주석 사이에는 빈 줄이 하나 있어야 해요. 위치를 못 잡겠으면 `Ctrl + A`로 `style.css` 전체를 지우고, 아래 "✅ 정답"의 "오늘 끝 상태 전체 코드"에 있는 `style.css`를 통째로 붙여 넣어요. 그러면 2~4단계가 한 번에 끝나요.
 2. `Ctrl + S`로 저장해요.
 
 📄 C:\dev\my-creator-site\css\style.css (일부)
@@ -212,6 +214,8 @@ main {
 2. `Ctrl + Shift + End`를 눌러 파일 맨 끝까지 선택해요.
 3. `Delete`로 지우고, 아래 코드를 붙여 넣어요.
 4. `Ctrl + S`로 저장해요.
+
+막히면 이렇게 해도 돼요: `Ctrl + A`로 `style.css` 전체를 지우고, 아래 "✅ 정답"의 "오늘 끝 상태 전체 코드"에 있는 `style.css`를 통째로 붙여 넣어요. 그러면 2~4단계가 한 번에 끝나요.
 
 📄 C:\dev\my-creator-site\css\style.css (일부)
 ```css
@@ -281,6 +285,7 @@ main {
 - `4`에는 `.site-header`에 아래쪽 테두리 선이 생기고, `.header-inner`에 위아래 padding이 생겼어요.
 - `6. 페이지별`은 새 구역이에요. 홈의 곰 그림은 폭 160px에 `border-radius: 50%`(정사각형을 원으로), 소개의 곰 그림은 폭 200px에 `12px` 둥근 모서리예요.
 - 같은 구역의 방송 일정 규칙을 읽어 봐요. `.schedule-table th, .schedule-table td { … }`는 쉼표 뒤에도 `.schedule-table`을 다시 쓴 자손 선택자예요. `.schedule-table thead th`는 머리글 칸만 골라 배경을 칠해요.
+- `font-weight`는 글자 굵기예요. 숫자 `400`이 보통, `700`이 굵게(`strong`과 같은 굵기)이고, `caption`에 `font-weight: 700`을 줘서 표 제목을 굵게 보여요.
 - `border-collapse: collapse`는 표의 칸마다 있는 테두리를 하나로 합쳐 줘요. 이 규칙이 없으면 칸 테두리가 두 줄로 겹쳐 보여요.
 - `7. 푸터`에는 위쪽 테두리와 위아래 padding이 더해졌고, 바닥글 안의 `p`에서 margin을 없앴어요.
 
@@ -400,7 +405,7 @@ CSS가 고르려는 이름표(`container`, `header-inner`, `hero-image` …)를 
     <section class="about-intro">
       <img class="about-image" src="images/profile.svg" alt="헤드셋을 쓴 곰 캐릭터, 달빛곰" width="240" height="240">
       <div>
-        <p>안녕하세요! <strong>달빛곰</strong>이에요. 게임, 토크, 음악 방송을 하는 <em>버라이어티 스트리머</em>예요.</p>
+        <p>안녕하세요! <strong>달빛곰</strong>이에요. 2026년에 방송을 시작한 <em>버라이어티 스트리머</em>예요.</p>
         <p>밤에 방송하는 걸 좋아해서 이름에 달빛이 들어갔어요. 시청자분들과 수다 떠는 시간이 가장 즐거워요.</p>
       </div>
     </section>
@@ -937,7 +942,7 @@ main {
     <section class="about-intro">
       <img class="about-image" src="images/profile.svg" alt="헤드셋을 쓴 곰 캐릭터, 달빛곰" width="240" height="240">
       <div>
-        <p>안녕하세요! <strong>달빛곰</strong>이에요. 게임, 토크, 음악 방송을 하는 <em>버라이어티 스트리머</em>예요.</p>
+        <p>안녕하세요! <strong>달빛곰</strong>이에요. 2026년에 방송을 시작한 <em>버라이어티 스트리머</em>예요.</p>
         <p>밤에 방송하는 걸 좋아해서 이름에 달빛이 들어갔어요. 시청자분들과 수다 떠는 시간이 가장 즐거워요.</p>
       </div>
     </section>

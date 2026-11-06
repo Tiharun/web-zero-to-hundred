@@ -102,7 +102,7 @@ PS C:\dev\my-creator-site>
 **무엇을:** 파일을 실행하고, 사용자 계정 컨트롤 창이 뜨면 게시자를 확인한 뒤 **예**를 클릭해요. 사용권 화면에서 **Next**를 누른 뒤, 아래 화면에서는 이렇게 골라요. 나머지 화면은 아무것도 바꾸지 않고 **Next**를 눌러요.
 
 1. 설치 위치와 구성 요소 선택 화면(Select Components)은 기본값 그대로 **Next**를 눌러요.
-2. "Choosing the default editor used by Git" 화면에서 목록을 열어 **Use Visual Studio Code as Git's default editor**를 골라요. VS Code가 목록에 없으면 VS Code를 먼저 설치해야 해요. 아래 🧯 자주 막히는 곳의 "설치 마법사 편집기 목록에 VS Code가 없어요"를 보세요.
+2. "Choosing the default editor used by Git" 화면에서 목록을 열어 **Use Visual Studio Code as Git's default editor**를 골라요. VS Code가 목록에 없으면 VS Code를 먼저 설치해야 해요. 아래 🧯 자주 막히는 곳의 "설치 마법사의 편집기 목록에 VS Code가 없어요"를 보세요.
 3. "Adjusting the name of the initial branch in new repositories" 화면에서 **Override the default branch name for new repositories**를 고르고, 입력 칸에 `main`이 들어 있는지 확인해요. 새 저장소의 기본 브랜치 이름을 `main`으로 정하는 거예요.
 4. "Adjusting your PATH environment" 화면은 (Recommended)라고 쓰인 기본 선택 그대로 두고 **Next**를 눌러요. 터미널 어디서든 `git`을 쓰게 해 줘요.
 5. 줄 끝 처리 화면(Configuring the line ending conversions)은 기본값 **Checkout Windows-style, commit Unix-style line endings**를 그대로 둬요. Windows 프로그램은 줄바꿈 방식이 Unix와 달라서, 내 컴퓨터에서는 Windows 방식으로 쓰고 기록에는 Unix 방식으로 남기는 설정이에요.
@@ -400,7 +400,7 @@ Day 8부터는 매일 이 패널로 커밋하고 올려요. 터미널 명령과 
 
 `about.html`의 소개 문장을 내 이야기로 바꾸고, 터미널 없이 소스 제어 패널만으로 커밋하고 GitHub에 올려 보세요.
 
-- `about.html`의 첫 문단에서 `2026년에 방송을 시작한`을 `게임, 토크, 음악 방송을 하는`으로 바꾸거나 내 소개로 바꿔 저장해요. 태그는 그대로 둬요.
+- `about.html`의 첫 문단에서 `2026년에 방송을 시작한` 부분을 `게임, 토크, 음악 방송을 하는`처럼 내 소개로 바꿔 저장해요. 태그는 그대로 둬요. 글은 내 것이라 사람마다 달라도 돼요. 이후 Day의 "끝 상태 전체 코드"는 원래 문장을 쓰는데, 내 문장을 그대로 두어도 동작은 같아요.
 - **소스 제어** 패널에서 바뀐 파일 `about.html` 옆에 `M` 표시가 생기는지 봐요.
 - 메시지 칸에 `Day 7: 소개 문장 바꾸기`를 입력하고 **커밋** 버튼을 클릭해요.
 - 이어서 나타나는 **변경 내용 동기화**(또는 비슷한 이름) 버튼을 클릭해요. 처음에는 확인 창이 뜰 수 있어요.
@@ -428,75 +428,13 @@ Day 8부터는 매일 이 패널로 커밋하고 올려요. 터미널 명령과 
 5. 버튼이 **변경 내용 동기화**로 바뀌면 클릭해요. 확인 창이 뜨면 **확인**(**OK**)을 클릭해요.
 6. GitHub 저장소 페이지를 새로 고치면 커밋이 2개가 돼요.
 
-바꾼 `about.html`의 첫 문단은 아래 한 줄이에요(닉네임과 문장은 내 것이어도 돼요).
+바꾼 첫 문단의 `<p>` 줄은 이런 모양이에요(원래 줄의 `2026년에 방송을 시작한` 부분만 바뀌었어요. 문장은 내 것이어도 돼요).
 
-📄 C:\dev\my-creator-site\about.html
+📄 C:\dev\my-creator-site\about.html (일부)
 ```html
-<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>소개 - 달빛곰 방송국</title>
-</head>
-<body>
-  <header>
-    <a href="index.html">
-      <img src="images/logo.svg" alt="" width="36" height="36">
-      <span>달빛곰 방송국</span>
-    </a>
-    <nav>
-      <ul>
-        <li><a href="index.html">홈</a></li>
-        <li><a href="about.html">소개</a></li>
-        <li><a href="contents.html">영상</a></li>
-        <li><a href="schedule.html">방송 일정</a></li>
-        <li><a href="contact.html">문의</a></li>
-      </ul>
-    </nav>
-  </header>
-
-  <main>
-    <h1>달빛곰을 소개해요</h1>
-
-    <section>
-      <img src="images/profile.svg" alt="헤드셋을 쓴 곰 캐릭터, 달빛곰" width="240" height="240">
-      <div>
         <p>안녕하세요! <strong>달빛곰</strong>이에요. 게임, 토크, 음악 방송을 하는 <em>버라이어티 스트리머</em>예요.</p>
-        <p>밤에 방송하는 걸 좋아해서 이름에 달빛이 들어갔어요. 시청자분들과 수다 떠는 시간이 가장 즐거워요.</p>
-      </div>
-    </section>
-
-    <section>
-      <h2>어떤 방송을 하나요?</h2>
-      <ul>
-        <li><strong>게임</strong>: 신작 게임을 첫 방송에서 같이 해 봐요.</li>
-        <li><strong>토크</strong>: 사연을 읽고 이야기를 나눠요.</li>
-        <li><strong>음악</strong>: 기타 연주와 신청곡 라이브를 해요.</li>
-      </ul>
-    </section>
-
-    <section>
-      <h2>방송 규칙</h2>
-      <ol>
-        <li>서로 존중하는 말을 써 주세요.</li>
-        <li>스포일러는 미리 말해 주세요.</li>
-        <li>개인 정보는 채팅에 올리지 마세요.</li>
-      </ol>
-    </section>
-
-    <section>
-      <h2>함께해요</h2>
-      <p>방송 시간은 <a href="schedule.html">방송 일정</a>에서 확인하고, 협업이나 궁금한 점은 <a href="contact.html">문의 페이지</a>로 보내 주세요.</p>
-    </section>
-  </main>
-
-  <footer>
-    <p>&copy; 2026 달빛곰 방송국 · 연습용으로 만든 사이트예요.</p>
-  </footer>
-</body>
-</html>
 ```
+
 **왜 이렇게 하나요?** 소스 제어 패널의 **커밋**은 터미널의 `git add .`와 `git commit -m "…"`를, **변경 내용 동기화**는 `git push`와 GitHub의 새 기록을 내려받는 일을 한 번에 해 줘요. 같은 일을 마우스로 하는 거예요. 오늘 이후 모든 Day의 마지막 단계에서 이 방법을 써요.
 :::
 
@@ -520,7 +458,7 @@ a1b2c3d Day 7: 소개 문장 바꾸기
 :::
 
 :::answer 오늘 끝 상태 전체 코드
-오늘 따라하기와 과제를 모두 끝내면 아래 상태가 돼요. 오늘 바뀐 파일은 `about.html`의 첫 문단뿐이에요. 나머지 파일은 어제와 같아요. 막혔다면 어제 끝 상태 코드로 폴더를 맞추고, 터미널에서 6~7단계를 다시 해요. 그러면 Day 8을 바로 시작할 수 있어요.
+오늘 따라하기와 과제를 모두 끝내면 아래 상태가 돼요. 파일 코드는 어제와 같고, 과제 1에서 고친 `about.html`의 첫 문단만 내 글로 달라요(아래 `about.html`은 원래 문장이에요. 내 문장을 그대로 두어도 돼요). 막혔다면 어제 끝 상태 코드로 폴더를 맞추고, 터미널에서 6~7단계를 다시 해요. 그러면 Day 8을 바로 시작할 수 있어요.
 
 ```text
 C:\dev\my-creator-site\
@@ -535,7 +473,7 @@ C:\dev\my-creator-site\
    └─ logo.svg
 ```
 
-`.git` 폴더는 Git이 만든 숨김 폴더라서 직접 고치지 않아요. 오늘 바뀐 파일은 `about.html`뿐이에요.
+`.git` 폴더는 Git이 만든 숨김 폴더라서 직접 고치지 않아요.
 
 📄 C:\dev\my-creator-site\about.html
 ```html
@@ -569,7 +507,7 @@ C:\dev\my-creator-site\
     <section>
       <img src="images/profile.svg" alt="헤드셋을 쓴 곰 캐릭터, 달빛곰" width="240" height="240">
       <div>
-        <p>안녕하세요! <strong>달빛곰</strong>이에요. 게임, 토크, 음악 방송을 하는 <em>버라이어티 스트리머</em>예요.</p>
+        <p>안녕하세요! <strong>달빛곰</strong>이에요. 2026년에 방송을 시작한 <em>버라이어티 스트리머</em>예요.</p>
         <p>밤에 방송하는 걸 좋아해서 이름에 달빛이 들어갔어요. 시청자분들과 수다 떠는 시간이 가장 즐거워요.</p>
       </div>
     </section>
@@ -636,6 +574,21 @@ At line:1 char:1
 3. 그래도 같은 오류면 Git이 설치되지 않은 거예요. 시작 메뉴에서 `git`을 검색해 **Git Bash**가 나오는지 봐요. 안 나오면 1단계부터 설치를 다시 해요.
 4. `git version 2.…`가 나오면 해결된 거예요.
 
+### 설치 마법사의 편집기 목록에 VS Code가 없어요
+
+**원인:** VS Code가 설치되어 있지 않거나, 설치 직후라서 마법사가 아직 찾지 못했어요. 이 화면은 Git이 커밋 메시지 같은 글을 쓸 때 열 편집기를 고르는 곳이라서, 지금 못 골라도 Git은 동작해요.
+
+**해결:**
+
+1. 일단 기본 편집기를 그대로 두고 설치를 끝내요. 나중에 바꿀 수 있어요.
+2. VS Code가 설치되어 있고 터미널이 열린 상태에서 아래 명령을 입력해요.
+
+```powershell
+git config --global core.editor "code --wait"
+```
+
+3. 아무것도 나오지 않고 다음 줄에 `PS C:\dev\my-creator-site>`가 다시 보이면 성공이에요. 이 설정이 없어도 `git commit -m "…"`처럼 메시지를 직접 쓰면 편집기는 열리지 않아요.
+
 ### Author identity unknown (이름과 이메일을 알려 달라는 오류)
 
 **원인:** Git에게 내 이름과 이메일을 아직 알려 주지 않아서 커밋을 못 만들어요. 4단계를 하지 않았거나 값을 잘못 입력했을 때 나와요.
@@ -670,22 +623,6 @@ git config --global user.email "moonbear@example.com"
 2. 다시 `git commit -m "Day 1~6: 첫 페이지들"`를 입력해요.
 3. `[main (root-commit) …]` 줄이 나오면 해결된 거예요.
 
-### fatal: not a git repository (or any of the parent directories): .git
-
-**원인:** 지금 터미널의 위치가 Git 저장소가 아니에요. 대부분은 터미널의 현재 폴더가 `C:\dev\my-creator-site`가 아니거나, `git init`을 아직 안 한 경우예요.
-
-**해결:**
-
-1. 터미널의 맨 마지막 줄 `PS …>`를 읽어서 현재 위치를 확인해요.
-2. `C:\dev\my-creator-site`가 아니면 아래 명령으로 옮겨요.
-
-```powershell
-cd C:\dev\my-creator-site
-```
-
-3. 위치가 맞는데도 오류면 `git init`을 한 번 실행해요. `Initialized empty Git repository`가 나와요.
-4. `git status`를 입력해서 `On branch main` 줄이 나오면 해결된 거예요.
-
 ### error: src refspec main does not match any
 
 **원인:** 푸시하려는 `main` 브랜치에 커밋이 하나도 없어요. `git commit`을 하기 전에 `git push`를 했거나, 커밋이 실패했거나, 브랜치 이름이 `main`이 아닐 때 나와요.
@@ -703,6 +640,34 @@ error: failed to push some refs to 'https://github.com/moonbear-dev/my-creator-s
 4. 다시 `git push -u origin main`을 입력해요.
 5. `* [new branch] main -> main` 줄이 나오면 해결된 거예요.
 
+### error: remote origin already exists.
+
+**원인:** `git remote add origin …`을 이미 한 번 했어요. 같은 이름 `origin`을 두 번 만들 수 없어요. 처음 입력한 주소가 틀렸을 때도 이 오류가 나와요.
+
+**해결:**
+
+1. 연결된 주소를 확인해요.
+
+```powershell
+git remote -v
+```
+
+예상 출력(주소는 내 아이디에 따라 달라요):
+
+```text
+origin	https://github.com/moonbear-dev/my-creator-site.git (fetch)
+origin	https://github.com/moonbear-dev/my-creator-site.git (push)
+```
+
+2. 주소가 맞으면 그대로 다음 단계로 가요.
+3. 틀렸다면 아래 명령으로 `origin`의 주소를 바꿔요. 주소는 내 저장소 주소로 바꿔요.
+
+```powershell
+git remote set-url origin https://github.com/moonbear-dev/my-creator-site.git
+```
+
+4. `git remote -v`의 주소가 내 저장소와 같으면 해결된 거예요.
+
 ### ! [rejected] main -> main (fetch first)
 
 **원인:** GitHub에서 저장소를 만들 때 **Add a README file**을 체크해서, GitHub 쪽에 이미 내 컴퓨터에 없는 기록이 있어요. Git은 남의 기록을 덮어쓰지 않으려고 푸시를 거절해요. 문구와 안내(`hint:`)는 Git 버전에 따라 조금 달라요.
@@ -718,25 +683,28 @@ hint: 'git pull' before pushing again.
 hint: See the 'Note about fast-forwards' in 'git push --help' for details.
 ```
 
-**해결:** 오늘은 가장 쉬운 방법으로, 비어 있는 저장소로 다시 만들어요. 내 컴퓨터의 파일과 기록은 지워지지 않아요.
+**해결:** 내 컴퓨터의 파일과 기록은 지워지지 않는 방법이에요. 둘 중 하나를 골라요.
+
+방법 1. 지우지 않고 이름만 바꿔 새로 만들기(옛 저장소는 백업으로 남아요)
+
+1. 브라우저에서 README가 있는 GitHub 저장소 페이지의 **Settings**를 클릭해요.
+2. 맨 위 **Repository name**을 `my-creator-site-old`로 바꾸고 **Rename**을 클릭해요. 메뉴 이름은 바뀔 수 있어요.
+3. 5단계처럼 `my-creator-site` 저장소를 새로 만들어요. 이번에는 **Add a README file**을 체크하지 않아요.
+4. 터미널에서 연결 주소를 새 저장소로 바꿔요. 아래 주소는 예시예요. `moonbear-dev` 자리에 내 아이디를 넣어요.
+
+```powershell
+git remote set-url origin https://github.com/moonbear-dev/my-creator-site.git
+```
+
+5. 아무것도 나오지 않으면 성공이에요. 이어서 `git push -u origin main`을 입력해요.
+6. ` * [new branch]      main -> main` 줄이 나오면 해결된 거예요.
+
+방법 2. 옛 저장소를 지우고 다시 만들기
 
 1. 브라우저에서 GitHub 저장소 페이지의 **Settings**를 클릭해요.
 2. 맨 아래쪽 **Danger Zone**(위험 구역)에서 **Delete this repository**를 클릭하고, 화면 안내대로 저장소 이름을 입력해 삭제해요. 메뉴 이름은 바뀔 수 있어요.
-3. 5단계처럼 `my-creator-site` 저장소를 다시 만들어요. 이번에는 **Add a README file**을 체크하지 않아요.
-4. 터미널에서 `git push -u origin main`을 다시 입력해요.
-5. ` * [new branch]      main -> main` 줄이 나오면 해결된 거예요.
-
-### 푸시할 때 로그인 창이 안 뜨거나 다른 계정으로 로그인돼요
-
-**원인:** 처음 푸시할 때 Git Credential Manager가 브라우저로 로그인을 요청해요. 팝업이 다른 창 뒤에 숨어 있거나, 브라우저가 이미 다른 GitHub 계정으로 로그인되어 있으면 그 계정으로 인증돼요. 로그인 창의 모양은 버전에 따라 달라요(실기 확인은 못 했어요).
-
-**해결:**
-
-1. 작업 표시줄에서 다른 창 뒤에 숨은 로그인 창이나 브라우저 창을 찾아요.
-2. 브라우저에서 GitHub의 오른쪽 위 프로필을 눌러 지금 로그인된 계정이 이 저장소 주인인지 확인해요. 다르면 로그아웃하고 올바른 계정으로 로그인해요.
-3. 인증 창에서 **Authorize**(허용)를 클릭해요.
-4. `git push -u origin main`을 다시 입력해요.
-5. 오류 없이 ` * [new branch]` 줄이 나오면 해결된 거예요.
+3. 5단계처럼 `my-creator-site` 저장소를 다시 만들어요(README 체크 없음). 주소는 같아서 `git remote set-url`은 필요 없어요.
+4. 터미널에서 `git push -u origin main`을 입력해요. ` * [new branch]      main -> main` 줄이 나오면 해결된 거예요.
 ## 📝 오늘의 체크리스트
 
 - [ ] 터미널에서 `git --version`이 `git version 2.…`를 보여 줘요.

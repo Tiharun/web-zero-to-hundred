@@ -16,7 +16,7 @@
 - `C:\dev\my-creator-site\images\profile.svg`, `C:\dev\my-creator-site\images\logo.svg`
 - `C:\dev\hello\hello.html`, `favorites.html`, `tools.html`, `links.html`, `plan.html`, `pages\back.html`
 - Git이 설치되어 있고(`git --version`의 예상 출력은 `git version 2.56.0.windows.4`, 숫자는 달라도 돼요) GitHub 공개 저장소 `my-creator-site`와 연결되어 있어요.
-- 어제까지의 변경이 모두 커밋·푸시되어 있어요. 소스 제어 패널에 바뀐 파일이 없어요.
+- 어제까지의 변경이 모두 커밋·푸시되어 있어요. 소스 제어 패널에 바뀐 파일이 없어요(Day 8 과제 3에서 영상 ID를 바꿨다면 커밋했거나 되돌린 상태예요).
 - VS Code에서 `C:\dev\my-creator-site` 폴더가 열려 있어요.
 :::
 
@@ -459,7 +459,7 @@ h1, h2, h3 {
     <section>
       <img src="images/profile.svg" alt="헤드셋을 쓴 곰 캐릭터, 달빛곰" width="240" height="240">
       <div>
-        <p>안녕하세요! <strong>달빛곰</strong>이에요. 게임, 토크, 음악 방송을 하는 <em>버라이어티 스트리머</em>예요.</p>
+        <p>안녕하세요! <strong>달빛곰</strong>이에요. 2026년에 방송을 시작한 <em>버라이어티 스트리머</em>예요.</p>
         <p>밤에 방송하는 걸 좋아해서 이름에 달빛이 들어갔어요. 시청자분들과 수다 떠는 시간이 가장 즐거워요.</p>
       </div>
     </section>
