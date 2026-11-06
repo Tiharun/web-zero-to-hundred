@@ -241,3 +241,6 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Ruling R47: the PowerShell 5.1-safe secret command fix is load-bearing for Days 14/37 and the reference README has the same bug; T29's fix round may edit ONLY that command in reference/sp-image-donation/README.md (no code change) — cost if wrong: one line of answer-key docs changed outside T28's review (re-review covers it).
 - Ruling R48: promote all T29 Minors (same reason as R40) — cost if wrong: one longer round.
 - Task 29: fix round 1/5 dispatched (resume a73d162abe7e73591; FIX_BASE d411c91).
+- Task 21: fix round 1/5 (6 addressed, 0 open; commits 8203077..f10a2c7)
+- Task 21: minor (deferred): Days 24, 26, 30 at 120 min remain the heaviest (copy-then-explain mitigation); spec-deviation list (7 items: D19→21 tests, D26→24 validation, D29→30 home, D30→31 static, minutes) lives in docs/checkpoint/reports/task-21-report.md "Fix round 1" — carry into HANDOFF (T36).
+- Task 21: complete (commits f85155c..f10a2c7, review clean)
