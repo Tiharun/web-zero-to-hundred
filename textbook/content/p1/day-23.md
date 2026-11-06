@@ -397,7 +397,7 @@ git push
 
 ```text
 [main 5b7e2a4] Day 23: 영상 필터와 검색
- ?
+ 3 files changed, 92 insertions(+), 13 deletions(-)
 ```
 
 :::success
@@ -805,7 +805,7 @@ Uncaught TypeError: video.title.toLowerCase(...).Includes is not a function
 
 ## 📚 더 알아보기
 
-- [MDN — HTMLElement: input 이벤트](https://developer.mozilla.org/ko/docs/Web/API/HTMLElement/input_event): 입력칸의 값이 바뀔 때마다 일어나는 `input` 이벤트를 설명해요.
+- [MDN — input 이벤트](https://developer.mozilla.org/ko/docs/Web/API/Element/input_event): 입력칸의 값이 바뀔 때마다 일어나는 `input` 이벤트를 설명해요.
 - [MDN — String.prototype.includes()](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/String/includes): 문자열에 글자가 들어 있는지 확인하는 방법이에요.
 - [MDN — hidden 전역 속성](https://developer.mozilla.org/ko/docs/Web/HTML/Reference/Global_attributes/hidden): `hidden` 속성의 동작과 주의점이에요.
 

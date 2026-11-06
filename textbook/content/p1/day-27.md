@@ -463,7 +463,7 @@ git push
 
 ```text
 [main 4c0e7f3] Day 27: OBS 카운트다운 오버레이
- ?
+ 3 files changed, 141 insertions(+)
 ```
 
 푸시 후 최대 10분 기다린 뒤, Edge 주소창에 아래 주소를 입력해 열어요. `<내 아이디>`는 내 GitHub 아이디예요.

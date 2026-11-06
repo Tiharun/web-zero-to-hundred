@@ -404,7 +404,7 @@ git push
 
 ```text
 [main 2e8f1a6] Day 25: videos.json과 fetch
- ?
+ 5 files changed, 65 insertions(+), 16 deletions(-)
 ```
 
 배포 주소(`https://<내 아이디>.github.io/my-creator-site/contents.html`)에서도 카드 6장이 보이는지 확인해요. 반영까지 최대 10분 걸려요.
@@ -445,6 +445,7 @@ GitHub 저장소에 `data/videos.json`이 생기고 `Day 25: videos.json과 fetc
 - `date`는 `2026-11-05` 같은 날짜 글자예요.
 - 확인 방법: 카드가 7장이 되고 `영상 7개`로 바뀌어요. 제목을 눌러 YouTube가 새 탭에서 열려요.
 - 힌트: 앞의 `v006` 줄 끝에 쉼표를 붙이고, 새 줄에는 쉼표를 붙이지 않아요.
+- 마무리: 내 영상을 남겨 두려면 소스 제어 패널에서 `Day 25: 내 영상 추가`로 커밋·푸시해요. 되돌리려면 **변경 내용 취소**를 눌러요(또는 다음 커밋에 포함돼요).
 
 ## ✅ 정답
 
@@ -904,7 +905,7 @@ Failed to load resource: the server responded with a status of 404 (Not Found)
 
 ## 📚 더 알아보기
 
-- [MDN — 서버에서 데이터 가져오기](https://developer.mozilla.org/ko/docs/Learn_web_development/Core/Scripting/Fetching_data): `fetch`로 데이터를 받아 화면에 보여 주는 과정을 설명해요.
+- [MDN — 서버에서 데이터 가져오기](https://developer.mozilla.org/ko/docs/Learn_web_development/Core/Scripting/Network_requests): `fetch`로 데이터를 받아 화면에 보여 주는 과정을 설명해요.
 - [MDN — JSON 다루기](https://developer.mozilla.org/ko/docs/Learn_web_development/Core/Scripting/JSON): JSON 문법과 JavaScript 객체와의 차이를 자세히 알려 줘요.
 - [MDN — try...catch](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Statements/try...catch): 오류를 잡아 처리하는 문법을 정리해요.
 

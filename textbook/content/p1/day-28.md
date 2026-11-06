@@ -449,7 +449,7 @@ git push
 
 ```text
 [main 6d2a8c0] Day 28: 접근성, SEO, 파비콘
- ?
+ 8 files changed, 110 insertions(+), 15 deletions(-)
 ```
 
 :::success
@@ -471,6 +471,7 @@ GitHub 저장소에 `favicon.svg`가 생기고 `Day 28: 접근성, SEO, 파비�
 
 - 확인 방법: 다섯 파일에서 설명 문장이 서로 다르고, `description`과 `og:description`이 같은 문장이에요.
 - 힌트: 페이지마다 그 페이지 내용을 말하고, 핵심 낱말(예: 방송 일정, 영상, 문의)을 앞쪽에 써요. 너무 길면 검색 결과에서 잘려요(대략 한두 문장).
+- 마무리: 바꿨다면 소스 제어 패널에서 `Day 28: 내 설명 문장`으로 커밋·푸시해요(안 하면 다음 커밋에 포함돼요).
 
 ### 과제 3 · Lighthouse 항목 하나 고치기 (도전 ⭐⭐⭐, 8분)
 

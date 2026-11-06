@@ -265,3 +265,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - T10 implementer DONE (Days 11–20; 116 checks + 16 intermediate; 8 outline problems incl. D20 null error text measured, .header-inner comment in D11 only, D14 full style.css). Final files at b69499d (base 342c1ed). Review dispatched (sonnet).
 - T10 review dispatched (sonnet, ae424603f9cd1808f), base 342c1ed head b69499d; includes D10/D11 seam check.
 - T9 fix round 1 implementer DONE (12 fixed; some 🧯 items moved to 모음 only to keep 3–6 per Day). Committed a901b47. Re-review dispatched (sonnet).
+- T9 fix round 1 re-review dispatched (sonnet, aa482c65588c474be), FIX_BASE b9b4bda HEAD a901b47.

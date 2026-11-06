@@ -327,7 +327,7 @@ git push
 
 ```text
 [main 8c1d0e7] Day 22: 다크 모드와 테마 저장
- ?
+ 7 files changed, 58 insertions(+), 1 deletion(-)
 ```
 
 `git add .`는 출력이 없고, `git push`는 마지막에 `main -> main`이 보이면 성공이에요.

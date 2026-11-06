@@ -18,7 +18,6 @@
 - `C:\dev\my-creator-site\index.html`
 - `C:\dev\my-creator-site\schedule.html`
 - `C:\dev\my-creator-site\css\style.css`
-- `C:\dev\my-creator-site\data\videos.json`
 - `C:\dev\my-creator-site\images\logo.svg`
 - `C:\dev\my-creator-site\images\profile.svg`
 - `C:\dev\my-creator-site\images\thumb-game.svg`
@@ -358,7 +357,7 @@ menuToggle.addEventListener('click', () => {
 **무엇을:** **☰ 메뉴** 버튼을 한 번 클릭하고, 한 번 더 클릭해요.
 
 :::success
-첫 클릭에 메뉴 목록(홈·소개·영상·방송 일정·문의, 다크 모드 버튼은 내일 생겨요)이 로고 아래로 펼쳐져요. 두 번째 클릭에 다시 접혀요. 개발자 도구 **Elements** 패널에서 `<button class="menu-toggle" …>`를 보고 있으면 `aria-expanded`가 `"true"`와 `"false"`로 바뀌고, `<nav>`에 `open`이 붙었다 떨어져요. 다섯 페이지를 모두 열어 봐도 콘솔(Console)에 빨간 오류가 없어요. 오류가 있다면 아래 🧯의 "한 페이지에서만 …" 항목을 보세요.
+첫 클릭에 메뉴 목록(홈·소개·영상·방송 일정·문의, 다크 모드 버튼은 내일 생겨요)이 로고 아래로 펼쳐져요. 두 번째 클릭에 다시 접혀요. 개발자 도구 **Elements** 패널에서 `<button class="menu-toggle" …>`를 보고 있으면 `aria-expanded`가 `"true"`와 `"false"`로 바뀌고, `<nav>`에 `open`이 붙었다 떨어져요. 다섯 페이지를 모두 열어 봐도 콘솔(Console)에 빨간 오류가 없어요. 오류가 있다면 아래 🧯의 "Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')" 항목을 보세요.
 :::
 
 ### 5단계 · contents.html: 카테고리 버튼 만들기 (8분)
@@ -505,7 +504,7 @@ git push
 
 ```text
 [main 3f2a9c1] Day 21: 모바일 메뉴와 카테고리 버튼
- ?
+ 8 files changed, 95 insertions(+), 13 deletions(-)
 ```
 
 `git push` 마지막 두 줄 예상 출력(내 아이디와 해시는 달라요):
@@ -599,8 +598,6 @@ document.querySelectorAll('#category-filters button').forEach((button) => {
 my-creator-site/
 ├─ css/
 │  └─ style.css ✎
-├─ data/
-│  └─ videos.json
 ├─ images/
 │  ├─ logo.svg
 │  ├─ profile.svg
@@ -695,7 +692,7 @@ my-creator-site/
 
     <section class="container">
       <h2>대표 영상</h2>
-      <!-- YouTube 공유 → 퍼가기에서 복사한 iframe이에요.는 화면에 가까워질 때 불러와요 -->
+      <!-- YouTube 공유 → 퍼가기에서 복사한 iframe이에요 -->
       <iframe class="video-frame" src="https://www.youtube.com/embed/aqz-KE-bpKQ" title="달빛곰 대표 영상 (예시 영상이에요)" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
     </section>
   </main>

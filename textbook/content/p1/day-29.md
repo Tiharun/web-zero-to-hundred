@@ -475,7 +475,7 @@ git push
 
 ```text
 [main 1b9e4d8] Day 29: README와 정리
- ?
+ 1 file changed, 79 insertions(+)
 ```
 
 그다음 Edge에서 `https://github.com/<내 아이디>/my-creator-site`를 열어요.
@@ -510,6 +510,7 @@ git push
 
 - 확인 방법: 미리 보기에서 `## 배운 것` 제목, 목록, 가장 어려웠던 Day 문장이 보여요.
 - 힌트: `- 항목` 줄로 목록을 쓰고, 기술 이름은 `` `fetch` ``처럼 백틱으로 감싸요.
+- 마무리: 9단계 커밋 뒤에 썼다면 `Day 29: README 배운 것`으로 한 번 더 커밋·푸시해요(안 하면 내일 커밋에 포함돼요).
 
 ## ✅ 정답
 
@@ -743,6 +744,6 @@ overlay/countdown.html?title=저녁 방송&start=20:00
 
 - [Chrome for Developers — JavaScript 디버깅 시작하기](https://developer.chrome.com/docs/devtools/javascript): 중단점, 한 줄씩 실행, Scope 보기를 단계별로 설명해요.
 - [MDN — JavaScript 오류 참고서](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Errors): 오류 메시지별로 원인과 고치는 방법을 찾아볼 수 있어요.
-- [GitHub Docs — README 정보](https://docs.github.com/ko/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes): README가 저장소 첫 화면에 보이는 규칙을 설명해요.
+- [GitHub Docs — About READMEs](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes): README가 저장소 첫 화면에 보이는 규칙을 설명해요.
 
 ➡️ **다음 Day 예고:** [Day 30 · 최종 배포와 회고](#/day/p1-d30)에서는 최종 점검표로 사이트를 한 번 더 점검하고, 마지막 커밋·푸시와 배포 확인을 하고, 30일을 돌아보는 회고를 README에 써요.
