@@ -271,3 +271,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Task 9: complete (commits 342c1ed..a901b47, review clean)
 - T17 (P2 Days 21–30, sonnet) dispatched, NO GIT.
 - T11 implementer DONE_WITH_CONCERNS (Days 21–30; 246 checks; D28 end state == reference; 4 outline problems: D20 wording assumed, D27 start=7:5 edge, Lighthouse written for Chrome (Edge tab unmeasurable), D21 @media whole-block replace). Final files at 32979ff (base 342c1ed). Review dispatched (sonnet).
+- T11 review dispatched (sonnet, a8fde2a5daece08f8); head 32979ff; includes D20/D21 seam + Edge vs Chrome Lighthouse.
