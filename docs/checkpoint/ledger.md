@@ -250,3 +250,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Task 29: fix round 1/5 (14 addressed, 0 open; commits d411c91..066fdaf). Re-review judged the Day 31→32 one-day gap (reported image URL still served until D32 gating) acceptable: unguessable 128-bit names, local dev only, D31 must state it.
 - Ruling R49: promote the 3 re-review leftovers into fix round 2 (D34 _meta summary/keywords stale after test move; D28 목표 stale sentence; D11 읽기만 box vs hand-written HasAllowedSignature) — they would mislead SP Day writers — cost if wrong: one tiny round.
 - Task 29: fix round 2/5 dispatched (resume a73d162abe7e73591; FIX_BASE 066fdaf).
+- T29 fix round 2 implementer DONE (3 leftovers + typo 4305). Committed 773967a; curriculum re-merged; committed-tree check OK. Re-review dispatched (haiku).
