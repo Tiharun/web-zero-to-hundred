@@ -28,3 +28,16 @@
 
 ## 미검증
 Windows 화면 전부, OBS 실행, GitHub Actions/Pages 배포, Edge DevTools 탭 이름, 저장소 차단(설정) 시 오류 꼬리 문구.
+
+## Fix round 1
+소스(생성 원본)는 스크래치 `md/dNN.src.md`이고 결과를 `day-NN.md`로 다시 생성했어요. 줄 번호는 생성 후 파일 기준이 아니라 항목 위치로 적어요.
+
+1. (IMPORTANT) Lighthouse를 Edge 기본 경로로 변경: day-28.md 목표(:8), 개념 정의, 8단계 "어디서"(Edge InPrivate `Ctrl + Shift + N`, Chrome 시크릿도 같은 탭), 2번 단계(탭 `»`, "이름·위치 버전에 따라 다를 수 있어요, 실기 미확인"), 버튼 이름 hedge, 🧯 "Lighthouse 탭이 안 보여요"·"확장 프로그램…"·"점수가 달라요". troubleshooting/p1-days-21-30.md의 같은 항목도 수정.
+2. (IMPORTANT) 영상 페이지 안내 문장을 Day 4 문장 `지난 방송 영상을 모아 두는 페이지예요.`로 통일: day-21.md 전체 코드 contents.html 포함, Day 21·22는 이 문장만 나옴. day-23.md 1단계 설명을 "`지난 방송 영상을 모아 두는 페이지예요.`에서 `카테고리를 고르거나 제목으로 검색해 보세요.`로 바뀌었어요"로 수정, Day 23~29 전체 코드는 레퍼런스 문장. 레퍼런스와 s28 diff 차이 없음.
+3. day-28.md 8단계 메타 문구를 "예를 들어 어제(Day 27) 상태의 홈 페이지를 검사하면"으로.
+4. day-21.md 🧯에 "메뉴를 연 채로 창을 넓히면 상태가 남아 있어요" 추가.
+5. day-24.md 🧯에 "이메일 정규식에서 \ 를 빠뜨렸더니…" 추가, day-23.md 🧯에 "검색칸 오른쪽의 ✕ 버튼…" 추가.
+6. troubleshooting/p1-days-21-30.md 첫 줄에 `# P1 문제 해결 (Day 21~30)` 추가.
+7. day-22.md 개념: `[[data 속성]]`을 "Day 21에서 배운 [[data 속성]]이에요"로(굵게/새 용어 표기 없음).
+
+재실행: `npm run check -- --only p1-d21…p1-d30` → 검사 통과(오류 0). 끝 상태 브라우저 검사 Day 21~29 전부 통과(44/25/23/29/20/38/34/28/5개). 검증 기록 갱신: docs/verification/p1-days-21-30.md.
