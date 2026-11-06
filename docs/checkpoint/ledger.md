@@ -219,3 +219,5 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - T8 fix round 1 implementer DONE (172 terms; §0.2 Edge DevTools rule). Committed b8a6f7f. Note: p1-only scratch merge can't be 0 errors while p2/p3 glossaries exist; all-three merge = 0 errors. Re-review dispatched (sonnet).
 - T8 fix round 1 re-review dispatched (sonnet, ae552e369fa4aa7d7), FIX_BASE dd9eeef HEAD b8a6f7f.
 - Ruling R45: in-flight agent files may be committed as labelled WIP snapshots ("wip(...)") to survive container restarts (the SP outline was lost once); review ranges always use the recorded BASE/FIX_BASE, never a WIP commit — cost if wrong: noisier history.
+- T29 implementer DONE_WITH_CONCERNS (125 SP terms; links P2/P3 shared terms per R38; renamed OAuth 스코프; test project moved to Day 25, test-mode backend Day 26; practice folder C:\dev\sp-practice; 치지직 redirect via Vite 5173 unverified on real server). SP files at d411c91 (base 8e30f25). Review dispatched (opus).
+- Task 28: minor (deferred): reference ApiFactory default TEST_DATABASE_URL embeds the sandbox login wzh/wzh — learners must set their own; SP test Day must teach it (carry to T30–33 writers).
