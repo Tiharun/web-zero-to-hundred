@@ -292,3 +292,6 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - 🧯 3–6 cap note sent to running P2 writers T16, T17, T18 (T15 under review — reviewer checks against the guide).
 - T11 fix round 2 implementer DONE (🧯 ≤6 all Days; ~30 entries added to 모음). Files at 0411826. Re-review dispatched (haiku).
 - T11 fix round 2 re-review dispatched (haiku, a86ca81a93bb8557c), FIX_BASE b718956 HEAD 0411826.
+- Task 11: fix round 2/5 (🧯 cap + reference resolution addressed; open: Day 26 "더블클릭으로 열면 카운트다운이 없어요" has no 모음 entry; Day 27 tomorrow-broadcast guidance lost in move; commits b718956..0411826)
+- Ruling R54: a Day 🧯 item and its 문제 해결 모음 entry need not have verbatim-identical headings — a paraphrase covering the same symptom/cause/fix satisfies CONTENT-GUIDE ("🧯 repeats 모음 items") — only genuinely missing items or lost content are defects — cost if wrong: a learner searching the 모음 by the exact Day heading may not find it by text search.
+- Task 11: fix round 3/5 dispatched (resume a8a09e53510e4c0d4; FIX_BASE 0411826) — add Day 26 entry, restore Day 27 guidance.
