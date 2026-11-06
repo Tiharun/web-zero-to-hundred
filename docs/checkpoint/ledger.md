@@ -217,3 +217,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Ruling R44: promote T21's 2 Minors (glossary owner = first teaching use, or "예고만" on the earlier Day) — cost if wrong: none.
 - Task 21: fix round 1/5 dispatched (resume aa08a953b244403bf; FIX_BASE 8203077).
 - T8 fix round 1 implementer DONE (172 terms; §0.2 Edge DevTools rule). Committed b8a6f7f. Note: p1-only scratch merge can't be 0 errors while p2/p3 glossaries exist; all-three merge = 0 errors. Re-review dispatched (sonnet).
+- T8 fix round 1 re-review dispatched (sonnet, ae552e369fa4aa7d7), FIX_BASE dd9eeef HEAD b8a6f7f.
