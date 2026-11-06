@@ -502,7 +502,97 @@ C:\dev\ts-practice\
    └─ types.ts
 ```
 
-`src\types.ts`, `src\data.ts`, `src\format.ts`는 위 1단계, 2단계, 과제 3 정답의 코드와 같아요. 그 밖의 파일은 [Day 4](#/day/p2-d04)의 끝 상태 그대로예요. 아래는 오늘 마지막으로 바뀐 `main.ts` 전체예요.
+그 밖의 파일은 [Day 4](#/day/p2-d04)의 끝 상태 그대로예요. 오늘 새로 생기거나 바뀐 파일을 모두 실었어요.
+
+📄 C:\dev\ts-practice\src\types.ts
+```ts
+// 서버와 주고받는 데이터의 모양이에요. 다른 파일이 쓸 수 있게 export를 붙여요
+export type Platform = 'chzzk' | 'youtube' | 'soop' | 'other';
+
+export interface Streamer {
+  id: number;
+  name: string;
+  platform: Platform;
+  channelUrl: string;
+  bio: string;
+  avatarUrl: string | null; // 사진이 없으면 null
+  createdAt: string;
+}
+
+export interface Schedule {
+  id: number;
+  streamerId: number;
+  streamerName: string;
+  title: string;
+  startsAt: string; // UTC 문자열 (끝의 Z)
+  durationMinutes: number;
+}
+
+// Streamer의 모든 칸 + 다가오는 일정
+export interface StreamerDetail extends Streamer {
+  schedules: Schedule[];
+}
+
+// 제네릭 인터페이스: 무엇의 목록이든 같은 모양으로 담아요
+export interface Paged<T> {
+  items: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+```
+
+📄 C:\dev\ts-practice\src\data.ts
+```ts
+import type { Streamer } from './types.js';
+
+export const streamers: Streamer[] = [
+  {
+    id: 1,
+    name: '달빛곰',
+    platform: 'chzzk',
+    channelUrl: 'https://example.com/moonbear',
+    bio: '밤마다 느긋하게 게임하는 곰이에요. 채팅 환영!',
+    avatarUrl: null,
+    createdAt: '2026-11-01T00:00:00Z',
+  },
+  {
+    id: 2,
+    name: '픽셀토끼',
+    platform: 'youtube',
+    channelUrl: 'https://example.com/pixelrabbit',
+    bio: '도트 그림을 그리면서 이야기 나누는 토끼예요.',
+    avatarUrl: null,
+    createdAt: '2026-11-01T00:00:00Z',
+  },
+  {
+    id: 3,
+    name: '노을고양이',
+    platform: 'soop',
+    channelUrl: 'https://example.com/sunsetcat',
+    bio: '노래와 수다를 좋아하는 고양이예요.',
+    avatarUrl: null,
+    createdAt: '2026-11-01T00:00:00Z',
+  },
+];
+```
+
+📄 C:\dev\ts-practice\src\format.ts
+```ts
+import type { Platform } from './types.js';
+
+// 플랫폼 이름을 한글로
+export function platformName(platform: Platform): string {
+  if (platform === 'chzzk') {
+    return '치지직';
+  } else if (platform === 'youtube') {
+    return 'YouTube';
+  } else if (platform === 'soop') {
+    return 'SOOP';
+  }
+  return '기타';
+}
+```
 
 📄 C:\dev\ts-practice\src\main.ts
 ```ts

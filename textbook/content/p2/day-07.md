@@ -717,7 +717,7 @@ git push
 - 확인: 맨 아래 꼬리말에 바뀐 문구가 보여요.
 - 힌트: `<footer>` 안의 `<p>` 글자만 바꿔요.
 
-### 과제 2 · 큰 소개에 버튼 두 개 더하기 (보통 ⭐⭐, 12분)
+### 과제 2 · 큰 소개에 버튼 두 개 더하기 (보통 ⭐⭐, 10분)
 
 - `main.ts`의 소개 글 아래에 버튼 두 개를 더해요. 하나는 주소가 `#/schedule`인 "이번 주 방송 일정", 다른 하나는 주소가 `#/streamers`인 "스트리머 보기"예요.
 - 첫 번째는 `class="button"`, 두 번째는 `class="button secondary"`로 하고 `<p class="actions">` 안에 나란히 둬요. 이 클래스는 `style.css`에 이미 있어요.
@@ -730,6 +730,28 @@ git push
 - `<script>` 줄의 `src` 주소를 읽어요.
 - 확인: `/assets/index-…해시….js`처럼 `/assets/`로 시작하고 이름에 알 수 없는 글자가 붙어 있어요.
 - 힌트: 소스에는 `/src/main.ts`였던 주소가 빌드에서는 어떻게 바뀌었는지 비교해요.
+
+### 마무리 · 과제 결과도 커밋하기 (2분)
+
+과제로 `index.html`과 `main.ts`가 바뀌었어요. 기록으로 남겨야 Day를 마칠 때 `git status`가 깨끗해요.
+
+**어디서:** VS Code 터미널(새 터미널), 위치 `C:\dev\streamer-hub`
+
+```powershell
+git add -A
+```
+
+```powershell
+git commit -m "day07: 과제"
+```
+
+```powershell
+git push
+```
+
+:::success
+`git status`가 `nothing to commit, working tree clean`이에요. GitHub의 `client\index.html` 꼬리말에 바뀐 문구가 보여요.
+:::
 
 ## ✅ 정답
 
@@ -781,7 +803,7 @@ app.innerHTML = `
 :::
 
 :::answer 오늘 끝 상태 전체 코드
-과제 1·2로 바뀐 `index.html`과 `main.ts`는 10단계 커밋 뒤의 변경이에요. 따로 커밋하지 않아도 Day 8 끝의 `git add -A` 커밋에 함께 들어가요(되돌려도 괜찮아요). 오늘 따라하기와 과제를 모두 끝낸 상태예요. 막혔다면 `C:\dev\streamer-hub\client`에 아래 폴더와 파일을 만들고 `client` 폴더에서 `npm install`을 실행한 뒤 Day 8을 시작하세요. `package.json`, `.gitignore`, `package-lock.json`은 `npm create vite@latest client -- --template vanilla-ts`와 `npm install`이 만들어 줘요. `node_modules`와 `dist`는 도구가 만든 것이라 직접 만들지 않아요.
+오늘 따라하기와 과제를 모두 끝낸 상태예요. 막혔다면 `C:\dev\streamer-hub\client`에 아래 폴더와 파일을 만들고 `client` 폴더에서 `npm install`을 실행한 뒤 Day 8을 시작하세요. `package.json`, `.gitignore`, `package-lock.json`은 `npm create vite@latest client -- --template vanilla-ts`와 `npm install`이 만들어 줘요. `node_modules`와 `dist`는 도구가 만든 것이라 직접 만들지 않아요.
 
 ```text
 C:\dev\streamer-hub\
@@ -803,7 +825,253 @@ C:\dev\streamer-hub\
    └─ tsconfig.json
 ```
 
-`src\types.ts`는 [Day 6](#/day/p2-d06)의 `types.ts`와 같고, `src\main.ts`는 위 과제 2 정답, `public\favicon.svg`와 `src\style.css`와 `index.html`은 5단계와 6단계의 코드와 같아요. `index.html`은 과제 1의 꼬리말만 다르게 아래 전체를 써요.
+오늘 바뀌거나 새로 생긴 파일을 모두 실었어요. `src\main.ts`는 위 과제 2 정답과 같아요. `index.html`은 과제 1의 꼬리말까지 반영한 아래 전체예요.
+
+📄 C:\dev\streamer-hub\client\public\favicon.svg
+```xml
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#5b4bdb"/><circle cx="16" cy="16" r="5" fill="#fff"/><path d="M8 8a11 11 0 0 0 0 16M24 8a11 11 0 0 1 0 16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
+```
+
+📄 C:\dev\streamer-hub\client\src\style.css
+```css
+/* ==========================================================
+   style.css - 스트리머 허브 전체 스타일
+   P1의 색 변수와 카드 모양을 그대로 가져왔어요. 순서: 변수 → 기본 → 머리말 → 공통 부품 → 화면별
+   ========================================================== */
+
+/* ---------- 1. 색 변수 ---------- */
+:root {
+  --bg: #ffffff;
+  --surface: #f4f2ff;
+  --text: #1d1b2e;
+  --muted: #5a5775;
+  --accent: #5b4bdb;
+  --accent-text: #ffffff;
+  --link: #4a3bc7;
+  --border: #d9d6ee;
+  --error: #b3261e;
+  --danger: #b3261e;
+  --highlight: #fff3c4;
+  --radius: 12px;
+  color-scheme: light dark;
+}
+
+/* 컴퓨터가 다크 모드면 변수 값만 바꿔요 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14121f;
+    --surface: #1f1c33;
+    --text: #ece9ff;
+    --muted: #b3aed6;
+    --accent: #8f83ff;
+    --accent-text: #14121f;
+    --link: #b0a8ff;
+    --border: #3a3660;
+    --error: #ff8a80;
+    --danger: #ff8a80;
+    --highlight: #4a3f12;
+  }
+}
+
+/* ---------- 2. 기본 ---------- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  line-height: 1.7;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+a {
+  color: var(--link);
+}
+
+h1,
+h2 {
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 1.75rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+  margin-top: 2rem;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1rem 3rem;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* ---------- 3. 머리말·꼬리말 ---------- */
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-links a {
+  text-decoration: none;
+}
+
+.nav-links a[aria-current='page'] {
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+
+.site-footer {
+  padding: 1.5rem 1rem;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* ---------- 4. 공통 부품 ---------- */
+.button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button.secondary {
+  background: transparent;
+  color: var(--link);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* ---------- 5. 화면별 ---------- */
+.hero {
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.hero h1 {
+  margin-top: 0;
+}
+```
+
+📄 C:\dev\streamer-hub\client\src\types.ts
+```ts
+// 서버와 주고받는 데이터의 모양이에요. 다른 파일이 쓸 수 있게 export를 붙여요
+export type Platform = 'chzzk' | 'youtube' | 'soop' | 'other';
+
+export interface Streamer {
+  id: number;
+  name: string;
+  platform: Platform;
+  channelUrl: string;
+  bio: string;
+  avatarUrl: string | null; // 사진이 없으면 null
+  createdAt: string;
+}
+
+export interface Schedule {
+  id: number;
+  streamerId: number;
+  streamerName: string;
+  title: string;
+  startsAt: string; // UTC 문자열 (끝의 Z)
+  durationMinutes: number;
+}
+
+// Streamer의 모든 칸 + 다가오는 일정
+export interface StreamerDetail extends Streamer {
+  schedules: Schedule[];
+}
+
+// 제네릭 인터페이스: 무엇의 목록이든 같은 모양으로 담아요
+export interface Paged<T> {
+  items: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+```
+
+📄 C:\dev\streamer-hub\client\.gitignore
+```text
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+```
 
 📄 C:\dev\streamer-hub\client\index.html
 ```html
@@ -973,7 +1241,7 @@ Target directory "client" is not empty. Please choose how to proceed:
 - [ ] `npm run build`가 `✓ built in …`으로 끝나고 `dist` 폴더가 생겼어요
 - [ ] `git status`에 `node_modules`와 `dist`가 안 보여요
 - [ ] 과제 1~3을 풀고 정답과 비교했어요
-- [ ] `git add -A`, `git commit -m "day07: Vite 프로젝트"`, `git push`를 했어요
+- [ ] `git add -A`, `git commit -m "day07: Vite 프로젝트"`, `git push`를 했고, 과제 뒤에도 커밋·푸시해서 `git status`가 깨끗해요
 
 ## 📚 더 알아보기
 
