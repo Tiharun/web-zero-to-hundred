@@ -208,3 +208,6 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Ruling R40: promote all 7 T8 Minors into fix round 1 (Day 8 full weekday names; Day 9 head comment vs §0.1; Day 13/21 768px comment; contents.js layout Days 19–21 + stale Day 19 comment; Day 7 Ctrl+Shift+` for New Terminal; mark Live Preview command/port 실기 미확인; Day 27 이미 배운 것 Day labels). The outline is the only contract between parallel Day writers, so ambiguity becomes inconsistency — cost if wrong: one longer round.
 - Task 8: fix round 1/5 dispatched (resume a9fabbaa9c23c95b9; FIX_BASE dd9eeef).
 - Resumed after limit reset: T14 review, T21 review, T29 implementer (told sp/ lost, regenerate + R38).
+- T14 review (opus): spec ✅ (C# Dev Kit optional = justified); Needs fixes — 3 Important: (I1) Day 26 task 1 admin-seed scenario not reproducible (seed creates admin on fresh DB first); (I2) P1 back-link/forward-use errors (change event, minlength/maxlength, createElementWithText→P1 Day 20, aria-current→P1 Day 11); (I3) Day 36 says 16 integration tests, reference has 15. 7 Minor. Review size note: ~247 KB not a problem.
+- Ruling R41: promote all 7 T14 Minors (same reason as R40) — cost if wrong: one longer round.
+- Task 14: fix round 1/5 dispatched (resume a9b5b72238c84e776; FIX_BASE b0ed08d).
