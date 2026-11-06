@@ -287,3 +287,6 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Task 10: complete (commits 342c1ed..30a8cca, review clean)
 - T11 fix round 1 re-review dispatched (sonnet, a324fbd1f42bc167b), FIX_BASE 32979ff HEAD b718956.
 - T18 (P2 Days 31–40, sonnet) dispatched, NO GIT.
+- Task 11: fix round 1/5 (7 addressed, 1 new Important — 🧯 counts over CONTENT-GUIDE 3–6: D21 7, D23 7, D24 9, plus pre-existing D26 7, D27 7, D28 8, D29 8; new 🧯 items missing from the troubleshooting file; commits 32979ff..b718956)
+- Task 11: fix round 2/5 dispatched (resume a8a09e53510e4c0d4; FIX_BASE b718956) — trim every Day 21–30 🧯 to ≤6 (move lowest-value items to the 모음; keep every "아래 🧯" reference resolving), and mirror new items in troubleshooting/p1-days-21-30.md.
+- 🧯 3–6 cap note sent to running P2 writers T16, T17, T18 (T15 under review — reviewer checks against the guide).
