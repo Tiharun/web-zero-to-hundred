@@ -721,7 +721,7 @@
       {
         "title": "통합·프론트 테스트",
         "minutes": 115,
-        "summary": "진짜 앱과 PostgreSQL로 API·SignalR·토큰 갱신을 확인하는 통합 테스트와, Vitest·Testing Library로 대시보드·후원 페이지를 확인하는 화면 테스트를 갖춰요.",
+        "summary": "진짜 앱과 PostgreSQL로 API·SignalR·안전 장치·정리 작업을 확인하는 통합 테스트와, Vitest·Testing Library로 대시보드·후원 페이지를 확인하는 화면 테스트를 갖춰요.",
         "keywords": [
           "통합 테스트",
           "WebApplicationFactory",
@@ -732,7 +732,6 @@
           "TEST_DATABASE_URL",
           "SignalR 클라이언트",
           "TestServer",
-          "가짜 HTTP 처리기",
           "Vitest",
           "Testing Library",
           "jsdom",
@@ -777,7 +776,8 @@
           "ConfigureTestServices",
           "StubChzzkHandler",
           "ChzzkApiClientTests",
-          "토큰 회전 테스트"
+          "토큰 회전 테스트",
+          "가짜 HTTP 처리기"
         ]
       },
       {
