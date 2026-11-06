@@ -244,3 +244,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Task 21: fix round 1/5 (6 addressed, 0 open; commits 8203077..f10a2c7)
 - Task 21: minor (deferred): Days 24, 26, 30 at 120 min remain the heaviest (copy-then-explain mitigation); spec-deviation list (7 items: D19→21 tests, D26→24 validation, D29→30 home, D30→31 static, minutes) lives in docs/checkpoint/reports/task-21-report.md "Fix round 1" — carry into HANDOFF (T36).
 - Task 21: complete (commits f85155c..f10a2c7, review clean)
+- T15 (P2 Days 1–10, sonnet, a4cb3a28d07200aa3) dispatched, NO GIT. T16–18 wait for slots.
