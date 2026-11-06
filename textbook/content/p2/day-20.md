@@ -52,7 +52,7 @@ streamerhub.db     SQLite 파일 (결과물)
 - **[[DbSet]]**(디비셋)은 `DbContext` 안의 테이블 하나예요. `DbSet<Streamer>`가 `Streamers` 테이블이에요. 목록처럼 LINQ(`Where`, `OrderBy`)를 쓸 수 있어요.
 - **[[연결 문자열]]**(connection string)은 "DB가 어디에 있는지" 적은 글자예요. SQLite에서는 `Data Source=streamerhub.db`로 파일 이름을 적어요.
 - **[[마이그레이션]]**(migration)은 DB 구조(테이블, 열)를 만들거나 바꾸는 설계 기록이에요. 코드를 보고 EF Core가 파일로 만들어 주고, 그 파일을 DB에 적용해요. 나중에 테이블을 바꿔야 할 때 마이그레이션을 하나 더 만들어요(Day 22, 25, 30, 33).
-- **[[dotnet-ef]]**는 마이그레이션을 만들고 적용하는 명령줄 도구예요. `dotnet ef …` 모양으로 써요.
+- **[[dotnet-ef]]**(닷넷 이에프)는 마이그레이션을 만들고 적용하는 명령줄 도구예요. `dotnet ef …` 모양으로 써요.
 
 ### SQLite 파일은 어디에 생길까요? (중요)
 

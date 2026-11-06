@@ -312,3 +312,11 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Task 15: fix round 1/5 dispatched (resume a4cb3a28d07200aa3; FIX_BASE 3173b9a).
 - 2026-11-06: usage limit (429) hit again; T12 reviewer ①, T15 fix round 1, T16, T17, T18 terminated early. Resumed after reset via SendMessage (transcripts intact). WIP snapshot taken first.
 - T15 fix round 1 implementer DONE (19 items; Day 8 briefly corrupted by a bad edit and rebuilt). Files at 6115e79. Re-review dispatched (sonnet) incl. Day 8 integrity.
+- 2026-11-06 STOPPED by user ("모든 작업을 멈춥니다"). Stopped agents (resumable via SendMessage while transcripts exist; otherwise re-dispatch fresh with the same brief + report path):
+  - T12 reviewer ① beginner simulation (opus, aceb6c4b664eb693f) — no report yet. T12 reviewer ② (technical) never dispatched.
+  - T15 fix round 1 re-review (sonnet, a8530f671e3826b17) — FIX_BASE 3173b9a HEAD 6115e79; diff review-t15-fix1.diff; must check Day 8 integrity.
+  - T16 P2 Days 11–20 (sonnet, a5ba0159a5dbfebb2) — was verifying Day 20; files on disk (WIP).
+  - T17 P2 Days 21–30 (sonnet, a8b7555c96ce6fe44) — early stage.
+  - T18 P2 Days 31–40 (sonnet, ae3c284e8a4d15b49) — mid-way (Day 34 CSRF experiment).
+  - Leftover scratch test processes from stopped agents (StreamerHub dotnet on :5260, vite :5290, T18 script) could not be killed (permission denied); harmless, container-local.
+- Complete so far: T1–T8, T13, T14, T20, T21, T28, T29, T9, T10, T11. T12 step 1 committed (6166d21). Next on resume: T15 re-review → T12 reviewers ①② → T12 fixes → send preview index.html; T16–T18 finish → reviews → T19.
