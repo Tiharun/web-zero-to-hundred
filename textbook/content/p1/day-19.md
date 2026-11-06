@@ -620,7 +620,7 @@ Uncaught ReferenceError: titles is not defined
 2. 결과가 `contents.html` 한 줄만 되도록 다른 페이지의 `<script src="js/contents.js" defer></script>` 줄을 지워요.
 3. 저장하고 새로 고침해서 다른 페이지의 콘솔이 비면 해결이에요.
 
-### 콘솔에 아무것도 안 나와요
+### 영상 페이지 콘솔에 아무것도 안 나와요
 
 **원인:** `contents.js`가 연결되지 않았거나 파일 이름이 틀렸어요. 또는 콘솔 로그 수준 필터가 꺼져 있어요(Day 15).
 
