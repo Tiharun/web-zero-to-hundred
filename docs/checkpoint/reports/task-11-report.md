@@ -78,3 +78,8 @@ Windows 화면 전부, OBS 실행, GitHub Actions/Pages 배포, Edge DevTools �
 - day-30 3단계 → "Actions에 빨간 ✕가 떠요"(첫 항목)
 
 재실행: `npm run check -- --only p1-d21…p1-d30` → 검사 통과(오류 0). Day 본문의 코드는 바뀌지 않아 브라우저 검사는 그대로 유효해요.
+
+## Fix round 3
+- troubleshooting/p1-days-21-30.md: Day 26 🧯 "더블클릭으로 열면 카운트다운이 없어요"의 짝으로 "더블클릭으로 열면 방송 일정 카운트다운이 없어요" 항목 추가(원인/해결, Live Preview로 열기, `- 관련:` Day 26 링크).
+- 같은 파일의 "지난 시각을 넣었더니 바로 곧 시작해요! 가 나와요": "내일 방송은 지원하지 않아요"와 "방송 당일에 주소의 `start`를 그날 시작 시각으로 써요" 안내 복원.
+- `npm run check -- --only p1-d26,p1-d27` → 검사 통과(오류 0).
