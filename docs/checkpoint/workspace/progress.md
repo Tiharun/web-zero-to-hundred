@@ -320,3 +320,9 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
   - T18 P2 Days 31–40 (sonnet, ae3c284e8a4d15b49) — mid-way (Day 34 CSRF experiment).
   - Leftover scratch test processes from stopped agents (StreamerHub dotnet on :5260, vite :5290, T18 script) could not be killed (permission denied); harmless, container-local.
 - Complete so far: T1–T8, T13, T14, T20, T21, T28, T29, T9, T10, T11. T12 step 1 committed (6166d21). Next on resume: T15 re-review → T12 reviewers ①② → T12 fixes → send preview index.html; T16–T18 finish → reviews → T19.
+- 2026-11-06 HANDOVER TO LOCAL SESSION (user request). Cloud agents' transcripts do not transfer: every in-flight task is re-dispatched fresh locally (templates: dispatch-templates.md). State at handover:
+  - T15: fix round 1 committed (6115e79); its scoped re-review was stopped before reporting → re-run re-review D on 3173b9a..6115e79 (P2 day-01..10 + troubleshooting/p2-days-01-10.md + docs/verification/p2-days-01-10.md), incl. Day 8 integrity.
+  - T16: textbook/content/p2/day-11.md … day-20.md exist (WIP, committed), but troubleshooting/p2-days-11-20.md, docs/verification/p2-days-11-20.md and task-16-report.md do NOT exist. Re-dispatch fresh: "files exist; finish verification (Day 20 was in progress), write the 모음 + verification + report"; then review B.
+  - T17 (P2 D21–30) and T18 (P2 D31–40): no files in the repo (they were still verifying in scratch). Re-dispatch fresh with template A.
+  - T12: step 1 done (6166d21). Reviewer ① (beginner) stopped without a report; reviewer ② (technical) never dispatched → dispatch both (template E), then one fix implementer, re-review, rebuild preview, send to user.
+- Workspace mirrored to docs/checkpoint/workspace/ (restore: bash docs/checkpoint/restore-workspace.sh). implementer-contract.md environment section rewritten for local machines.

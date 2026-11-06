@@ -1,362 +1,417 @@
-# 체크포인트 — 여기서부터 이어서 하세요
+# 체크포인트 — 로컬 세션에서 여기서부터 이어서 하세요
 
-> **2026-11-06 업데이트 (최신 — 아래 본문보다 우선합니다)**
-> - 상태: **중지됨** (사용자 요청 "모든 작업을 멈춥니다"). 실행 중인 에이전트는 없습니다. 마지막 커밋은 `4288567`입니다.
-> - 진행 기록은 `docs/checkpoint/ledger.md`에 있습니다. 끝부분의 "STOPPED by user" 항목이 멈춘 지점과 재개 순서이고, 판정은 R37–R58이 새로 추가되었습니다. 배치 규칙은 `docs/checkpoint/content-batch-rules.md`, 커리큘럼 병합 스크립트는 `docs/checkpoint/merge-meta.mjs`에 있습니다.
-> - 완료(리뷰 통과): T1–T8, T9–T11(P1 Day 2–30), T13, T14, T20, T21, T28, T29. 개요 4개는 `curriculum.json`에 병합되어 있습니다(Day 155개). T12 1단계(스모크 테스트, Day 1 보류 수정, 미리보기 `index.html`)는 `6166d21`에 커밋되었습니다.
-> - 남은 일(재개 순서):
->   1. T15(P2 Day 1–10) 1차 수정 재리뷰. 범위는 `3173b9a..6115e79`이고, Day 8 무결성도 확인합니다.
->   2. T12 리뷰어 ①(초보자 시뮬레이션)과 ②(기술 정확성) → 반영 → 사용자에게 미리보기 전달.
->   3. T16–T18(P2 Day 11–40) 작성 마무리 → 리뷰 → T19.
->   4. 이후 P3·SP 본문과 T35–T37.
-> - `textbook/content/p2/day-11.md` 이후 파일은 **리뷰 전 WIP**입니다(`wip(...)` 커밋).
-
-- 작성일: 2026-11-05
-- 상태: **일시 정지됨** (사용자 요청 "잠시 작업 멈춰"). 실행 중인 에이전트는 없습니다.
-- 저장소: `tiharun/web-zero-to-hundred` / 브랜치 `claude/gifted-goldberg-u1f9c6` (이 브랜치에만 push)
-- 마지막 커밋: `d76194d` (WIP. 아래 4.1 참고). 마지막으로 리뷰를 통과한 커밋은 `21b63fa`입니다.
-- 이 문서는 새 세션이 **다른 파일을 읽기 전에** 읽는 첫 문서입니다. 이전 세션의 작업 기록은 git에 포함되지 않는 `.superpowers/` 폴더에 있었는데, 그 내용을 `docs/checkpoint/`로 옮겨 두었습니다.
+- 작성일: 2026-11-06 (클라우드 세션 → **로컬 세션 인계본**)
+- 상태: **중지됨**. 실행 중인 에이전트가 없습니다. 클라우드 쪽 에이전트 대화 기록은 로컬로 넘어오지 않습니다. 따라서 진행 중이던 작업은 모두 **새 에이전트로 다시 실행**합니다(7장).
+- 저장소: `tiharun/web-zero-to-hundred` / 브랜치 **`claude/gifted-goldberg-u1f9c6`**. 이 브랜치에서만 작업하고 push합니다. PR은 아직 만들지 않았고, 사용자가 요청할 때만 만듭니다.
+- 인계 시점 기준선(이 커밋에서 직접 실행한 결과)
+  - `npm test`: 168/168 통과
+  - `npm run check -- --allow-missing`: "검사 통과: Day 155개"
+  - `npm run test:e2e`: 26/26 통과
+- 이 문서는 새 세션이 **다른 파일보다 먼저** 읽는 문서입니다. 이전 판(2026-11-05)은 `docs/checkpoint/CHECKPOINT-2026-11-05.md`에 보관했습니다. 내용이 다르면 이 문서가 우선합니다.
 
 ---
 
 ## 0. 30초 요약
 
-1. **만드는 것**: 지식 0% 초보자(Windows 11, 하루 1~2시간)가 혼자 따라가는 **단일 HTML 교재** `index.html`. 총 155 Day입니다.
+1. **만드는 것**: 지식 0% 초보자(Windows 11, 하루 1~2시간)가 혼자 따라가는 **단일 HTML 교재** `index.html`. 모두 155 Day입니다.
    - P1 크리에이터 홈페이지 30
    - P2 스트리머 허브 40
-   - P3 시청자 참여 실시간 게임 45
-   - 특별 프로젝트 SP 이미지 도네이션 40
+   - P3 시청자 참여 게임 45
+   - SP 이미지 도네이션 40
    - 부록 + 졸업 로드맵
-2. **가장 중요한 요구**: "중간에 막히지 않고 잘 따라갈 수 있는 것" (사용자의 말).
-3. **진행 정도**: 37개 Task 중 **Phase 0(기반) 7개와 완성 코드 4개 중 3개**가 리뷰를 통과했습니다.
-   - SP 완성 코드는 2차 수정이 거의 끝난 WIP 상태입니다.
-   - Day 본문은 **P1 Day 1(견본) 하나만** 완성되어 있습니다.
-4. **다음 할 일**: 5장 "재개 절차"를 그대로 따르세요. ① 환경 복구 → ② SP WIP 마무리와 리뷰 → ③ P1·P2·P3 개요(T8·T14·T21)를 처음부터 다시 실행 → 이후 계획서 순서대로 진행합니다.
+2. **가장 중요한 요구**(사용자의 말): "중간에 막히지 않고 잘 따라갈 수 있는 것".
+3. **끝난 것**(리뷰 통과)
+   - 기반 T1–T7
+   - 완성 코드 4개: T7 P1, T13 P2, T20 P3, T28 SP
+   - 개요 4개: T8, T14, T21, T29. 모두 `curriculum.json`에 병합했습니다.
+   - **P1 본문 30 Day 전체**: T6 Day 1, T9, T10, T11
+   - **T12 1단계**: 스모크 테스트, Day 1 보류 수정, 미리보기 빌드
+4. **멈춘 것**: T15 재리뷰, T12 리뷰어 2명, T16–T18 P2 본문.
+5. **로컬에서 처음 할 일**: 1장 → 5장(환경) → 6장(작업 폴더 복구) → 7장(재개 절차) 순서로 하면 됩니다.
 
 ---
 
-## 1. 반드시 읽을 문서 (순서대로)
+## 1. 로컬에서 처음 하는 순서 (체크리스트)
+
+1. 저장소를 받습니다.
+   ```bash
+   git clone https://github.com/tiharun/web-zero-to-hundred.git
+   ```
+   ```bash
+   cd web-zero-to-hundred && git checkout claude/gifted-goldberg-u1f9c6 && git pull origin claude/gifted-goldberg-u1f9c6
+   ```
+2. 도구를 준비합니다(5장). 최소 Node 22 + Playwright가 있어야 교재 작업을 할 수 있습니다. 레퍼런스 테스트와 P2·P3·SP 본문 검증에는 .NET 10, Rust, PostgreSQL이 필요합니다.
+3. 교재 빌드 도구를 설치합니다.
+   ```bash
+   cd textbook && npm ci
+   ```
+4. 기준선을 확인합니다. 결과가 위 숫자와 같아야 합니다.
+   ```bash
+   cd textbook && npm test && npm run check -- --allow-missing && npm run test:e2e
+   ```
+5. 작업 폴더(진행 기록·지시문·보고서)를 복구합니다(6장).
+   ```bash
+   bash docs/checkpoint/restore-workspace.sh
+   ```
+6. superpowers 플러그인이 있으면 `subagent-driven-development` 스킬을 켭니다. 없어도 진행할 수 있습니다(6.3).
+7. 7장의 재개 절차를 순서대로 실행합니다.
+
+---
+
+## 2. 읽을 문서 (순서대로)
 
 | 순서 | 파일 | 내용 |
 |---|---|---|
-| 1 | `docs/CHECKPOINT.md` (이 문서) | 현재 위치, 재개 절차, 판정 목록 |
-| 2 | `docs/superpowers/specs/2026-11-01-web-zero-to-hundred-design.md` | **설계서(최상위 기준)**. 사용자가 승인했습니다. 155 Day 전체 일정이 들어 있습니다 |
-| 3 | `docs/superpowers/plans/2026-11-01-web-zero-to-hundred.md` | **구현 계획서**. 사용자가 승인했습니다. Task 1~37, 각 Task의 인터페이스·테스트 |
-| 4 | `docs/checkpoint/ledger.md` | 이전 세션의 진행 기록 원본. 모든 판정(Ruling)과 보류된 Minor 지적이 들어 있습니다 |
-| 5 | `docs/checkpoint/implementer-contract.md` | 작업 에이전트에게 주던 공통 계약. NO GIT 규칙, 환경 메모, 보고 형식 |
-| 6 | `docs/checkpoint/outline-rules.md` | 개요 Task(T8·T14·T21·T29) 전용 규칙. `_meta.json` 방식 포함 |
-| 7 | `docs/checkpoint/global-constraints.md`, `review-focus.md`, `file-structure.md` | 계획서에서 뽑아 둔 전역 제약, 리뷰 초점, 파일 구조 |
-| 8 | `docs/CONTENT-GUIDE.md` | 콘텐츠 작성 가이드(막힘 방지 규칙 (a)~(g), 문법, 검증법, 리뷰 체크리스트) |
-| 9 | `docs/research/external-facts.md` | 버전·설치 절차·치지직 API 등 외부 사실과 출처(작성 기준 2026-11-01) |
-| 10 | `docs/checkpoint/reports/task-N-report.md` | 완료된 Task별 구현 보고서(설계 선택과 미검증 항목) |
-
-> 주의: `docs/checkpoint/implementer-contract.md` 안의 경로 `.superpowers/sdd/2026-11-01-web-zero-to-hundred/...`는 이전 세션의 작업 폴더입니다. 새 세션에서는 5.2에서 작업 폴더를 다시 만들고, 이 폴더의 파일을 그곳에 복사해서 씁니다.
+| 1 | `docs/CHECKPOINT.md` (이 문서) | 현재 위치, 환경, 재개 절차 |
+| 2 | `docs/checkpoint/workspace/progress.md` | **진행 기록(ledger)**. 모든 Task의 완료 줄, 판정, 보류 Minor. 첫 줄이 계획서 경로입니다 |
+| 3 | `docs/checkpoint/workspace/rulings.md` | 판정(Ruling) 전체 목록(R1–R58 + Setup). 사용자에게 최종 보고할 "제가 내린 결정" |
+| 4 | `docs/checkpoint/workspace/dispatch-templates.md` | **에이전트에게 보내는 지시문 틀**: Day 배치 작성 / 배치 리뷰 / 수정 회차 / 재리뷰 / 통합 리뷰 2종 |
+| 5 | `docs/superpowers/specs/2026-11-01-web-zero-to-hundred-design.md` | 설계서(최상위 기준, 사용자 승인) |
+| 6 | `docs/superpowers/plans/2026-11-01-web-zero-to-hundred.md` | 구현 계획서(Task 1~37, 사용자 승인). 오케스트레이터는 한 번만 읽고, 에이전트에게는 지시문(brief) 파일만 줍니다 |
+| 7 | `docs/checkpoint/workspace/implementer-contract.md` | 작업 에이전트 공통 계약: NO GIT, 환경, 보고 형식. 로컬 환경용으로 고쳐 두었습니다 |
+| 8 | `docs/checkpoint/workspace/content-batch-rules.md` | Day 본문 배치 규칙: 파일 소유권, 검증, 공유 문서 수정 금지 |
+| 9 | `docs/checkpoint/workspace/task-N-brief.md` | Task별 지시문(계획서에서 미리 추출. 묶음 Task는 대표 번호 9·15·22·30) |
+| 10 | `docs/checkpoint/workspace/task-{8,12,14,21,29}-notes.md` | 프로젝트별 "리뷰에서 나온 사실" 메모. 본문 배치에 반드시 함께 줍니다 |
+| 11 | `docs/CONTENT-GUIDE.md` | 콘텐츠 작성 가이드: 막힘 방지 규칙 (a)~(g), 🧯 3~6개, 리뷰 체크리스트 |
+| 12 | `docs/research/external-facts.md` | 버전·설치·치지직 API 등 외부 사실과 출처(작성 기준 2026-11) |
+| 13 | `textbook/content/<pid>/_outline.md` | 프로젝트별 상세 개요. Day 본문의 계약이고 확정되었습니다 |
 
 ---
 
-## 2. 사용자와 확정된 결정 (다시 묻지 말 것)
+## 3. 사용자와 확정된 결정 (다시 묻지 말 것)
 
-- 사용자: 지식 0% 초보자, Windows 11, 하루 1~2시간. 장기 목표는 사이트·게임·리깅·유니티·언리얼 개발자, 콘텐츠를 자급자족하는 스트리머·유튜버, 외주, MCN 창업. 최종적으로 배울 언어는 C++과 Rust입니다. 취업보다 성장이 우선입니다.
-- 언어 경로: HTML/CSS/JS(P1) → TypeScript + C#(P2) → Rust(P3) → 졸업 후 C++·언리얼 / 유니티.
-- P2 스택은 **A안**(TS + C# ASP.NET Core + SQLite)으로 확정했습니다.
-- P3는 **시청자 참여 멀티플레이 웹게임**(Rust 서버 + Rust→WASM + TS Canvas + PostgreSQL + Docker)입니다.
-- SP(특별 프로젝트)는 **이미지 도네이션 서비스**(C# + SignalR + React + PostgreSQL + Docker + 치지직 API)입니다. P2를 마치면 언제든 해금됩니다.
+- **사용자**
+  - 지식 0% 초보자이고 Windows 11을 씁니다. 하루 1~2시간 공부합니다.
+  - 장기 목표는 사이트·게임·리깅·유니티·언리얼 개발자, 콘텐츠를 자급자족하는 스트리머·유튜버, 외주, MCN 창업입니다.
+  - 최종적으로 배울 언어는 C++과 Rust입니다. 취업보다 성장을 우선합니다.
+- **언어 경로**: HTML/CSS/JS(P1) → TypeScript + C#(P2) → Rust(P3) → 졸업 후 C++·언리얼 / 유니티.
+- **P2**: TS + C# ASP.NET Core + SQLite.
+- **P3**: Rust 서버 + Rust→WASM + TS Canvas + PostgreSQL + Docker 기반 시청자 참여 멀티플레이 웹게임.
+- **SP**: 이미지 도네이션 서비스(C# + SignalR + React + PostgreSQL + Docker + 치지직 API).
   - **운영자는 돈을 받지 않습니다.**
-  - 모드는 무료 이미지 후원, 그리고 치즈 후원 메시지 코드 매칭(선택) 두 가지입니다.
+  - 모드는 두 가지입니다: 무료 이미지 후원, 치즈 후원 메시지 코드 매칭(선택).
   - 테스트 모드가 있어야 합니다.
-- 해금 순서: P1 → P2 → (P3 → 졸업 로드맵) / (SP 언제든).
-- 3차를 마치면 **졸업 로드맵**을 반드시 넣습니다.
-- 4차 프로젝트를 나중에 추가할 수 있도록 **HANDOFF.md**(Task 36)를 반드시 씁니다.
-- 실행 방식은 **Subagent 방식**입니다(사용자가 선택). 작업마다 새 구현 에이전트를 쓰고, 작업마다 리뷰 → 수정 → 재리뷰를 거치며, 마지막에 전체 리뷰를 합니다.
-- 사용자 선호: 답변은 한국어로 합니다. 정확성, 실무 표준, 추측 금지, 모르는 것은 명시합니다.
+  - P2를 마치면 언제든 해금됩니다.
+- **해금 순서**: P1 → P2 → (P3 → 졸업 로드맵) / (SP 언제든).
+- P3 다음에 **졸업 로드맵**을 반드시 둡니다. 4차 프로젝트를 나중에 붙일 수 있도록 **HANDOFF.md**(T36)를 반드시 씁니다.
+- **실행 방식은 Subagent 방식**입니다(사용자 선택).
+  - 작업마다 새 구현 에이전트를 씁니다.
+  - 작업마다 리뷰 → 수정 → 재리뷰를 거칩니다.
+  - 마지막에 전체 리뷰를 합니다.
+- **응답 선호**
+  - 한국어로 답합니다.
+  - 정확성과 실무 표준을 지킵니다.
+  - 추측하지 않고, 모르는 것은 모른다고 밝힙니다.
+  - 큰 단계마다 결과물을 전달합니다(P1 완성 시 미리보기 `index.html`).
 
 ---
 
-## 3. 진행 현황표
+## 4. 진행 현황표 (인계 시점)
 
-범례: ✅ 리뷰를 통과해 완료 / 🟡 WIP(리뷰 전) / ⏸ 시작했지만 중단됨(산출물 없음) / ⬜ 시작 전
+범례: ✅ 리뷰 통과·완료 / 🟡 진행 중(멈춤) / ⬜ 시작 전
 
-### Phase 0 — 기반 ✅ 전체 완료
-| Task | 내용 | 상태 | 핵심 커밋 |
+| Task | 내용 | 상태 | 커밋(범위) |
 |---|---|---|---|
-| T1 | 외부 사실 조사 `docs/research/external-facts.md` | ✅ | 0326afd, 8c1884c (+afc8662, 6580cee, 21b63fa에서 일부 갱신) |
-| T2 | 렌더러·검증기 `textbook/lib/markdown.mjs`, `validate.mjs` | ✅ | 7250704, 111735f |
-| R27 | 굵게 깨짐 빌드 오류 `E_BOLD_UNRENDERED` | ✅ | 2cb312d, 02ae6e8 |
-| T3 | 커리큘럼 로더·용어 병합·단일 파일 조립·빌드 CLI | ✅ | 8f71f0c |
-| T4 | 진도·해금·저장·검색·라우터 로직 | ✅ | ca0fb77, dc3e978 |
-| T5 | 런타임 화면·스타일·e2e | ✅ | 08e71d9, 1cb0557 |
-| T6 | `docs/CONTENT-GUIDE.md` + 견본 `textbook/content/p1/day-01.md` + curriculum(P1 30 Day 메타 초안) | ✅ | e81daf6, afc8662 |
-| T7 | P1 완성 코드 `reference/p1-my-creator-site/` | ✅ | a29862b, fa134f8 |
+| T1–T7, R27 | 조사·렌더러·로더·런타임·UI·가이드+Day 1·P1 완성 코드 | ✅ | `885e2f7..fa134f8` 외 (ledger 참고) |
+| T13 | P2 완성 코드 `reference/p2-streamer-hub/` | ✅ | `356116c`, `7648078` |
+| T20 | P3 완성 코드 `reference/p3-viewer-arena/` | ✅ | `bf9ac3f..81a777e` |
+| T28 | SP 완성 코드 `reference/sp-image-donation/` | ✅ | `070f5df..d76194d` (+ README 한 줄 `066fdaf`, R47) |
+| T8 | P1 개요 + 시작하기·막혔을 때 + 용어 172 | ✅ | `9ff7ac2..b8a6f7f` |
+| T14 | P2 개요 + 용어 211 | ✅ | `37f03e1..d411c91` |
+| T21 | P3 개요 + 용어 162 | ✅ | `f85155c..f10a2c7` |
+| T29 | SP 개요 + 용어 125 | ✅ | `8e30f25..773967a` |
+| (병합) | 4개 `_meta.json` → `curriculum.json` (Day 155) | ✅ | `02eae44` 이후 재병합 여러 번(R46) |
+| T9 | P1 Day 2–10 | ✅ | `342c1ed..a901b47` |
+| T10 | P1 Day 11–20 | ✅ | `342c1ed..30a8cca` |
+| T11 | P1 Day 21–30 | ✅ | `342c1ed..5302192` |
+| **T12** | P1 통합 | 🟡 1단계 완료(`6166d21`). 리뷰어 ①②, 반영, 미리보기 전달 남음 | |
+| **T15** | P2 Day 1–10 | 🟡 1차 수정 완료(`6115e79`). **재리뷰 남음** | |
+| **T16** | P2 Day 11–20 | 🟡 `day-11~20.md`는 있음(WIP). 문제 해결 모음·검증 기록·보고서 없음 | |
+| **T17** | P2 Day 21–30 | ⬜ 저장소에 파일 없음. 처음부터 | |
+| **T18** | P2 Day 31–40 | ⬜ 저장소에 파일 없음. 처음부터 | |
+| T19 | P2 통합 | ⬜ | |
+| T22–T26 | P3 Day 1–9 / 10–18 / 19–27 / 28–36 / 37–45 | ⬜ | |
+| T27 | P3 통합 | ⬜ | |
+| T30–T33 | SP Day 1–10 / 11–20 / 21–30 / 31–40 | ⬜ | |
+| T34 | SP 통합 | ⬜ | |
+| T35 | 부록(설치·단축키·졸업 로드맵) | ⬜ (P3 Day 45에 로드맵 링크를 넣는 일 포함, R39) | |
+| T36 | README + HANDOFF | ⬜ | |
+| T37 | 최종 검증 + 전체 브랜치 리뷰 | ⬜ | |
 
-### 완성 코드(정답의 원천)
-| Task | 내용 | 상태 | 커밋 |
+> `wip(...)`로 시작하는 커밋은 리뷰 전 스냅샷입니다(R45). 리뷰 범위는 항상 기록해 둔 기준 커밋(BASE/FIX_BASE)부터 잡습니다.
+
+---
+
+## 5. 로컬 환경 준비
+
+### 5.1 필요한 도구와 이 프로젝트가 검증에 쓴 버전
+
+| 도구 | 검증에 쓴 버전 | 필요한 곳 | 확인 명령 |
 |---|---|---|---|
-| T13 | P2 `reference/p2-streamer-hub/` | ✅ | 356116c, 7648078 |
-| T20 | P3 `reference/p3-viewer-arena/` | ✅ | bf9ac3f, d21948b, 81a777e |
-| T28 | SP `reference/sp-image-donation/` | 🟡 2차 수정 WIP | 070f5df, 6580cee, 21b63fa(1차 수정 리뷰 통과), **d76194d(2차 WIP)** |
+| Node.js | 22.23.4 | 교재 빌드·테스트, 모든 TS | `node --version` |
+| Playwright(전역) | **1.63.0** + Chromium | 교재 e2e, 레퍼런스 e2e, 본문 검증 | `node -e "console.log(require('playwright/package.json').version)"` |
+| .NET SDK | 10.0.114 | P2·SP 완성 코드, P2·SP 본문 검증 | `dotnet --version` |
+| Rust / cargo | 1.97.0 + target `wasm32-unknown-unknown` | P3 완성 코드, P3 본문 검증 | `rustc --version`, `rustup target list --installed` |
+| wasm-bindgen-cli | **0.2.130** (P3 `Cargo.lock`과 같아야 함) | P3 | `wasm-bindgen --version` |
+| PostgreSQL | 16 (학습자는 18) | P3·SP DB 테스트 | `psql --version` |
+| Docker | 29.x (선택) | P3·SP Docker 스모크 | `docker info` |
+| Git | 2.4x 이상 | 전부 | `git --version` |
 
-### Phase 1~5
-| Task | 내용 | 상태 |
-|---|---|---|
-| T8 | P1 상세 개요 + 시작하기·막혔을 때 페이지 | ⏸ (산출물 없음, 처음부터 다시) |
-| T9–T11 | P1 Day 2–30 본문(병렬 3배치) | ⬜ |
-| T12 | P1 통합 리뷰 + 스모크 테스트 + **사용자에게 미리보기 전달** | ⬜ |
-| T14 | P2 상세 개요·용어 | ⏸ (산출물 없음, 처음부터 다시) |
-| T15–T18 | P2 Day 1–40 본문(병렬 4배치) | ⬜ |
-| T19 | P2 통합 리뷰 | ⬜ |
-| T21 | P3 상세 개요·용어 | ⏸ (산출물 없음, 처음부터 다시) |
-| T22–T26 | P3 Day 1–45 본문(병렬 5배치) | ⬜ |
-| T27 | P3 통합 리뷰 | ⬜ |
-| T29 | SP 상세 개요·용어 (T28 완료 후) | ⬜ |
-| T30–T33 | SP Day 1–40 본문(병렬 4배치) | ⬜ |
-| T34 | SP 통합 리뷰 | ⬜ |
-| T35 | 부록(설치 체크리스트·단축키·졸업 로드맵) | ⬜ |
-| T36 | README.md + HANDOFF.md | ⬜ |
-| T37 | 최종 검증 + 전체 브랜치 리뷰 | ⬜ |
+- 설치 방법은 운영체제마다 다릅니다. 각 도구의 공식 설치 프로그램이나 패키지 관리자를 쓰세요(Windows는 winget, macOS는 Homebrew, Linux는 apt 등).
+- 버전은 위 표와 **주 버전이 같으면** 됩니다. 단, Playwright 1.63.0과 wasm-bindgen 0.2.130은 정확히 맞춥니다.
 
-### 2026-11-05에 확인한 상태 (이 문서를 쓸 때 직접 실행)
-- `cd textbook && npm test` → **168/168 통과**
-- `cd textbook && npm run check -- --only p1-d01` → 통과("Day 30개, 페이지 2개", Day 1만 렌더)
-- SP WIP(`d76194d`): `dotnet test` **54/54 통과**, 클라이언트 `tsc -b` 통과, `npm test` **8/8 통과**. **e2e와 Docker 스모크는 아직 실행하지 않았습니다.**
-- 루트 `index.html`은 **아직 만들지 않았습니다**(P1이 완성되는 T12에서 처음 빌드합니다).
+### 5.2 Playwright 전역 설치(중요)
 
----
-
-## 4. 멈춘 지점 상세
-
-### 4.1 T28 SP 완성 코드 — 2차 수정 (WIP 커밋 `d76194d`)
-2차 수정에서 요청한 4가지(판정 R36)는 다음과 같습니다.
-1. 긴급 정지 시 오버레이에 `Clear()`를 **먼저** 보내고, 그다음 상태를 저장합니다. 항목 하나가 실패해도 나머지는 계속 처리합니다. 파일 삭제가 실패해도 Clear가 도착하는지 확인하는 테스트를 둡니다(`FailingDeleteStorage.cs`).
-2. `DashboardPage.tsx`: 신고에 실패했는데 "신고했어요."로 덮어쓰는 문제를 고치고, 실패 경로 테스트를 추가합니다.
-3. `/media/{file}`: DB를 조회하기 전에 파일 이름 형식을 먼저 검사합니다.
-4. `DonationCard.tsx`: 이미지가 이미 없는 후원(일반 거절·Cleared·Expired)에서는 신고 버튼을 숨기거나 설명을 붙입니다. 신고된 후원은 "증거로 보관 중(7일 뒤 삭제)"으로 표시합니다.
-
-중단 직전에 에이전트가 남긴 마지막 말은 "Both pass under double load. Noting the second `Clear()` in the README, then final client + e2e runs."입니다. 따라서 **남은 일은 README 한 줄 보강, e2e 실행, 보고서 작성**입니다.
-
-마무리 방법:
-1. 새 구현 에이전트(opus)에게 다음을 맡깁니다.
-   - 위 4개 항목이 코드에 다 들어갔는지 확인하고, README에 "긴급 정지는 Clear()를 먼저 보낸다"를 적습니다.
-   - `dotnet build -c Release`, `dotnet test`, 클라이언트 `npx tsc -b && npm test && npm run build`, `node --test tests/reference/sp.e2e.test.mjs`를 실행합니다.
-   - 결과를 `docs/checkpoint/reports/task-28-report.md`에 "fix round 2" 절로 추가합니다.
-2. 재리뷰어(sonnet)에게 `21b63fa..HEAD`(경로 `reference/sp-image-donation`) 범위 diff로 위 4개 항목의 판정을 받습니다.
-3. 통과하면 진행 기록에 `Task 28: complete`를 남깁니다. 그다음 T29(SP 개요)를 시작할 수 있습니다.
-
-### 4.2 T8 · T14 · T21 개요 — 중단됨, 산출물 없음
-- 세 에이전트 모두 디스크에 파일을 쓰기 전에 중지했습니다(`textbook/content/p1/_outline.md`, `pages/`, `p2/`, `p3/`, `glossary/p2.md` 모두 없음).
-- **처음부터 다시 실행**합니다. 셋 다 병렬로 실행해도 됩니다(판정 R32). 서로 다른 파일만 쓰고, `curriculum.json`은 직접 고치지 않습니다.
-- 각 Task 지시문에 넣어야 할 "알려진 사실 메모"는 **7장**에 정리했습니다. 이전 세션의 실제 지시문 내용도 7장에 반영해 두었습니다.
-
----
-
-## 5. 재개 절차 (새 세션에서 그대로 따라 하기)
-
-### 5.1 환경 복구 (컨테이너가 새로 시작되면 매번)
+테스트는 `tests/helpers/browser.mjs`에서 **전역 Playwright**를 `require('playwright')`로 불러옵니다. 저장소의 package.json에는 Playwright가 없습니다.
 ```bash
-cd /home/user/web-zero-to-hundred && git fetch origin claude/gifted-goldberg-u1f9c6 && git checkout claude/gifted-goldberg-u1f9c6 && git pull origin claude/gifted-goldberg-u1f9c6
+npm install -g playwright@1.63.0
 ```
 ```bash
-cd /home/user/web-zero-to-hundred/textbook && npm ci
+npx -y playwright@1.63.0 install chromium
+```
+Node가 전역 모듈을 찾을 수 있게 `NODE_PATH`를 전역 경로로 지정합니다.
+- macOS/Linux:
+  ```bash
+  export NODE_PATH="$(npm root -g)"
+  ```
+- Windows PowerShell:
+  ```powershell
+  $env:NODE_PATH = (npm root -g)
+  ```
+  영구로 두려면 사용자 환경 변수 `NODE_PATH`에 `npm root -g`의 출력 경로를 넣습니다.
+
+확인:
+```bash
+node -e "require('playwright'); console.log('ok')"
+```
+
+### 5.3 Rust WASM 준비 (P3)
+```bash
+rustup target add wasm32-unknown-unknown
 ```
 ```bash
-command -v dotnet || apt-get install -y dotnet-sdk-10.0
+cargo install wasm-bindgen-cli --version 0.2.130 --locked
 ```
-```bash
-rustup target add wasm32-unknown-unknown && (command -v wasm-bindgen || cargo install wasm-bindgen-cli --version 0.2.130 --locked)
-```
-PostgreSQL(테스트 전용 계정. 이미 있으면 CREATE는 오류가 나지만 무시해도 됩니다):
-```bash
-pg_ctlcluster 16 main start
-```
-```bash
-su postgres -c "psql -q" <<'EOF'
+
+### 5.4 PostgreSQL 테스트 전용 계정·DB (P3·SP 테스트)
+
+완성 코드의 테스트와 작업 에이전트 계약은 아래 계정을 기준으로 합니다. SP의 `ApiFactory.cs`도 기본값이 `wzh/wzh`입니다(학습자용 본문은 각자 값을 쓰게 안내합니다). **테스트 전용 계정입니다. 실제 서비스에 쓰지 마세요.**
+```sql
 CREATE ROLE wzh LOGIN SUPERUSER PASSWORD 'wzh';
 CREATE DATABASE viewer_arena OWNER wzh;
 CREATE DATABASE viewer_arena_test OWNER wzh;
 CREATE DATABASE image_donation OWNER wzh;
 CREATE DATABASE image_donation_test OWNER wzh;
-EOF
 ```
-Docker: Docker Hub 익명 pull이 429로 막히므로 미러를 설정합니다.
+- 이 SQL은 `psql -U postgres`로 접속한 상태에서 실행합니다.
+- 테스트가 DB를 찾는 위치
+  - P3 DB 테스트: 환경 변수 `TEST_DATABASE_URL`이 없으면 건너뜁니다. 예: `postgres://wzh:wzh@127.0.0.1:5432/viewer_arena_test`
+  - SP: `ApiFactory.cs`의 기본값을 씁니다.
+
+### 5.5 Docker (선택)
+- 클라우드에서는 Docker Hub 익명 pull 제한 때문에 미러를 썼습니다. 컨테이너 빌드 때 프록시 인증서 문제도 있었습니다.
+- 로컬 Docker Desktop에서는 대개 필요 없습니다.
+- Docker가 없으면 Docker 스모크만 "미실행"으로 기록하고 진행합니다.
+
+### 5.6 로컬 환경 주의
+- 작업 에이전트용 스크래치 폴더는 **저장소 밖**에 둡니다. 예: `<repo>/../wzh-scratch/t16`.
+  - 클라우드에서는 `/tmp/claude-0/.../scratchpad`를 썼습니다. 로컬에서는 지시문의 `{SCRATCH}`를 바꿔 넣습니다.
+- 로컬 PC는 버리는 컨테이너가 아닙니다. 에이전트가 전역 설정·시스템 패키지를 바꾸지 않도록 계약에 적어 두었습니다.
+- 다른 프로세스는 이름으로 죽이지 않습니다(`pkill`·`taskkill /im` 금지). 자기가 띄운 서버만 PID로 종료합니다.
+- Windows에서 Claude Code의 Bash 도구는 Git Bash로 실행됩니다. 이 문서의 `bash …` 명령과 `.sh` 스크립트는 Git Bash에서 그대로 돕니다.
+- 클라우드에서는 stop 훅이 "커밋 안 된 변경이 있다"고 계속 알렸습니다. 그래서 작업 중 파일을 `wip(...)` 스냅샷으로 자주 커밋했습니다(R45). 로컬에서는 컨테이너 유실 위험이 없으므로 **Task나 수정 회차가 끝날 때만 커밋해도 됩니다**. 다만 push는 Task마다 합니다.
+
+---
+
+## 6. 작업 폴더(진행 기록) 복구
+
+### 6.1 왜 필요한가
+이 프로젝트는 superpowers `subagent-driven-development` 방식으로 진행합니다. 오케스트레이터의 작업 폴더 `.superpowers/sdd/2026-11-01-web-zero-to-hundred/`는 git에서 제외됩니다(`.superpowers/sdd/.gitignore` = `*`). 그래서 같은 내용을 **`docs/checkpoint/workspace/`에 미러로 커밋**해 두었습니다. 리뷰용 diff 파일만 빼고 60개 파일입니다.
+
+### 6.2 복구 명령
 ```bash
-mkdir -p /etc/docker && echo '{"registry-mirrors":["https://mirror.gcr.io"]}' > /etc/docker/daemon.json && (nohup dockerd > /tmp/dockerd.log 2>&1 &) && sleep 6 && docker info --format '{{.ServerVersion}}'
+bash docs/checkpoint/restore-workspace.sh
 ```
-- 컨테이너 안에서 빌드할 때는 프록시 CA를 신뢰하지 않아 `docker compose up --build`가 실패할 수 있습니다. 이전 세션은 **검증용 복사본 Dockerfile**(스크래치 폴더)에 프록시 CA를 추가해 검증했고, 저장소의 Dockerfile은 바꾸지 않았습니다. 방법은 `/root/.ccr/README.md`에 있습니다.
-- 네트워크: npm, crates.io, NuGet, apt, mcr.microsoft.com, mirror.gcr.io는 접속됩니다. **github.com 릴리스 다운로드와 Microsoft 다운로드 서버(dot.net)는 차단**되어 있습니다. 공식 문서 사이트 일부(learn.microsoft.com, support.microsoft.com, docs.docker.com, chzzk 문서)도 열리지 않아서, 이전 세션은 GitHub raw 소스나 검색 요약으로 확인했습니다.
+- 작업 폴더를 만들고 미러를 복사합니다. 이미 있는 파일은 덮어쓰지 않습니다. 덮어쓰려면 `--force`를 붙입니다.
+- 끝나면 진행 기록의 첫 줄이 다음과 같아야 합니다.
+  `# SDD ledger — plan: docs/superpowers/plans/2026-11-01-web-zero-to-hundred.md`
+- 스킬 규칙상 `Task N: complete` 줄이 있는 Task는 **다시 실행하지 않습니다.**
 
-### 5.2 작업 폴더(진행 기록) 복구
-이 프로젝트는 superpowers `subagent-driven-development` 방식으로 진행했습니다. 작업 폴더는 git에 포함되지 않습니다(`.superpowers/sdd/.gitignore`).
+### 6.3 superpowers 스킬이 있을 때 / 없을 때
+- **있을 때**
+  - 스킬 스크립트 위치를 찾습니다.
+    ```bash
+    find ~/.claude -path '*subagent-driven-development/scripts/sdd-workspace' 2>/dev/null | head -1
+    ```
+  - `sdd-workspace PLAN`은 위와 같은 경로를 출력합니다.
+  - `task-brief PLAN N`은 지시문을 다시 뽑습니다.
+  - `review-package PLAN BASE HEAD`는 리뷰 패키지를 만듭니다.
+- **없을 때**
+  - 지시문은 이미 `workspace/task-N-brief.md`로 다 뽑아 두었습니다.
+  - 리뷰 diff는 직접 만듭니다.
+    ```bash
+    git diff -U4 BASE HEAD -- <경로들> > .superpowers/sdd/2026-11-01-web-zero-to-hundred/review-tN.diff
+    ```
+- **묶음 Task 주의(R7)**: 계획서 제목이 `### Task 15 / 16 / 17 / 18:` 형식이라 대표 번호(9·15·22·30)로만 추출됩니다. 배치 정보(Day 범위·배치 이름)는 dispatch 문장에 넣습니다.
+
+### 6.4 기록을 저장소에 남기기
+진행 기록을 갱신할 때마다 미러에 복사하고 커밋합니다.
 ```bash
-cd /home/user/web-zero-to-hundred && SK=$(dirname "$(find /root/.claude -path '*skills/subagent-driven-development/scripts/sdd-workspace' 2>/dev/null | head -1)") && WS=$(bash $SK/sdd-workspace docs/superpowers/plans/2026-11-01-web-zero-to-hundred.md) && echo $WS
+cp .superpowers/sdd/2026-11-01-web-zero-to-hundred/{progress.md,rulings.md,*-report.md} docs/checkpoint/workspace/
 ```
+새 판정이 생기면 `rulings.md`도 다시 만듭니다.
 ```bash
-cd /home/user/web-zero-to-hundred && WS=.superpowers/sdd/2026-11-01-web-zero-to-hundred && cp docs/checkpoint/ledger.md $WS/progress.md && cp docs/checkpoint/{implementer-contract,outline-rules,global-constraints,review-focus,file-structure}.md $WS/ && cp docs/checkpoint/reports/*.md $WS/
+WS=.superpowers/sdd/2026-11-01-web-zero-to-hundred; { head -4 docs/checkpoint/workspace/rulings.md; grep -E "^- (Ruling|Task [0-9]+: parked)" $WS/progress.md; } > $WS/rulings.md.new && mv $WS/rulings.md.new $WS/rulings.md
 ```
-- 진행 기록(`progress.md`)의 첫 줄은 `# SDD ledger — plan: docs/superpowers/plans/2026-11-01-web-zero-to-hundred.md`입니다. 스킬 규칙상 `Task N: complete` 줄이 있는 Task는 **다시 실행하지 않습니다.**
-- 진행 기록에 이어서 쓴 뒤, 필요할 때마다 `docs/checkpoint/ledger.md`에도 복사해 커밋해 두세요. 컨테이너가 사라져도 기록이 남습니다.
-- Task 지시문(brief)은 스크립트로 계획서에서 다시 뽑습니다: `bash $SK/task-brief docs/superpowers/plans/2026-11-01-web-zero-to-hundred.md N`
-  - **주의(판정 R7)**: 묶음 Task의 제목이 `### Task 9 / 10 / 11:`처럼 되어 있어서, N=10·11은 추출에 실패합니다. N=9로 뽑은 지시문에 "이번 배치는 Day 11–20" 같은 배치 정보를 덧붙여 씁니다. 15–18(→15), 22–26(→22), 30–33(→30)도 같습니다.
-  - T14·T19·T21·T27·T29·T34처럼 "Task 8/9/12와 같다"고만 적힌 Task는 **참조된 Task의 지시문도 함께** 줍니다.
-
-### 5.3 재개 순서
-1. **T28 마무리**(4.1) — T29의 선행 조건입니다.
-2. **T8 · T14 · T21** 병렬 실행(4.2, 7장 메모 포함) → 각각 리뷰(opus, 선행 지식 순서 검사) → 수정 → 재리뷰.
-   - 끝날 때마다 각 `textbook/content/<pid>/_meta.json`을 `curriculum.json`에 합칩니다. 오케스트레이터가 직접 하고, 프로젝트 순서는 p1, p2, p3, sp, 페이지는 start, help, glossary, troubleshooting 순입니다.
-   - 합친 뒤에는 `npm run check -- --allow-missing`이 오류 0이어야 합니다.
-3. T28이 끝나면 **T29**(SP 개요)를 실행합니다.
-4. 개요가 확정된 프로젝트부터 **Day 본문 배치**를 병렬로 돌립니다: T9–11 → T12(P1 통합, **사용자에게 미리보기 index.html 전달**) → T15–18 → T19 …
-5. T35 → T36(HANDOFF) → T37 → 전체 브랜치 최종 리뷰(가장 유능한 모델) → superpowers `finishing-a-development-branch`.
 
 ---
 
-## 6. 작업 방식 (이전 세션에서 실제로 쓴 규칙)
+## 7. 재개 절차 (순서대로, 정확히)
 
-- **병렬 실행 (진행 기록의 Setup rulings)**
-  - 파일이 겹치지 않는 Task는 병렬로 실행합니다(동시 최대 5개).
-  - 병렬 작업 에이전트는 **NO GIT**입니다. add, commit, push, stash, checkout, reset을 모두 하지 않습니다.
-  - 에이전트가 보고하면 **오케스트레이터가 그 Task의 경로만 골라 커밋 1개**를 만듭니다. 그다음 리뷰 패키지(`review-package` 스크립트, 또는 경로 필터를 건 `git diff`)를 만들어 리뷰어에게 줍니다.
-  - 같은 파일에 두 Task의 변경이 섞이면 hunk 단위로 나눠 stage합니다. T28과 T6이 함께 고친 `external-facts.md`에서 실제로 그렇게 했습니다.
-- **리뷰 루프**
-  - 구현 → 리뷰(스펙 준수 + 품질) → Critical·Important가 있으면 같은 에이전트를 재개해서 고치고(1~3회차), 범위를 좁혀 재리뷰합니다. 최대 5회입니다.
-  - 정답 코드와 견본 Day는 "초보자가 그대로 배우는 코드"입니다. 그래서 **가르치는 데 영향을 주는 Minor는 수정 대상으로 올렸습니다**(판정 R11·R12·R17·R22·R24·R25·R30·R31·R34·R36). 올리지 않은 Minor는 진행 기록에 `minor (deferred)`로 남깁니다.
-- **모델 선택**
-  - 설계·판단이 필요한 일에는 opus를 씁니다: 완성 코드 P2·P3·SP, 개요, 가이드, 견본 Day, 큰 리뷰, 최종 리뷰.
-  - 명세가 분명한 구현과 일반 리뷰에는 sonnet, 작은 재리뷰에는 haiku를 씁니다.
-  - Day 본문 배치는 sonnet으로 계획했습니다.
-- 작업 에이전트는 다른 프로세스를 죽이면 안 됩니다(`pkill` 금지). 자기가 띄운 프로세스만 PID로 종료합니다. 실제로 `pkill -x node` 사고가 한 번 있었습니다.
-- 커밋 메시지 끝에는 시스템이 지정한 attribution 줄을 넣습니다. 저장소 파일에 모델 식별자를 쓰지 않습니다.
-- PR은 사용자가 요청할 때만 만듭니다(아직 요청 없음).
+공통으로 지킬 것은 세 가지입니다.
+- **동시 실행 최대 5개**입니다(R57). 사용량 한도에 두 번 걸렸습니다.
+- 병렬 작업 에이전트는 **NO GIT**이고, 커밋은 오케스트레이터가 Task 경로만 골라서 합니다.
+- 지시문은 `dispatch-templates.md`의 틀을 씁니다.
 
----
+### 7.1 T15 (P2 Day 1–10) — 재리뷰부터
+- 수정은 끝났고 `6115e79`에 커밋되어 있습니다. 재리뷰만 남았습니다.
+- **템플릿 D**로 재리뷰합니다. sonnet, 범위 `3173b9a..6115e79`.
+  - 경로: `textbook/content/p2/day-0[1-9].md day-10.md`, `textbook/content/troubleshooting/p2-days-01-10.md`, `docs/verification/p2-days-01-10.md`
+  - 확인할 지적 19개는 `progress.md`의 "T15 review" 줄과 "Task 15: fix round 1/5 dispatched" 줄, 그리고 `task-15-report.md`의 "## Fix round 1" 절에 있습니다.
+  - **Day 8 무결성도 꼭 확인합니다.** 수정 중 잘못 편집해서 중복된 뒤 다시 만든 파일입니다. 중복 문단, 제목 순서, 코드 블록 개수, 수정 전 대비 빠진 내용을 봅니다.
+- 통과하면 `Task 15: fix round 1/5 (…)`와 `Task 15: complete (commits 3173b9a..6115e79, review clean)`를 기록합니다.
+  - 실패하면 **새** 구현 에이전트로 수정 회차를 이어 갑니다(템플릿 C의 "원래 에이전트가 없을 때"). 보고서 파일이 기억 역할을 합니다.
 
-## 7. 다음 Task에 반드시 넣을 메모 (리뷰에서 나온 사실)
+### 7.2 T12 (P1 통합) — 리뷰어 2명 → 반영 → 미리보기 전달
+1. **템플릿 E1**(초보자 시뮬레이션)과 **E2**(기술 정확성)를 opus로 **동시에** 보냅니다.
+   - E2는 `tests/e2e/smoke.test.mjs`도 리뷰합니다.
+   - T12에 넘길 보류 항목은 `task-12-notes.md`에 있습니다. Day 1 보류 6개는 이미 고쳤고 나머지는 참고용입니다.
+2. 두 리뷰의 지적을 **한 명의** 수정 에이전트(sonnet)에게 몰아 줍니다. 이 에이전트는 P1 Day 전체와 용어·모음을 고칠 수 있습니다.
+3. 재리뷰(템플릿 D)를 합니다.
+4. `cd textbook && npm test && npm run check -- --allow-missing && npm run test:e2e`가 통과해야 합니다.
+5. **미리보기를 다시 빌드합니다(R55).** 리뷰가 끝난 Day만 넣고, P2·P3·SP의 Day 파일은 뺍니다.
+   ```bash
+   S=../wzh-scratch/preview && rm -rf $S && mkdir -p $S && cp -r textbook/content $S/content && find $S/content/p2 $S/content/p3 $S/content/sp -name 'day-*.md' -delete && node textbook/build.mjs --allow-missing --content $S/content --out index.html
+   ```
+   - 이때 이미 리뷰를 통과한 P2 Day(예: T15)는 넣어도 됩니다. 넣으면 사용자에게 어떤 Day를 넣었는지 알립니다.
+6. 커밋(`feat(p1): 30-day creator homepage course`) → push → **사용자에게 `index.html`을 전달**하고 피드백을 받습니다.
+7. 진행 기록에 `Task 12: complete …`를 남기고 Phase 1 완료로 표시합니다.
 
-### T8 (P1 개요) — `reference/p1-my-creator-site` 관련
-- Day 1은 이미 완성되어 있습니다(`textbook/content/p1/day-01.md`). Day 2는 "VS Code로 `C:\dev\hello`를 연다"는 약속을 이어받아야 합니다. `glossary/p1.md`의 Day 1 용어 15개는 그대로 유지합니다.
-- `js/main.js`의 테마 코드는 Day 22에서 try/catch를 씁니다(주석으로 "try/catch는 Day 25에서 배워요"라고 예고). 따라서 Day 22는 try/catch 없는 버전 또는 예고를 넣은 버전으로 가르치고, Day 25에서 설명합니다.
-- 시간 코드는 **브라우저 로컬 시간**을 씁니다(PC 시계가 한국 시간이라고 가정. 시간대는 P2 Day 29에서 다룹니다). YouTube ID는 예시이므로 학습자가 자기 ID로 바꿉니다.
-- 연락 폼에는 선택 항목 `채팅 닉네임`(`pattern="[A-Za-z0-9가-힣_]{2,20}"`)이 있고 `validity.patternMismatch`로 검사합니다. 그래서 Day 24에서 Constraint Validation API를 소개합니다.
-- 오버레이는 `?title=&start=HH:MM`을 `split(':')` + `Number()` + 범위 검사로 읽습니다.
-- JS는 템플릿 리터럴(Day 16)과 화살표 함수 콜백(Day 18)을 일관되게 씁니다.
-- 설계서 3.1에 이름이 없는 메서드는 처음 등장하는 Day에 소개합니다: padStart, split, trim, includes, closest, dataset, setAttribute/removeAttribute, hidden, URLSearchParams, Number, Math.floor.
-- 테마 토글은 고정 라벨 "다크 모드" + `aria-pressed`이고, contents.html에는 h2 "영상 목록"이 있습니다.
-- start.md(교재 사용법·학습 원칙·전체 지도·준비물)와 help.md(막혔을 때 탈출 가이드)를 쓰고, `_meta.json`의 pages에 start → help 순서로 넣습니다.
+### 7.3 T16 (P2 Day 11–20) — 마무리 작업으로 새로 실행
+- 저장소에 `textbook/content/p2/day-11.md`~`day-20.md`가 있습니다. 이전 에이전트가 Day 20 검증 중에 멈췄습니다.
+- **없는 파일**: `textbook/content/troubleshooting/p2-days-11-20.md`, `docs/verification/p2-days-11-20.md`, 작업 폴더의 `task-16-report.md`.
+- **템플릿 A**(sonnet)에 아래를 덧붙여 새로 실행합니다.
+  > "이 배치의 Day 파일 10개는 이전 작업자가 썼고 리뷰 전입니다. 처음부터 다시 쓰지 말고, 개요·규칙과 대조해 고칠 곳을 고친 뒤 코드 검증(Day 11–20 전체, 특히 Day 20)을 수행하고, 문제 해결 모음·검증 기록·보고서를 작성하세요."
+- 이 배치가 조사 문서에 추가한 sqlite3·EF Core 사실 두 줄은 이미 커밋되어 있습니다(R56).
+- 끝나면 **템플릿 B**로 리뷰 → 수정(C) → 재리뷰(D)를 진행합니다.
 
-### T12 (P1 통합 리뷰)에서 Day 1에 함께 고칠 것 (T6 보류 Minor)
-- "글자를 치면 이름이 통째로 지워지니" 문장이 부정확합니다. 실제로는 선택된 부분만 바뀝니다.
-- "열린 상태에서 이미 이름을 바꿨다면" 경로에 5단계 잔여 파일 안내가 빠져 있습니다.
-- 한/영 전환 뒤 영어로 되돌리라는 말이 없습니다.
-- CONTENT-GUIDE §1.5 제목 "빌드는 통과하지만…"이 이제 사실과 다릅니다.
-- "Destination Folder Access Denied" 안내에 인라인 "계속 → 예"와 되돌아가는 링크가 없습니다.
-- 메모장에 "항상"을 눌렀을 때의 복구 방법이 없습니다.
+### 7.4 T17 (P2 Day 21–30), T18 (P2 Day 31–40) — 처음부터
+- **템플릿 A**로 새로 실행합니다(sonnet).
+- T17에 특히 넣을 사실(`task-14-notes.md`에도 있음)
+  - Day 26 `/api/me` 204와 관리자 시드 시나리오의 순서
+  - Day 26 user-secrets
+  - Day 27 CORS 실험
+  - Day 29 `UtcDateTimeConverter` + `Intl.DateTimeFormat`, `change` 이벤트
+- T18에 특히 넣을 사실
+  - Day 31 가입 흐름 재시도
+  - Day 34 HTTPS·CSRF 실험과 `dotnet dev-certs https --trust`
+  - Day 36 통합 테스트 15개(8 + 15 = 23)
+  - Mvc.Testing·xunit runner·Prettier 버전과 Prettier CRLF 동작은 **직접 확인해 검증 기록에 남길 것**(조사 문서에 없음)
+  - Day 39 `UseForwardedHeaders`를 `UseRateLimiter`보다 앞에 둘 것
+- 끝나면 각각 리뷰(B) → 수정(C) → 재리뷰(D)를 진행합니다.
 
-### T14 (P2 개요) — `reference/p2-streamer-hub` 관련
-- `GET /api/me`는 비로그인 시 **204**를 돌려줍니다(401이 아님. 공개 페이지에서 콘솔 오류를 피하려는 의도). 이 동작과 이유를 가르칩니다.
-- Day 27(CORS)과 Day 34(HTTPS·CSRF)는 코드에 직접 대응하는 부분이 없습니다(Vite 프록시와 SameSite=Lax 때문). 그래서 작은 실험과 설명을 개요에 넣습니다.
-- Day 39: 리버스 프록시 뒤에서는 `UseForwardedHeaders`(ForwardedHeaders = XForwardedFor + KnownProxies/KnownIPNetworks)를 `UseRateLimiter`보다 **앞에** 둬야 합니다.
-- `Dtos/HttpUrlAttribute.cs`(override, is 패턴, out var)는 그 Day에 문법을 소개하거나 "읽기만 하고 나중에 이해해요" 상자로 처리합니다.
-- 관리자 시드는 `CheckPasswordAsync`가 성공할 때만 기존 계정을 승격합니다. 같은 이메일을 먼저 가입해 두는 위험을 가르칩니다.
-- SQLite는 UTC 표식을 잃기 때문에 `UtcDateTimeConverter`를 씁니다. 저장은 UTC, 표시는 `Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul'})`(Day 29)이며, P1의 로컬 시간과 비교해 설명합니다.
-- 가입 흐름은 register → login → PUT /api/me(닉네임)이고, 닉네임 저장이 실패하면 재시도할 수 있습니다.
-- 서버는 DisplayName을 trim하지 않습니다(보류 Minor).
-- Windows에서 막힐 수 있는 지점을 Day에 배정합니다: PowerShell 실행 정책(Day 3, npm.ps1 오류), `dotnet dev-certs https --trust`, 포트 충돌, 첫 `dotnet run` 때의 방화벽 창, user-secrets 위치, SQLite 파일 위치, CRLF.
-- `Microsoft.AspNetCore.Mvc.Testing` 10.0.14, xunit runner, Prettier 옵션(`--single-quote --print-width 120`)은 조사 문서에 아직 없습니다(Day 35~37 작성자에게 알립니다).
+### 7.5 그다음 순서
+1. **T19 P2 통합**: T12와 같은 방식(E1·E2)입니다. 기술 리뷰어는 Microsoft Learn과 대조합니다. 끝나면 사용자에게 P2까지 들어간 미리보기를 전달합니다.
+2. **T22–T26 P3 본문**: 배치 5개(9 Day씩)이고 템플릿 A를 씁니다.
+   - 지시문은 `task-22-brief.md`, 메모는 `task-21-notes.md`입니다.
+   - P3 개요에 §4 "중간 코드 모양 표"(R42)가 있으니 반드시 따르게 합니다.
+   - Day 45에는 로드맵 링크를 넣지 않습니다(R39).
+3. **T27 P3 통합**: The Rust Book·Axum·Tokio와 대조합니다.
+4. **T30–T33 SP 본문**: 배치 4개이고 템플릿 A를 씁니다.
+   - 지시문은 `task-30-brief.md`, 메모는 `task-29-notes.md`입니다.
+   - SP 개요 §9 "중간 파일 뼈대"(R42)를 따르게 합니다.
+   - Docker·PostgreSQL은 SP 안에서 처음부터 가르칩니다(R38).
+5. **T34 SP 통합**: 치지직 문서·Microsoft Learn·React와 대조합니다.
+6. **T35 부록**: install·shortcuts·roadmap 페이지(roadmap은 `requires:["p3"]`)를 씁니다. **P3 Day 45에 로드맵 링크도 추가**합니다(R39). 끝나면 `merge-meta`로 pages를 갱신합니다.
+7. **T36 README + HANDOFF**: 계획서 T36의 모든 항목을 씁니다. P3 개요의 설계서 대비 변경 7가지(`task-21-report.md` "Fix round 1")를 HANDOFF에 옮깁니다.
+8. **T37 최종 검증 + 전체 브랜치 리뷰**: 가장 유능한 모델로 합니다.
+   - 범위: 저장소 첫 커밋부터 HEAD까지. 원격에는 `main`이 없고 이 브랜치만 있습니다(인계 시점 확인). 첫 커밋 `105a5eb`는 설계서만 담고 있으므로, 리뷰 범위는 `105a5eb..HEAD`입니다.
+     ```bash
+     git rev-list --max-parents=0 HEAD
+     ```
+   - 보류 Minor 목록(`progress.md`의 `minor (deferred)` 줄)도 함께 넘깁니다.
+9. superpowers `finishing-a-development-branch`로 마무리합니다. 사용자에게 `rulings.md` 전체를 "제가 내린 결정"으로 보고합니다.
 
-### T21 (P3 개요) — `reference/p3-viewer-arena` 관련
-- 서버는 `DATABASE_URL` 없이도 실행됩니다(랭킹은 꺼지고 경고만 남음). Day 33 이전 단계와 Docker 없는 경로에서 이 점을 씁니다. DB 테스트는 `TEST_DATABASE_URL`이 없으면 조용히 건너뛴다는 사실을 테스트 Day에 명시합니다.
-- `HOST`의 기본값은 127.0.0.1입니다. 같은 와이파이의 휴대폰으로 플레이하려면 `HOST=0.0.0.0` + Windows 방화벽 "허용"이 필요합니다.
-- 예측은 서버 위치를 향한 부드러운 보정입니다(프로토콜에 입력 ack가 없음). 보정(reconciliation)은 개념으로 설명합니다.
-- 랭킹 `day`는 "최근 24시간"입니다.
-- 안전 장치:
-  - 메시지 크기 1 KB 제한
-  - 연결당 초당 30프레임(바이너리 프레임 포함)
-  - 10초 유휴 타임아웃. 쓰기도 마감 시간 안에서만 합니다(`write()` + `timeout_at`)
-  - 닉네임 1~12자. 보이지 않는 문자·포맷 문자·한글 채움 문자(U+3164 등)를 거부하는 거부 목록 방식이므로 허용 목록 방식과의 장단점을 설명합니다
-  - 중복 닉네임 거부, 금지어
-- 모듈 의존은 한 방향입니다(`Phase`는 protocol.rs에 있음). Day 11 예시로 쓰기 좋습니다.
-- 추가 crate: tower-http, dotenvy(.env는 cargo가 아니라 dotenvy가 읽음), 테스트 전용 tokio-tungstenite/futures-util/reqwest. QR은 브라우저의 qrcode-generator 2.0.4를 씁니다.
-- Docker 캐시는 변경이 없을 때만 효과가 있습니다. 관리형 Postgres가 TLS를 요구하면 sqlx에 TLS feature가 필요합니다(Day 41/42).
-- 호스트 화면은 3초마다 다시 연결합니다. 방은 메모리에만 있으므로 서버를 재시작하면 새 OBS URL이 필요합니다.
-- 설계서 3.3의 구조를 유지합니다: Rust 기초 1–12 → TS 로컬 게임 13–18 → Day 19에 Rust로 이식 → Day 20 WASM → 네트워크 21–32 → Docker/DB 33–40 → 배포·리허설·회고 41–45. 유니티 Update(), 언리얼 데디케이티드 서버, C++ RAII와의 연결은 `:::info`로 넣습니다.
-
-### T29 (SP 개요) — `reference/sp-image-donation` 관련
-- 이미지 라이브러리는 **SkiaSharp 4.154.0(MIT)**입니다. ImageSharp는 Release 빌드에 라이선스 키가 필요하고 매출 기준 상용 라이선스가 있어서 제외했습니다(R28).
-- 애니메이션 GIF는 첫 프레임만 씁니다(R29). EXIF 회전을 적용하고 WebP로 재인코딩합니다. 디코딩 한도는 헤더 1억 픽셀, 디코딩 4096²입니다.
-- 상태: AwaitingCheese, Pending, Approved, Shown, Rejected, Expired, **Cleared**(긴급 정지).
-  - 모든 전이는 조건부 `ExecuteUpdate`로 합니다.
-  - 오버레이에 연결하면 최근 30분 안에 승인된 후원을 다시 보냅니다.
-  - 긴급 정지는 Clear()를 먼저 보내고(WIP 항목) 상태를 Cleared로 저장합니다.
-- **신고(R33·R35)**
-  - 스트리머가 운영자에게 신고하면 Report 행을 만들고, 거절과 차단을 한 번에 처리합니다.
-  - 이미지는 증거로 보관하되 `/media`로는 제공하지 않고(404), 7일 보존 기간이 끝나면 삭제합니다.
-  - 운영자 화면은 없고 SQL로 검토합니다.
-- 치지직
-  - 소켓은 SocketIOClient 4.0.5, `EIO=V3`이고 인증값은 `Query["auth"]`로 넘깁니다. 로컬 에뮬레이터(Socket.IO 2.5.0)로만 검증했고 **실서버는 검증하지 못했습니다.**
-  - 리프레시 토큰은 1회용이며 회전합니다. 잠금 안에서 다시 읽고 저장하는데, 잠금은 프로세스 하나 안에서만 유효합니다.
-  - 매칭되지 않은 후원 이벤트의 닉네임·메시지는 저장하지 않습니다(최소 수집).
-- React 템플릿의 기본 린터 Oxlint를 씁니다(ESLint 없음, R23). `/api/auth/me`는 비로그인 시 204입니다.
-- 운영자가 결제를 다루지 않는 원칙, 테스트 모드를 기본 경로로 둘 것, 법적 고려(Day 32)에 "법률 자문 필요"를 명시할 것은 계획서 T29에 이미 들어 있습니다.
-
-### 모든 콘텐츠 배치 공통
-- `docs/CONTENT-GUIDE.md`를 따릅니다. 빌드가 막는 규칙은 다음과 같습니다.
-  - `:::`는 0열에 씁니다
-  - 원시 HTML은 escape됩니다
-  - Markdown 이미지는 쓸 수 없습니다
-  - TODO 같은 자리표시 단어는 금지입니다
-  - 코드 블록에는 언어를 표기합니다
-  - `[[용어]]`는 정확한 대소문자로 씁니다
-  - `E_BOLD_UNRENDERED`
-- Docker를 쓰는 Day(P3·SP)에는 항상 Docker 없는 경로를 함께 두고, 설치 전에 `winver`와 Windows 에디션을 확인하게 합니다. Windows 11 Home의 Docker Desktop 지원 여부는 **미확인**입니다.
-- 검증 기록은 `docs/verification/<batch>.md`, 화면 캡처는 축소한 JPEG로 남깁니다(R26).
+### 7.6 curriculum 병합 (개요의 `_meta.json`이 바뀔 때마다)
+```bash
+cd textbook && node ../.superpowers/sdd/2026-11-01-web-zero-to-hundred/merge-meta.mjs content && npm run check -- --allow-missing
+```
+- 프로젝트 순서는 p1, p2, p3, sp입니다. 페이지 순서는 start, help, glossary, troubleshooting이고 그 밖의 페이지는 뒤에 붙습니다.
+- T35에서 페이지를 추가할 때는 `curriculum.json`의 pages를 직접 수정해도 됩니다.
 
 ---
 
-## 8. 판정(Ruling) 목록 요약 — 사용자 대신 내린 결정
+## 8. 작업 방식 규칙 (지금까지 실제로 쓴 것)
 
-자세한 내용은 `docs/checkpoint/ledger.md`에 있습니다. 틀렸다면 되돌릴 수 있는 결정들입니다.
-
-| ID | 결정 | 틀렸을 때 비용 |
-|---|---|---|
-| Setup | worktree 없이 지정 브랜치에서 직접 작업. 병렬 에이전트는 NO GIT, 오케스트레이터가 경로별로 커밋. 판단 작업은 opus | 낮음 |
-| R1 | slugify가 앞뒤 `-`를 잘라 `p1-d01-따라하기` 형태의 id를 만듦 | 없음 |
-| R3 | Day minutes 60~120 범위 밖이면 스키마 오류 | 없음 |
-| R4 | 빌드 `--allow-missing`(미작성 Day는 "준비 중"으로 표시), `--only` | 낮음 |
-| R5 | 테스트 헬퍼는 T7이 만들고 T5가 사용 | 없음 |
-| R6 | start·help 페이지는 T8에서 추가 | 없음 |
-| R7 | 묶음 Task는 대표 Task의 지시문 + 배치 정보로 실행 | 없음 |
-| R8 | 빌드 의존성 버전 정확 고정(marked 18.1.2, highlight.js 11.12.0, esbuild 0.28.2) | 없음 |
-| R9 | TODO 금지 검사는 코드 안까지 적용. 힌트는 "// 여기에 코드를 작성하세요" | 낮음 |
-| R10 | Markdown 이미지 금지(단일 오프라인 파일이므로) | 그림이 필요하면 나중에 data URI 지원 추가 |
-| R13 | P1 시간 코드는 로컬 시간 기준(시간대는 P2) | PC 시계가 한국 시간이 아니면 오버레이 시간이 어긋남(주석으로 안내) |
-| R14·R19 | 완성 코드 작업은 조사(T1) 리뷰 후 시작 | 없음 |
-| R15 | styles.css가 없으면 빌드 오류, builtAt은 날짜만 | 없음 |
-| R16 | 검색 색인에 정답 내용 포함(짧은 미리보기에 정답이 보일 수 있음) | 작음 |
-| R18 | P3·SP의 Docker 수업에는 Docker 없는 경로 병기 + 에디션 확인 | 글 분량 증가 |
-| R20·R21 | 잠긴 페이지·Day는 검색 결과에서 제목만 보임. `search(index, q, isItemLocked)` | 없음 |
-| R23 | SP React는 Oxlint만 사용 | ESLint를 언급하는 정도 |
-| R26 | 검증 스크린샷은 축소 JPEG | 화질 낮음 |
-| R27 | 굵게가 깨지면 빌드 오류(`E_BOLD_UNRENDERED`) | 작은 엔진 변경 |
-| R28 | ImageSharp 대신 SkiaSharp(MIT) | 이미 반영 |
-| R29 | 애니메이션 GIF는 첫 프레임만 | GIF가 정지 이미지로 나옴 |
-| R32 | 개요 Task는 `_meta.json`에 쓰고, 오케스트레이터가 curriculum.json에 병합 | 병합 단계 1회 |
-| R33·R35 | SP 신고 기능 최소 구현, 신고 이미지는 7일 동안 격리 보관 | 최대 7일 보관 |
-| R11·R12·R17·R22·R24·R25·R30·R31·R34·R36 | 가르치는 데 영향을 주는 Minor를 수정 대상으로 올림 | 수정 회차 증가 |
-| (T5 보류) | 용어 딥링크로 들어오면 첫 Tab 위치가 본문으로 감(의도된 동작으로 유지) | 키보드 사용자가 Shift+Tab을 한 번 누름 |
+- **Task 루프**
+  - 구현 → 리뷰(스펙 + 품질) → Critical·Important가 있으면 수정(1~3회차는 같은 에이전트, 4~5회차는 더 강한 모델의 새 에이전트) → **회차마다 범위를 좁힌 재리뷰** → 통과하면 `Task N: complete`.
+  - 최대 5회차입니다. 넘으면 판정(Ruling)으로 정리하고 진행합니다.
+- **Minor 처리**
+  - 가르치는 데나 막힘에 영향을 주는 Minor는 수정 대상으로 올리고, 판정으로 기록합니다(R40·R41·R48·R51·R52·R53·R58).
+  - 나머지는 `Task N: minor (deferred): …`로 남겨 최종 리뷰에 넘깁니다.
+- **모델**
+  - opus: 설계·판단(개요, 완성 코드, 통합 리뷰, 최종 리뷰)
+  - sonnet: Day 배치 작성과 배치 리뷰, 중간 크기 재리뷰
+  - haiku: 아주 작은 재리뷰
+  - 모델은 항상 명시합니다(R50).
+- **병렬**
+  - 파일이 겹치지 않는 Task만 병렬로 돌리고, 동시에 최대 5개입니다.
+  - Day 배치마다 쓰는 파일은 `day-NN.md`, `troubleshooting/<batch>.md`, `docs/verification/<batch>.md`뿐입니다.
+- **공유 문서 수정 금지(R56)**
+  - 대상: 작업 에이전트는 `external-facts.md`, `CONTENT-GUIDE.md`, 개요, 기존 용어집을 고치지 않습니다.
+  - 새로 확인한 사실은 자기 검증 기록에 적고, 오케스트레이터가 옮깁니다.
+- **커밋**
+  - Task 경로만 골라서 커밋합니다.
+  - 메시지 끝에는 세션이 지정하는 attribution 줄을 붙입니다.
+  - 저장소 파일에 모델 식별자를 쓰지 않습니다.
+- **기타**
+  - 리뷰어에게 "이건 지적하지 마라" 같은 선입견을 주지 않습니다.
+  - 오케스트레이터는 직접 고치지 않습니다. 수정은 항상 에이전트가 하고 리뷰를 거칩니다.
 
 ---
 
-## 9. 검증하지 못한 것 (정직하게 기록)
+## 9. 리뷰에서 반복해서 나온 교훈 (모든 Day 배치에 미리 넣을 것)
 
-- Windows 11 실제 화면과 메뉴 문구. 한국어 Windows 문구 일부는 "버전에 따라 다를 수 있어요"로 대비했습니다. 새 복구 경로(Day 1)는 Windows에서 실행해 보지 못했습니다.
-- Edge 렌더링, Malgun Gothic·Consolas 글꼴, Edge의 클립보드 대체 경로(Chromium에서만 확인).
-- 치지직 실서버 연동 전체(OAuth, 세션, 후원 이벤트, 채팅). 앱 심사 기준, 약관, 할당량도 확인하지 못했습니다.
-- Windows 11 Home에서 Docker Desktop이 지원되는지(현재 공식 요구사항 목록에 Home이 없음).
-- SkiaSharp를 Windows에서 실제로 실행하는 것(패키지에 libSkiaSharp.dll이 포함된 것만 확인).
-- `npm.cmd`로 실행 정책을 우회하는 방법과 정확한 한국어 PowerShell 오류 문구.
+`dispatch-templates.md` §A의 (a)~(g)에 이미 들어 있습니다. 근거가 된 사례는 다음과 같습니다.
+1. "아래 🧯을 보세요"가 그 Day에 없는 항목을 가리켰습니다(P1 Day 2·7). 참조는 그 Day 안에서 해결되어야 합니다.
+2. 🧯이 7~9개로 늘어났습니다(P1 Day 21–29). **Day마다 3~6개**이고, 나머지는 모음으로 옮깁니다. 모음에도 모든 항목이 있어야 하며, 제목은 같은 뜻이면 됩니다(R54).
+3. 과제에서 다른 폴더를 열고 끝나서 다음 Day가 막혔습니다(P1 Day 5). 과제 뒤 커밋을 하지 않아 다음 Day의 "변경 0개"와 어긋났습니다(P1 Day 8, P2 Day 7·8). → **"과제 후 커밋"을 필수**로 하고, 열린 폴더도 되돌립니다.
+4. 화면 문구가 배치마다 달라졌습니다(P1 contents.html 안내 문장, about.html 문장). → 개요가 정한 Day에만 바꿉니다.
+5. 선택 도구를 설치되어 있다고 가정했습니다(P1 Day 28 Chrome, P3 OBS). → Edge가 기본이고, Chrome·OBS는 "없으면 설치" 단계를 둡니다.
+6. 배우지 않은 메서드·문법을 썼습니다(`.join`, `append`, `change` 이벤트, `minlength`, `ReadOnlySpan` 등). → 처음 쓰는 곳에서 한 문장으로 소개합니다.
+7. 과제가 import를 빠뜨려 그대로는 실패했습니다(P2 Day 8 `wait`). → 정답에 바뀌는 줄을 모두 보여 줍니다.
+8. 재현되지 않는 실습이 있었습니다(P2 Day 26 관리자 시드). → 실제로 실행해 확인한 순서만 싣습니다.
+9. PowerShell 5.1에서 안 되는 명령을 썼습니다(.NET 6+ 정적 메서드). → Windows PowerShell 5.1 기준으로 쓰고, 실행 못 했으면 "실기 미확인"으로 표시합니다.
+
+---
+
+## 10. 검증하지 못한 것 (정직하게 기록)
+
+- Windows 11 실제 화면과 메뉴 문구(한국어 Windows, VS Code, Edge DevTools의 Lighthouse·Network request blocking, SmartScreen·UAC, 설치 프로그램).
+- PowerShell 5.1의 실제 오류 문구와 출력(이 환경에는 PowerShell이 없었습니다).
+- 치지직 실서버 연동 전체(OAuth, 세션, 후원 이벤트, 채팅)와 앱 심사·약관·할당량. 로컬 에뮬레이터로만 검증했습니다.
+- Windows 11 Home의 Docker Desktop 지원 여부(공식 요구사항 목록에 Home이 없습니다).
+- SkiaSharp을 Windows에서 실제로 실행하는 것.
+- OBS 33.0.1 설치 화면, GitHub 웹 화면(저장소 이름 바꾸기 등).
 - 무료 배포 호스팅 정책(작성 시점의 조사 결과만 있음).
-- SP WIP(`d76194d`)의 e2e와 Docker 스모크(4.1에서 실행 예정).
+- SP·P3 개요의 중간 코드 뼈대(R42)는 컴파일하지 않았습니다. Day 작성자가 실행해서 확인해야 합니다.
+- 로컬에 PowerShell(Windows)이 있으면 이 목록 중 일부를 실제로 확인해 `docs/verification/`에 남기는 것을 권장합니다.
 
 ---
 
-## 10. 사용자에게 보고할 때
-- 사용자에게는 한국어로 짧게 보고합니다. 큰 단계(P1 완성 등)마다 결과물을 보냅니다. T12에서는 `index.html` 미리보기를 보냅니다.
-- 끝날 때(최종 보고) 8장의 판정 목록(진행 기록의 모든 `Ruling:` 줄)을 "제가 내린 결정"으로 정리해 사용자에게 알립니다.
+## 11. 사용자에게 보고할 때
+- 한국어로 짧게 보고하고, 큰 단계마다 결과물을 보냅니다.
+  - T12: P1 미리보기 `index.html`
+  - T19: P2 포함본
+  - T37: 최종본
+- 판정(Ruling)과 미검증 항목은 숨기지 않습니다. 최종 보고에서는 `rulings.md` 전체를 정리해 전달합니다.

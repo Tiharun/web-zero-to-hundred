@@ -23,10 +23,9 @@ Do all work yourself. Never spawn a subagent, never spawn a reviewer. Review is 
 Follow the plan's file structure (.superpowers/sdd/2026-11-01-web-zero-to-hundred/file-structure.md). One clear responsibility per file. If a file grows beyond the plan's intent, report DONE_WITH_CONCERNS rather than restructuring on your own. Only touch files your task owns; other agents are editing other files concurrently.
 
 ## Environment notes
-- Node 22 + npm available; Playwright is preinstalled globally: in ESM use `import { createRequire } from 'node:module'; const require = createRequire(import.meta.url); const { chromium } = require('playwright');` and `chromium.launch()` with no options. Never run `playwright install` or install another Playwright version.
-- Rust 1.97 + cargo + rustup (wasm32-unknown-unknown target installed), Docker CLI (daemon not running by default), psql client, Python 3. .NET SDK is NOT installed until a task installs it (`apt-get install -y dotnet-sdk-10.0`).
-- Outbound network goes through a proxy: npm registry, crates.io, NuGet, apt work; github.com release downloads and Microsoft download servers are blocked.
-- Use the scratchpad for temporary files: /tmp/claude-0/-home-user-web-zero-to-hundred/a3ed5e68-2ed7-58a6-8548-3d657f4039ce/scratchpad (make a subfolder named after your task).
+- Toolchain (see docs/CHECKPOINT.md §5 for install and versions): Node 22 + npm; Playwright 1.63.0 installed globally and resolvable through NODE_PATH. In ESM, use `import { createRequire } from 'node:module'; const require = createRequire(import.meta.url); const { chromium } = require('playwright');` and `chromium.launch()`. Never install a different Playwright version. Also installed: .NET SDK 10.0.x, Rust 1.97 + the wasm32-unknown-unknown target + wasm-bindgen-cli 0.2.130, PostgreSQL client and server, Docker (optional), Python 3.
+- The machine may be the user's own computer (Windows, macOS or Linux), not a disposable container. Never change global settings, never install system packages, never touch files outside the repository and your scratch folder.
+- Use the scratch folder given in your dispatch for temporary files (make a subfolder named after your task). If none is given, use `<repo>/../wzh-scratch/<task>`. Never put scratch files inside the repository.
 - Never write model identifiers into any repository file.
 
 ## When you're in over your head
@@ -48,6 +47,6 @@ Write the full report to the report-file path given in your dispatch:
 Then reply with ONLY (under 15 lines): Status (DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT), commits created (or "none — NO GIT"), one-line test summary, concerns, report file path.
 
 ## Shared infrastructure (prepared by the controller — do not restart or reconfigure)
-- PostgreSQL 16 is running locally on 127.0.0.1:5432. Login role `wzh` / password `wzh` (superuser, test-only). Databases: `viewer_arena`, `viewer_arena_test`, `image_donation`, `image_donation_test`. Example URL: `postgres://wzh:wzh@127.0.0.1:5432/viewer_arena_test`. Learners will use PostgreSQL 18 (Docker image `postgres:18`); write SQL compatible with both.
-- Docker daemon is running with a registry mirror (Docker Hub anonymous pulls are rate-limited); `docker pull postgres:18` works. Never stop/restart dockerd. Clean up containers/images you create (use unique names).
-- Never kill processes you did not start (no `pkill`/`killall`); stop your own servers by PID.
+- PostgreSQL is running locally on 127.0.0.1:5432 with the test-only login role `wzh` / password `wzh` (superuser) and the databases `viewer_arena`, `viewer_arena_test`, `image_donation`, `image_donation_test`. Example URL: `postgres://wzh:wzh@127.0.0.1:5432/viewer_arena_test`. Learners use PostgreSQL 18 (Docker image `postgres:18`), so write SQL that works on both.
+- Docker may or may not be available. If `docker info` fails, record Docker steps as "미실행" in your verification doc; do not try to start the daemon.
+- Never kill processes you did not start (no `pkill`/`killall`/`taskkill /im`). Stop your own servers by PID. Use unique ports, because sibling agents run servers too.
