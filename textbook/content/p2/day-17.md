@@ -307,7 +307,7 @@ http://localhost:5250/api/streamers
 :::success
 터미널에 `Now listening on: http://localhost:5250`이 보이고, 브라우저 화면에 `["달빛곰","픽셀토끼","노을고양이"]`가 보여요. `http://localhost:5250/`을 열면 `스트리머 허브 API예요`가 보여요.
 
-방화벽 알림창(**Windows 보안 경고**, 문구는 버전에 따라 달라요)이 떴다면 아래 🧯 자주 막히는 곳의 "Windows 보안 경고 창이 떠요"를 보세요. `Failed to bind to address … address already in use`가 나왔다면 "포트 충돌" 항목을 보세요.
+방화벽 알림창(**Windows 보안 경고**, 문구는 버전에 따라 달라요)이 떴다면 아래 🧯 자주 막히는 곳의 "Windows 보안 경고 창이 떠요"를 보세요. `Failed to bind to address … address already in use`가 나왔다면 같은 🧯 항목 `Failed to bind to address http://127.0.0.1:5250: address already in use.`를 보세요.
 :::
 
 서버를 끄려면 서버가 켜진 터미널을 클릭하고 `Ctrl + C`를 눌러요. 프롬프트가 돌아오면 꺼진 거예요. 이 단계에서는 끄고 다음 단계로 가요.
@@ -443,17 +443,16 @@ git commit -m "day17: 첫 웹 API"
 
 ```text
 [main 4ec72cf] day17: 첫 웹 API
- 7 files changed, 53 insertions(+)
+ 8 files changed, 63 insertions(+)
  create mode 100644 .gitignore
  create mode 100644 server/StreamerHub.Api/Program.cs
  create mode 100644 server/StreamerHub.Api/Properties/launchSettings.json
  create mode 100644 server/StreamerHub.Api/StreamerHub.Api.csproj
+ create mode 100644 server/StreamerHub.Api/StreamerHub.Api.http
  create mode 100644 server/StreamerHub.Api/appsettings.Development.json
  create mode 100644 server/StreamerHub.Api/appsettings.json
  create mode 100644 server/StreamerHub.slnx
 ```
-
-`StreamerHub.Api.http`는 7단계 전에 만들었으면 목록에 하나 더 나와요(그러면 `8 files changed`).
 
 ```powershell
 git push
@@ -610,7 +609,7 @@ GET {{host}}/
 GET {{host}}/api/streamers
 ```
 
-오늘 `git push`까지 끝냈다면 `git status`는 `nothing to commit, working tree clean`이에요(`.http` 파일을 7단계 이후에 만들었다면 `git add -A`, `git commit -m "day17: 요청 파일"`, `git push`를 한 번 더 해요). 터미널 위치는 `C:\dev\streamer-hub`이고 서버는 꺼 두어도 돼요.
+오늘 `git push`까지 끝냈다면 `git status`는 `nothing to commit, working tree clean`이에요. 터미널 위치는 `C:\dev\streamer-hub`이고 서버는 꺼 두어도 돼요.
 :::
 
 ## 🧯 자주 막히는 곳

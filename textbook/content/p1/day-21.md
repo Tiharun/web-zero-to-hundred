@@ -1276,12 +1276,6 @@ Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')
 
 **해결:** `contents.html`의 버튼 4개가 `data-category="…"`인지, `contents.js`가 `button.dataset.category`인지 철자를 하나씩 비교해요.
 
-### 메뉴를 연 채로 창을 넓히면 상태가 남아 있어요
-
-**원인:** 정상이에요. 개발자 도구 기기 모드에서 좁은 폭으로 메뉴를 열어 둔 채 폭을 넓히면 `<nav>`에 `open` 클래스와 `aria-expanded="true"`가 그대로 남아요. 넓은 화면 규칙이 버튼을 숨기고 메뉴를 항상 보여 주기 때문에 눈에 띄는 문제는 없어요.
-
-**해결:** 할 일이 없어요. 다시 좁게 줄이면 열린 상태로 보이니 버튼을 한 번 눌러 닫아요.
-
 ### ☰ 글자가 네모(□)로 보여요
 
 **원인:** `☰`는 글꼴에 따라 없을 수 있어요. 대부분의 Windows 11 글꼴에 들어 있어서 드물지만, 실제 컴퓨터에서 확인하지는 못했어요(실기 미확인).
