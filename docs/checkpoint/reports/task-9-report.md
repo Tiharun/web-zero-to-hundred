@@ -60,3 +60,30 @@
 - 초보자 시뮬레이션: 단계마다 어디서/무엇을/성공 상자를 갖추고, 실패하기 쉬운 곳(`.txt` 확장자, 엉뚱한 폴더, `hello` 폴더 연 채로 `index.html` 만들기, 터미널 위치, 닫는 태그·따옴표 빠짐, 캐시)은 일찍 발견하도록 순서를 짰고 🧯 항목과 연결했어요.
 - 약속 이어받기: Day 2는 Day 1의 `C:\dev\hello`를 VS Code로 열어요. Day 3~10의 시작 상태는 앞 Day 끝 상태와 같고, Day 10 끝 상태(색은 색상 코드 직접, `.header-inner`에 flex 없음, `.site-nav`·`.menu-list` class 없음)는 Day 11 개요의 시작 상태와 같아요.
 - 이름은 레퍼런스와 같고(class 이름은 스크립트로 레퍼런스 HTML에 모두 있음을 확인), 중간 단계는 개요 2절 표대로예요(메뉴 `header`/`nav` 없음 Day 4~5, 색 코드 직접 Day 9~13 등).
+
+## Fix round 1
+
+Day line numbers below refer to the regenerated files. All items are fixed; the Day files are generated from sources in the scratchpad, so edits were made there and rebuilt.
+
+| # | Finding | Change |
+|---|---|---|
+| 1 | Day 7 step 2 pointed to a 🧯 item missing from the Day | `day-07.md` 🧯 now has "설치 마법사의 편집기 목록에 VS Code가 없어요" (:577) and the step 2 pointer (:105) uses that exact title. To stay within 3~6 items, "not a git repository" and "로그인 창" moved to the 모음 only. |
+| 2 | Day 2 SmartScreen/UAC not in the Day's 🧯 | `day-02.md:379` new item ("파란 Windows의 PC 보호 창…"); step 2 points to "두 번째 항목". "Live Preview 아이콘이 안 보여요" moved to the 모음 only (6 items kept). Audit script over all 9 Days: every quoted "아래 🧯 …" reference matches a heading in that Day's own 🧯 (0 mismatches). |
+| 3 | Day 5 assignment 2 never returns to my-creator-site | `day-05.md:240` return step (파일 → 최근 항목 열기 → `C:\dev\my-creator-site`) plus checklist line. Day 8's assignment 2 checklist line got the same wording (:726). |
+| 4 | Day 4 used 스크린 리더 before Day 5 | `day-04.md:28` short gloss, "Day 5에서 배워요". |
+| 5 | Day 3 combined sample hides the `</h1>` symptom | `day-03.md:275` explains it and shows the effect with the quote fixed first (checked by rendering). |
+| 6 | Day 10 style.css edits rely on selection | `day-10.md:120` and the step 3/4 equivalents add "Ctrl + A로 전체를 지우고 끝 상태 전체 코드의 style.css를 통째로 붙여 넣기". |
+| 7 | Day 7 changed the reference sentence | `day-07.md:403` keeps the edit learner-owned and says later full codes use the original. Day 7~10 end-state `about.html` now use the original sentence (the edited line is only a one-line `(일부)` example in the answer). |
+| 8 | Day 8 assignment 3 vs Day 9 "변경 0개" | `day-08.md:351` tells learners to revert or commit "Day 8: 대표 영상 바꾸기"; `day-09.md:19` start state notes it. |
+| 9 | `rejected` recovery only deleted the repo; remote-exists only in the 모음 | `rejected` now offers rename-old-repo + new repo + `git remote set-url` (method 1) and delete (method 2); `error: remote origin already exists.` is now in Day 7's 🧯. `git remote set-url` run locally to confirm it changes the URL. |
+| 10 | Missing Day-level 🧯 items | Day 3: tab-character indentation added to the indent item. Day 5: new "width·height 빠짐" item and "svg 더블클릭하면 다른 앱" item (:494 and :504); `src="C:\…"` folded into the broken-image item. |
+| 11 | `font-weight: 700` unexplained | `day-10.md:255` explains it. |
+| 12 | Day 5 text art 34 columns | `day-05.md:72` split into short lines. |
+
+Commands run after the fixes:
+
+- `cd textbook && npm run check -- --only p1-d02,...,p1-d10` → `검사 통과: Day 155개, 페이지 4개, 결과 크기 2.02 MB (--only: 9개 Day만 렌더)` (0 errors)
+- Scratch end-state rebuild vs snapshots → `OK` (92 files, 0 differences); `(일부)` application → `ALL OK`; all 56 full-file HTML blocks opened → `총 56개 중 실패 0`; Playwright end-state checks → `총 111건 중 실패 0건`; structure and time lint → `LINT OK`.
+- `docs/verification/p1-days-02-10.md` updated with a "Fix round 1" section.
+
+Files changed: `textbook/content/p1/day-02.md` … `day-10.md` (all nine), `textbook/content/troubleshooting/p1-days-02-10.md`, `docs/verification/p1-days-02-10.md`, this report.
