@@ -693,8 +693,8 @@ body {
 
 ## 📚 더 알아보기
 
-- [MDN · 미디어 쿼리 사용하기](https://developer.mozilla.org/ko/docs/Web/CSS/CSS_media_queries/Using_media_queries): 화면 조건을 검사하는 문법과 예제를 보여 줘요.
-- [MDN · 뷰포트 메타 태그](https://developer.mozilla.org/ko/docs/Web/HTML/Guides/Viewport_meta_element): viewport 줄이 하는 일을 설명해요.
-- [Microsoft Edge DevTools · 기기 모드로 휴대폰 흉내 내기](https://learn.microsoft.com/ko-kr/microsoft-edge/devtools/device-mode/): Edge 개발자 도구의 기기 모드 사용법을 설명해요.
+- [MDN · 미디어 쿼리 사용하기](https://developer.mozilla.org/ko/docs/Web/CSS/Guides/Media_queries/Using): 화면 조건을 검사하는 문법과 예제를 보여 줘요.
+- [MDN · 뷰포트 메타 태그](https://developer.mozilla.org/ko/docs/Web/HTML/Reference/Elements/meta/name/viewport): viewport 줄이 하는 일을 설명해요.
+- [Microsoft Edge DevTools · 기기 모드로 휴대폰 흉내 내기](https://learn.microsoft.com/microsoft-edge/devtools/device-mode/): Edge 개발자 도구의 기기 모드 사용법을 설명해요.
 
 ➡️ **다음 Day 예고:** [Day 14 · 꾸미기 + 첫 배포](#/day/p1-d14)에서는 색을 CSS 변수로 한곳에서 관리하고, 마우스를 올리면 움직이는 효과를 넣은 뒤, 내 사이트를 GitHub Pages로 인터넷에 처음 공개해요.

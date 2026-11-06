@@ -794,8 +794,8 @@ SVG 3개는 1단계의 코드와 같아요(`images\thumb-game.svg`, `thumb-talk.
 
 ## 📚 더 알아보기
 
-- [MDN · CSS 그리드 레이아웃 기본 개념](https://developer.mozilla.org/ko/docs/Web/CSS/CSS_grid_layout/Basic_concepts_of_grid_layout): 줄과 칸, `fr`, `repeat()`를 그림으로 설명해요.
-- [MDN · minmax()](https://developer.mozilla.org/ko/docs/Web/CSS/minmax): 최소·최대 폭을 정하는 함수의 값과 예제를 보여 줘요.
-- [MDN · repeat()](https://developer.mozilla.org/ko/docs/Web/CSS/repeat): `auto-fit`과 `auto-fill`의 차이를 예제로 보여 줘요.
+- [MDN · CSS 그리드 레이아웃 기본 개념](https://developer.mozilla.org/ko/docs/Web/CSS/Guides/Grid_layout/Basic_concepts): 줄과 칸, `fr`, `repeat()`를 그림으로 설명해요.
+- [MDN · grid-template-columns](https://developer.mozilla.org/ko/docs/Web/CSS/Reference/Properties/grid-template-columns): 칸의 폭을 정하는 속성과 `fr`, `minmax()` 예제를 보여 줘요.
+- [MDN · repeat() (영어 문서)](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/repeat): `auto-fit`과 `auto-fill`의 차이를 예제로 보여 줘요.
 
 ➡️ **다음 Day 예고:** [Day 13 · 반응형 웹](#/day/p1-d13)에서는 휴대폰 크기까지 고려해서, 화면이 좁을 때와 넓을 때의 배치를 `@media`로 나눠 만들어요.

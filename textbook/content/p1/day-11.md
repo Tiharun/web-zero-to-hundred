@@ -1116,8 +1116,8 @@ button,
 
 ## 📚 더 알아보기
 
-- [MDN · Flexbox 기본 개념](https://developer.mozilla.org/ko/docs/Web/CSS/CSS_flexible_box_layout/Basic_concepts_of_flexbox): 주축과 교차축, 정렬 속성을 그림으로 보여 줘요.
-- [MDN · aria-current](https://developer.mozilla.org/ko/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-current): 현재 위치를 알리는 속성의 값과 쓰임을 설명해요.
-- [MDN · 속성 선택자](https://developer.mozilla.org/ko/docs/Web/CSS/Attribute_selectors): 대괄호로 요소를 고르는 여러 방법을 보여 줘요.
+- [MDN · Flexbox 기본 개념](https://developer.mozilla.org/ko/docs/Web/CSS/Guides/Flexible_box_layout/Basic_concepts): 주축과 교차축, 정렬 속성을 그림으로 보여 줘요.
+- [MDN · aria-current (영어 문서)](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-current): 현재 위치를 알리는 속성의 값과 쓰임을 설명해요.
+- [MDN · 속성 선택자](https://developer.mozilla.org/ko/docs/Web/CSS/Reference/Selectors/Attribute_selectors): 대괄호로 요소를 고르는 여러 방법을 보여 줘요.
 
 ➡️ **다음 Day 예고:** [Day 12 · Grid](#/day/p1-d12)에서는 방송 소개와 영상 목록을 카드로 바꾸고, 화면 폭에 따라 3칸·2칸·1칸으로 저절로 바뀌는 카드 그리드를 만들어요.

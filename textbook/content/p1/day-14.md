@@ -876,6 +876,6 @@ There isn't a GitHub Pages site here.
 
 - [MDN · CSS 사용자 지정 속성(변수) 사용하기](https://developer.mozilla.org/ko/docs/Web/CSS/Guides/Cascading_variables/Using_custom_properties): `--이름`과 `var()`의 쓰임을 설명해요.
 - [MDN · CSS 트랜지션 사용하기](https://developer.mozilla.org/ko/docs/Web/CSS/Guides/Transitions/Using): `transition`의 속성, 시간, 효과를 예제로 보여 줘요.
-- [GitHub Docs · GitHub Pages 사이트 만들기](https://docs.github.com/ko/pages/getting-started-with-github-pages/creating-a-github-pages-site): Pages를 켜는 순서와 반영 시간을 설명해요.
+- [GitHub Docs · GitHub Pages 사이트 만들기 (영어 문서)](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site): Pages를 켜는 순서와 반영 시간을 설명해요.
 
 ➡️ **다음 Day 예고:** [Day 15 · JavaScript 시작](#/day/p1-d15)에서는 처음으로 JavaScript 파일을 만들어 웹페이지에 연결하고, 개발자 도구 콘솔에서 코드를 실행해 봐요.

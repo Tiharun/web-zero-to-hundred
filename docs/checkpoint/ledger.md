@@ -255,3 +255,6 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Task 29: complete (commits 8e30f25..773967a, review clean)
 - ALL FOUR OUTLINES COMPLETE (T8, T14, T21, T29). curriculum.json merged (p1:30 p2:40 p3:45 sp:40).
 - T16 (P2 Days 11–20, sonnet) dispatched, NO GIT.
+- T9 implementer DONE_WITH_CONCERNS (Days 2–10; 111 Playwright checks pass; 2 outline problems: Day 5 back.html ../../ path outside Live Preview root → file:// with explanation; Day 3 broken-HTML task has no file → read-and-find). Final files at b9b4bda (base 342c1ed).
+- Ruling R50: Day-batch reviews use sonnet (mid tier) with CONTENT-GUIDE's review checklist; project integration reviews (T12/T19/T27/T34) use opus — cost if wrong: a subtle teaching defect slips to the integration review.
+- T9 review dispatched (sonnet, a5afd54997d2550b8), base 342c1ed head b9b4bda.

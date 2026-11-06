@@ -907,6 +907,6 @@ Uncaught SyntaxError: Invalid or unexpected token
 
 - [MDN · JavaScript 첫걸음](https://developer.mozilla.org/ko/docs/Learn_web_development/Core/Scripting/What_is_JavaScript): JavaScript가 무엇이고 웹페이지에서 어떻게 쓰이는지 설명해요.
 - [MDN · script 요소](https://developer.mozilla.org/ko/docs/Web/HTML/Reference/Elements/script): `src`, `defer` 속성의 쓰임을 보여 줘요.
-- [Microsoft Edge DevTools · 콘솔 개요](https://learn.microsoft.com/ko-kr/microsoft-edge/devtools/console/): 콘솔 창의 사용법을 설명해요.
+- [Microsoft Edge DevTools · 콘솔 개요](https://learn.microsoft.com/microsoft-edge/devtools/console/): 콘솔 창의 사용법을 설명해요.
 
 ➡️ **다음 Day 예고:** [Day 16 · 조건문](#/day/p1-d16)에서는 `if`로 시간에 따라 다른 글을 고르는 법을 배워서, 홈 화면에 지금 시각에 맞는 인사말이 나오게 만들어요.
