@@ -50,3 +50,14 @@ Per-finding changes (textbook/content/p2/):
 18. day-02 step 2: ₩ key inline note (🧯 cap kept).
 Output: `npm run check -- --only p2-d01..p2-d10` -> 검사 통과 (0 errors). Re-executed code blocks for Days 6, 7, 8 (tsc + build pass). Verification doc appended.
 Note: day-08.md was briefly corrupted by a bad edit and rebuilt from the previous content; final file re-checked.
+
+## Fix round 2
+Per-finding changes (textbook/content/p2/day-07.md only, plus one line in docs/verification/p2-days-01-10.md):
+1. Finding 1 (CSS HMR exercise at step 3 item 5, which referenced an unwritten style.css): removed step 3 item 5 (was line 190) and the CSS-HMR bullet in the step 3 :::success block (was line 200). Step 3 item 4 (main.ts HMR) kept. Added the same exercise at the end of step 6, after its :::success block: lines 480-496 (edit `--bg: #ffffff;` to `#fff3c4;` in the first `:root` block, see the change without refresh, restore `#ffffff;`, :::warn on restoring, dark-mode note lines 492-493 reworded to match the `@media (prefers-color-scheme: dark)` override, :::success on what to see). Grep of Day 7 for HMR/--bg/CSS references: step 3 has no remaining CSS-exercise reference; the checklist line (1253) and the 개념 paragraph (line 37) still hold for main.ts/general HMR.
+2. Minor (R60, step minutes): step 6 heading `(8분)` changed to `(9분)`, now `### 6단계 · style.css 바꾸기 (9분)` at line 292. Step minutes now sum to 68 = header 따라하기 68분 (header unchanged).
+3. Verification doc: appended `- Fix round 2: ...` line to the "## Fix round 1 (재검증)" list.
+
+Check: `cd textbook && npm run check -- --only p2-d07`
+- First run: 16 errors (E_CONTAINER_UNCLOSED at line 194, E_CONTAINER_NESTED after it), caused by my own edit that dropped the newline before the step 3 :::success closing `:::`. Fixed.
+- Final run: `검사 통과: Day 155개, 페이지 4개, 결과 크기 1.24 MB (--only: 1개 Day만 렌더)` EXIT=0 (0 errors).
+- No Vite run (text move only).

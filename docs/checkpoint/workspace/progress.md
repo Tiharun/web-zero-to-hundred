@@ -326,3 +326,11 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
   - T17 (P2 D21–30) and T18 (P2 D31–40): no files in the repo (they were still verifying in scratch). Re-dispatch fresh with template A.
   - T12: step 1 done (6166d21). Reviewer ① (beginner) stopped without a report; reviewer ② (technical) never dispatched → dispatch both (template E), then one fix implementer, re-review, rebuild preview, send to user.
 - Workspace mirrored to docs/checkpoint/workspace/ (restore: bash docs/checkpoint/restore-workspace.sh). implementer-contract.md environment section rewritten for local machines.
+- 2026-11-07 local resume. User instruction: this session runs no subagents; work goes to child sessions (start_session) that report back here; child sessions share this checkout (NO GIT), the controller commits.
+- Ruling R59: weekly usage measured at 94% (extra usage off, reset 2026-11-09) — run child sessions one at a time and re-measure usage after each instead of the 5-concurrent cap — cost if wrong: slower progress.
+- Task 15: fix round 1 re-review dispatched as child session (sonnet, t15-rereview), FIX_BASE 3173b9a HEAD 6115e79.
+- Task 15: fix round 1/5 (18 addressed, 1 open — M9: D7 step 3 item 5 CSS exercise cannot be followed before step 6; commits 3173b9a..6115e79). Re-review: task-15-rereview-1.md; Day 8 integrity OK.
+- Ruling R60: promote the D7 67 vs 68 minutes Minor into round 2 since Day 7 is being edited anyway — cost if wrong: one extra line in the diff.
+- Task 15: fix round 2 implemented by child session (haiku, t15-fix2); commit b0e31da; re-review dispatched as child session (haiku), FIX_BASE 6115e79.
+- Task 15: fix round 2/5 (2 addressed, 0 open — D7 CSS exercise moved after step 6; D7 minutes sum; commits 6115e79..b0e31da).
+- Task 15: complete (commits 3173b9a..b0e31da, review clean)
