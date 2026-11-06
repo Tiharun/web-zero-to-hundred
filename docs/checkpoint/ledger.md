@@ -291,3 +291,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Task 11: fix round 2/5 dispatched (resume a8a09e53510e4c0d4; FIX_BASE b718956) — trim every Day 21–30 🧯 to ≤6 (move lowest-value items to the 모음; keep every "아래 🧯" reference resolving), and mirror new items in troubleshooting/p1-days-21-30.md.
 - 🧯 3–6 cap note sent to running P2 writers T16, T17, T18 (T15 under review — reviewer checks against the guide).
 - T11 fix round 2 implementer DONE (🧯 ≤6 all Days; ~30 entries added to 모음). Files at 0411826. Re-review dispatched (haiku).
+- T11 fix round 2 re-review dispatched (haiku, a86ca81a93bb8557c), FIX_BASE b718956 HEAD 0411826.
