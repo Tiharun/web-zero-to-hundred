@@ -2,7 +2,9 @@
   "version": 1,
   "title": "웹 제로 투 헌드레드",
   "writtenAt": "2026-11",
-  "validation": { "minDayChars": 4000 },
+  "validation": {
+    "minDayChars": 4000
+  },
   "projects": [
     {
       "id": "p1",
@@ -11,7 +13,14 @@
       "title": "나의 크리에이터 홈페이지",
       "subtitle": "첫 웹사이트 — HTML·CSS·JavaScript로 처음부터 만들어 인터넷에 공개해요",
       "folder": "C:\\dev\\my-creator-site",
-      "stack": ["HTML", "CSS", "JavaScript", "Git", "GitHub", "GitHub Pages"],
+      "stack": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "Git",
+        "GitHub",
+        "GitHub Pages"
+      ],
       "requires": [],
       "summary": "컴퓨터와 웹의 첫걸음부터 시작해 HTML·CSS·JavaScript로 내 방송 홈페이지를 만들고, Git·GitHub로 관리하며 GitHub Pages로 공개해요.",
       "outcome": "인터넷에 공개된 나의 크리에이터 홈페이지(소개·영상 목록·방송 일정·문의 폼, 다크 모드·반응형)와 OBS 카운트다운 오버레이",
@@ -20,187 +29,3330 @@
           "title": "컴퓨터와 웹의 첫걸음",
           "minutes": 90,
           "summary": "인터넷·브라우저·웹사이트가 무엇인지 알고, 파일 확장명을 보이게 한 뒤 C:\\dev 폴더에 메모장으로 첫 HTML 파일을 만들어 브라우저로 열어요.",
-          "keywords": ["인터넷", "웹", "브라우저", "서버", "웹사이트", "파일", "폴더", "확장자", "경로", "C:\\dev", "메모장", "HTML"]
+          "keywords": [
+            "인터넷",
+            "웹",
+            "브라우저",
+            "서버",
+            "웹사이트",
+            "파일",
+            "폴더",
+            "확장자",
+            "경로",
+            "C:\\dev",
+            "메모장",
+            "HTML"
+          ]
         },
         {
           "title": "개발 도구 설치",
-          "minutes": 90,
-          "summary": "VS Code(한국어 팩, Live Preview)와 Chrome을 설치하고, 폴더를 열어 파일을 저장·자동 저장하는 법을 익혀요.",
-          "keywords": ["VS Code", "한국어 팩", "Live Preview", "Chrome", "폴더 열기", "저장", "자동 저장"]
+          "minutes": 100,
+          "summary": "VS Code(한국어 팩, Live Preview)와 Chrome을 설치하고, C:\\dev\\hello 폴더를 VS Code로 열어 저장·자동 저장·명령 팔레트를 익혀요.",
+          "keywords": [
+            "VS Code",
+            "한국어 팩",
+            "Live Preview",
+            "Chrome",
+            "폴더 열기",
+            "저장",
+            "자동 저장",
+            "명령 팔레트",
+            "확장 프로그램"
+          ]
         },
         {
           "title": "HTML 기본 구조",
           "minutes": 90,
-          "summary": "태그·요소·속성과 <!DOCTYPE>, head/body 구조를 배우고 제목·문단·주석을 쓰며 Emmet !로 뼈대를 빠르게 만들어요.",
-          "keywords": ["태그", "요소", "속성", "<!DOCTYPE>", "head", "body", "제목", "문단", "주석", "Emmet"]
+          "summary": "프로젝트 폴더 C:\\dev\\my-creator-site를 만들고, 태그·요소·속성과 <!DOCTYPE>, head/body 구조를 배우며 Emmet !로 index.html 뼈대를 만들어요.",
+          "keywords": [
+            "태그",
+            "요소",
+            "속성",
+            "<!DOCTYPE>",
+            "head",
+            "body",
+            "제목",
+            "문단",
+            "주석",
+            "Emmet",
+            "들여쓰기",
+            "index.html"
+          ]
         },
         {
           "title": "텍스트·목록·링크",
-          "minutes": 90,
-          "summary": "strong/em, ul/ol 목록, <a> 링크를 쓰고 절대 경로와 상대 경로의 차이를 익혀 여러 페이지를 서로 이어요.",
-          "keywords": ["strong", "em", "ul", "ol", "li", "a", "href", "절대 경로", "상대 경로", "여러 페이지"]
+          "minutes": 100,
+          "summary": "strong/em, ul/ol 목록, <a> 링크를 쓰고 절대 경로와 상대 경로의 차이를 익혀 다섯 페이지를 메뉴로 서로 이어요.",
+          "keywords": [
+            "strong",
+            "em",
+            "ul",
+            "ol",
+            "li",
+            "a",
+            "href",
+            "절대 경로",
+            "상대 경로",
+            "여러 페이지",
+            "대소문자"
+          ]
         },
         {
           "title": "이미지와 경로 완전정복",
           "minutes": 90,
-          "summary": "<img>와 images 폴더, ./ 와 ../ 상대 경로, 파일 이름 규칙, 이미지 형식을 익혀 사진과 그림을 넣어요.",
-          "keywords": ["img", "alt", "images 폴더", "./", "../", "파일 이름 규칙", "이미지 형식", "SVG"]
+          "summary": "<img>와 images 폴더, ./ 와 ../ 상대 경로, 파일 이름 규칙, 이미지 형식을 익혀 프로필 그림을 넣고 대체 텍스트를 써요.",
+          "keywords": [
+            "img",
+            "alt",
+            "대체 텍스트",
+            "images 폴더",
+            "./",
+            "../",
+            "파일 이름 규칙",
+            "이미지 형식",
+            "SVG",
+            "접근성"
+          ]
         },
         {
           "title": "시맨틱 구조",
           "minutes": 90,
-          "summary": "header·nav·main·section·footer로 페이지 뼈대를 의미 있게 나누고, div/span과 비교하며 개발자 도구 Elements 패널로 살펴봐요.",
-          "keywords": ["시맨틱", "header", "nav", "main", "section", "footer", "div", "span", "개발자 도구", "Elements"]
+          "summary": "header·nav·main·section·footer로 다섯 페이지 뼈대를 의미 있게 나누고, div/span과 비교하며 개발자 도구 Elements 패널로 살펴봐요.",
+          "keywords": [
+            "시맨틱",
+            "header",
+            "nav",
+            "main",
+            "section",
+            "article",
+            "footer",
+            "div",
+            "span",
+            "개발자 도구",
+            "Elements",
+            "&copy;"
+          ]
         },
         {
           "title": "Git·GitHub 시작",
           "minutes": 120,
-          "summary": "Git을 설치하고 사용자 정보를 설정한 뒤 GitHub에 가입해 저장소를 만들고 첫 커밋과 푸시를 해요.",
-          "keywords": ["Git", "GitHub", "저장소", "커밋", "푸시", "git config", "버전 관리"]
+          "summary": "Git을 설치하고 사용자 정보를 설정한 뒤 GitHub에 가입해 저장소를 만들고, VS Code 터미널과 소스 제어 패널로 첫 커밋과 푸시를 해요.",
+          "keywords": [
+            "Git",
+            "GitHub",
+            "저장소",
+            "커밋",
+            "푸시",
+            "git config",
+            "버전 관리",
+            "터미널",
+            "PowerShell",
+            "소스 제어"
+          ]
         },
         {
           "title": "표·폼·미디어",
           "minutes": 100,
-          "summary": "table로 방송 일정표를, form으로 연락 폼을 만들고 iframe으로 YouTube 영상을 넣어요.",
-          "keywords": ["table", "tr", "th", "td", "form", "input", "label", "button", "iframe", "YouTube"]
+          "summary": "table로 방송 일정표를, form으로 문의 폼을 만들고 iframe으로 YouTube 영상을 넣은 뒤 오늘 작업을 커밋해요.",
+          "keywords": [
+            "table",
+            "tr",
+            "th",
+            "td",
+            "form",
+            "input",
+            "label",
+            "select",
+            "textarea",
+            "button",
+            "iframe",
+            "YouTube"
+          ]
         },
         {
           "title": "CSS 시작",
           "minutes": 90,
-          "summary": "css/style.css를 만들어 link로 연결하고 선택자, 색, 글꼴로 첫 스타일을 입혀요.",
-          "keywords": ["CSS", "link", "선택자", "클래스", "색", "글꼴", "css/style.css"]
+          "summary": "css/style.css를 만들어 link로 다섯 페이지에 연결하고 선택자, 클래스, 색, 글꼴로 첫 스타일을 입혀요.",
+          "keywords": [
+            "CSS",
+            "link",
+            "선택자",
+            "클래스",
+            "색",
+            "색상 코드",
+            "글꼴",
+            "css/style.css",
+            "캐시"
+          ]
         },
         {
           "title": "박스 모델",
           "minutes": 90,
-          "summary": "margin·padding·border와 box-sizing, px·rem·% 단위를 익혀 여백과 크기를 다듬어요.",
-          "keywords": ["박스 모델", "margin", "padding", "border", "box-sizing", "px", "rem", "%"]
+          "summary": "margin·padding·border와 box-sizing, px·rem·% 단위를 익혀 가운데 정렬 상자와 여백, 표 테두리를 다듬어요.",
+          "keywords": [
+            "박스 모델",
+            "margin",
+            "padding",
+            "border",
+            "box-sizing",
+            "px",
+            "rem",
+            "%",
+            "container"
+          ]
         },
         {
           "title": "Flexbox",
           "minutes": 100,
-          "summary": "Flexbox로 내비게이션 바를 만들고 정렬, gap, wrap을 익혀요.",
-          "keywords": ["Flexbox", "display: flex", "justify-content", "align-items", "gap", "flex-wrap", "내비게이션 바"]
+          "summary": "Flexbox로 로고와 메뉴를 한 줄에 놓는 내비게이션 바를 만들고 정렬, gap, wrap, 현재 페이지 표시를 익혀요.",
+          "keywords": [
+            "Flexbox",
+            "display: flex",
+            "justify-content",
+            "align-items",
+            "gap",
+            "flex-wrap",
+            "내비게이션 바",
+            "aria-current"
+          ]
         },
         {
           "title": "Grid",
           "minutes": 100,
-          "summary": "Grid의 repeat, minmax, auto-fit으로 화면 폭에 맞춰 늘어나는 콘텐츠 카드 그리드를 만들어요.",
-          "keywords": ["Grid", "display: grid", "grid-template-columns", "repeat", "minmax", "auto-fit", "카드"]
+          "summary": "Grid의 repeat, minmax, auto-fit으로 화면 폭에 맞춰 칸 수가 바뀌는 방송 소개 카드 그리드를 만들어요.",
+          "keywords": [
+            "Grid",
+            "display: grid",
+            "grid-template-columns",
+            "repeat",
+            "minmax",
+            "auto-fit",
+            "fr",
+            "카드"
+          ]
         },
         {
           "title": "반응형 웹",
           "minutes": 100,
           "summary": "viewport와 미디어 쿼리, 모바일 우선 방식으로 휴대폰에서도 보기 좋게 만들고 개발자 도구 기기 모드로 확인해요.",
-          "keywords": ["반응형", "viewport", "미디어 쿼리", "모바일 우선", "기기 모드", "breakpoint"]
+          "keywords": [
+            "반응형",
+            "viewport",
+            "미디어 쿼리",
+            "모바일 우선",
+            "기기 모드",
+            "breakpoint",
+            "aspect-ratio"
+          ]
         },
         {
           "title": "꾸미기 + 첫 배포",
           "minutes": 120,
-          "summary": "CSS 변수와 hover·transition으로 꾸민 뒤 GitHub Pages로 내 사이트를 인터넷에 처음 공개해요.",
-          "keywords": ["CSS 변수", "hover", "transition", "GitHub Pages", "배포", "공개 저장소"]
+          "summary": "CSS 변수와 hover·transition으로 꾸민 뒤 GitHub Pages로 내 사이트를 인터넷에 처음 공개하고 휴대폰으로 확인해요.",
+          "keywords": [
+            "CSS 변수",
+            "hover",
+            "transition",
+            "GitHub Pages",
+            "배포",
+            "공개 저장소"
+          ]
         },
         {
           "title": "JavaScript 시작",
           "minutes": 90,
-          "summary": "script와 defer로 JavaScript를 연결하고 Console에서 let/const, 자료형, 연산자를 실험해요.",
-          "keywords": ["JavaScript", "script", "defer", "Console", "let", "const", "자료형", "연산자"]
+          "summary": "script와 defer로 js/main.js를 연결하고 Console에서 let/const, 자료형, 연산자, 자료형 바꾸기를 실험해요.",
+          "keywords": [
+            "JavaScript",
+            "script",
+            "defer",
+            "Console",
+            "let",
+            "const",
+            "자료형",
+            "연산자",
+            "console.log",
+            "NaN"
+          ]
         },
         {
           "title": "조건문",
           "minutes": 90,
-          "summary": "if/else, ===, 논리 연산, 템플릿 리터럴로 시간대별 인사말을 만들어요.",
-          "keywords": ["if", "else", "===", "논리 연산", "템플릿 리터럴", "Date", "인사말"]
+          "summary": "if/else, ===, 논리 연산, 템플릿 리터럴, 삼항 연산자와 Date로 홈 화면에 시간대별 인사말을 띄워요.",
+          "keywords": [
+            "if",
+            "else",
+            "===",
+            "논리 연산",
+            "템플릿 리터럴",
+            "삼항 연산자",
+            "Date",
+            "인사말"
+          ]
         },
         {
           "title": "반복문과 배열",
           "minutes": 90,
-          "summary": "for, for…of와 배열 기본으로 여러 값을 차례로 꺼내 다뤄요.",
-          "keywords": ["for", "for...of", "배열", "length", "push", "인덱스"]
+          "summary": "JS 연습장을 만들어 for, for…of와 배열 기본으로 여러 값을 차례로 꺼내 합계와 최댓값을 구해요.",
+          "keywords": [
+            "for",
+            "for...of",
+            "배열",
+            "length",
+            "push",
+            "인덱스",
+            "연습장"
+          ]
         },
         {
           "title": "함수",
           "minutes": 100,
           "summary": "함수 선언, 매개변수, return, 화살표 함수, 스코프를 익혀 되풀이되는 코드를 묶어요.",
-          "keywords": ["함수", "매개변수", "return", "화살표 함수", "스코프"]
+          "keywords": [
+            "함수",
+            "매개변수",
+            "return",
+            "화살표 함수",
+            "스코프"
+          ]
         },
         {
           "title": "객체와 배열 메서드",
           "minutes": 100,
-          "summary": "객체로 영상 목록 데이터를 만들고 map, filter, forEach로 다뤄요.",
-          "keywords": ["객체", "속성", "영상 목록", "map", "filter", "forEach"]
+          "summary": "객체로 영상 목록 데이터를 만들어 js/contents.js에 담고 map, filter, forEach로 콘솔에서 다뤄요.",
+          "keywords": [
+            "객체",
+            "키",
+            "영상 목록",
+            "map",
+            "filter",
+            "forEach",
+            "콜백",
+            "contents.js"
+          ]
         },
         {
           "title": "DOM 다루기",
           "minutes": 120,
-          "summary": "querySelector, textContent, classList, createElement로 데이터에서 영상 카드를 화면에 그려요.",
-          "keywords": ["DOM", "querySelector", "textContent", "classList", "createElement", "append", "카드 그리기"]
+          "summary": "querySelector, textContent, classList, createElement로 영상 데이터에서 카드를 만들어 영상 페이지에 그려요.",
+          "keywords": [
+            "DOM",
+            "querySelector",
+            "textContent",
+            "classList",
+            "createElement",
+            "appendChild",
+            "카드 그리기",
+            "noscript"
+          ]
         },
         {
           "title": "이벤트",
-          "minutes": 100,
-          "summary": "addEventListener로 모바일 햄버거 메뉴를 만들고 이벤트 위임을 익혀요.",
-          "keywords": ["이벤트", "addEventListener", "click", "햄버거 메뉴", "aria-expanded", "이벤트 위임"]
+          "minutes": 110,
+          "summary": "addEventListener로 모바일 햄버거 메뉴를 만들고, data 속성과 이벤트 위임으로 카테고리 버튼을 연결해요.",
+          "keywords": [
+            "이벤트",
+            "addEventListener",
+            "click",
+            "햄버거 메뉴",
+            "aria-expanded",
+            "이벤트 위임",
+            "closest",
+            "data 속성",
+            "dataset"
+          ]
         },
         {
           "title": "다크 모드와 localStorage",
           "minutes": 100,
-          "summary": "테마 토글 버튼을 만들어 선택을 localStorage에 저장하고 prefers-color-scheme을 반영해요.",
-          "keywords": ["다크 모드", "테마 토글", "localStorage", "prefers-color-scheme", "data 속성"]
+          "summary": "테마 토글 버튼을 만들어 선택을 localStorage에 저장하고, 처음 방문하면 prefers-color-scheme을 따라가요.",
+          "keywords": [
+            "다크 모드",
+            "테마 토글",
+            "localStorage",
+            "prefers-color-scheme",
+            "data-theme",
+            "aria-pressed",
+            "matchMedia"
+          ]
         },
         {
           "title": "필터와 검색",
           "minutes": 100,
-          "summary": "input 이벤트와 카테고리 버튼으로 영상 목록을 걸러 보여 줘요.",
-          "keywords": ["input 이벤트", "필터", "검색", "카테고리", "includes"]
+          "summary": "input 이벤트와 카테고리 버튼으로 영상 목록을 걸러 보여 주고, 결과 개수와 빈 목록 안내를 표시해요.",
+          "keywords": [
+            "input 이벤트",
+            "필터",
+            "검색",
+            "카테고리",
+            "includes",
+            "trim",
+            "toLowerCase",
+            "hidden"
+          ]
         },
         {
           "title": "폼 검증",
-          "minutes": 100,
-          "summary": "required·pattern 속성과 JavaScript 검증, aria-live 피드백으로 문의 폼을 다듬어요.",
-          "keywords": ["폼 검증", "required", "pattern", "submit", "preventDefault", "aria-live"]
+          "minutes": 120,
+          "summary": "required·pattern 속성과 JavaScript 검증, aria-live 피드백으로 문의 폼이 틀린 칸을 친절하게 알려 주게 만들어요.",
+          "keywords": [
+            "폼 검증",
+            "required",
+            "pattern",
+            "정규 표현식",
+            "submit",
+            "preventDefault",
+            "aria-live",
+            "validity",
+            "contact.js"
+          ]
         },
         {
           "title": "JSON과 fetch",
           "minutes": 120,
-          "summary": "data/videos.json을 fetch와 async/await로 불러오고, file:// 제약과 오류 처리를 익혀요.",
-          "keywords": ["JSON", "fetch", "async", "await", "data/videos.json", "file://", "오류 처리", "Live Preview"]
+          "summary": "영상 목록을 data/videos.json으로 옮겨 fetch와 async/await로 불러오고, file:// 제약과 try/catch 오류 처리를 익혀요.",
+          "keywords": [
+            "JSON",
+            "fetch",
+            "async",
+            "await",
+            "data/videos.json",
+            "file://",
+            "오류 처리",
+            "try/catch",
+            "Live Preview",
+            "Network"
+          ]
         },
         {
           "title": "날짜와 타이머",
-          "minutes": 100,
+          "minutes": 110,
           "summary": "Date로 오늘 요일을 강조하고 setInterval로 다음 방송까지 남은 시간을 세는 카운트다운을 만들어요.",
-          "keywords": ["Date", "요일", "setInterval", "카운트다운", "schedule.json"]
+          "keywords": [
+            "Date",
+            "요일",
+            "getDay",
+            "setInterval",
+            "카운트다운",
+            "schedule.json",
+            "padStart",
+            "Math.floor"
+          ]
         },
         {
           "title": "OBS 오버레이 위젯",
           "minutes": 120,
-          "summary": "투명 배경의 overlay/countdown.html을 만들어 URL 파라미터로 설정하고 OBS 브라우저 소스에 띄워요.",
-          "keywords": ["OBS", "오버레이", "브라우저 소스", "투명 배경", "URL 파라미터", "URLSearchParams"]
+          "summary": "투명 배경의 overlay/countdown.html을 만들어 URL 파라미터로 제목과 시각을 정하고 OBS 브라우저 소스에 띄워요.",
+          "keywords": [
+            "OBS",
+            "오버레이",
+            "브라우저 소스",
+            "투명 배경",
+            "URL 파라미터",
+            "URLSearchParams",
+            "clamp",
+            "clearInterval"
+          ]
         },
         {
           "title": "품질 높이기",
-          "minutes": 100,
-          "summary": "접근성, SEO·Open Graph·파비콘, 성능을 점검하고 Lighthouse로 확인해요.",
-          "keywords": ["접근성", "SEO", "Open Graph", "파비콘", "성능", "Lighthouse"]
+          "minutes": 110,
+          "summary": "건너뛰기 링크·포커스 표시 같은 접근성, SEO·Open Graph·파비콘, 지연 로딩을 점검하고 Lighthouse로 확인해요.",
+          "keywords": [
+            "접근성",
+            "SEO",
+            "Open Graph",
+            "파비콘",
+            "성능",
+            "지연 로딩",
+            "Lighthouse",
+            "건너뛰기 링크"
+          ]
         },
         {
           "title": "디버깅과 정리",
           "minutes": 100,
-          "summary": "개발자 도구 디버거의 중단점과 흔한 오류를 익히고, 폴더를 정리해 README.md를 써요.",
-          "keywords": ["디버깅", "중단점", "Sources", "흔한 오류", "폴더 정리", "README.md"]
+          "summary": "개발자 도구 Sources의 중단점과 흔한 오류 읽는 법을 익히고, 폴더를 정리해 Markdown으로 README.md를 써요.",
+          "keywords": [
+            "디버깅",
+            "중단점",
+            "Sources",
+            "흔한 오류",
+            "폴더 정리",
+            "README.md",
+            "Markdown"
+          ]
         },
         {
           "title": "최종 배포와 회고",
           "minutes": 90,
-          "summary": "최종 점검표로 사이트를 확인하고 배포한 주소에서 다시 점검한 뒤 회고를 쓰면 P2가 열려요.",
-          "keywords": ["최종 점검표", "배포 확인", "회고", "P2 해금"]
+          "summary": "최종 점검표로 사이트를 확인하고 배포한 주소에서 다시 점검한 뒤 README에 회고를 쓰면 P2가 열려요.",
+          "keywords": [
+            "최종 점검표",
+            "배포 확인",
+            "회고",
+            "KPT",
+            "P2 해금"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p2",
+      "order": 2,
+      "track": "main",
+      "title": "스트리머 허브",
+      "subtitle": "더 발전된 웹사이트 — TypeScript 화면과 C# 서버, 데이터베이스로 로그인·게시판·관리자·실시간 공지까지 만들어요",
+      "folder": "C:\\dev\\streamer-hub",
+      "stack": [
+        "TypeScript",
+        "Vite",
+        "C#",
+        "ASP.NET Core",
+        ".NET 10",
+        "SQL",
+        "SQLite",
+        "EF Core",
+        "ASP.NET Core Identity",
+        "xUnit"
+      ],
+      "requires": [
+        "p1"
+      ],
+      "summary": "터미널과 Node.js부터 시작해 TypeScript(Vite)로 화면을, C#·ASP.NET Core로 API 서버를, SQLite·EF Core로 데이터베이스를 만들고, 로그인·권한·보안·테스트·배포까지 직접 해 보는 풀스택 프로젝트예요.",
+      "outcome": "스트리머 목록·주간 방송 일정(한국 시간)·팬 게시판·가입과 로그인·관리자 화면·OBS 실시간 공지 오버레이가 있는 스트리머 허브(TypeScript 클라이언트 + C# 서버 + SQLite, 단위·통합 테스트 포함)와 하나의 앱으로 빌드한 배포본",
+      "days": [
+        {
+          "title": "풀스택 큰 그림",
+          "minutes": 75,
+          "summary": "프론트엔드·백엔드·데이터베이스·API가 각각 하는 일과 요청/응답 흐름을 알고, 개발자 도구로 P1 사이트의 요청을 들여다본 뒤 스트리머 허브 폴더와 README 초안을 만들어요.",
+          "keywords": [
+            "풀스택",
+            "프론트엔드",
+            "백엔드",
+            "데이터베이스",
+            "API",
+            "요청",
+            "응답",
+            "클라이언트",
+            "개발자 도구",
+            "Network 탭",
+            "README.md",
+            "C:\\dev\\streamer-hub"
+          ]
+        },
+        {
+          "title": "터미널 기초",
+          "minutes": 90,
+          "summary": "Windows Terminal의 PowerShell에서 현재 위치를 읽고 cd·dir·mkdir로 폴더를 오가며 탭 완성을 익히고, 스트리머 허브 폴더를 Git 저장소로 만들어 GitHub에 올려요.",
+          "keywords": [
+            "Windows Terminal",
+            "PowerShell",
+            "프롬프트",
+            "현재 위치",
+            "cd",
+            "dir",
+            "mkdir",
+            "Get-Location",
+            "탭 완성",
+            "통합 터미널",
+            "git init",
+            "git push"
+          ]
+        },
+        {
+          "title": "Node.js와 npm",
+          "minutes": 100,
+          "summary": "Node.js LTS를 설치하고 PowerShell 실행 정책 오류를 안전하게 해결한 뒤, 연습 폴더에서 package.json을 만들고 npm으로 TypeScript 패키지를 설치하며 node_modules와 package-lock.json의 역할을 알아요.",
+          "keywords": [
+            "Node.js",
+            "LTS",
+            "npm",
+            "npx",
+            "package.json",
+            "package-lock.json",
+            "node_modules",
+            "devDependencies",
+            "실행 정책",
+            "RemoteSigned",
+            "PATH",
+            "npm ci",
+            "winget"
+          ]
+        },
+        {
+          "title": "TypeScript 시작",
+          "minutes": 100,
+          "summary": "TypeScript가 왜 필요한지 알고 tsconfig.json을 만든 뒤, 기본 타입과 타입 추론을 쓰고 tsc로 컴파일해 오류 메시지를 읽고 고쳐요.",
+          "keywords": [
+            "TypeScript",
+            "tsc",
+            "tsconfig.json",
+            "컴파일",
+            "타입 표기",
+            "타입 추론",
+            "string",
+            "number",
+            "boolean",
+            "any",
+            "strict",
+            "TS2322",
+            "@types/node"
+          ]
+        },
+        {
+          "title": "타입 설계",
+          "minutes": 90,
+          "summary": "interface와 type으로 스트리머·방송 일정 데이터의 모양을 설계하고, 선택적 프로퍼티·유니온·리터럴 타입과 타입 좁히기로 잘못된 값을 컴파일 단계에서 막아요.",
+          "keywords": [
+            "interface",
+            "type",
+            "유니온 타입",
+            "리터럴 타입",
+            "선택적 프로퍼티",
+            "null",
+            "extends",
+            "타입 좁히기",
+            "typeof",
+            "??",
+            "?.",
+            "Platform",
+            "Streamer"
+          ]
+        },
+        {
+          "title": "함수·제네릭·모듈",
+          "minutes": 100,
+          "summary": "함수 타입과 제네릭으로 어떤 데이터에도 쓸 수 있는 함수를 만들고, import/export로 코드를 여러 파일(모듈)로 나눠요.",
+          "keywords": [
+            "함수 타입",
+            "화살표 함수",
+            "기본 매개변수",
+            "void",
+            "제네릭",
+            "<T>",
+            "Array<T>",
+            "Record",
+            "Paged<T>",
+            "모듈",
+            "import",
+            "export",
+            "import type"
+          ]
+        },
+        {
+          "title": "Vite 프로젝트",
+          "minutes": 110,
+          "summary": "Vite의 vanilla-ts 템플릿으로 client 폴더를 만들고 개발 서버(localhost:5173)를 켠 뒤, 사이트 틀(머리말·본문·꼬리말)과 스타일을 넣고 빌드까지 해 봐요.",
+          "keywords": [
+            "Vite",
+            "npm create vite",
+            "vanilla-ts",
+            "개발 서버",
+            "localhost",
+            "포트",
+            "5173",
+            "HMR",
+            "npm run build",
+            "dist",
+            "innerHTML",
+            "querySelector<T>",
+            "!"
+          ]
+        },
+        {
+          "title": "비동기 깊게",
+          "minutes": 110,
+          "summary": "Promise가 무엇인지 실험으로 알고, async/await와 Promise.all로 JSON 두 개를 동시에 불러오는 타입 있는 fetch 함수를 만들어 로딩·오류 문장이 있는 카드 화면을 그려요.",
+          "keywords": [
+            "Promise",
+            "async",
+            "await",
+            "Promise.all",
+            "setTimeout",
+            "구조 분해 할당",
+            "전개 구문",
+            "fetch",
+            "getJson<T>",
+            "response.ok",
+            "unknown",
+            "role=\"status\"",
+            "로딩 상태"
+          ]
+        },
+        {
+          "title": ".NET과 첫 C#",
+          "minutes": 110,
+          "summary": ".NET 10 SDK와 VS Code C# 확장을 설치하고, dotnet new console로 첫 C# 프로그램을 만들어 컴파일·실행하며 컴파일 오류를 읽어요.",
+          "keywords": [
+            ".NET 10",
+            "C#",
+            "SDK",
+            "런타임",
+            "dotnet --version",
+            "dotnet new console",
+            "dotnet run",
+            "dotnet build",
+            "csproj",
+            "Program.cs",
+            "최상위 문장",
+            "CS1002",
+            "유니티"
+          ]
+        },
+        {
+          "title": "C# 기본 문법",
+          "minutes": 90,
+          "summary": "C#의 기본 타입·var·const와 문자열 보간, if/switch, for/foreach/while을 TypeScript와 비교하며 방송 시간표를 출력하는 프로그램을 만들어요.",
+          "keywords": [
+            "int",
+            "double",
+            "bool",
+            "string",
+            "char",
+            "var",
+            "const",
+            "문자열 보간",
+            "if",
+            "switch",
+            "switch 식",
+            "enum",
+            "for",
+            "foreach",
+            "while",
+            "배열"
+          ]
+        },
+        {
+          "title": "메서드와 컬렉션",
+          "minutes": 100,
+          "summary": "C# 메서드를 만들고 List·Dictionary로 스트리머 데이터를 다루며, nullable 타입과 null 검사로 \"없을 수도 있는 값\"을 안전하게 처리해요.",
+          "keywords": [
+            "메서드",
+            "반환 타입",
+            "매개변수 기본값",
+            "이름 있는 인수",
+            "void",
+            "List<T>",
+            "Dictionary<TKey,TValue>",
+            "컬렉션 초기화",
+            "nullable",
+            "string?",
+            "is null",
+            "??",
+            "TryParse",
+            "out"
+          ]
+        },
+        {
+          "title": "클래스와 객체",
+          "minutes": 100,
+          "summary": "클래스·생성자·프로퍼티·접근 제한자로 스트리머와 방송 일정을 객체로 만들고, record와 네임스페이스를 익히며 유니티의 스크립트가 왜 클래스인지 알아요.",
+          "keywords": [
+            "class",
+            "인스턴스",
+            "생성자",
+            "프로퍼티",
+            "get",
+            "set",
+            "init",
+            "public",
+            "private",
+            "static",
+            "객체 이니셜라이저",
+            "new()",
+            "record",
+            "with",
+            "namespace",
+            "using",
+            "DateTime",
+            "유니티"
+          ]
+        },
+        {
+          "title": "상속과 인터페이스",
+          "minutes": 100,
+          "summary": "상속·virtual/override로 기본 기능을 물려받아 바꾸고, C# 인터페이스와 다형성으로 여러 클래스를 같은 방식으로 다루며 is 패턴 매칭을 익혀요.",
+          "keywords": [
+            "상속",
+            ":",
+            "base",
+            "virtual",
+            "override",
+            "ToString",
+            "다형성",
+            "interface",
+            "구현",
+            "is",
+            "패턴 매칭",
+            "IDisposable",
+            "MonoBehaviour"
+          ]
+        },
+        {
+          "title": "LINQ와 람다",
+          "minutes": 90,
+          "summary": "람다 식과 LINQ의 Where·Select·OrderBy 등으로 스트리머·일정 목록을 거르고 정렬하며, P1에서 쓴 JavaScript의 map/filter와 나란히 비교해요.",
+          "keywords": [
+            "람다 식",
+            "=>",
+            "LINQ",
+            "Where",
+            "Select",
+            "OrderBy",
+            "OrderByDescending",
+            "First",
+            "FirstOrDefault",
+            "Any",
+            "Count",
+            "Skip",
+            "Take",
+            "ToList",
+            "식 본문 멤버",
+            "map",
+            "filter"
+          ]
+        },
+        {
+          "title": "예외와 async",
+          "minutes": 100,
+          "summary": "C#의 예외를 던지고 try/catch/finally로 잡으며 using으로 정리를 보장하고, Task와 async/await로 기다리는 일을 비동기로 처리해요.",
+          "keywords": [
+            "예외",
+            "throw",
+            "try",
+            "catch",
+            "finally",
+            "스택 추적",
+            "InvalidOperationException",
+            "FormatException",
+            "using",
+            "IDisposable",
+            "Task",
+            "Task<T>",
+            "async",
+            "await",
+            "Task.Delay",
+            "Task.WhenAll",
+            "Async 접미사"
+          ]
+        },
+        {
+          "title": "HTTP와 REST",
+          "minutes": 90,
+          "summary": "HTTP 요청·응답의 메서드·상태 코드·헤더·JSON 본문을 알고, REST 방식으로 스트리머 허브 API를 설계한 뒤 REST Client의 .http 파일로 실제 요청을 보내 봐요.",
+          "keywords": [
+            "HTTP",
+            "HTTPS",
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "상태 코드",
+            "200",
+            "201",
+            "204",
+            "400",
+            "401",
+            "403",
+            "404",
+            "429",
+            "헤더",
+            "Content-Type",
+            "REST",
+            "엔드포인트",
+            ".http",
+            "REST Client",
+            "curl.exe"
+          ]
+        },
+        {
+          "title": "첫 웹 API",
+          "minutes": 110,
+          "summary": "ASP.NET Core Minimal API로 server 폴더에 첫 웹 API를 만들고, 포트 5250에서 dotnet run·dotnet watch로 실행해 브라우저와 .http 파일로 JSON 응답을 확인해요.",
+          "keywords": [
+            "ASP.NET Core",
+            "Minimal API",
+            "dotnet new web",
+            "dotnet new sln",
+            ".slnx",
+            "MapGet",
+            "launchSettings.json",
+            "applicationUrl",
+            "5250",
+            "dotnet run",
+            "dotnet watch",
+            "직렬화",
+            "포트 충돌",
+            "방화벽",
+            ".gitignore"
+          ]
+        },
+        {
+          "title": "메모리 CRUD API",
+          "minutes": 110,
+          "summary": "라우트 매개변수와 POST·PUT·DELETE로 스트리머를 만들고 읽고 고치고 지우는 API를 메모리 목록으로 만들고, TypedResults로 201·204·404 응답을 정확히 돌려줘요.",
+          "keywords": [
+            "CRUD",
+            "라우트 매개변수",
+            "{id:int}",
+            "라우트 제약",
+            "MapPost",
+            "MapPut",
+            "MapDelete",
+            "TypedResults",
+            "Results<>",
+            "Created",
+            "Location",
+            "NoContent",
+            "NotFound",
+            "모델 바인딩",
+            "?q="
+          ]
+        },
+        {
+          "title": "DB와 SQL 기초",
+          "minutes": 100,
+          "summary": "데이터베이스가 왜 필요한지 알고 SQLite 연습 DB에서 테이블·기본 키를 만든 뒤 SELECT·INSERT·UPDATE·DELETE SQL을 직접 실행해요.",
+          "keywords": [
+            "데이터베이스",
+            "SQL",
+            "SQLite",
+            "sqlite3",
+            "테이블",
+            "행",
+            "열",
+            "기본 키",
+            "CREATE TABLE",
+            "INSERT",
+            "SELECT",
+            "WHERE",
+            "ORDER BY",
+            "LIKE",
+            "UPDATE",
+            "DELETE",
+            ".tables",
+            ".schema"
+          ]
+        },
+        {
+          "title": "EF Core 연결",
+          "minutes": 120,
+          "summary": "EF Core와 SQLite 패키지를 설치하고 AppDbContext·엔티티·연결 문자열을 만든 뒤, dotnet-ef로 첫 마이그레이션을 만들어 streamerhub.db에 테이블을 생성해요.",
+          "keywords": [
+            "ORM",
+            "EF Core",
+            "NuGet",
+            "dotnet add package",
+            "Microsoft.EntityFrameworkCore.Sqlite",
+            "Microsoft.EntityFrameworkCore.Design",
+            "dotnet-ef",
+            "DbContext",
+            "DbSet",
+            "엔티티",
+            "[MaxLength]",
+            "연결 문자열",
+            "ConnectionStrings",
+            "마이그레이션",
+            "dotnet ef migrations add",
+            "dotnet ef database update",
+            "streamerhub.db"
+          ]
+        },
+        {
+          "title": "DB CRUD",
+          "minutes": 110,
+          "summary": "메모리 목록을 지우고 AppDbContext로 스트리머 CRUD API를 비동기 쿼리로 바꾸며, 시드 데이터와 SQL 로그로 서버가 DB와 주고받는 것을 눈으로 확인해요.",
+          "keywords": [
+            "AppDbContext",
+            "ToListAsync",
+            "FindAsync",
+            "FirstOrDefaultAsync",
+            "AnyAsync",
+            "SaveChangesAsync",
+            "Add",
+            "Remove",
+            "IQueryable",
+            "AsQueryable",
+            "변경 추적",
+            "시드 데이터",
+            "SeedData",
+            "MigrateAsync",
+            "CreateScope",
+            "SQL 로그"
+          ]
+        },
+        {
+          "title": "관계 설계",
+          "minutes": 110,
+          "summary": "스트리머 1명에 방송 일정 여러 개가 붙는 1:N 관계를 외래 키와 탐색 속성으로 만들고, Include로 함께 불러오며 순환 참조를 응답 DTO로 해결해요.",
+          "keywords": [
+            "1:N 관계",
+            "외래 키",
+            "StreamerId",
+            "탐색 속성",
+            "Include",
+            "filtered Include",
+            "계단식 삭제",
+            "Cascade",
+            "AddSchedules",
+            "순환 참조",
+            "JsonException",
+            "DTO",
+            "ScheduleResponse",
+            "StreamerDetailResponse"
+          ]
+        },
+        {
+          "title": "구조화",
+          "minutes": 120,
+          "summary": "엔드포인트를 자원별 파일과 MapGroup으로 나누고, 요청 DTO에 검증 특성을 붙여 AddValidation으로 400을 돌려주며, 의존성 주입과 서비스 계층의 역할을 알아요.",
+          "keywords": [
+            "DTO",
+            "요청 DTO",
+            "public record",
+            "init",
+            "특성",
+            "[Required]",
+            "[StringLength]",
+            "[AllowedValues]",
+            "[Range]",
+            "[Url]",
+            "AddValidation",
+            "400",
+            "MapGroup",
+            "확장 메서드",
+            "this",
+            "의존성 주입",
+            "AddScoped",
+            "Scoped",
+            "Singleton",
+            "Transient",
+            "서비스 계층",
+            "ScheduleQuery"
+          ]
+        },
+        {
+          "title": "오류·설정·로깅",
+          "minutes": 100,
+          "summary": "모든 오류 응답을 ProblemDetails로 통일하고 미들웨어 순서를 이해하며, appsettings와 실행 환경(Development·Production), ILogger와 로그 수준을 다뤄요.",
+          "keywords": [
+            "ProblemDetails",
+            "AddProblemDetails",
+            "UseStatusCodePages",
+            "UseExceptionHandler",
+            "application/problem+json",
+            "미들웨어",
+            "구성",
+            "appsettings.json",
+            "appsettings.Development.json",
+            "ASPNETCORE_ENVIRONMENT",
+            "Development",
+            "Production",
+            "$env:",
+            "--no-launch-profile",
+            "ILogger",
+            "로그 수준",
+            "LogInformation"
+          ]
+        },
+        {
+          "title": "회원가입·로그인",
+          "minutes": 120,
+          "summary": "인증과 인가, 비밀번호 해싱과 쿠키 로그인의 원리를 알고, ASP.NET Core Identity의 API 엔드포인트로 가입·로그인·로그아웃을 만들어 .http로 확인해요.",
+          "keywords": [
+            "인증",
+            "인가",
+            "해싱",
+            "솔트",
+            "쿠키",
+            "Set-Cookie",
+            "ASP.NET Core Identity",
+            "IdentityUser",
+            "AppUser",
+            "IdentityDbContext",
+            "AddIdentityApiEndpoints",
+            "MapIdentityApi",
+            "useCookies=true",
+            "UseAuthentication",
+            "UseAuthorization",
+            "SignInManager",
+            "AddIdentity 마이그레이션",
+            "AspNetUsers"
+          ]
+        },
+        {
+          "title": "권한",
+          "minutes": 120,
+          "summary": "Admin 역할과 권한 정책으로 관리자만 쓰기 요청을 하게 하고, /api/me로 지금 로그인한 사람을 알려 주며, user-secrets로 관리자 계정을 안전하게 시드해요.",
+          "keywords": [
+            "역할",
+            "Admin",
+            "IdentityRole",
+            "AddRoles",
+            "권한 정책",
+            "AddAuthorizationBuilder",
+            "RequireRole",
+            "RequireAuthorization",
+            "401",
+            "403",
+            "클레임",
+            "ClaimsPrincipal",
+            "/api/me",
+            "204",
+            "PUT /api/me",
+            "user-secrets",
+            "UserSecretsId",
+            "EnsureAdminAsync",
+            "CheckPasswordAsync"
+          ]
+        },
+        {
+          "title": "프론트↔백 연결",
+          "minutes": 120,
+          "summary": "브라우저의 출처와 CORS 규칙을 실험으로 확인하고, Vite 프록시로 화면과 API를 같은 주소처럼 연결한 뒤, ApiError가 있는 타입 있는 API 클라이언트로 진짜 서버 데이터를 화면에 그려요.",
+          "keywords": [
+            "출처",
+            "CORS",
+            "Access-Control-Allow-Origin",
+            "Vite 프록시",
+            "vite.config.ts",
+            "defineConfig",
+            "server.proxy",
+            "ApiError",
+            "class",
+            "extends Error",
+            "instanceof",
+            "ProblemDetails",
+            "request",
+            "toApiError",
+            "getStreamers",
+            "encodeURIComponent",
+            "터미널 두 개"
+          ]
+        },
+        {
+          "title": "목록·상세 페이지",
+          "minutes": 120,
+          "summary": "주소의 # 뒤를 읽는 해시 라우터를 직접 만들어 한 페이지 안에서 홈·스트리머 목록·스트리머 상세 화면을 오가고, 검색과 없는 주소 처리까지 해요.",
+          "keywords": [
+            "SPA",
+            "해시 라우터",
+            "hashchange",
+            "location.hash",
+            "addRoute",
+            "matchRoute",
+            ":id",
+            "decodeURIComponent",
+            "URLSearchParams",
+            "replaceChildren",
+            "aria-current",
+            "Record<Platform,string>",
+            "createLink",
+            "createAvatar",
+            "검색 폼",
+            "404 화면"
+          ]
+        },
+        {
+          "title": "방송 일정 페이지",
+          "minutes": 120,
+          "summary": "UTC와 한국 시간의 차이를 이해하고 서버는 UTC로 저장·전송, 화면은 Intl.DateTimeFormat으로 한국 시간 표시를 하도록 고친 뒤, 주간 방송 일정 페이지와 스트리머 필터를 만들어요.",
+          "keywords": [
+            "UTC",
+            "KST",
+            "시간대",
+            "Asia/Seoul",
+            "ISO 8601",
+            "Z",
+            "toISOString",
+            "Intl.DateTimeFormat",
+            "DateTimeKind",
+            "UtcDateTimeConverter",
+            "ValueConverter",
+            "ConfigureConventions",
+            "주간 일정",
+            "startOfKstWeek",
+            "?week=",
+            "Map",
+            "필터"
+          ]
+        },
+        {
+          "title": "팬 게시판 API",
+          "minutes": 120,
+          "summary": "작성자와 연결된 게시글 엔티티와 페이지네이션 응답을 만들고, PostService에 \"본인 또는 관리자만 수정·삭제\" 규칙을 모아 게시판 API를 완성해요.",
+          "keywords": [
+            "Post",
+            "AuthorId",
+            "AppUser",
+            "AddPosts",
+            "PagedResult<T>",
+            "페이지네이션",
+            "Skip",
+            "Take",
+            "Select",
+            "프로젝션",
+            "AsNoTracking",
+            "PostService",
+            "enum PostChangeResult",
+            "AddScoped",
+            "ClaimsPrincipal",
+            "NameIdentifier",
+            "IsInRole",
+            "Forbid",
+            "403",
+            "canEdit"
+          ]
+        },
+        {
+          "title": "팬 게시판 화면",
+          "minutes": 120,
+          "summary": "로그인 상태를 /api/me로 알아내는 auth 모듈과 로그인·가입 화면을 만들고, 게시판 목록·상세·작성·수정·삭제 화면을 완성해요.",
+          "keywords": [
+            "auth.ts",
+            "/api/me",
+            "HttpOnly 쿠키",
+            "관찰자 패턴",
+            "onAuthChange",
+            "login.ts",
+            "register.ts",
+            "닉네임 trim",
+            "board.ts",
+            "?page=",
+            "postDetail.ts",
+            "postForm.ts",
+            "#/board/:id/edit",
+            "canEdit",
+            "confirm",
+            "disabled",
+            "textContent",
+            "value",
+            "Promise.all"
+          ]
+        },
+        {
+          "title": "관리자 화면",
+          "minutes": 120,
+          "summary": "관리자에게만 메뉴가 보이는 역할 기반 UI를 만들고, 스트리머와 방송 일정을 등록·수정·삭제하는 관리자 화면을 완성하며 화면 숨기기와 서버 권한 검사의 차이를 확인해요.",
+          "keywords": [
+            "역할 기반 UI",
+            "isAdmin",
+            "#admin-link",
+            "hidden",
+            "admin.ts",
+            "StreamerInput",
+            "ScheduleInput",
+            "createStreamer",
+            "updateStreamer",
+            "deleteStreamer",
+            "datetime-local",
+            "kstInputToUtcIso",
+            "utcIsoToKstInput",
+            "type=\"hidden\"",
+            "reloadLists",
+            "403"
+          ]
+        },
+        {
+          "title": "실시간 공지 오버레이",
+          "minutes": 120,
+          "summary": "공지 API와 OBS용 투명 오버레이 페이지를 만들고, 처음에는 몇 초마다 묻는 폴링으로, 다음에는 서버가 먼저 보내 주는 SSE로 바꿔 관리자가 올린 공지가 방송 화면에 바로 뜨게 해요.",
+          "keywords": [
+            "Notice",
+            "AddNotices",
+            "/api/notices/current",
+            "204",
+            "폴링",
+            "setInterval",
+            "SSE",
+            "text/event-stream",
+            "EventSource",
+            "TypedResults.ServerSentEvents",
+            "IAsyncEnumerable",
+            "yield return",
+            "NoticeBroadcaster",
+            "Channel",
+            "lock",
+            "AddSingleton",
+            "overlay.html",
+            "OBS 브라우저 소스"
+          ]
+        },
+        {
+          "title": "보안 점검",
+          "minutes": 120,
+          "summary": "XSS·위험한 주소·CSRF·SQL 인젝션·무차별 요청·HTTPS를 하나씩 직접 공격해 보고, textContent·[HttpUrl]·쿠키 옵션·EF 매개변수·요청 제한으로 스트리머 허브를 지켜요.",
+          "keywords": [
+            "XSS",
+            "textContent",
+            "innerHTML",
+            "javascript:",
+            "HttpUrlAttribute",
+            "ValidationAttribute",
+            "isHttpUrl",
+            "CSRF",
+            "SameSite=Lax",
+            "HttpOnly",
+            "ConfigureApplicationCookie",
+            "SQL 인젝션",
+            "SQL 매개변수",
+            "요청 제한",
+            "AddRateLimiter",
+            "FixedWindow",
+            "429",
+            "RequireRateLimiting",
+            "HTTPS",
+            "dotnet dev-certs https --trust",
+            "비밀 값 점검"
+          ]
+        },
+        {
+          "title": "단위 테스트",
+          "minutes": 110,
+          "summary": "xUnit 테스트 프로젝트를 만들어 메모리 SQLite로 PostService의 권한 규칙, ScheduleQuery의 UTC 범위, DTO 검증 특성을 자동으로 확인하는 단위 테스트를 써요.",
+          "keywords": [
+            "자동 테스트",
+            "단위 테스트",
+            "xUnit",
+            "dotnet new xunit",
+            "dotnet test",
+            "[Fact]",
+            "[Theory]",
+            "[InlineData]",
+            "Assert",
+            "AAA 패턴",
+            "TestDb",
+            ":memory:",
+            "SqliteConnection",
+            "Validator.TryValidateObject",
+            "ProjectReference",
+            "StreamerHub.slnx"
+          ]
+        },
+        {
+          "title": "통합 테스트",
+          "minutes": 120,
+          "summary": "WebApplicationFactory로 진짜 서버를 메모리에서 띄워 가입·로그인·권한·검증·페이지네이션·SSE·요청 제한·관리자 시드를 HTTP 요청으로 확인하고, 클라이언트는 tsc --noEmit으로 타입을 검사해요.",
+          "keywords": [
+            "통합 테스트",
+            "WebApplicationFactory",
+            "Microsoft.AspNetCore.Mvc.Testing",
+            "TestApp",
+            "UseEnvironment(\"Testing\")",
+            "UseSetting",
+            "Mode=Memory;Cache=Shared",
+            "HttpClient",
+            "PostAsJsonAsync",
+            "Set-Cookie",
+            "401",
+            "403",
+            "429",
+            "SSE 테스트",
+            "tsc --noEmit",
+            "npm run build"
+          ]
+        },
+        {
+          "title": "코드 품질과 Git 흐름",
+          "minutes": 100,
+          "summary": "dotnet format과 Prettier로 코드 모양을 자동으로 맞추고, 브랜치를 만들어 GitHub 풀 리퀘스트로 변경을 검토·머지하는 협업 흐름을 연습해요.",
+          "keywords": [
+            "코드 포매터",
+            "dotnet format",
+            "--verify-no-changes",
+            "Prettier",
+            "npx prettier",
+            "--single-quote",
+            "--print-width 120",
+            "--end-of-line",
+            "CRLF",
+            "브랜치",
+            "git switch -c",
+            "git push -u",
+            "풀 리퀘스트",
+            "머지",
+            "git pull",
+            "git branch -d",
+            "$LASTEXITCODE"
+          ]
+        },
+        {
+          "title": "프로덕션 빌드",
+          "minutes": 110,
+          "summary": "클라이언트를 빌드해 서버의 wwwroot에 넣고 정적 파일·폴백 라우트를 설정해 서버 하나가 화면과 API를 함께 제공하게 한 뒤, dotnet publish로 배포용 폴더를 만들어 환경 변수로 실행해요.",
+          "keywords": [
+            "프로덕션 빌드",
+            "npm run build",
+            "rolldownOptions",
+            "input",
+            "overlay.html",
+            "dist",
+            "wwwroot",
+            "UseStaticFiles",
+            "정적 파일",
+            "MapFallbackToFile",
+            "폴백 라우트",
+            "/api/{**rest}",
+            "dotnet publish",
+            "-c Release",
+            "환경 변수",
+            "Admin__Email",
+            "__",
+            "--urls"
+          ]
+        },
+        {
+          "title": "배포",
+          "minutes": 100,
+          "summary": "작성 시점에 확인한 배포 선택지의 비용·카드·데이터 보존 제약을 비교하고, 내 PC에서 배포 모드로 운영하며 DB 파일 위치를 고정하고 백업·복원을 연습한 뒤, 인터넷 공개 때 필요한 리버스 프록시 설정을 이해해요.",
+          "keywords": [
+            "배포 선택지",
+            "Azure App Service F1",
+            "Render",
+            "카드 등록",
+            "디스크 휘발",
+            "DB 파일 위치",
+            "ConnectionStrings__Default",
+            "백업",
+            "복원",
+            "WAL",
+            "-wal",
+            "-shm",
+            "리버스 프록시",
+            "X-Forwarded-For",
+            "UseForwardedHeaders",
+            "KnownProxies",
+            "KnownIPNetworks",
+            "HTTPS"
+          ]
+        },
+        {
+          "title": "최종 점검과 회고",
+          "minutes": 90,
+          "summary": "최종 점검표로 테스트·빌드·실행·보안을 확인하고 레퍼런스와 비교한 뒤, README와 스크린샷으로 포트폴리오를 완성하고 40일을 회고하며 P3와 특별 프로젝트를 열어요.",
+          "keywords": [
+            "최종 점검",
+            "dotnet test",
+            "tsc --noEmit",
+            "npm run build",
+            "dotnet format",
+            "Prettier",
+            "git status",
+            "git grep",
+            "File: Compare Active File With",
+            "README.md",
+            "스크린샷",
+            "Win + Shift + S",
+            "포트폴리오",
+            "회고",
+            "P3 해금",
+            "SP 해금"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p3",
+      "order": 3,
+      "track": "main",
+      "title": "시청자 참여 실시간 게임",
+      "subtitle": "방송용 멀티플레이 웹게임 — Rust 서버와 WebAssembly, TypeScript Canvas로 OBS 아레나와 휴대폰 컨트롤러를 만들어요",
+      "folder": "C:\\dev\\viewer-arena",
+      "stack": [
+        "Rust",
+        "Axum",
+        "Tokio",
+        "WebSocket",
+        "WebAssembly",
+        "wasm-bindgen",
+        "TypeScript",
+        "Canvas 2D",
+        "Vite",
+        "PostgreSQL",
+        "SQLx",
+        "Docker"
+      ],
+      "requires": [
+        "p2"
+      ],
+      "summary": "Rust 기초부터 시작해 TypeScript로 로컬 게임을 먼저 만들고, 규칙을 Rust game-core로 옮겨 WebAssembly와 Axum·Tokio 권위 서버에서 함께 쓰며, PostgreSQL 랭킹과 Docker 묶음·배포 준비까지 완성해요.",
+      "outcome": "OBS 화면에 투명 배경 아레나가 뜨고, 시청자가 휴대폰으로 QR 코드를 찍어 조이스틱으로 참가하는 실시간 멀티플레이 웹게임(방 코드·라운드·랭킹·안전 장치·Docker 묶음)",
+      "days": [
+        {
+          "title": "왜 Rust인가 + 설치",
+          "minutes": 120,
+          "summary": "Rust가 이 게임의 서버와 브라우저 계산을 한 언어로 맡는 이유를 알고, rustup·VS C++ 빌드 도구·rust-analyzer를 설치한 뒤 cargo로 첫 프로그램을 실행해요.",
+          "keywords": [
+            "Rust",
+            "rustup",
+            "cargo",
+            "rustc",
+            "VS C++ Build Tools",
+            "MSVC",
+            "링커",
+            "rust-analyzer",
+            "cargo new",
+            "cargo run",
+            "println!",
+            "wasm32-unknown-unknown"
+          ]
+        },
+        {
+          "title": "변수·타입·함수",
+          "minutes": 90,
+          "summary": "플레이어 체력·점수 예제로 let과 mut, 섀도잉, 기본 타입, 함수와 반환 타입, 표현식과 문의 차이를 익혀요.",
+          "keywords": [
+            "let",
+            "mut",
+            "불변",
+            "섀도잉",
+            "i32",
+            "u32",
+            "f32",
+            "bool",
+            "char",
+            "튜플",
+            "fn",
+            "반환 타입",
+            "표현식",
+            "as"
+          ]
+        },
+        {
+          "title": "제어 흐름",
+          "minutes": 90,
+          "summary": "라운드 카운트다운과 WASD 방향 예제로 if 표현식, loop·while·for와 범위, match 기초를 익혀요.",
+          "keywords": [
+            "if",
+            "else",
+            "loop",
+            "break",
+            "while",
+            "for",
+            "범위",
+            "1..=3",
+            "rev",
+            "match",
+            "패턴 매칭",
+            "_"
+          ]
+        },
+        {
+          "title": "소유권 ①",
+          "minutes": 100,
+          "summary": "닉네임 String을 함수에 넘기며 스택과 힙, 소유권 이동(move), clone, Copy를 익히고 C#의 GC·C++의 RAII와 비교해요.",
+          "keywords": [
+            "소유권",
+            "ownership",
+            "스택",
+            "힙",
+            "move",
+            "clone",
+            "Copy",
+            "String",
+            "String::from",
+            "drop",
+            "가비지 컬렉션",
+            "RAII"
+          ]
+        },
+        {
+          "title": "소유권 ② 빌림",
+          "minutes": 110,
+          "summary": "점수판 예제로 &와 &mut 빌림, 빌림 규칙, 슬라이스, String과 &str의 차이를 익히고 한글이 바이트로 3칸이라는 사실을 확인해요.",
+          "keywords": [
+            "빌림",
+            "borrow",
+            "참조",
+            "&",
+            "&mut",
+            "빌림 검사기",
+            "슬라이스",
+            "&[u32]",
+            "String",
+            "&str",
+            "len",
+            "chars",
+            "count"
+          ]
+        },
+        {
+          "title": "구조체와 메서드",
+          "minutes": 100,
+          "summary": "게임의 위치·속도를 담는 Vec2 구조체와 Player 구조체를 만들고 impl 블록에 길이·내적·정규화 메서드와 연관 함수 new를 넣어요.",
+          "keywords": [
+            "struct",
+            "구조체",
+            "impl",
+            "메서드",
+            "self",
+            "&self",
+            "&mut self",
+            "연관 함수",
+            "Vec2",
+            "new",
+            "length",
+            "normalize",
+            "derive(Debug)",
+            "const"
+          ]
+        },
+        {
+          "title": "열거형과 match",
+          "minutes": 100,
+          "summary": "라운드 단계 Phase와 게임 메시지 ClientMsg를 열거형으로 만들고 match·Option·if let으로 다뤄요.",
+          "keywords": [
+            "enum",
+            "열거형",
+            "match",
+            "Option",
+            "Some",
+            "None",
+            "if let",
+            "Phase",
+            "ClientMsg",
+            "Join",
+            "Input",
+            "Ping",
+            "'static"
+          ]
+        },
+        {
+          "title": "오류 처리",
+          "minutes": 100,
+          "summary": "닉네임 검사와 입력 파싱 예제로 Result, ? 연산자, panic, 직접 만든 오류 타입을 익혀요.",
+          "keywords": [
+            "Result",
+            "Ok",
+            "Err",
+            "?",
+            "panic",
+            "unwrap",
+            "expect",
+            "parse",
+            "ParseIntError",
+            "오류 타입",
+            "NameError",
+            "validate_name",
+            "trim"
+          ]
+        },
+        {
+          "title": "컬렉션과 반복자",
+          "minutes": 110,
+          "summary": "플레이어 목록과 점수 기록을 Vec과 HashMap에 담고, 반복자·클로저로 찾기·지우기·정렬해 순위표를 만들어요.",
+          "keywords": [
+            "Vec",
+            "vec!",
+            "push",
+            "iter",
+            "iter_mut",
+            "HashMap",
+            "entry",
+            "or_insert",
+            "반복자",
+            "map",
+            "filter",
+            "collect",
+            "sum",
+            "any",
+            "retain",
+            "sort_by_key",
+            "Reverse",
+            "enumerate",
+            "클로저"
+          ]
+        },
+        {
+          "title": "트레이트와 제네릭",
+          "minutes": 110,
+          "summary": "트레이트로 공통 행동을 정하고 derive의 뜻을 배운 뒤, Vec2에 +, -, * 연산자를 오버로딩해 벡터 계산을 수식처럼 써요.",
+          "keywords": [
+            "trait",
+            "트레이트",
+            "impl Trait for",
+            "derive",
+            "Debug",
+            "Clone",
+            "Copy",
+            "PartialEq",
+            "Default",
+            "연산자 오버로딩",
+            "Add",
+            "Sub",
+            "Mul",
+            "AddAssign",
+            "SubAssign",
+            "제네릭",
+            "트레이트 경계"
+          ]
+        },
+        {
+          "title": "모듈·워크스페이스·테스트",
+          "minutes": 120,
+          "summary": "C:\\dev\\viewer-arena에 Cargo 워크스페이스와 game-core 크레이트를 만들어 Vec2와 메시지 타입을 옮기고, serde로 JSON을 다루며 cargo test로 단위 테스트를 돌려요.",
+          "keywords": [
+            "mod",
+            "pub",
+            "use",
+            "crate",
+            "크레이트",
+            "워크스페이스",
+            "workspace",
+            "Cargo.toml",
+            "resolver",
+            "edition 2024",
+            "cargo test",
+            "#[test]",
+            "#[cfg(test)]",
+            "assert_eq!",
+            "serde",
+            "serde_json",
+            "Serialize",
+            "Deserialize",
+            "git init"
+          ]
+        },
+        {
+          "title": "수명·스마트 포인터·동시성 맛보기",
+          "minutes": 120,
+          "summary": "수명 표기와 &'static, Box·Rc·Arc, Mutex와 스레드를 연습 크레이트에서 맛보고, 서버가 여러 연결을 안전하게 다루는 원리를 예고해요.",
+          "keywords": [
+            "수명",
+            "lifetime",
+            "'a",
+            "'static",
+            "스마트 포인터",
+            "Box",
+            "Rc",
+            "Arc",
+            "Mutex",
+            "lock",
+            "thread::spawn",
+            "join",
+            "move",
+            "스레드",
+            "동시성",
+            "데이터 경쟁",
+            "Send"
+          ]
+        },
+        {
+          "title": "게임 루프의 원리",
+          "minutes": 110,
+          "summary": "Vite로 client 폴더를 만들고, requestAnimationFrame과 delta time으로 화면 주사율과 상관없이 같은 속도로 움직이는 게임 루프를 만들어요.",
+          "keywords": [
+            "게임 루프",
+            "update",
+            "render",
+            "프레임",
+            "FPS",
+            "델타 타임",
+            "delta time",
+            "requestAnimationFrame",
+            "performance.now",
+            "Vite",
+            "vanilla-ts",
+            "npm create vite"
+          ]
+        },
+        {
+          "title": "Canvas 2D",
+          "minutes": 100,
+          "summary": "canvas에 아레나·아이템·플레이어를 월드 좌표로 그리고, 기기 픽셀 비율(DPR)에 맞춰 휴대폰에서도 선명하게 보이게 해요.",
+          "keywords": [
+            "canvas",
+            "Canvas 2D",
+            "getContext",
+            "CanvasRenderingContext2D",
+            "arc",
+            "fill",
+            "stroke",
+            "fillText",
+            "clearRect",
+            "translate",
+            "scale",
+            "save",
+            "restore",
+            "좌표계",
+            "월드 좌표",
+            "devicePixelRatio",
+            "DPR"
+          ]
+        },
+        {
+          "title": "입력 처리",
+          "minutes": 110,
+          "summary": "키보드(WASD·방향키)와 화면 가상 조이스틱(Pointer Events)을 같은 방향 값 { dx, dy }로 만들어 내 플레이어를 움직여요.",
+          "keywords": [
+            "keydown",
+            "keyup",
+            "event.code",
+            "KeyW",
+            "ArrowUp",
+            "preventDefault",
+            "blur",
+            "Set",
+            "Pointer Events",
+            "pointerdown",
+            "pointermove",
+            "pointerup",
+            "pointercancel",
+            "setPointerCapture",
+            "가상 조이스틱",
+            "touch-action"
+          ]
+        },
+        {
+          "title": "벡터와 이동",
+          "minutes": 100,
+          "summary": "속도·가속도·마찰을 TypeScript로 구현해 조이스틱을 놓으면 미끄러지다 멈추는 이동을 만들고, 정규화로 방향만 남기는 법을 익혀요.",
+          "keywords": [
+            "벡터",
+            "위치",
+            "속도",
+            "가속도",
+            "마찰",
+            "정규화",
+            "normalize",
+            "최고 속도",
+            "integrate",
+            "오일러 적분",
+            "Body"
+          ]
+        },
+        {
+          "title": "충돌",
+          "minutes": 110,
+          "summary": "원과 원, 원과 아레나 경계의 충돌을 판정하고 겹친 만큼 밀어내서, 벽을 따라 미끄러지고 더미 플레이어를 밀 수 있게 해요.",
+          "keywords": [
+            "충돌 판정",
+            "원-원 충돌",
+            "경계 충돌",
+            "밀어내기",
+            "내적",
+            "dot",
+            "distance",
+            "제곱 거리",
+            "keepInsideArena",
+            "separateCircles",
+            "circlesOverlap"
+          ]
+        },
+        {
+          "title": "게임 규칙",
+          "minutes": 120,
+          "summary": "아이템·점수·라운드를 넣고 대기→게임→결과 상태 머신으로 로컬 게임을 완성해요.",
+          "keywords": [
+            "상태 머신",
+            "Phase",
+            "waiting",
+            "playing",
+            "ended",
+            "라운드",
+            "아이템",
+            "점수",
+            "순위",
+            "formatTime",
+            "PHASE_LABEL",
+            "Math.random",
+            "거절 표본 추출"
+          ]
+        },
+        {
+          "title": "game-core 크레이트",
+          "minutes": 120,
+          "summary": "TypeScript 로컬 게임의 이동·충돌·규칙을 game-core 크레이트(rules.rs·physics.rs·world.rs)로 옮기고, 고정 틱과 시드 난수로 결정적인 세계를 만들어 단위 테스트로 확인해요.",
+          "keywords": [
+            "이식",
+            "porting",
+            "game-core",
+            "rules.rs",
+            "physics.rs",
+            "world.rs",
+            "고정 틱",
+            "TICK_HZ",
+            "TICK_DT",
+            "결정성",
+            "시드",
+            "StdRng",
+            "rand",
+            "RngExt",
+            "SeedableRng",
+            "Snapshot",
+            "단위 테스트"
+          ]
+        },
+        {
+          "title": "WebAssembly",
+          "minutes": 120,
+          "summary": "game-core의 이동 계산을 wasm32로 컴파일하고 wasm-bindgen으로 감싸, Vite 페이지에서 Rust 코드로 내 플레이어를 움직여요.",
+          "keywords": [
+            "WebAssembly",
+            "wasm",
+            "wasm32-unknown-unknown",
+            "컴파일 타깃",
+            "rustup target",
+            "wasm-bindgen",
+            "wasm-bindgen-cli",
+            "cdylib",
+            "rlib",
+            "#[wasm_bindgen]",
+            "--target web",
+            "init",
+            "predict",
+            "npm run wasm",
+            "wasm-pack"
+          ]
+        },
+        {
+          "title": "네트워크 게임의 원리",
+          "minutes": 90,
+          "summary": "권위 서버·지연·틱 레이트·스냅샷 빈도를 배우고, 로컬 게임에 일부러 지연을 넣어 왜 예측과 보간이 필요한지 몸으로 느껴요.",
+          "keywords": [
+            "권위 서버",
+            "클라이언트-서버",
+            "P2P",
+            "지연 시간",
+            "latency",
+            "RTT",
+            "핑",
+            "지터",
+            "틱 레이트",
+            "스냅샷 빈도",
+            "SNAPSHOT_HZ",
+            "대역폭",
+            "넷코드",
+            "데디케이티드 서버",
+            "Netcode for GameObjects",
+            "replication"
+          ]
+        },
+        {
+          "title": "Tokio와 Axum",
+          "minutes": 110,
+          "summary": "server 크레이트를 만들어 Tokio 비동기 런타임 위에 Axum 라우터와 핸들러를 올리고, 공유 상태(State)로 방문 수를 세는 첫 Rust 웹 서버를 실행해요.",
+          "keywords": [
+            "async",
+            "await",
+            "Future",
+            "Tokio",
+            "#[tokio::main]",
+            "Axum",
+            "Router",
+            "route",
+            "get",
+            "핸들러",
+            "추출기",
+            "State",
+            "Json",
+            "TcpListener",
+            "axum::serve",
+            "127.0.0.1:8080",
+            "curl.exe"
+          ]
+        },
+        {
+          "title": "WebSocket 기초",
+          "minutes": 100,
+          "summary": "HTTP 연결을 WebSocket으로 업그레이드하는 에코 서버를 만들고, Vite 개발 서버의 프록시를 거쳐 브라우저 개발자 도구에서 메시지를 주고받아요.",
+          "keywords": [
+            "WebSocket",
+            "ws://",
+            "업그레이드",
+            "101 Switching Protocols",
+            "WebSocketUpgrade",
+            "on_upgrade",
+            "Message::Text",
+            "recv",
+            "send",
+            "에코 서버",
+            "any",
+            "Vite proxy",
+            "vite.config.ts",
+            "ws: true"
+          ]
+        },
+        {
+          "title": "메시지 프로토콜",
+          "minutes": 120,
+          "summary": "serde 태그 열거형으로 클라이언트·서버 메시지와 오류 코드를 정하고, 크기 제한·버전 필드·파싱 검증을 넣은 뒤 TypeScript에도 같은 타입을 만들어요.",
+          "keywords": [
+            "메시지 프로토콜",
+            "ClientMsg",
+            "ServerMsg",
+            "ErrorCode",
+            "#[serde(tag = \"t\")]",
+            "rename_all",
+            "camelCase",
+            "snake_case",
+            "PROTOCOL_VERSION",
+            "MAX_MESSAGE_BYTES",
+            "ParseError",
+            "parse",
+            "ping",
+            "pong",
+            "구별된 유니온",
+            "net.ts",
+            "connect"
+          ]
+        },
+        {
+          "title": "서버 게임 루프",
+          "minutes": 120,
+          "summary": "방 하나를 액터로 만들어 mpsc 채널로 명령을 받고 20Hz 고정 틱으로 World를 돌리며, broadcast 채널로 모든 연결에 스냅샷을 뿌려요.",
+          "keywords": [
+            "액터 패턴",
+            "actor",
+            "채널",
+            "mpsc",
+            "oneshot",
+            "broadcast",
+            "tokio::spawn",
+            "tokio::select!",
+            "interval",
+            "고정 틱",
+            "RoomCommand",
+            "RoomHandle",
+            "RoomActor",
+            "Utf8Bytes",
+            "try_send",
+            "Lagged"
+          ]
+        },
+        {
+          "title": "입장/퇴장",
+          "minutes": 120,
+          "summary": "닉네임으로 참가(join)하고 welcome을 받은 뒤 입력을 보내며, 연결이 닫히거나 10초간 소식이 없으면 퇴장 처리해요. 휴대폰 화면(play.html)을 네트워크 컨트롤러로 바꿔요.",
+          "keywords": [
+            "join",
+            "welcome",
+            "leave",
+            "player_session",
+            "wait_for_join",
+            "validate_name",
+            "NameError",
+            "IDLE_TIMEOUT",
+            "유휴 타임아웃",
+            "sleep_until",
+            "deadline",
+            "하트비트",
+            "close_with_error",
+            "연결 관리",
+            "끊김 처리"
+          ]
+        },
+        {
+          "title": "상태 동기화",
+          "minutes": 100,
+          "summary": "스냅샷을 10Hz로 줄여 대역폭을 아끼고, 화면은 조금 과거를 두 스냅샷 사이 보간으로 그려 부드럽게 만들어요.",
+          "keywords": [
+            "스냅샷",
+            "상태 동기화",
+            "스냅샷 빈도",
+            "10Hz",
+            "is_multiple_of",
+            "보간",
+            "interpolation",
+            "lerp",
+            "렌더 지연",
+            "INTERP_DELAY_MS",
+            "SnapshotBuffer",
+            "지터"
+          ]
+        },
+        {
+          "title": "입력과 예측",
+          "minutes": 120,
+          "summary": "입력에 순서 번호를 붙여 보내고, 내 플레이어만은 WASM(서버와 같은 Rust 코드)으로 미리 움직인 뒤 스냅샷이 오면 서버 위치 쪽으로 보정해요.",
+          "keywords": [
+            "입력 전송",
+            "seq",
+            "시퀀스 번호",
+            "round2",
+            "RESEND_MS",
+            "클라이언트 예측",
+            "prediction",
+            "predictBody",
+            "서버 보정",
+            "reconciliation",
+            "SNAP_DISTANCE",
+            "CORRECTION",
+            "RTT/2",
+            "WASM 재사용"
+          ]
+        },
+        {
+          "title": "방 시스템",
+          "minutes": 120,
+          "summary": "영문 4자 방 코드로 여러 방을 만들고 찾는 방 목록을 만들고, 연결이 없는 방은 60초 뒤 정리하며, Drop 경비원으로 어떤 경우에도 목록이 깨끗하게 남게 해요.",
+          "keywords": [
+            "방 코드",
+            "Rooms",
+            "HashMap",
+            "Arc<Mutex>",
+            "MAX_ROOMS",
+            "random_code",
+            "RemoveOnDrop",
+            "Drop",
+            "RAII",
+            "EMPTY_ROOM_SECS",
+            "receiver_count",
+            "AppError",
+            "IntoResponse",
+            "POST /api/rooms",
+            "GET /api/rooms/{code}",
+            "/ws/{code}",
+            "start_paused"
+          ]
+        },
+        {
+          "title": "호스트 화면(OBS)",
+          "minutes": 120,
+          "summary": "OBS 브라우저 소스로 띄울 투명 배경 관전 화면(host.html)에 아레나·참가자 수·라운드 결과·참가 QR 코드를 그리고, Rust 서버가 빌드된 클라이언트를 직접 서빙하게 해요.",
+          "keywords": [
+            "관전 화면",
+            "host.html",
+            "role=host",
+            "Role",
+            "WsParams",
+            "host_session",
+            "투명 배경",
+            "OBS 브라우저 소스",
+            "QR 코드",
+            "qrcode-generator",
+            "멀티 페이지 앱",
+            "rolldownOptions",
+            "npm run build",
+            "tower-http",
+            "ServeDir",
+            "fallback_service",
+            "client/dist",
+            "다시 연결"
+          ]
+        },
+        {
+          "title": "플레이어 화면(휴대폰)",
+          "minutes": 110,
+          "summary": "서버를 0.0.0.0으로 열고 Windows 방화벽에서 개인 네트워크를 허용해, 같은 Wi-Fi의 휴대폰이 QR로 들어와 조이스틱으로 플레이하게 해요.",
+          "keywords": [
+            "LAN",
+            "같은 Wi-Fi",
+            "0.0.0.0",
+            "127.0.0.1",
+            "HOST",
+            "환경 변수",
+            "사설 IP 주소",
+            "ipconfig",
+            "IPv4 주소",
+            "Windows 방화벽",
+            "개인 네트워크",
+            "공용 네트워크",
+            "네트워크 프로필",
+            "viewport",
+            "user-scalable",
+            "isLocalOnlyAddress"
+          ]
+        },
+        {
+          "title": "치팅과 안전",
+          "minutes": 120,
+          "summary": "클라이언트를 믿지 않는 서버 검증을 정리하고, 메시지 크기·빈도 제한, 쓰기 마감 시간, 닉네임 필터(보이지 않는 문자·금지어·중복)를 넣어 방송을 지켜요.",
+          "keywords": [
+            "치팅",
+            "서버 검증",
+            "메시지 크기 제한",
+            "빈도 제한",
+            "RateLimiter",
+            "rate_limited",
+            "MAX_INPUTS_PER_SEC",
+            "쓰기 마감 시간",
+            "timeout_at",
+            "finish_by",
+            "닉네임 필터",
+            "거부 목록",
+            "허용 목록",
+            "보이지 않는 문자",
+            "U+3164",
+            "BANNED_WORDS",
+            "name_taken",
+            "is_control"
+          ]
+        },
+        {
+          "title": "Docker 시작",
+          "minutes": 120,
+          "summary": "Windows 에디션·버전과 가상화를 먼저 점검하고, WSL 2와 Docker Desktop을 설치해 hello-world 컨테이너를 실행해요. Docker가 안 되는 PC를 위한 길도 함께 정해요.",
+          "keywords": [
+            "Docker",
+            "컨테이너",
+            "이미지",
+            "Docker Hub",
+            "Docker Desktop",
+            "WSL 2",
+            "wsl --install",
+            "wsl --update",
+            "가상화",
+            "BIOS",
+            "UEFI",
+            "winver",
+            "Windows 에디션",
+            "docker run hello-world",
+            "docker ps",
+            "docker images"
+          ]
+        },
+        {
+          "title": "PostgreSQL in Docker",
+          "minutes": 110,
+          "summary": "docker-compose.yml로 PostgreSQL 18 컨테이너를 띄우고 psql로 들어가 SQL을 복습해요. Docker가 없으면 PostgreSQL 18을 Windows에 직접 설치해요.",
+          "keywords": [
+            "PostgreSQL",
+            "postgres:18",
+            "docker-compose.yml",
+            "docker compose up -d db",
+            "docker compose ps",
+            "docker compose exec",
+            "psql",
+            "\\dt",
+            "볼륨",
+            "/var/lib/postgresql",
+            "포트 매핑",
+            "127.0.0.1:5432",
+            "healthcheck",
+            "pg_isready",
+            "winget",
+            "PostgreSQL.PostgreSQL.18"
+          ]
+        },
+        {
+          "title": "SQLx 연결",
+          "minutes": 120,
+          "summary": "SQLx로 PostgreSQL 연결 풀을 만들고 서버가 시작할 때 마이그레이션을 실행하며, 라운드가 끝나면 경기 결과를 트랜잭션으로 저장해요. DATABASE_URL이 없으면 랭킹 없이도 돌아가요.",
+          "keywords": [
+            "SQLx",
+            "sqlx 0.9",
+            "PgPool",
+            "PgPoolOptions",
+            "연결 풀",
+            "migrate!",
+            "마이그레이션",
+            "_sqlx_migrations",
+            "GENERATED ALWAYS AS IDENTITY",
+            "TIMESTAMPTZ",
+            "REFERENCES",
+            "ON DELETE CASCADE",
+            "트랜잭션",
+            "begin",
+            "commit",
+            "bind",
+            "$1",
+            "DATABASE_URL",
+            "Option<PgPool>"
+          ]
+        },
+        {
+          "title": "랭킹",
+          "minutes": 100,
+          "summary": "닉네임별 최고 점수를 최근 24시간·전체로 뽑는 SQL과 /api/leaderboard API를 만들고, OBS 관전 화면에 랭킹 패널을 띄워요.",
+          "keywords": [
+            "리더보드",
+            "랭킹",
+            "GROUP BY",
+            "MAX",
+            "집계 함수",
+            "JOIN",
+            "INTERVAL",
+            "now()",
+            "최근 24시간",
+            "ORDER BY",
+            "LIMIT",
+            "query_as",
+            "FromRow",
+            "Period",
+            "serde(default)",
+            "Query",
+            "/api/leaderboard",
+            "fetchLeaderboard",
+            "refreshBoard",
+            "인덱스"
+          ]
+        },
+        {
+          "title": "설정·로깅·종료",
+          "minutes": 110,
+          "summary": "흩어진 환경 변수를 config.rs로 모으고 .env 파일을 읽게 하며, println!을 tracing 로그로 바꾸고 Ctrl+C·docker stop에 우아하게 종료하게 해요.",
+          "keywords": [
+            "환경 변수",
+            "Config",
+            "from_env",
+            "from_vars",
+            ".env",
+            ".env.example",
+            "dotenvy",
+            "tracing",
+            "tracing-subscriber",
+            "EnvFilter",
+            "RUST_LOG",
+            "info!",
+            "warn!",
+            "error!",
+            "graceful shutdown",
+            "우아한 종료",
+            "ctrl_c",
+            "SIGTERM",
+            "#[cfg(unix)]",
+            "run() -> Result"
+          ]
+        },
+        {
+          "title": "테스트와 린트",
+          "minutes": 120,
+          "summary": "진짜 서버를 빈 포트에 띄우고 봇 클라이언트로 접속하는 통합 테스트와 PostgreSQL 랭킹 테스트를 쓰고, clippy·rustfmt·tsc로 코드 품질을 검사해요.",
+          "keywords": [
+            "통합 테스트",
+            "tests 폴더",
+            "ws_flow",
+            "leaderboard_db",
+            "tokio-tungstenite",
+            "reqwest",
+            "futures-util",
+            "127.0.0.1:0",
+            "TEST_DATABASE_URL",
+            "건너뛰기",
+            "cargo test --workspace",
+            "clippy",
+            "-D warnings",
+            "rustfmt",
+            "cargo fmt",
+            "tsc --noEmit",
+            "린터"
+          ]
+        },
+        {
+          "title": "성능",
+          "minutes": 110,
+          "summary": "디버그와 릴리스 빌드를 비교하고, 스냅샷 크기와 대역폭을 재며, Node로 만든 봇 40명을 한 방에 넣어 서버가 버티는지 부하 테스트를 해요.",
+          "keywords": [
+            "릴리스 빌드",
+            "--release",
+            "디버그 빌드",
+            "최적화",
+            "스냅샷 크기",
+            "대역폭",
+            "부하 테스트",
+            "봇",
+            "Node WebSocket",
+            "fetch",
+            "작업 관리자",
+            "CPU",
+            "메모리",
+            "room_full",
+            "MAX_PLAYERS"
+          ]
+        },
+        {
+          "title": "Docker로 묶기",
+          "minutes": 120,
+          "summary": "멀티스테이지 Dockerfile로 WASM·클라이언트·서버를 한 이미지로 빌드하고, docker compose로 서버와 PostgreSQL을 함께 띄워요.",
+          "keywords": [
+            "Dockerfile",
+            "멀티스테이지 빌드",
+            "FROM … AS",
+            "COPY --from",
+            "RUN",
+            "WORKDIR",
+            "ENV",
+            "EXPOSE",
+            "USER",
+            "CMD",
+            "레이어 캐시",
+            ".dockerignore",
+            "docker compose up --build",
+            "depends_on",
+            "service_healthy",
+            "docker compose logs",
+            "docker compose down -v",
+            "debian:trixie-slim"
+          ]
+        },
+        {
+          "title": "배포 준비",
+          "minutes": 90,
+          "summary": "도메인·DNS·HTTPS(TLS)·WSS·리버스 프록시를 이해하고, https 페이지에서는 wss로 연결하도록 클라이언트를 고치며, 인터넷에 열기 전 점검표를 만들어요.",
+          "keywords": [
+            "도메인 이름",
+            "DNS",
+            "HTTPS",
+            "TLS",
+            "인증서",
+            "WSS",
+            "wss://",
+            "혼합 콘텐츠",
+            "리버스 프록시",
+            "TLS 종료",
+            "헬스 체크",
+            "/healthz",
+            "PORT",
+            "단일 인스턴스",
+            "sslmode=require",
+            "tls-rustls"
+          ]
+        },
+        {
+          "title": "배포",
+          "minutes": 120,
+          "summary": "작성 시점에 확인한 무료 컨테이너 호스팅 한 곳에 Docker 이미지로 서버를 올려 보고, 슬립·휘발 디스크·카드 등록 같은 비용·보안 주의를 확인해요. 본선은 여전히 로컬 방송이에요.",
+          "keywords": [
+            "배포",
+            "Render",
+            "무료 인스턴스",
+            "Docker 배포",
+            "슬립",
+            "콜드 스타트",
+            "휘발 디스크",
+            "관리형 데이터베이스",
+            "환경 변수",
+            "헬스 체크",
+            "GitHub 저장소",
+            "Cloud Run",
+            "비용",
+            "카드 등록"
+          ]
+        },
+        {
+          "title": "방송 리허설",
+          "minutes": 100,
+          "summary": "OBS에 관전 화면을 정식으로 올리고 친구와 실제처럼 한 판을 진행하며, 방송 전·중·후 체크리스트와 사고 대응 순서를 README에 정리해요.",
+          "keywords": [
+            "방송 리허설",
+            "OBS",
+            "브라우저 소스",
+            "1920×1080",
+            "장면",
+            "체크리스트",
+            "사고 대응",
+            "서버 재시작",
+            "새 방 URL",
+            "녹화",
+            "지연 확인",
+            "README.md"
+          ]
+        },
+        {
+          "title": "확장 설계",
+          "minutes": 90,
+          "summary": "치지직 채팅에서 !join으로 참가하는 기능을 코드 없이 설계하고, 방이 메모리에 있는 구조의 한계와 여러 서버로 늘리는 방법, SP와의 연결을 정리해요.",
+          "keywords": [
+            "확장 설계",
+            "채팅 명령어",
+            "!join",
+            "치지직",
+            "Open API",
+            "세션 소켓",
+            "채팅 봇",
+            "설계 문서",
+            "수평 확장",
+            "수직 확장",
+            "방 단위 분산",
+            "SP 연결"
+          ]
+        },
+        {
+          "title": "회고와 졸업",
+          "minutes": 90,
+          "summary": "README를 포트폴리오로 완성하고 레퍼런스와 폴더를 대조해 최종 점검을 한 뒤, P3를 회고하고 졸업 로드맵을 열어요.",
+          "keywords": [
+            "회고",
+            "포트폴리오",
+            "README",
+            "최종 점검",
+            "폴더 대조",
+            "cargo test --workspace",
+            "clippy",
+            "npm run build",
+            "git push",
+            "KPT",
+            "졸업 로드맵",
+            "Bevy",
+            "유니티",
+            "언리얼",
+            "C++"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sp",
+      "order": 4,
+      "track": "special",
+      "title": "이미지 도네이션 서비스",
+      "subtitle": "특별 프로젝트 — 시청자가 보낸 이미지를 스트리머가 검수해 방송 화면에 띄우는 서비스를 React·ASP.NET Core·SignalR·PostgreSQL로 만들어요. 운영자는 결제를 다루지 않아요",
+      "folder": "C:\\dev\\image-donation",
+      "stack": [
+        "C#",
+        "ASP.NET Core",
+        "SignalR",
+        "React",
+        "TypeScript",
+        "PostgreSQL",
+        "EF Core (Npgsql)",
+        "Docker",
+        "치지직 Open API",
+        "OAuth 2.0"
+      ],
+      "requires": [
+        "p2"
+      ],
+      "summary": "스트리머가 가입하면 후원 페이지와 비밀 OBS 오버레이 주소가 생기고, 시청자가 보낸 이미지를 검수해 승인한 것만 방송에 띄우는 서비스를 만들어요. 운영자는 결제를 전혀 다루지 않고, 치즈 후원은 치지직이 스트리머에게 직접 정산하며, 치지직 승인이 없어도 테스트 모드로 전체 흐름을 연습해요.",
+      "outcome": "무료 이미지 후원·치즈 후원 연동(선택)·테스트 모드를 갖춘 이미지 후원 서비스(후원 페이지, 실시간 검수 대시보드, OBS 오버레이, 안전 장치, Docker 실행)",
+      "days": [
+        {
+          "title": "서비스 기획",
+          "minutes": 80,
+          "summary": "이미지 후원 서비스의 사용자·기능·화면 흐름과 위험을 정리하고, 운영자는 결제를 전혀 다루지 않는다는 돈 흐름 원칙과 테스트 모드를 README 기획서로 써요.",
+          "keywords": [
+            "서비스 기획",
+            "이미지 후원",
+            "돈 흐름 원칙",
+            "결제 없음",
+            "치즈 후원",
+            "테스트 모드",
+            "검수",
+            "위험",
+            "개인정보",
+            "저작권",
+            "README"
+          ]
+        },
+        {
+          "title": "아키텍처",
+          "minutes": 80,
+          "summary": "React 화면·ASP.NET Core API·SignalR·PostgreSQL·이미지 저장소·치지직(또는 테스트 모드)·OBS 오버레이의 구성도와 요청 흐름을 그리고, 폴더 구조를 정해 Git 저장소를 시작해요.",
+          "keywords": [
+            "아키텍처",
+            "구성도",
+            "React",
+            "ASP.NET Core",
+            "SignalR",
+            "PostgreSQL",
+            "이미지 저장소",
+            "치지직 Open API",
+            "저장소 구조",
+            "포트",
+            "Git",
+            ".gitignore"
+          ]
+        },
+        {
+          "title": "React ①",
+          "minutes": 110,
+          "summary": "Vite의 react-ts 템플릿으로 client 폴더를 만들고, 컴포넌트·TSX·props를 배워 첫 컴포넌트인 후원 카드를 화면에 그려요.",
+          "keywords": [
+            "React",
+            "Vite",
+            "react-ts",
+            "템플릿",
+            "컴포넌트",
+            "JSX",
+            "TSX",
+            "props",
+            "className",
+            "Oxlint",
+            "npm run dev",
+            "npm run lint"
+          ]
+        },
+        {
+          "title": "React ②",
+          "minutes": 100,
+          "summary": "useState와 이벤트, 조건부·목록 렌더링과 key를 배워 예시 후원 목록에서 승인·거절 버튼과 상태 필터가 동작하게 해요.",
+          "keywords": [
+            "useState",
+            "훅",
+            "상태",
+            "이벤트",
+            "onClick",
+            "조건부 렌더링",
+            "목록 렌더링",
+            "key",
+            "불변 업데이트",
+            "map",
+            "filter",
+            "유니온 타입",
+            "Record"
+          ]
+        },
+        {
+          "title": "React ③",
+          "minutes": 110,
+          "summary": "useEffect와 정리 함수로 데이터를 불러오고, 이미지 미리보기 커스텀 훅과 제어 컴포넌트 폼(후원 폼 첫 버전)을 만들어요.",
+          "keywords": [
+            "useEffect",
+            "의존성 배열",
+            "정리 함수",
+            "fetch",
+            "ApiError",
+            "로딩",
+            "오류 처리",
+            "커스텀 훅",
+            "useImagePreview",
+            "FileReader",
+            "제어 컴포넌트",
+            "폼"
+          ]
+        },
+        {
+          "title": "React ④",
+          "minutes": 100,
+          "summary": "React Router 8의 BrowserRouter·Routes·레이아웃(Outlet)으로 후원 페이지(/d/:slug)와 대시보드(/dashboard)를 나누고 공통 메뉴와 없는 페이지 화면을 만들어요.",
+          "keywords": [
+            "React Router",
+            "react-router",
+            "BrowserRouter",
+            "Routes",
+            "Route",
+            "Link",
+            "NavLink",
+            "useParams",
+            "Outlet",
+            "레이아웃",
+            "Navigate",
+            "404"
+          ]
+        },
+        {
+          "title": "Docker + PostgreSQL",
+          "minutes": 120,
+          "summary": "Windows 에디션·버전과 가상화를 점검하고 Docker Desktop을 설치한 뒤 docker-compose.yml로 PostgreSQL 18을 띄워 psql로 접속해요. Docker가 안 되면 PostgreSQL을 직접 설치하는 길로 가요.",
+          "keywords": [
+            "Docker",
+            "Docker Desktop",
+            "WSL 2",
+            "가상화",
+            "winver",
+            "컨테이너",
+            "이미지",
+            "docker compose",
+            "postgres:18",
+            "볼륨",
+            ".env",
+            "psql",
+            "PostgreSQL 직접 설치",
+            "winget"
+          ]
+        },
+        {
+          "title": "API 뼈대",
+          "minutes": 110,
+          "summary": "server 폴더에 솔루션과 ASP.NET Core 프로젝트를 만들고 Npgsql EF Core를 설치해, user-secrets에 넣은 연결 문자열로 PostgreSQL에 붙는지 확인해요.",
+          "keywords": [
+            "dotnet new web",
+            "slnx",
+            "launchSettings",
+            "포트 5080",
+            "Npgsql",
+            "EF Core",
+            "UseNpgsql",
+            "연결 문자열",
+            "user-secrets",
+            "UserSecretsId",
+            "빠른 실패",
+            "DbContext"
+          ]
+        },
+        {
+          "title": "데이터 모델링",
+          "minutes": 120,
+          "summary": "Streamer·StreamerSettings·Donation 엔티티와 7가지 후원 상태의 전이 규칙을 설계하고, 인덱스·글자 저장 enum·배열 열을 넣은 첫 마이그레이션을 PostgreSQL에 적용해요.",
+          "keywords": [
+            "엔티티",
+            "Streamer",
+            "StreamerSettings",
+            "Donation",
+            "DonationStatus",
+            "상태 전이",
+            "enum",
+            "HasConversion",
+            "인덱스",
+            "고유 인덱스",
+            "text[]",
+            "timestamptz",
+            "마이그레이션",
+            "InitialCreate",
+            "Migrate"
+          ]
+        },
+        {
+          "title": "파일 업로드 ①",
+          "minutes": 110,
+          "summary": "multipart/form-data와 IFormFile로 이미지 업로드 API를 만들고, 크기 제한(413)·저장 위치·무작위 파일 이름을 적용해 REST Client로 파일을 보내 봐요.",
+          "keywords": [
+            "파일 업로드",
+            "multipart/form-data",
+            "IFormFile",
+            "FromForm",
+            "크기 제한",
+            "413",
+            "FormOptions",
+            "RequestSizeLimit",
+            "GUID",
+            "파일 이름 무작위화",
+            "경로 조작",
+            "DisableAntiforgery",
+            "REST Client"
+          ]
+        },
+        {
+          "title": "파일 업로드 ② 보안",
+          "minutes": 120,
+          "summary": "확장자를 믿지 않고 매직 넘버와 실제 디코딩으로 이미지를 검증하고, SkiaSharp으로 크기 상한·축소·EXIF 방향 적용을 거쳐 WebP로 재인코딩해 메타데이터를 없애요.",
+          "keywords": [
+            "이미지 보안",
+            "매직 넘버",
+            "파일 시그니처",
+            "SkiaSharp",
+            "SKCodec",
+            "디코딩",
+            "압축 폭탄",
+            "픽셀 상한",
+            "리사이즈",
+            "EXIF",
+            "방향",
+            "재인코딩",
+            "WebP",
+            "메타데이터 제거",
+            "using",
+            "MIT 라이선스"
+          ]
+        },
+        {
+          "title": "이미지 제공과 정리",
+          "minutes": 100,
+          "summary": "저장한 이미지를 /media 주소로 캐시 헤더와 함께 내보내고, BackgroundService로 7일이 지난 후원과 파일을 자동으로 지우는 정리 작업을 만들어요.",
+          "keywords": [
+            "정적 제공",
+            "Results.Stream",
+            "Cache-Control",
+            "캐시",
+            "/media",
+            "BackgroundService",
+            "PeriodicTimer",
+            "TimeProvider",
+            "보관 기간",
+            "7일",
+            "자동 삭제",
+            "IServiceScopeFactory",
+            "로그"
+          ]
+        },
+        {
+          "title": "인증 설계",
+          "minutes": 120,
+          "summary": "개발용 로컬 로그인을 ASP.NET Core Identity로 붙이고, 계정 하나에 스트리머 하나를 연결하는 온보딩 API(후원 페이지 주소·비밀 오버레이 토큰 발급)와 내 정보 API를 만들어요.",
+          "keywords": [
+            "인증",
+            "Identity",
+            "IdentityDbContext",
+            "MapIdentityApi",
+            "쿠키 로그인",
+            "useCookies",
+            "/api/auth/me",
+            "204",
+            "온보딩",
+            "slug",
+            "오버레이 토큰",
+            "RandomNumberGenerator",
+            "Base64Url",
+            "409",
+            "AddValidation",
+            "FindStreamerAsync"
+          ]
+        },
+        {
+          "title": "후원 페이지 API",
+          "minutes": 110,
+          "summary": "후원 페이지가 읽을 스트리머 공개 정보 API를 만들고, 후원 생성 규칙을 서비스로 옮겨 서버 쪽 입력 검증·IP의 HMAC 해시·IP당 요청 제한(429)을 적용해요.",
+          "keywords": [
+            "공개 API",
+            "/d/{slug}",
+            "PublicStreamerDto",
+            "입력 검증",
+            "닉네임 20자",
+            "메시지 100자",
+            "DonationService",
+            "서비스 계층",
+            "HMAC",
+            "SHA256",
+            "IP 해시",
+            "Security:IpHashKey",
+            "요청 제한",
+            "429",
+            "Rate Limiting"
+          ]
+        },
+        {
+          "title": "실시간 통신 원리",
+          "minutes": 110,
+          "summary": "폴링·SSE·WebSocket을 비교하고 SignalR의 허브와 그룹을 배운 뒤, 서버에 오버레이 허브를 붙이고 React 오버레이 페이지가 새 후원을 실시간으로 받게 해요.",
+          "keywords": [
+            "실시간",
+            "폴링",
+            "SSE",
+            "WebSocket",
+            "SignalR",
+            "허브",
+            "그룹",
+            "Hub<T>",
+            "IHubContext",
+            "@microsoft/signalr",
+            "HubConnectionBuilder",
+            "Vite 프록시",
+            "ws",
+            "overlay.html"
+          ]
+        },
+        {
+          "title": "SignalR 허브",
+          "minutes": 110,
+          "summary": "오버레이를 스트리머별 그룹으로 나누고 로그인 대신 비밀 토큰으로 접속하게 하며, 로그인한 스트리머만 쓰는 대시보드 허브와 보안 헤더를 더해요.",
+          "keywords": [
+            "SignalR 그룹",
+            "오버레이 토큰",
+            "토큰 인증",
+            "401",
+            "UseWhen",
+            "OnConnectedAsync",
+            "Context.Items",
+            "DashboardHub",
+            "Authorize",
+            "DonationCreated",
+            "DonationDto",
+            "overlay-token",
+            "보안 헤더",
+            "Referrer-Policy",
+            "X-Frame-Options"
+          ]
+        },
+        {
+          "title": "검수 API",
+          "minutes": 110,
+          "summary": "검수 대기열 조회와 승인·거절 API를 만들고, 조건부 UPDATE로 상태 전이를 안전하게 하며, 승인한 후원만 오버레이로 보내고 늦게 연결된 오버레이에 미표시 후원을 다시 보내요.",
+          "keywords": [
+            "검수",
+            "대기열",
+            "승인",
+            "거절",
+            "조건부 업데이트",
+            "ExecuteUpdateAsync",
+            "경쟁 상태",
+            "404",
+            "409",
+            "ChangeAsync",
+            "MarkShown",
+            "Shown",
+            "백로그",
+            "30분",
+            "자동 승인",
+            "DonationUpdated"
+          ]
+        },
+        {
+          "title": "오버레이 페이지",
+          "minutes": 110,
+          "summary": "OBS 브라우저 소스용 오버레이를 완성해요. 대기열에서 한 장씩 정해진 시간 동안 애니메이션으로 보여 주고, 다 보여 주면 서버에 알리며, 끊겨도 스스로 다시 연결해요.",
+          "keywords": [
+            "오버레이",
+            "OBS",
+            "브라우저 소스",
+            "투명 배경",
+            "큐",
+            "대기열",
+            "표시 시간",
+            "간격",
+            "setTimeout",
+            "CSS 애니메이션",
+            "keyframes",
+            "useRef",
+            "useCallback",
+            "자동 재연결",
+            "MarkShown",
+            "Clear"
+          ]
+        },
+        {
+          "title": "검수 대시보드(React)",
+          "minutes": 120,
+          "summary": "로그인 화면과 로그인 확인 레이아웃을 만들고, 목록 API와 SignalR 대시보드 허브를 합친 실시간 검수 대기열에서 미리보기를 보며 승인·거절과 단축키를 쓰게 해요.",
+          "keywords": [
+            "검수 대시보드",
+            "로그인 화면",
+            "useMe",
+            "보호된 라우트",
+            "Navigate",
+            "로그아웃",
+            "useDashboardHub",
+            "실시간 대기열",
+            "upsertDonation",
+            "필터",
+            "단축키",
+            "keydown",
+            "XSS",
+            "dangerouslySetInnerHTML"
+          ]
+        },
+        {
+          "title": "설정 화면",
+          "minutes": 110,
+          "summary": "후원 방식·자동 승인·표시 시간·간격·파일 크기·금지어를 저장하는 설정 API와 화면을 만들고, 오버레이 주소를 복사하거나 유출됐을 때 재발급하게 해요.",
+          "keywords": [
+            "설정",
+            "SettingsDto",
+            "Range",
+            "검증",
+            "자동 승인",
+            "표시 시간",
+            "간격",
+            "최대 파일 크기",
+            "금지어",
+            "후원 방식",
+            "오버레이 주소",
+            "재발급",
+            "Clipboard API",
+            "useOutletContext"
+          ]
+        },
+        {
+          "title": "OAuth 2.0 원리",
+          "minutes": 100,
+          "summary": "OAuth 2.0 인가 코드 흐름과 토큰·state·스코프·리디렉션 URI를 배우고, 치지직 로그인 화면으로 보내는 /api/chzzk/login과 로그인 화면의 치지직 버튼을 만들어요. 승인이 없어도 끝까지 할 수 있어요.",
+          "keywords": [
+            "OAuth 2.0",
+            "인가 코드",
+            "액세스 토큰",
+            "리프레시 토큰",
+            "state",
+            "CSRF",
+            "스코프",
+            "리디렉션 URI",
+            "account-interlock",
+            "ChzzkOptions",
+            "IOptions",
+            "AddHttpClient",
+            "/api/chzzk/login",
+            "테스트 모드"
+          ]
+        },
+        {
+          "title": "치지직 개발자 센터",
+          "minutes": 90,
+          "summary": "치지직 개발자 센터의 앱 등록·리디렉션 URL·스코프·심사 유의 사항과 Client Secret 보관법을 익히고, 승인과 상관없이 치지직 API 호출의 공통 부분(응답 형식·오류·토큰 교환 요청)을 만들어요.",
+          "keywords": [
+            "치지직 개발자 센터",
+            "애플리케이션 등록",
+            "Client ID",
+            "Client Secret",
+            "리디렉션 URL",
+            "스코프",
+            "후원 조회",
+            "유저 정보 조회",
+            "심사",
+            "90일 삭제",
+            "user-secrets",
+            "공통 응답",
+            "Bearer",
+            "ChzzkApiException"
+          ]
+        },
+        {
+          "title": "치지직 로그인",
+          "minutes": 110,
+          "summary": "OAuth 콜백에서 state를 안전하게 비교하고 인가 코드를 토큰으로 바꾼 뒤, 치지직 채널을 우리 계정에 연결해 같은 로그인 쿠키로 들어오게 해요. 승인 없이도 오류 경로와 화면을 확인할 수 있어요.",
+          "keywords": [
+            "OAuth 콜백",
+            "state 비교",
+            "FixedTimeEquals",
+            "타이밍 공격",
+            "토큰 교환",
+            "users/me",
+            "계정 연결",
+            "ChzzkToken",
+            "UserManager",
+            "SignInManager",
+            "/api/auth/me",
+            "치지직 연결 상태",
+            "마이그레이션"
+          ]
+        },
+        {
+          "title": "토큰 관리",
+          "minutes": 100,
+          "summary": "치지직 토큰을 Data Protection으로 암호화해서만 저장하고, 1회용 리프레시 토큰을 갱신할 때마다 새 값으로 바꾸며, 동시에 두 번 갱신하지 않도록 잠금을 걸어요.",
+          "keywords": [
+            "토큰 관리",
+            "Data Protection",
+            "암호화",
+            "Protect",
+            "Unprotect",
+            "키 링",
+            "SetApplicationName",
+            "토큰 회전",
+            "1회용 리프레시 토큰",
+            "SemaphoreSlim",
+            "잠금",
+            "만료 5분 전",
+            "갱신"
+          ]
+        },
+        {
+          "title": "세션 소켓 이해",
+          "minutes": 120,
+          "summary": "치지직 세션 소켓(Socket.IO 2.x, EIO=3)의 연결·구독 흐름과 .NET 클라이언트의 함정을 배우고, 내 PC의 에뮬레이터에 실제로 붙어 보는 테스트로 연결 코드를 확인해요.",
+          "keywords": [
+            "세션 소켓",
+            "Socket.IO",
+            "Socket.IO 2.x",
+            "Engine.IO",
+            "EIO=3",
+            "SocketIOClient",
+            "sessionKey",
+            "SYSTEM",
+            "DONATION",
+            "구독",
+            "에뮬레이터",
+            "socket.io 2.5.0",
+            "xUnit",
+            "dotnet test",
+            "재연결"
+          ]
+        },
+        {
+          "title": "후원 이벤트 수신",
+          "minutes": 120,
+          "summary": "진짜 치지직 수신기와 테스트 모드의 가짜 후원 발생기가 같은 모양의 이벤트를 내도록 설계하고, 후원 이벤트를 해석해 최소한만 기록해요. 테스트 모드로 승인 없이 이벤트를 받아 볼 수 있어요.",
+          "keywords": [
+            "후원 이벤트",
+            "DONATION",
+            "페이로드",
+            "ParseDonation",
+            "JSON 문자열",
+            "payAmount",
+            "IDonationEventSource",
+            "C# 이벤트",
+            "FakeDonationSource",
+            "테스트 모드",
+            "test-donation",
+            "BackgroundService",
+            "세션 점검",
+            "DonationEvent",
+            "최소 수집",
+            "브라우저 중계"
+          ]
+        },
+        {
+          "title": "후원 코드 매칭",
+          "minutes": 120,
+          "summary": "치즈 모드에서 이미지 후원마다 #AB12 같은 코드를 발급하고, 치즈 후원 메시지에서 코드를 찾아 금액·시간 조건을 확인해 한 번만 매칭하며, 30분이 지나면 만료시켜요.",
+          "keywords": [
+            "후원 코드",
+            "코드 매칭",
+            "AwaitingCheese",
+            "정규 표현식",
+            "GeneratedRegex",
+            "최소 치즈",
+            "30분 만료",
+            "중복 방지",
+            "멱등성",
+            "조건부 업데이트",
+            "RandomNumberGenerator.GetString",
+            "만료",
+            "Expired",
+            "expiresAt"
+          ]
+        },
+        {
+          "title": "테스트 모드·채팅 안내",
+          "minutes": 110,
+          "summary": "대시보드에 가짜 치즈 후원 발생기를 붙여 치지직 없이 전체 흐름을 화면에서 연습하고, 코드 확인을 채팅으로 알리는 선택 기능과 세션 소켓의 실패 처리를 완성해요.",
+          "keywords": [
+            "테스트 모드",
+            "가짜 후원 발생기",
+            "TestDonationPanel",
+            "대기 중인 코드",
+            "채팅 안내",
+            "chats/send",
+            "ChatOnMatch",
+            "채팅 메시지 쓰기",
+            "실패 처리",
+            "revoked",
+            "재연결",
+            "할당량",
+            "429",
+            "에뮬레이터 상황"
+          ]
+        },
+        {
+          "title": "후원 페이지 화면",
+          "minutes": 110,
+          "summary": "시청자용 후원 페이지를 완성해요. 스트리머 정보를 불러오고, 이미지를 골라 미리 보고, 업로드 진행률을 보여 주며, 치즈 모드면 후원 코드를 크게 안내하고 휴대폰 화면에도 맞춰요.",
+          "keywords": [
+            "후원 페이지",
+            "/d/:slug",
+            "이미지 선택",
+            "미리보기",
+            "업로드 진행률",
+            "XMLHttpRequest",
+            "FormData",
+            "크기 미리 검사",
+            "후원 코드 안내",
+            "모바일",
+            "기기 모드",
+            "같은 Wi-Fi",
+            "방화벽"
+          ]
+        },
+        {
+          "title": "스트리머 온보딩",
+          "minutes": 90,
+          "summary": "처음 온 스트리머가 가입 → 후원 페이지 만들기 → OBS 오버레이 연결 → 테스트 후원까지 막히지 않게 온보딩 화면과 시작 가이드를 만들고, 새 계정으로 처음부터 끝까지 따라가 봐요.",
+          "keywords": [
+            "온보딩",
+            "사용자 여정",
+            "후원 페이지 만들기",
+            "시작 가이드",
+            "OBS 오버레이 주소",
+            "테스트 후원",
+            "Navigate",
+            "reload",
+            "pattern",
+            "첫 화면"
+          ]
+        },
+        {
+          "title": "안전 장치",
+          "minutes": 120,
+          "summary": "방송 사고를 막는 금지어·차단·신고·긴급 정지를 만들어요. 신고는 기록·거절·차단을 한 트랜잭션으로 묶고 이미지를 증거로 격리하며, 긴급 정지는 화면부터 비워요.",
+          "keywords": [
+            "안전 장치",
+            "금지어",
+            "BannedWordFilter",
+            "차단",
+            "BlockEntry",
+            "신고",
+            "Report",
+            "트랜잭션",
+            "증거 격리",
+            "긴급 정지",
+            "Cleared",
+            "Clear",
+            "/media 상태 확인",
+            "403",
+            "window.confirm",
+            "window.prompt"
+          ]
+        },
+        {
+          "title": "개인정보·법적 고려",
+          "minutes": 90,
+          "summary": "이 서비스가 모으는 개인정보와 보관 기간을 정리해 최소 수집을 확인하고, 저작권·초상권 정책과 개인정보 처리방침·이용약관 초안을 쓰되 실제 운영 전에는 법률 자문이 필요하다는 점을 분명히 해요.",
+          "keywords": [
+            "개인정보",
+            "최소 수집",
+            "보관 기간",
+            "IP 해시",
+            "EXIF 제거",
+            "개인정보 처리방침",
+            "이용약관",
+            "초안",
+            "법률 자문",
+            "저작권",
+            "초상권",
+            "미성년자",
+            "치지직 약관"
+          ]
+        },
+        {
+          "title": "단위 테스트",
+          "minutes": 110,
+          "summary": "코드 매칭 규칙과 이미지 검증·금지어를 단위 테스트로 지키고, 테스트 이미지를 파일 대신 코드로 만들며, 경계값에서 테스트가 버그를 잡는지 일부러 고장 내 확인해요.",
+          "keywords": [
+            "단위 테스트",
+            "xUnit",
+            "Fact",
+            "Assert",
+            "경계값",
+            "DonationCodeMatcherTests",
+            "ImageProcessorTests",
+            "TestImages",
+            "EXIF",
+            "GIF",
+            "BannedWordFilterTests",
+            "테스트 이미지 생성",
+            "dotnet test"
+          ]
+        },
+        {
+          "title": "통합·프론트 테스트",
+          "minutes": 120,
+          "summary": "진짜 앱과 PostgreSQL로 API·SignalR·토큰 갱신을 확인하는 통합 테스트와, Vitest·Testing Library로 대시보드·후원 페이지를 확인하는 화면 테스트를 갖춰요.",
+          "keywords": [
+            "통합 테스트",
+            "WebApplicationFactory",
+            "ApiFactory",
+            "PostgreSQL 테스트",
+            "테스트 스키마",
+            "Search Path",
+            "TEST_DATABASE_URL",
+            "SignalR 클라이언트",
+            "TestServer",
+            "가짜 HTTP 처리기",
+            "Vitest",
+            "Testing Library",
+            "jsdom",
+            "vi.mock",
+            "npm test"
+          ]
+        },
+        {
+          "title": "관측성",
+          "minutes": 80,
+          "summary": "구조화 로깅과 로그 수준을 정리하고 /healthz 헬스 체크를 붙이며, 운영자 화면 대신 SQL로 통계와 신고를 확인하는 방법을 익혀요.",
+          "keywords": [
+            "관측성",
+            "구조화 로깅",
+            "메시지 템플릿",
+            "로그 수준",
+            "appsettings",
+            "헬스 체크",
+            "/healthz",
+            "AddHealthChecks",
+            "운영자 통계",
+            "SQL",
+            "GROUP BY",
+            "신고 확인"
+          ]
+        },
+        {
+          "title": "저장소 추상화",
+          "minutes": 90,
+          "summary": "이미지 저장소를 인터페이스로 감싸 로컬 폴더 대신 객체 스토리지(S3 호환)로 바꿔 끼울 수 있게 설계하고, 지우기만 실패하는 테스트 대역으로 긴급 정지가 화면부터 비우는지 확인해요.",
+          "keywords": [
+            "저장소 추상화",
+            "인터페이스",
+            "IImageStorage",
+            "LocalImageStorage",
+            "의존성 주입",
+            "객체 스토리지",
+            "S3 호환",
+            "버킷",
+            "테스트 대역",
+            "FailingDeleteStorage",
+            "ConfigureTestServices"
+          ]
+        },
+        {
+          "title": "Docker 이미지",
+          "minutes": 120,
+          "summary": "React 빌드를 서버가 함께 제공하게 하고, 멀티스테이지 Dockerfile과 compose로 API와 PostgreSQL 18을 한 번에 띄워요. 업로드 이미지와 암호화 키는 볼륨에 남겨요. Docker가 없으면 같은 결과를 직접 빌드해 실행해요.",
+          "keywords": [
+            "Docker 이미지",
+            "Dockerfile",
+            "멀티스테이지 빌드",
+            ".dockerignore",
+            "docker compose up --build",
+            "vite build",
+            "wwwroot",
+            "UseStaticFiles",
+            "MapFallbackToFile",
+            "환경 변수",
+            "Data Protection 키",
+            "볼륨",
+            "8080",
+            "dotnet publish"
+          ]
+        },
+        {
+          "title": "배포와 HTTPS",
+          "minutes": 100,
+          "summary": "시청자가 인터넷에서 후원 페이지에 들어오려면 무엇이 필요한지 정리하고, 작성 시점의 배포 선택지와 비용·제약, HTTPS·도메인·리디렉션 URL 갱신, 공개 전 점검표를 만들어요. 실제 배포는 선택이에요.",
+          "keywords": [
+            "배포",
+            "HTTPS",
+            "도메인",
+            "리버스 프록시",
+            "X-Forwarded-For",
+            "Render",
+            "Cloud Run",
+            "휘발성 디스크",
+            "슬립",
+            "비용",
+            "리디렉션 URL 갱신",
+            "LocalLoginEnabled",
+            "환경 변수",
+            "공개 전 점검"
+          ]
+        },
+        {
+          "title": "방송 리허설",
+          "minutes": 90,
+          "summary": "실제 방송 전에 체크리스트로 서버·OBS·설정을 점검하고, 친구나 다른 기기로 후원·검수·표시·사고 대응(거절·차단·신고·긴급 정지)을 처음부터 끝까지 연습해요.",
+          "keywords": [
+            "방송 리허설",
+            "체크리스트",
+            "OBS",
+            "오버레이",
+            "테스트 후원",
+            "긴급 정지",
+            "차단",
+            "신고",
+            "사고 대응",
+            "휴대폰 테스트",
+            "개인정보 노출",
+            "방송 화면"
+          ]
+        },
+        {
+          "title": "회고와 다음 단계",
+          "minutes": 80,
+          "summary": "SP를 돌아보며 운영 비용을 계산하고, 영상 후원·다중 플랫폼 같은 확장 아이디어를 설계해 보고, README를 포트폴리오로 정리해 마무리해요.",
+          "keywords": [
+            "회고",
+            "운영 비용",
+            "확장",
+            "영상 후원",
+            "다중 플랫폼",
+            "관리자 화면",
+            "서버 여러 대",
+            "포트폴리오",
+            "README",
+            "레퍼런스 비교",
+            "Git"
+          ]
         }
       ]
     }
   ],
   "pages": [
-    { "id": "glossary", "title": "용어 사전", "generated": "glossary" },
-    { "id": "troubleshooting", "title": "문제 해결 모음", "generated": "troubleshooting" }
+    {
+      "id": "start",
+      "title": "시작하기",
+      "file": "start.md"
+    },
+    {
+      "id": "help",
+      "title": "막혔을 때 탈출 가이드",
+      "file": "help.md"
+    },
+    {
+      "id": "glossary",
+      "title": "용어 사전",
+      "generated": "glossary"
+    },
+    {
+      "id": "troubleshooting",
+      "title": "문제 해결 모음",
+      "generated": "troubleshooting"
+    }
   ]
 }

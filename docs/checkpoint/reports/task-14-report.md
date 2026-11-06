@@ -140,3 +140,66 @@ P1 레퍼런스를 확인한 결과 P1은 `innerHTML`·`setTimeout`·구조 분�
 2. 위 미확인 사항 중 sqlite3 설치 경로와 Prettier/CRLF는 Day 작성 전에 정해져야 Day 19·37이 막히지 않아요.
 3. `glossary/p3.md`(다른 에이전트)는 p3 `_meta.json`을 합치기 전에는 `E_LINK_UNKNOWN` 162개를 내요 — 합치면 통과(검증 2).
 4. 생성 스크립트(`days.py`/`gen.py`)는 스크래치에만 있어요(저장소에 넣지 않음). 개요를 크게 고칠 때 다시 쓰려면 말해 주세요: /tmp/claude-0/-home-user-web-zero-to-hundred/a3ed5e68-2ed7-58a6-8548-3d657f4039ce/scratchpad/task14/
+
+---
+
+## Fix round 1
+
+Status: **DONE**. No git was used. I touched only `textbook/content/p2/_outline.md` and `textbook/content/p2/_meta.json`, plus this report. `glossary/p2.md` needed no change because `개발 인증서` stays owned by Day 34 (see 10). `_meta.json` was regenerated but its content is unchanged.
+
+The outline is still generated from the scratch scripts `/tmp/claude-0/-home-user-web-zero-to-hundred/a3ed5e68-2ed7-58a6-8548-3d657f4039ce/scratchpad/task14/days.py` and `gen.py`. The fixes are applied by `fix1.py` in the same folder. Backups of the pre-fix scripts are `days.before-fix1.py` and `gen.before-fix1.py`. I checked P1 Day numbers against the current `textbook/content/p1/_outline.md`.
+
+Line numbers below refer to `textbook/content/p2/_outline.md` after the fix.
+
+### Changes
+
+| # | Finding | Change (file:line) |
+| :-- | :-- | :-- |
+| 1 | Day 26 task 1 could not be reproduced | `_outline.md:949`. The steps now follow the reference test `AdminSeed_DoesNotPromote_…`: ① server off, delete `streamerhub.db*` ② `dotnet user-secrets remove "Admin:Password"` ③ start the server → "설정이 없어서 관리자 계정을 만들지 않았어요" warning ④ fan registers as `admin@example.com` with a different password ⑤ restore the secret with `set` and restart → "비밀번호가 설정과 달라서 관리자로 올리지 않았어요", `/api/me` roles `[]` ⑥ delete the DB again and restart to restore. I also added why the old steps fail (the seed runs at startup, so the fan's register gets `DuplicateUserName`). |
+| 2a | `change` event was credited to P1 | Day 29 목표 `:1034` now introduces the **`change` event** and compares it with P1 Day 23's `input`. The Day 29 이미 배운 것 now credits `select`/`option` to P1 Day 8 and `input` events to P1 Day 23. Section 2 table row 23 `:84` now says change is not taught in P1 and points to P2 Day 29. Section 2 note `:93`. |
+| 2b | `minlength` was credited to P1, and `maxlength` was taught nowhere | Day 31 목표 `:1118` introduces **`minlength`·`maxlength`**, including their use in `register.ts`, `postForm.ts` and Days 32–33 `admin.ts`. It also introduces `disabled`, `confirm()`, `Math.ceil`/`Math.max`, `Number.isInteger` and the `in` operator, none of which P1 teaches. The Day 31 이미 배운 것 now credits only `required`·`pattern` to P1 Day 24 and `trim` to P1 Day 23. Section 2 row 24 `:85`. |
+| 2c | `createElementWithText` pointed to P1 Day 18 | Now P1 Day 20: Day 8 이미 배운 것 `:389`, section 2 row 20 `:81`. Row 18 no longer mentions the helper. |
+| 2d | `aria-current` pointed to P1 Day 6 | Now P1 Day 11, together with the attribute selector: Day 28 `:997`, section 2 row 11 `:73`. Row 6 no longer mentions it. |
+| 3 | Day 36 said 16 integration tests | Changed to 15 in three places, `:1334` (×2) and `:1358`. The text now reads "`[Fact]` 15개 … 단위 8 + 통합 15 = 23". |
+| 4 | Day 13 task 1 answer used an expression body | `:533`. The answer is now a block body: `public override string Describe() { return $"{Name}님은 채팅 관리자예요."; }`. |
+| 5 | Day 5 used `slice` and JS `switch` before teaching them | Day 5 목표 `:307` introduces the string method `slice(시작, 끝)`, which task 3 and Day 28 `createAvatar` use. Task 2 `:321` now uses `if`/`else if` only, with a note that JS `switch` is not used and switch comes in C# Day 10. |
+| 6 | Day 24 Production run listened on the wrong port | Day 24 목표 `:845` now uses `dotnet run --no-launch-profile --urls http://localhost:5250` and explains why (the default would be 5000). I also added a pitfall at `:874`. |
+| 7 | Names used without introduction | Day 33 `:1202`: the "읽기만 하고 나중에 이해해요" box now names `await foreach` and `CancellationToken`. Day 36 `:1334`: `HttpClient`, `PostAsJsonAsync`, `GetFromJsonAsync`, `ReadFromJsonAsync`, `HttpStatusCode`, `response.Headers`/`Content.Headers`. |
+| 8 | Section 0 claimed the reference annotations match the outline | Section 0 `:11` now says "다르면 이 개요를 따라요" and lists 11 known differences without editing the reference: ScheduleQuery (Day 29 vs 23), PostService / Program "서비스 (Day 23)" / README `AddScoped` (vs 30, 33), README 9–15 PostService·NoticeBroadcaster·lock (vs 30, 33), README vite.config (7 vs 27), README ApiError (8 vs 27), README createElementWithText (4–6 vs 8), HttpUrlAttribute (23·34 vs 34), StreamerDtos "DTO (Day 23)" (vs 22), SeedData MigrateAsync (20 vs 21), Streamer.cs (20 vs 18), ScheduleEndpoints (22·29 vs 22, 23, 29). |
+| 9 | CSS split between Days was vague | Each Day now has explicit line ranges of the reference `client/src/style.css`, inserted in reference order. Together they cover lines 1–428 exactly once, so by Day 32 the file equals the reference.<br>Day 7 `:354`: 1–127, 135–161, 178–183, 304–315 (`.auth-menu` excluded).<br>Day 8 `:388`: 184–213, 262–303.<br>Day 28 `:996`: 214–227, 245–255 (`input, select, textarea`), 316–333.<br>Day 29 `:1064`: 361–410.<br>Day 31 `:1150`: 128–134 `.auth-menu`, 162–167, 173–177, 228–244 `.form`/`.form.narrow`/`.form label`, 256–261 `.hint`, 334–360 `.page-head`/`.post-list .post-title`/`.post-body`/`.pagination`.<br>Day 32 `:1190`: 168–172, 411–428. |
+| 10 | `개발 인증서` appeared on Day 17 but is owned by Day 34 | Day 17 pitfall `:643` now describes `dotnet dev-certs https --trust` in one line, without bold, a glossary link or a definition. The term stays owned by Day 34, so the glossary, the Day 34 block and the section 3 trap table stay in sync. |
+| 11 | `Date` was attributed only to P1 Day 26 | Section 2 row 16 `:77` now lists `Date` 맛보기 (`new Date()`·`getHours`), and row 26 says "`Date` 깊게". |
+
+Related extra changes, since the same first-use problem appeared elsewhere when I rechecked against the P1 outline:
+- Day 27 `:958` introduces `Object.keys`, `Object.values` and `flat()`.
+- Day 28 `:996` introduces `startsWith`, `replaceChildren` and `scrollTo`.
+- Day 33 `:1202` introduces `.then()`/`.catch()`.
+- Day 1 now credits the Network panel to P1 Day 25 (`:222`).
+- Section 2 rows 8, 25 and 26 are more precise: `select`, `throw new Error`, `Math.floor`·`padStart`·`split`.
+
+### Commands and output
+
+```text
+$ python3 gen.py textbook/content/p2/_outline.md textbook/content/p2/_meta.json
+outline 196102 chars, 1518 lines; terms 211
+NO PROBLEMS
+```
+
+This self-check confirms:
+- Every Day's start state equals the previous Day's end state.
+- All 67 reference files are present by Day 40.
+- There are no duplicate terms.
+- The outline terms match the glossary.
+- No term overlaps the current `glossary/p1.md`.
+- Minutes are in range and there are no forbidden words.
+
+Scratch merge: I copied `textbook/content` and merged every on-disk `_meta.json` (p1, p2, p3, sp) into a scratch `curriculum.json`. The scratch copy also includes all four on-disk glossaries (p1, p2, p3, sp).
+
+```text
+merged: p1:30:req=[] p2:40:req=["p1"] p3:45:req=["p2"] sp:40:req=["p2"]
+$ node textbook/build.mjs --check --allow-missing --content <scratch>/content
+검사 통과: Day 155개, 페이지 4개, 결과 크기 0.83 MB
+E_TERM_DUPLICATE count: 0
+```
+
+The only warnings are the expected `E_CUR_FILE_MISSING` for Day files that don't exist yet.

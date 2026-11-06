@@ -222,3 +222,9 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - T29 implementer DONE_WITH_CONCERNS (125 SP terms; links P2/P3 shared terms per R38; renamed OAuth 스코프; test project moved to Day 25, test-mode backend Day 26; practice folder C:\dev\sp-practice; 치지직 redirect via Vite 5173 unverified on real server). SP files at d411c91 (base 8e30f25). Review dispatched (opus).
 - Task 28: minor (deferred): reference ApiFactory default TEST_DATABASE_URL embeds the sandbox login wzh/wzh — learners must set their own; SP test Day must teach it (carry to T30–33 writers).
 - T29 review dispatched (opus, adb024653a4f543e2), base 8e30f25 head d411c91 (SP paths).
+- Task 8: fix round 1/5 (10 addressed, 0 open; commits dd9eeef..b8a6f7f)
+- Task 8: minor (deferred): Day 10 용어 order vs glossary order; Day 24 이미 배운 것 out of descending order; §0.2 DevTools Day list omits Days 11, 20, 21 (general rule covers them).
+- Task 8: complete (commits 9ff7ac2..b8a6f7f, review clean)
+- T14 fix round 1 implementer DONE (11 fixed + extra P1-untaught JS methods introduced: Object.keys/values/flat D27, startsWith/replaceChildren D28, disabled/confirm/Math.ceil/Number.isInteger/in D31, then/catch D33). Final files already in WIP snapshot d411c91. All-4 scratch merge 0 errors.
+- Ruling R46: merge all four _meta.json into curriculum.json now (glossary p2/p3/sp were already committed and link to those Days, so a partial merge leaves the repo check red); re-merge p3/sp after their fix rounds (script: workspace merge-meta.mjs) — cost if wrong: one re-merge per outline change.
+- curriculum.json merged (p1:30 p2:40 p3:45 sp:40; pages start,help,glossary,troubleshooting): `npm run check -- --allow-missing` → 검사 통과 Day 155개, only missing-day warnings; npm test 168/168.
