@@ -725,7 +725,7 @@ C:\dev\
 
 ## 📚 더 알아보기
 
-- [MDN · table 요소](https://developer.mozilla.org/ko/docs/Web/HTML/Reference/Elements/table): 표의 여러 부품을 자세히 설명해요.
+- [MDN · table 요소(영어)](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/table): 표의 여러 부품을 자세히 설명해요.
 - [MDN · 첫 번째 폼 만들기](https://developer.mozilla.org/ko/docs/Learn_web_development/Extensions/Forms/Your_first_form): 폼과 입력 칸을 단계별로 만들어 봐요.
 - [YouTube 도움말 · 동영상 퍼가기](https://support.google.com/youtube/answer/171780): 영상을 다른 사이트에 넣는 방법을 설명해요.
 

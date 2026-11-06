@@ -542,7 +542,7 @@ C:\dev\
 ## 📚 더 알아보기
 
 - [MDN · img 요소](https://developer.mozilla.org/ko/docs/Web/HTML/Reference/Elements/img): `src`, `alt`, `width`, `height` 같은 속성을 자세히 설명해요.
-- [MDN · 이미지 파일 형식 안내](https://developer.mozilla.org/ko/docs/Web/Media/Guides/Formats/Image_types): 이미지 형식별 특징과 고르는 기준을 알려 줘요.
+- [MDN · 이미지 파일 형식 안내(영어)](https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Formats/Image_types): 이미지 형식별 특징과 고르는 기준을 알려 줘요.
 - [MDN · 대체 텍스트 이해하기](https://developer.mozilla.org/ko/docs/Learn_web_development/Core/Accessibility/HTML): 접근성을 위한 HTML 습관을 설명해요.
 
 ➡️ **다음 Day 예고:** [Day 6 · 시맨틱 구조](#/day/p1-d06)에서는 페이지를 `header`·`main`·`footer`로 나누고, 로고를 만들고, 브라우저의 개발자 도구로 페이지의 속을 들여다봐요.

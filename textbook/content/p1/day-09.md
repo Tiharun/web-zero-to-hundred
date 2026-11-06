@@ -728,7 +728,7 @@ h1, h2, h3 {
 ## 📚 더 알아보기
 
 - [MDN · CSS 첫걸음](https://developer.mozilla.org/ko/docs/Learn_web_development/Core/Styling_basics/Getting_started): CSS 규칙과 선택자의 기본을 단계별로 설명해요.
-- [MDN · CSS 선택자](https://developer.mozilla.org/ko/docs/Web/CSS/CSS_selectors): 선택자의 종류를 한눈에 보여 줘요.
-- [MDN · font-family](https://developer.mozilla.org/ko/docs/Web/CSS/font-family): 글꼴 목록을 쓰는 규칙을 설명해요.
+- [MDN · CSS 선택자](https://developer.mozilla.org/ko/docs/Web/CSS/Guides/Selectors): 선택자의 종류를 한눈에 보여 줘요.
+- [MDN · font-family(영어)](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/font-family): 글꼴 목록을 쓰는 규칙을 설명해요.
 
 ➡️ **다음 Day 예고:** [Day 10 · 박스 모델](#/day/p1-d10)에서는 모든 요소가 상자라는 사실을 배우고, 여백과 테두리로 페이지를 가운데에 모아요.

@@ -443,8 +443,8 @@ C:\dev\
 
 ## 📚 더 알아보기
 
-- [VS Code 사용자 인터페이스](https://code.visualstudio.com/docs/getstarted/userinterface): 활동 막대, 탐색기, 상태 표시줄 같은 화면 구성을 그림으로 보여 줘요.
-- [VS Code 확장 프로그램 사용하기](https://code.visualstudio.com/docs/editor/extension-marketplace): 확장 프로그램을 찾고 설치하는 법과 게시자 확인법을 설명해요.
-- [Live Preview 확장 프로그램](https://marketplace.visualstudio.com/items?itemName=ms-vscode.live-server): Live Preview의 기능과 설정을 소개해요.
+- [VS Code 기본 편집](https://code.visualstudio.com/docs/editing/codebasics): 탐색기, 탭, 저장, 자동 저장 같은 VS Code의 기본 사용법을 설명해요.
+- [VS Code 확장 프로그램 사용하기](https://code.visualstudio.com/docs/configure/extensions/extension-marketplace): 확장 프로그램을 찾고 설치하는 법과 게시자 확인법을 설명해요.
+- [Live Preview 확장 프로그램 저장소](https://github.com/microsoft/vscode-livepreview): Microsoft가 만든 Live Preview의 기능과 설정을 소개해요.
 
 ➡️ **다음 Day 예고:** [Day 3 · HTML 기본 구조](#/day/p1-d03)에서는 30일 동안 키울 프로젝트 폴더 `C:\dev\my-creator-site`를 만들고, 첫 홈페이지 파일 `index.html`을 써요.

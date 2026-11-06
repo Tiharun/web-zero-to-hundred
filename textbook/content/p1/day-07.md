@@ -751,7 +751,7 @@ hint: See the 'Note about fast-forwards' in 'git push --help' for details.
 ## 📚 더 알아보기
 
 - [Git 공식 사이트](https://git-scm.com/): Git을 내려받고 설명서(Book)를 볼 수 있어요.
-- [GitHub Docs · 저장소 만들기](https://docs.github.com/ko/repositories/creating-and-managing-repositories/quickstart-for-repositories): 저장소를 만드는 방법을 설명해요.
+- [GitHub Docs · 저장소 만들기(영어)](https://docs.github.com/en/repositories/creating-and-managing-repositories/quickstart-for-repositories): 저장소를 만드는 방법을 설명해요.
 - [VS Code · 소스 제어 사용하기](https://code.visualstudio.com/docs/sourcecontrol/overview): 소스 제어 패널의 기능을 설명해요.
 
 ➡️ **다음 Day 예고:** [Day 8 · 표·폼·미디어](#/day/p1-d08)에서는 방송 일정표(`table`)와 문의 폼(`form`)을 만들고, YouTube 영상을 `iframe`으로 넣어요. 그리고 처음으로 하루 작업을 커밋하고 올려 봐요.

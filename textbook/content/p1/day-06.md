@@ -812,8 +812,8 @@ C:\dev\my-creator-site\
 
 ## 📚 더 알아보기
 
-- [MDN · HTML 문서 구조 시맨틱 요소](https://developer.mozilla.org/ko/docs/Learn_web_development/Core/Structuring_content/Structuring_documents): 헤더, 메뉴, 본문, 바닥글을 어떻게 나누는지 설명해요.
-- [MDN · 브라우저 개발자 도구 알아보기](https://developer.mozilla.org/ko/docs/Learn_web_development/Howto/Tools_and_setup/What_are_browser_developer_tools): 개발자 도구의 여러 패널이 하는 일을 소개해요.
+- [MDN · 문서 구조 나누기(영어)](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content/Structuring_documents): 헤더, 메뉴, 본문, 바닥글을 어떻게 나누는지 설명해요.
+- [MDN · 브라우저 개발자 도구 알아보기(영어)](https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Tools_and_setup/What_are_browser_developer_tools): 개발자 도구의 여러 패널이 하는 일을 소개해요.
 - [Microsoft Edge · 개발자 도구 시작하기](https://learn.microsoft.com/ko-kr/microsoft-edge/devtools/overview): Edge 개발자 도구의 기본 사용법을 알려 줘요.
 
 ➡️ **다음 Day 예고:** [Day 7 · Git·GitHub 시작](#/day/p1-d07)에서는 Git을 설치하고 GitHub 계정을 만들어, 지금까지 만든 파일을 인터넷 저장소에 올려요.

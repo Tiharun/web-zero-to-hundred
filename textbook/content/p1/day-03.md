@@ -427,6 +427,6 @@ VS Code 설정 `Editor: Tab Size`는 `2`로 바뀌어 있어요.
 
 - [MDN · HTML 문서 구조](https://developer.mozilla.org/ko/docs/Learn_web_development/Core/Structuring_content/Basic_HTML_syntax): 요소, 속성, 중첩을 그림으로 설명해요.
 - [MDN · 제목 요소 h1~h6](https://developer.mozilla.org/ko/docs/Web/HTML/Reference/Elements/Heading_Elements): 제목 단계를 어떻게 써야 하는지 알려 줘요.
-- [VS Code · Emmet](https://code.visualstudio.com/docs/editor/emmet): VS Code에서 쓸 수 있는 Emmet 약어를 소개해요.
+- [VS Code · HTML 편집](https://code.visualstudio.com/docs/languages/html): HTML 자동 완성과 Emmet 사용법을 설명해요.
 
 ➡️ **다음 Day 예고:** [Day 4 · 텍스트·목록·링크](#/day/p1-d04)에서는 페이지를 네 개 더 만들고, 링크로 다섯 페이지를 서로 이어요.

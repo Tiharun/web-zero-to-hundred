@@ -1227,7 +1227,7 @@ main {
 ## 📚 더 알아보기
 
 - [MDN · 박스 모델 소개](https://developer.mozilla.org/ko/docs/Learn_web_development/Core/Styling_basics/Box_model): 네 겹 상자와 `box-sizing`을 그림으로 설명해요.
-- [MDN · box-sizing](https://developer.mozilla.org/ko/docs/Web/CSS/box-sizing): `content-box`와 `border-box`의 차이를 보여 줘요.
+- [MDN · box-sizing](https://developer.mozilla.org/ko/docs/Web/CSS/Reference/Properties/box-sizing): `content-box`와 `border-box`의 차이를 보여 줘요.
 - [MDN · CSS 단위](https://developer.mozilla.org/ko/docs/Learn_web_development/Core/Styling_basics/Values_and_units): `px`, `rem`, `%` 같은 값의 종류를 설명해요.
 
 ➡️ **다음 Day 예고:** [Day 11 · Flexbox](#/day/p1-d11)에서는 로고와 메뉴를 한 줄로 나란히 놓고, 지금 보고 있는 페이지의 메뉴를 강조하고, 둥근 버튼을 만들어요.
