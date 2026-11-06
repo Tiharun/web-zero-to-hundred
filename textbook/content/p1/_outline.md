@@ -17,7 +17,8 @@
 
 ### 0.2 화면 확인 방법
 
-- Day 1: 파일 더블클릭(`file://`). Day 2부터: VS Code **Live Preview**(주소 `http://127.0.0.1:3000/…`, 포트 숫자는 달라도 돼요) 또는 더블클릭. Day 3~24는 두 방법 모두 동작해야 해요.
+- Day 1: 파일 더블클릭(`file://`). Day 2부터: VS Code **Live Preview**(주소 `http://127.0.0.1:3000/…` — 기본 포트 3000은 실기 미확인, 본문에는 "숫자는 달라도 돼요"를 붙여요) 또는 더블클릭. Day 3~24는 두 방법 모두 동작해야 해요.
+- **개발자 도구는 브라우저에서.** VS Code 안의 Live Preview 미리 보기 창은 Edge·Chrome이 아니라서 `F12`를 눌러도 브라우저 개발자 도구가 열리지 않아요. 개발자 도구(Elements·Styles·Console·Network·Application·Lighthouse·Sources·기기 모드)가 필요한 단계는 미리 보기 창 위쪽 주소 칸의 주소(`http://127.0.0.1:3000/…`)를 복사해 **Edge(또는 Chrome) 주소창에 붙여 열거나**, 명령 팔레트의 Live Preview 외부 브라우저 명령(`Live Preview: Show Preview (External Browser)`)으로 열어요. 명령·버튼 이름은 실기 미확인이라 본문에는 "이름은 버전에 따라 조금 다를 수 있어요"를 붙이고 주소 복사 방법을 1순위로 써요. 더블클릭(`file://`)으로 연 페이지는 이미 브라우저라 그대로 `F12`를 써요. Day 6에서 처음 안내하고, 개발자 도구를 쓰는 Day(9, 10, 13, 15, 22, 25, 26, 28, 29)는 이 규칙을 한 줄로 다시 짚어요.
 - Day 25부터 `fetch`를 쓰는 페이지(`contents.html`, Day 26부터 `schedule.html`)는 **Live Preview 또는 배포 주소로만** 열어요(레퍼런스 README). 더블클릭하면 오류 상자가 나오는 것이 정상이라고 알려 줘요.
 - Day 14부터 배포 주소 `https://<내 아이디>.github.io/my-creator-site/`에서 확인하는 단계를 "선택"으로 둘 수 있어요(반영까지 최대 10분, external-facts 4절).
 
@@ -39,7 +40,7 @@
 
 | 구역 주석(레퍼런스 원문) | 처음 만드는 Day |
 |---|---|
-| 파일 맨 위 머리 주석 `/* === style.css - … === */` | 9 |
+| 파일 맨 위 머리 주석 `/* === style.css - … === */` | 9 (Day 13·14에 한 줄씩 더해 완성) |
 | `/* ---------- 1. CSS 변수: 색은 여기서만 정해요 (Day 14, 22) ---------- */` | 14 |
 | `/* ---------- 2. 기본 설정 (Day 9, 10) ---------- */` | 9 |
 | `/* ---------- 3. 레이아웃 ---------- */` | 10 |
@@ -50,12 +51,19 @@
 | `/* ---------- 8. 반응형: 화면이 768px 이상일 때 (Day 13) ---------- */` | 13 |
 | 파일 맨 끝 `prefers-reduced-motion` 규칙 | 28 |
 
+- **주석 규칙(머리 주석 포함).** 구역 제목 주석(`/* ---------- 2. 기본 설정 (Day 9, 10) ---------- */` 등)은 그 구역을 처음 만드는 Day에 레퍼런스 원문 그대로 써요(괄호 속 Day 번호도 그대로). 그 밖의 설명 주석은 설명하는 코드가 생기는 Day에 넣어요(0.1절). 파일 맨 위 머리 주석은 세 단계로 완성해요: Day 9 = 테두리 줄 두 개 + `style.css - 달빛곰 방송국 전체 스타일 (모든 페이지가 함께 써요)` 줄, Day 13 = `모바일 먼저 만들고, 화면이 넓어지면 @media로 덧붙여요 (Day 13)` 줄 추가, Day 14 = `순서: 변수 → 기본 → 레이아웃 → 헤더/메뉴 → 공통 부품 → 페이지별 → 반응형` 줄을 제목 줄 바로 아래에 추가(이 Day에 마지막 구역 1이 생겨 레퍼런스와 같아짐).
 - Day 9~13은 색을 색상 코드로 직접 써요(밝은 색 값: 배경 `#ffffff`, 면 `#f4f2ff`, 글자 `#1d1b2e`, 보조 글자 `#5a5775`, 포인트 `#5b4bdb`, 포인트 위 글자 `#ffffff`, 링크 `#4a3bc7`, 선 `#d9d6ee`, 모서리 `12px`). Day 14에 `:root` 변수로 바꾸고 모든 색을 `var(--…)`로 고쳐요. Day 14 이후 Day는 새 색도 변수로만 써요.
 
 ### 0.6 JavaScript 파일 구역
 
 - `js/main.js`(모든 페이지): 머리 주석 → `1. 모바일 메뉴 (Day 21)` → `2. 다크 모드 (Day 22)` → `3. 시간대별 인사말 (Day 16)`. Day 16에 3번 구역이 먼저 생기고, Day 21에 1번을 3번 **위에**, Day 22에 2번을 1번과 3번 **사이에** 넣어요. 머리 주석의 목록 줄은 구역이 생길 때마다 늘어나서 Day 22에 레퍼런스와 같아져요.
-- `js/contents.js`(영상 페이지): 레퍼런스의 순서(데이터 객체 → 요소 찾기 → 상태 변수 → 도우미 함수 → `createCard` → `getVisibleVideos` → `render` → 리스너 → `loadVideos`)를 지키며 Day 19~25에 걸쳐 채워요.
+- `js/contents.js`(영상 페이지): 레퍼런스의 순서(데이터 객체 → 요소 찾기 → 상태 변수 → 도우미 함수 → `createCard` → `getVisibleVideos` → `render` → 리스너 → `loadVideos`)를 지키며 Day 19~25에 걸쳐 채워요. 위치 고정:
+  - Day 19: 머리 주석 → `categoryNames`·`thumbnails` → 주석 `// 지금 상태: 전체 영상` + `let allVideos = [ …6개… ];` → 확인 코드(파일 끝).
+  - Day 20: `// 화면의 요소들을 미리 찾아 둬요 (Day 20)` 구역을 `thumbnails`와 `// 지금 상태` 주석 **사이**에 넣어요(그래서 `allVideos`는 요소 구역 아래). 도우미 함수·`createCard`·`render`는 `allVideos` 아래, 파일 끝은 `render();`.
+  - Day 21: `filterBox`는 요소 구역 끝, `let selectedCategory = 'all';`은 `allVideos` 바로 아래, 상태 주석은 `// 지금 상태: 전체 영상, 선택한 카테고리`.
+  - Day 23: `searchInput`·`countElement`·`emptyMessage`는 요소 구역 끝, `let searchText = '';`는 `selectedCategory` 아래, 상태 주석 `// 지금 상태: 전체 영상, 선택한 카테고리, 검색어`.
+  - Day 25: `loadStatus`·`loadError`는 요소 구역 끝, `let isLoaded = false;`는 `allVideos` 바로 아래, 상태 주석은 레퍼런스 원문 `// 지금 상태: 전체 영상, 불러왔는지 여부, 선택한 카테고리, 검색어`.
+  - 머리 주석: Day 19 "contents.js - 영상 목록 페이지 / 지금은 영상 데이터를 만들고 콘솔에서 살펴봐요" → Day 20 "영상 데이터로 카드를 그려요" → Day 23 "영상 데이터를 카드로 그리고, 카테고리 버튼과 검색창으로 걸러서 보여 줘요" → Day 25 레퍼런스 원문("data/videos.json을 불러와서(fetch) 카드로 그리고, …").
 - JS는 템플릿 리터럴(Day 16)과 화살표 함수 콜백(Day 18)을 일관되게 써요. 설계서 3.1에 이름이 없는 메서드는 아래 Day에 처음 소개해요: `String()`·`Number()` Day 15, `classList.toggle`·`closest`·`dataset`·`setAttribute`·`querySelectorAll` Day 21, `matchMedia` Day 22, `trim`·`toLowerCase`·`includes`·`hidden` Day 23, `removeAttribute`·`getAttribute`·`classList.contains`·`focus`·`reset` Day 24, `Math.floor`·`padStart`·`split` Day 26, `URLSearchParams`·`clearInterval` Day 27.
 
 ## 1. 레퍼런스 파일 등장표
@@ -119,7 +127,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
 | 7 | 버전 관리, Git, GitHub, 저장소, 원격 저장소, 커밋, 스테이징, 푸시, 브랜치, 터미널, PowerShell |
 | 8 | 표, 폼, 레이블, iframe, 임베드 |
 | 9 | CSS, 선택자, 클래스, CSS 속성, 색상 코드, 캐시 |
-| 10 | 박스 모델, margin, padding, border, box-sizing, px, rem |
+| 10 | 박스 모델, margin, padding, border, box-sizing, px, rem, 자손 선택자 |
 | 11 | Flexbox, 주축, 교차축, 속성 선택자, ARIA |
 | 12 | Grid, fr, minmax, auto-fit |
 | 13 | 반응형 웹, 뷰포트, 미디어 쿼리, 모바일 우선, 브레이크포인트 |
@@ -130,7 +138,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
 | 18 | 함수, 매개변수, 반환값, 화살표 함수, 스코프 |
 | 19 | 객체, 키, 메서드, 콜백 함수, 배열 메서드 |
 | 20 | DOM, querySelector, textContent, classList, createElement |
-| 21 | 이벤트, 이벤트 리스너, 이벤트 위임, 햄버거 메뉴, data 속성 |
+| 21 | 이벤트, 이벤트 리스너, 이벤트 위임, 햄버거 메뉴, data 속성, 복합 선택자 |
 | 22 | 다크 모드, localStorage, prefers-color-scheme |
 | 23 | input 이벤트, hidden 속성, 문자열 메서드 |
 | 24 | 폼 검증, 정규 표현식, 제약 조건 검증 API, preventDefault, aria-live |
@@ -167,7 +175,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
   - Chrome 설치(`https://www.google.com/chrome/`). 기본 브라우저로 바꾸지 않아도 된다고 알려 줘요. Edge만 써도 교재를 따라갈 수 있어요.
   - VS Code로 폴더 열기: **파일 → 폴더 열기** → `C:\dev\hello` → "이 폴더에 있는 파일의 작성자를 신뢰합니까?" 창에서 신뢰(내가 만든 폴더라서). 왼쪽 **탐색기**에 `HELLO`와 파일 두 개가 보이는 것 확인.
   - VS Code에서 `hello.html` 열어 한 줄 고치기, 탭의 ●(저장 안 됨) 표시, `Ctrl + S` 저장, **파일 → 자동 저장** 켜기.
-  - **명령 팔레트**(`Ctrl + Shift + P`) 열기 → `Live Preview: Show Preview` 실행, 편집기 오른쪽 위 미리 보기 아이콘으로도 열기. 미리 보기 창 주소 `http://127.0.0.1:3000/hello.html`(숫자는 달라도 돼요)의 뜻을 "내 컴퓨터 안에서 Live Preview가 작은 서버를 띄웠다"로만 설명해요(포트·localhost 용어는 P2).
+  - **명령 팔레트**(`Ctrl + Shift + P`) 열기 → `Live Preview: Show Preview` 실행(실기 미확인: 목록에 `(Internal Browser)`·`(External Browser)`가 붙은 명령이 따로 보일 수 있음 — 실제 목록을 확인해 쓰기), 편집기 오른쪽 위 미리 보기 아이콘으로도 열기. 미리 보기 창 주소 `http://127.0.0.1:3000/hello.html`(기본 포트 실기 미확인, 본문엔 "숫자는 달라도 돼요")의 뜻을 "내 컴퓨터 안에서 Live Preview가 작은 서버를 띄웠다"로만 설명해요(포트·localhost 용어는 P2).
   - 탐색기 사이드바의 **새 파일** 아이콘으로 `tools.html` 만들기(과제 1).
 - 이미 배운 것: Day 1 파일·폴더·확장자·경로, `C:\dev\hello`, 브라우저, 서버(요청하면 파일을 보내 주는 컴퓨터), HTML 파일의 모양(맛보기), 고치기 → 저장 → 새로 고침, UTF-8.
 - 시작 상태: (Day 1 끝 상태와 같아요)
@@ -177,7 +185,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
   - `C:\dev\hello\hello.html` — VS Code로 `<p>` 문장 하나를 고쳐 Live Preview에 바로 반영되는 것 확인. (레퍼런스 대응 없음)
   - `C:\dev\hello\tools.html` — 과제 1: VS Code에서 새로 만든 파일. 탭 제목 `내 개발 도구`, `<h1>내 개발 도구</h1>`, 문단 3개(VS Code·Live Preview·Chrome이 각각 무엇인지 한 문장). Day 1과 같은 뼈대를 직접 타이핑(Emmet은 Day 3).
 - 끝 상태 확인: VS Code 메뉴가 한국어(파일·편집·선택 영역…); 확장 화면에 Korean Language Pack과 Live Preview가 설치됨; VS Code 탐색기에 `hello.html`·`favorites.html`·`tools.html`; Live Preview 창에 `tools.html` 내용; **파일** 메뉴의 **자동 저장** 앞에 체크; Chrome이 설치되어 시작 메뉴에 있음.
-- 과제: 1) `tools.html` 만들기(쉬움) → 정답 요지: 전체 코드 + "새 파일은 탐색기에서 이름을 `.html`까지 쳐서 만든다". 2) 명령 팔레트만으로 `favorites.html`을 Live Preview로 열기(보통) → 정답 요지: `favorites.html` 탭 선택 → `Ctrl + Shift + P` → `Live Preview: Show Preview` → `Enter`. 3) (도전) 자동 저장을 끄고 고쳤을 때와 켜고 고쳤을 때 탭의 ● 표시 차이를 한 문장으로 → 정답 요지: 꺼져 있으면 저장 전까지 ●가 남고, 켜져 있으면 잠시 뒤 저절로 사라진다.
+- 과제: 1) `tools.html` 만들기(쉬움) → 정답 요지: 전체 코드 + "새 파일은 탐색기에서 이름을 `.html`까지 쳐서 만든다". 2) 명령 팔레트만으로 `favorites.html`을 Live Preview로 열기(보통) → 정답 요지: `favorites.html` 탭 선택 → `Ctrl + Shift + P` → `Live Preview: Show Preview`(명령 이름 실기 미확인, 변형 이름이 보이면 그 이름) → `Enter`. 3) (도전) 자동 저장을 끄고 고쳤을 때와 켜고 고쳤을 때 탭의 ● 표시 차이를 한 문장으로 → 정답 요지: 꺼져 있으면 저장 전까지 ●가 남고, 켜져 있으면 잠시 뒤 저절로 사라진다.
 - 용어(사전 담당): VS Code, 확장 프로그램, 명령 팔레트, 자동 저장, Live Preview
 - 자주 막히는 곳 후보: 설치 파일이 다운로드 폴더(OneDrive일 수 있음)에서 안 보임 → 브라우저 다운로드 목록(`Ctrl + J`)에서 열기; "Windows의 PC 보호"(SmartScreen)·사용자 계정 컨트롤 창이 뜸(게시자 Microsoft 확인 후 진행); System setup 파일을 받아 관리자 암호를 물음 → User setup으로 다시; 한국어 팩 설치 뒤에도 영어(다시 시작 안 함, 또는 명령 팔레트 `Configure Display Language`); 작업 영역 신뢰 창에서 "아니요"를 눌러 제한 모드가 됨; Live Preview 아이콘이 안 보임(HTML 파일 탭이 아님); **파일 → 열기**로 파일만 열어 탐색기에 폴더가 없음 → **폴더 열기**; Windows 방화벽 창이 뜨면 무엇인지(실기 미확인: Live Preview는 내 컴퓨터 안에서만 쓰는 서버라 뜨지 않는 경우가 많다고 추정, 뜨면 "개인 네트워크"만 허용); Chrome이 기본 브라우저 설정을 계속 물음(무시해도 됨); 노트북 `Fn` 키.
 - 레퍼런스 대응: 없음(도구 설치 Day, 연습 폴더만 써요).
@@ -271,6 +279,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
   - 의미 없는 상자 `div`(**블록 요소**: 한 줄을 다 차지)와 `span`(**인라인 요소**: 글자 사이에 끼움). 시맨틱 태그가 맞지 않을 때만 씀.
   - 로고: 새 파일 `images\logo.svg`(레퍼런스 원문) + `<a href="index.html"><img src="images/logo.svg" alt="" width="36" height="36"><span>달빛곰 방송국</span></a>`. 바로 옆에 글자가 있어서 그림은 장식 → `alt=""`(Day 5 대체 텍스트 복습).
   - **문자 참조** `&copy;`(©) — 바닥글 `<p>&copy; 2026 달빛곰 방송국 · 연습용으로 만든 사이트예요.</p>`. `&lt;`·`&gt;`·`&amp;`도 소개.
+  - 개발자 도구를 쓰려면 페이지를 **브라우저**에서 열어요(0.2절 규칙: 더블클릭으로 열거나, Live Preview 주소를 Edge 주소창에 붙여 넣기 — VS Code 안 미리 보기 창에서는 `F12`가 안 됨).
   - **개발자 도구** 열기(`F12`, `Ctrl + Shift + I`, 오른쪽 클릭 → **검사**) → **Elements** 패널(한국어 화면은 **요소**일 수 있음): 접고 펼치기, 왼쪽 위 요소 선택 도구, 마우스를 올리면 화면에 영역 표시, 글자를 더블클릭해 고쳐 보기(새로 고침하면 사라짐 = 파일이 아니라 화면만 바뀜).
   - 다섯 페이지를 같은 뼈대(`header` → `main` → `footer`)로 바꾸기. 따라하기는 `index.html`·`about.html`, 과제 1은 나머지 세 페이지.
 - 이미 배운 것: Day 3 요소·주석·h1~h3; Day 4 목록·링크·메뉴 `ul`·다섯 페이지; Day 5 `img`·대체 텍스트·SVG 파일 만들기·스크린 리더.
@@ -302,7 +311,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
 - 목표:
   - **버전 관리**가 왜 필요한지(저장 시점 기록, 되돌리기, 인터넷 백업, Day 14 배포의 준비).
   - Git for Windows 설치(작성 기준 `Git-2.56.0.4-64-bit.exe`, `https://git-scm.com/`): **VS Code를 먼저 설치한 뒤** 설치, 편집기 화면에서 "Use Visual Studio Code as Git's default editor", 초기 브랜치 화면에서 "Override the default branch name for new repositories" → `main`, 나머지는 기본값(줄 끝 처리 "Checkout Windows-style, commit Unix-style"을 유지하는 이유 한 줄). 화면 문구가 조금 달라도 같은 위치의 선택지를 고르라는 `:::info`(external-facts 3절).
-  - VS Code를 완전히 닫았다 다시 열고 **터미널 → 새 터미널**(`` Ctrl + ` ``) — **터미널**과 **PowerShell**을 최소한으로: 프롬프트 `PS C:\dev\my-creator-site>` 읽기(지금 위치), 명령 붙여 넣기(`Ctrl + V` 또는 오른쪽 클릭), `Enter`. 터미널 오른쪽 위 `∨`에서 PowerShell을 고르는 법. 터미널 기초는 P2 Day 2에서 제대로 배운다고 예고.
+  - VS Code를 완전히 닫았다 다시 열고 **터미널 → 새 터미널**(`` Ctrl + Shift + ` ``; `` Ctrl + ` ``는 터미널 패널을 보였다 숨겼다 하는 키) — **터미널**과 **PowerShell**을 최소한으로: 프롬프트 `PS C:\dev\my-creator-site>` 읽기(지금 위치), 명령 붙여 넣기(`Ctrl + V` 또는 오른쪽 클릭), `Enter`. 터미널 오른쪽 위 `∨`에서 PowerShell을 고르는 법. 위치가 프로젝트 폴더가 아니면 `cd C:\dev\my-creator-site`(cd = 지금 위치 바꾸기) 한 줄로 옮기는 법. 터미널 기초는 P2 Day 2에서 제대로 배운다고 예고.
   - `git --version`(예상 `git version 2.56.0.windows.4`, 숫자는 달라도 돼요), `git config --global user.name "내 이름"`, `git config --global user.email "내 이메일"`, `git config --global --list`로 확인. 이 이메일이 공개 커밋에 남는다는 것과 GitHub의 noreply 이메일을 쓰는 선택(팁, 화면 위치는 GitHub **Settings → Emails**, 실기 미확인 표시).
   - GitHub 가입(`https://github.com/`): 이메일 인증 코드, 아이디는 영어 소문자 권장(배포 주소에 들어감). 새 저장소: 오른쪽 위 **+** → **New repository** → 이름 `my-creator-site` → **Public**(무료 계정의 GitHub Pages는 공개 저장소만, external-facts 4절) → README·.gitignore·license는 추가하지 않음 → **Create repository**.
   - 로컬 저장소 만들고 올리기(VS Code 터미널, 위치 `C:\dev\my-creator-site`): `git init` → `git status` → `git add .`(**스테이징**) → `git status` → `git commit -m "Day 1~6: 첫 페이지들"`(**커밋**) → `git branch -M main` → `git remote add origin https://github.com/<내 아이디>/my-creator-site.git`(**원격 저장소**) → `git push -u origin main`(**푸시**). 첫 푸시 때 Git Credential Manager가 브라우저 로그인 창을 띄우는 흐름(실기 미확인 표시).
@@ -357,7 +366,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
   - 오늘까지의 변경이 모두 커밋·푸시되어 있어요(VS Code 소스 제어 패널의 변경 0개).
   - VS Code에서 `C:\dev\my-creator-site` 폴더를 열어 두면 바로 시작할 수 있어요.
 - 오늘 만들/바꿀 파일:
-  - `C:\dev\my-creator-site\schedule.html` — `main`의 임시 문장을 `<p>모든 시간은 한국 시간이에요.</p>`로 바꾸고 표 추가: `<caption>주간 방송 일정</caption>`, `thead`(요일·시작 시간·방송 내용, `th scope="col"`), `tbody` 7행(월 `20:00` 신작 게임 같이 해요 / 화 `-` 휴방 / 수 `21:00` 수요일 수다 타임 / 목 `-` 휴방 / 금 `20:00` 신청곡 라이브 / 토 `15:00` 시청자 참여 게임 / 일 `-` 휴방, 각 행 첫 칸 `th scope="row"`). (레퍼런스 표와 같은 글)
+  - `C:\dev\my-creator-site\schedule.html` — `main`의 임시 문장을 `<p>모든 시간은 한국 시간이에요.</p>`로 바꾸고 표 추가: `<caption>주간 방송 일정</caption>`, `thead`(요일·시작 시간·방송 내용, `th scope="col"`), `tbody` 7행(`월요일` `20:00` 신작 게임 같이 해요 / `화요일` `-` 휴방 / `수요일` `21:00` 수요일 수다 타임 / `목요일` `-` 휴방 / `금요일` `20:00` 신청곡 라이브 / `토요일` `15:00` 시청자 참여 게임 / `일요일` `-` 휴방 — 요일 칸은 레퍼런스처럼 `월요일`…`일요일` 전체 이름, 각 행 첫 칸 `th scope="row"`). (레퍼런스 표와 같은 글)
   - `C:\dev\my-creator-site\contact.html` — 임시 문장을 `<p>협업 제안, 영상 요청, 궁금한 점을 남겨 주세요. 이 사이트는 연습용이라 실제로 전송되지는 않아요.</p>`로 바꾸고 `<form>` 추가. 칸마다 `<div>`로 감쌈: 이름(`id="name" name="name" type="text" autocomplete="name"`), 이메일(`id="email" name="email" type="email" autocomplete="email"`), `채팅 닉네임 (선택)`(`id="nickname" name="nickname" type="text" autocomplete="nickname"`), 문의 종류(`select id="topic" name="topic"`: `general` 일반 문의 / `collab` 협업 제안 / `request` 영상 요청), 내용(`textarea id="message" name="message" rows="6"`, label `내용`), `<button type="submit">보내기</button>`.
   - `C:\dev\my-creator-site\index.html` — `main` 끝에 `<section>`: `<h2>대표 영상</h2>`, 주석 `<!-- YouTube 공유 → 퍼가기에서 복사한 iframe이에요 -->`, `<iframe src="https://www.youtube.com/embed/aqz-KE-bpKQ" title="달빛곰 대표 영상 (예시 영상이에요)" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`.
   - `C:\dev\hello\plan.html` — 과제 2(연습): "내 공부 계획" 표(요일·공부 시간·할 일, 7행).
@@ -371,9 +380,9 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
 - 목표:
   - **CSS**의 역할(HTML = 내용과 구조, CSS = 모양). 규칙 문법 `선택자 { CSS 속성: 값; }`, 주석 `/* */`.
   - `css` 폴더와 `style.css` 파일 만들기, 다섯 페이지 `head`에 `<link rel="stylesheet" href="css/style.css">`(title 다음 줄). 파일 하나로 다섯 페이지 모양을 함께 바꾸는 이유.
-  - **선택자**: 요소 선택자(`body`, `a`, `h1, h2, h3`), **클래스** 선택자(`.site-header` ↔ `class="site-header"`), id 선택자(`#이름`)는 소개만(Day 26에서 씀). 나중 규칙이 앞 규칙을 덮는다는 것(순서).
+  - **선택자**: 요소 선택자(`body`, `a`), 쉼표로 여러 선택자를 한 규칙에 묶기(`h1, h2, h3` = h1과 h2와 h3 모두), **클래스** 선택자(`.site-header` ↔ `class="site-header"`), id 선택자(`#이름`)는 소개만(Day 26에서 씀). 나중 규칙이 앞 규칙을 덮는다는 것(순서).
   - 색: **색상 코드** `#rrggbb`(0.5절 값), 글꼴 `font-family` 목록(`system-ui, "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif` — 앞에서부터 있는 글꼴을 씀, 공백 있는 이름은 따옴표), `line-height`, `text-align`.
-  - 개발자 도구 Elements 오른쪽 **Styles**(스타일) 창에서 값 바꿔 보기(저장 안 됨).
+  - 개발자 도구 Elements 오른쪽 **Styles**(스타일) 창에서 값 바꿔 보기(저장 안 됨). Live Preview로 보고 있다면 0.2절대로 주소를 Edge에 붙여 열고 개발자 도구를 써요.
   - 고쳤는데 안 바뀔 때 **캐시** 의심 → `Ctrl + F5`(강력 새로 고침).
 - 이미 배운 것: Day 6 header·footer·개발자 도구 Elements; Day 3 속성·head; Day 4 상대 경로(`css/style.css`); Day 7~8 커밋·푸시.
 - 시작 상태: (Day 8 끝 상태와 같아요)
@@ -393,7 +402,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
   - 오늘까지의 변경이 모두 커밋·푸시되어 있어요(VS Code 소스 제어 패널의 변경 0개).
   - VS Code에서 `C:\dev\my-creator-site` 폴더를 열어 두면 바로 시작할 수 있어요.
 - 오늘 만들/바꿀 파일:
-  - `C:\dev\my-creator-site\css\style.css` — 새 파일. 레퍼런스 머리 주석(`style.css - 달빛곰 방송국 전체 스타일 …`, 순서·모바일 먼저 줄 포함) + 구역 `2. 기본 설정 (Day 9, 10)`: `body { background: #ffffff; color: #1d1b2e; font-family: system-ui, "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; line-height: 1.7; }`, `a { color: #4a3bc7; }`, `h1, h2, h3 { line-height: 1.3; }` / 구역 `4. 헤더와 내비게이션 (Day 11)`: `.site-header { background: #f4f2ff; }` / 구역 `7. 푸터`: `.site-footer { background: #f4f2ff; color: #5a5775; text-align: center; }`.
+  - `C:\dev\my-creator-site\css\style.css` — 새 파일. 머리 주석 Day 9 버전(테두리 줄 두 개 + `style.css - 달빛곰 방송국 전체 스타일 (모든 페이지가 함께 써요)` 한 줄만 — 순서 줄은 Day 14, 모바일 먼저 줄은 Day 13, 0.5절 주석 규칙) + 구역 `2. 기본 설정 (Day 9, 10)`: `body { background: #ffffff; color: #1d1b2e; font-family: system-ui, "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; line-height: 1.7; }`, `a { color: #4a3bc7; }`, `h1, h2, h3 { line-height: 1.3; }` / 구역 `4. 헤더와 내비게이션 (Day 11)`: `.site-header { background: #f4f2ff; }` / 구역 `7. 푸터`: `.site-footer { background: #f4f2ff; color: #5a5775; text-align: center; }`.
   - 다섯 페이지 — `head`에 stylesheet `link`, `<header class="site-header">`, `<footer class="site-footer">`.
 - 끝 상태 확인: 다섯 페이지 글꼴이 맑은 고딕 계열로 바뀜; 머리글·바닥글 배경이 연보라; 바닥글 글자 가운데·회색; 링크가 보라; 개발자 도구 Styles에 `style.css`의 규칙이 보임; GitHub에 `Day 9` 커밋.
 - 과제: 1) Styles 창 실험(쉬움): `body`의 `color`를 바꿔 보고 새로 고침하면 돌아오는 이유 → 정답 요지: 개발자 도구는 화면만 바꾸고 파일은 그대로. 2) 규칙 직접 쓰기(보통): `h1`만 포인트 색 `#5b4bdb`로 바꾸는 규칙을 써서 확인한 뒤 지우기 → 정답 요지: `h1 { color: #5b4bdb; }`, 끝 상태에는 넣지 않음(레퍼런스에 없음). 3) (도전) 클래스 퀴즈: `class=".site-header"`·`.site-footer`(점 없음)·`class="site-header site-footer"`의 뜻 → 정답 요지: HTML에는 점 없이, CSS에는 점, 빈칸으로 클래스 여러 개.
@@ -403,12 +412,13 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
 
 ## Day 10 — 박스 모델 (90분)
 - 목표:
-  - **박스 모델**: 모든 요소는 상자 — 내용 → **padding**(안쪽 여백) → **border**(테두리) → **margin**(바깥 여백). 개발자 도구 **Computed**(계산됨) 창의 상자 그림으로 확인.
+  - **박스 모델**: 모든 요소는 상자 — 내용 → **padding**(안쪽 여백) → **border**(테두리) → **margin**(바깥 여백). 개발자 도구 **Computed**(계산됨) 창의 상자 그림으로 확인(브라우저에서 열기 — 0.2절).
   - 블록·인라인 상자(Day 6 복습)와 `display: block`/`inline-block` 맛보기.
   - **box-sizing** `border-box`를 전체 선택자 `*`로: `width`에 padding·border를 포함해 계산.
   - 단위 **px**(고정), **rem**(기본 글자 크기의 몇 배, 사용자 글자 크기 설정을 따름), `%`(부모 기준).
   - 가운데 정렬 상자 `.container`(`max-width: 960px; margin: 0 auto;` + 좌우 `padding` 1rem). border 축약(`1px solid 색`), `border-radius`(`12px`, `50%` = 원), `font-weight`.
   - `img { max-width: 100%; height: auto; }` — CSS로 폭만 바꿔도 비율이 유지되는 이유(그림에 `height` 속성이 있어서 없으면 찌그러짐).
+  - **자손 선택자**: 빈칸으로 띄어 쓴 `.site-footer p`(= `.site-footer` 안에 있는 `p`만), `.schedule-table thead th`(여러 겹 안쪽도 됨). 쉼표 묶음과 섞어 `.schedule-table th, .schedule-table td`처럼 쓰는 법(쉼표 뒤에도 앞부분을 다시 씀). 빈칸(안에 있는)과 쉼표(이것도 저것도)의 차이.
   - 표 꾸미기: `border-collapse: collapse`, `th`·`td` padding·border, caption 왼쪽 정렬.
   - 위아래 margin이 겹치는 현상(마진 겹침)은 정상이라고 짧게.
 - 이미 배운 것: Day 9 CSS 문법·선택자·클래스·색상 코드·구역 주석·개발자 도구 Styles; Day 6 블록/인라인·div; Day 8 table.
@@ -442,7 +452,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
   - `C:\dev\my-creator-site\schedule.html` — `<table class="schedule-table">`.
 - 끝 상태 확인: 넓은 창에서 내용이 가운데 960px 안에 모임, 좁혀도 좌우 16px 여백; 페이지 가장자리 흰 틈(body margin) 사라짐; 홈 곰 그림이 지름 160px 원; 소개 곰 그림이 모서리 둥근 200px 사각형; 일정표에 칸 테두리와 연보라 머리글; 개발자 도구 Computed 상자 그림에서 `.container`의 padding 16 확인; GitHub에 `Day 10` 커밋.
 - 과제: 1) 박스 계산(쉬움): `width: 200px; padding: 20px; border: 2px` 상자의 전체 폭을 `content-box`와 `border-box`로 각각 → 정답 요지: 244px vs 200px. 2) 실험(보통): `.container`의 `max-width`를 `600px`로 바꿔 관찰하고 되돌리기 → 정답 요지: 내용 폭이 좁아짐, 좌우 margin auto가 남는 공간을 반씩 나눔. 3) (도전) `h2`의 margin을 rem 대신 px로 쓰면 브라우저 글자 크기 설정을 키웠을 때 무엇이 다른지 → 정답 요지: rem은 함께 커지고 px는 그대로.
-- 용어(사전 담당): 박스 모델, margin, padding, border, box-sizing, px, rem
+- 용어(사전 담당): 박스 모델, margin, padding, border, box-sizing, px, rem, 자손 선택자
 - 자주 막히는 곳 후보: 가운데 정렬이 안 됨(`max-width` 없이 `margin: 0 auto`); 곰 그림이 타원(`img` 규칙 빠짐 → height 속성 240 그대로); `class="container, hero"`(쉼표); 표 테두리가 두 줄(`border-collapse` 빠짐); 위아래 여백이 생각보다 작음(마진 겹침); 새 구역을 엉뚱한 위치에 넣음(순서는 동작엔 영향 적지만 뒤 Day 삽입 위치가 어긋남 — 구역 주석 순서 확인); `0.75rem` 앞 0 빠뜨림은 괜찮다는 안심; `div` 닫는 태그 빠뜨림.
 - 레퍼런스 대응: `style.css`의 `*`, body margin, `img`, h1~h3 크기·margin, `3. 레이아웃` 전부, `.site-header` border, `.header-inner` padding, `.hero-image`·`.about-image`(768px 규칙 제외), `.schedule-table` 관련 규칙 전부, `7. 푸터` 전부; HTML의 `container`·`header-inner`·`hero`·`about-intro`·`hero-image`·`about-image`·`schedule-table` class. 중간 단계 — 레퍼런스와 다름: 색 코드 직접, `.header-inner`에 flex 없음(Day 11).
 
@@ -453,7 +463,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
   - 목록 초기화(`list-style: none; margin: 0; padding: 0;`), 링크 밑줄 없애기(`text-decoration: none`), 링크를 `display: block`으로 넓혀 누르기 쉽게.
   - **ARIA** 첫 만남: 지금 보고 있는 페이지 메뉴에 `aria-current="page"`, CSS **속성 선택자** `.menu-list a[aria-current="page"]`로 강조.
   - 버튼 모양: `button, .button` 규칙(둥근 `border-radius: 999px`, `cursor: pointer`, `font: inherit`), 테두리만 있는 `.button-outline`. 홈에 버튼 모양 링크 2개.
-- 이미 배운 것: Day 10 박스 모델·padding·margin·border·rem·display·`.container`/`.header-inner`; Day 9 클래스·선택자·색상 코드; Day 8 `<button>`; Day 6 header/nav; Day 3 속성.
+- 이미 배운 것: Day 10 박스 모델·padding·margin·border·rem·display·`.container`/`.header-inner`·자손 선택자(`.logo img`·`.menu-list a`에 씀); Day 9 클래스·선택자·쉼표 묶음·색상 코드; Day 8 `<button>`; Day 6 header/nav; Day 3 속성.
 - 시작 상태: (Day 10 끝 상태와 같아요)
   - 프로젝트 `C:\dev\my-creator-site\`:
     - `C:\dev\my-creator-site\index.html`
@@ -525,7 +535,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
 ## Day 13 — 반응형 웹 (100분)
 - 목표:
   - **반응형 웹**이 필요한 이유(시청자 대부분이 휴대폰). **뷰포트**와 Day 3부터 있던 `<meta name="viewport" …>` 줄의 뜻(지우면 휴대폰이 PC 화면을 축소해 보여 줌).
-  - 개발자 도구 **기기 모드**(`Ctrl + Shift + M`, 왼쪽 위 휴대폰 모양): 폭 360px·768px·1280px로 바꿔 보기, 가로 스크롤 찾기.
+  - 개발자 도구 **기기 모드**(브라우저에서 연 페이지 — 0.2절; `Ctrl + Shift + M`, 왼쪽 위 휴대폰 모양): 폭 360px·768px·1280px로 바꿔 보기, 가로 스크롤 찾기.
   - **미디어 쿼리** `@media (min-width: 768px) { … }`, **모바일 우선**(기본 규칙 = 좁은 화면, 넓어지면 덧붙임), **브레이크포인트** 고르는 법(내용이 깨지는 폭). 미디어 쿼리는 파일 맨 끝(앞 규칙을 덮어야 해서).
   - 한국어 줄바꿈 `word-break: keep-all`, 긴 영어 주소용 `overflow-wrap: break-word`.
   - 좁은 화면에서 메뉴를 로고 아래 줄로: `flex-basis: 100%`(Flexbox 자식이 한 줄을 다 차지), `flex-direction: column`(Day 11 복습).
@@ -554,10 +564,11 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
   - VS Code에서 `C:\dev\my-creator-site` 폴더를 열어 두면 바로 시작할 수 있어요.
 - 오늘 만들/바꿀 파일:
   - `C:\dev\my-creator-site\css\style.css` —
+    - 머리 주석: 제목 줄 아래에 `모바일 먼저 만들고, 화면이 넓어지면 @media로 덧붙여요 (Day 13)` 줄 추가(0.5절).
     - `2`: `body`에 `word-break: keep-all;`, `overflow-wrap: break-word;`(레퍼런스 주석 포함).
     - `4`: `.header-inner` 주석 `/* 좁은 화면에서는 메뉴가 아래 줄로 내려가요 */`, `.site-nav`를 `{ flex-basis: 100%; }`로(Day 11의 margin-left 삭제, 주석 "한 줄을 다 차지해서 아래로 내려가요"), `.menu-list`의 `flex-wrap` 삭제·`flex-direction: column; gap: 0.25rem;`.
     - `6`: 주석 `/* 유튜브 영상: … */` + `.video-frame { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 12px; background: #f4f2ff; }`(`.hero-actions` 다음, `/* 소개 페이지 */` 앞).
-    - 새 구역 `8. 반응형: 화면이 768px 이상일 때 (Day 13)`(파일 맨 끝): `@media (min-width: 768px) { h1 { font-size: 2.25rem; } .site-nav { flex-basis: auto; margin-left: auto; } .menu-list { flex-direction: row; align-items: center; gap: 0.5rem; } .hero { grid-template-columns: 200px 1fr; gap: 2rem; } .hero-image { width: 200px; } .about-intro { grid-template-columns: 200px 1fr; } }`(레퍼런스 주석 "메뉴 목록은 가로로 늘어놔요" 포함, 메뉴 버튼 규칙은 Day 21).
+    - 새 구역 `8. 반응형: 화면이 768px 이상일 때 (Day 13)`(파일 맨 끝): `@media (min-width: 768px) { h1 { font-size: 2.25rem; } .site-nav { flex-basis: auto; margin-left: auto; } .menu-list { flex-direction: row; align-items: center; gap: 0.5rem; } .hero { grid-template-columns: 200px 1fr; gap: 2rem; } .hero-image { width: 200px; } .about-intro { grid-template-columns: 200px 1fr; } }`. 이 구역 안의 주석은 Day 13에는 `h1` 규칙 다음, `.site-nav` 바로 위에 `/* 메뉴 목록은 가로로 늘어놔요 */` 한 줄만 써요(레퍼런스 원문 "메뉴 버튼은 숨기고, …"의 앞부분은 메뉴 버튼이 생기는 Day 21에 고쳐 써요). 메뉴 버튼 규칙은 Day 21.
   - `C:\dev\my-creator-site\index.html` — iframe에 `class="video-frame"`.
 - 끝 상태 확인: 기기 모드 360px: 메뉴가 로고 아래 세로 목록(다섯 줄), 카드 1열, 곰 그림 위·글 아래, 영상 16:9, 가로 스크롤 없음; 768px 이상: 메뉴가 오른쪽 가로 한 줄, 홈 hero가 그림 200px + 글 2열, 소개도 2열, h1이 더 큼; GitHub에 `Day 13` 커밋.
 - 과제: 1) 세 폭 점검표(쉬움): 360·768·1280에서 메뉴·카드 칸 수·hero 모양을 표로 → 정답 요지: 표(세로·1칸·쌓임 / 가로·2칸·2열 / 가로·3칸·2열). 2) 브레이크포인트 실험(보통): `768px`을 `1000px`로 바꿔 900px에서 관찰하고 되돌리기 → 정답 요지: 900px에서도 모바일 모양. 3) (도전) 미디어 쿼리를 파일 맨 위로 옮기면 왜 안 먹는지 → 정답 요지: 아래의 기본 규칙이 나중에 와서 덮어씀(같은 선택자는 나중 규칙이 이김).
@@ -595,6 +606,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
   - VS Code에서 `C:\dev\my-creator-site` 폴더를 열어 두면 바로 시작할 수 있어요.
 - 오늘 만들/바꿀 파일:
   - `C:\dev\my-creator-site\css\style.css` —
+    - 머리 주석: 제목 줄 바로 아래에 `순서: 변수 → 기본 → 레이아웃 → 헤더/메뉴 → 공통 부품 → 페이지별 → 반응형` 줄 추가 → 머리 주석 완성(0.5절).
     - 새 구역 `1. CSS 변수: 색은 여기서만 정해요 (Day 14, 22)`(머리 주석 바로 아래): `:root { --bg: #ffffff; --surface: #f4f2ff; --text: #1d1b2e; --muted: #5a5775; --accent: #5b4bdb; --accent-text: #ffffff; --link: #4a3bc7; --border: #d9d6ee; --radius: 12px; }`(레퍼런스 줄 끝 주석 포함; `--error`·`--success`·`--highlight`·`color-scheme`는 아직 없음).
     - 모든 색상 코드·`12px` 모서리를 `var(--…)`로 바꿈(body·a·`.site-header`·`.logo`·`.menu-list a`·`[aria-current]`·`button, .button`·`.button-outline`·`.card`·`.card-body p`·`.video-frame`·`.about-image`·`.schedule-table` 규칙·`.site-footer`). VS Code **찾기**(`Ctrl + F`)로 `#`를 검색해 `:root` 밖에 색 코드가 남지 않았는지 확인.
     - `body`에 `transition: background-color 0.2s, color 0.2s;`(주석 "테마가 바뀔 때 부드럽게 (Day 14)"), `.menu-list a:hover { background: var(--border); }`, `button, .button`에 `transition: transform 0.15s, background-color 0.15s;`, `button:hover, .button:hover { transform: translateY(-2px); }`, `.card`에 `transition: transform 0.15s, box-shadow 0.15s;`, `.card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15); }`.
@@ -608,7 +620,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
 ## Day 15 — JavaScript 시작 (90분)
 - 목표:
   - **JavaScript**의 역할(HTML 내용, CSS 모양, JS 동작). `js` 폴더와 `main.js` 만들기, 다섯 페이지 `head`의 stylesheet `link` 다음 줄에 `<script src="js/main.js" defer></script>` — **defer**(HTML을 다 읽은 뒤 실행) 뜻과 `head`에 두는 이유.
-  - 개발자 도구 **콘솔**(Console) 열기, `console.log('…')`, 문장·세미콜론·한 줄 주석 `//`, 콘솔에 직접 입력해 바로 실행(`Enter`), 여러 줄은 `Shift + Enter`.
+  - 개발자 도구 **콘솔**(Console) 열기(Live Preview 미리 보기 창이 아니라 Edge에서 연 페이지 — 0.2절), `console.log('…')`, 문장·세미콜론·한 줄 주석 `//`, 콘솔에 직접 입력해 바로 실행(`Enter`), 여러 줄은 `Shift + Enter`.
   - **변수** `let`(바뀌는 값)·`const`(안 바뀌는 값, 기본으로 const), 이름 짓기(영어 camelCase, 예 `siteName`).
   - **자료형**: **문자열**(`'…'`), 숫자, **불리언**(`true`/`false`), **undefined**(아직 값 없음), **null**(일부러 비움). `typeof`.
   - **연산자**: `+ - * / %`(나머지), 문자열 `+` 이어 붙이기, `>`·`<` 맛보기(자세한 비교는 Day 16), `=`는 "넣기".
@@ -797,7 +809,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
   - 오늘까지의 변경이 모두 커밋·푸시되어 있어요(VS Code 소스 제어 패널의 변경 0개).
   - VS Code에서 `C:\dev\my-creator-site` 폴더를 열어 두면 바로 시작할 수 있어요.
 - 오늘 만들/바꿀 파일:
-  - `C:\dev\my-creator-site\js\contents.js` — 새 파일. 머리 주석(Day 19 버전: "contents.js - 영상 목록 페이지 / 지금은 영상 데이터를 만들고 콘솔에서 살펴봐요"), `// 카테고리 코드 → 화면에 보여 줄 이름, 썸네일 그림 (Day 19: 객체)` + `categoryNames`·`thumbnails`(레퍼런스 원문), `let allVideos = [ … ];`(6개 객체 — 값은 레퍼런스 `data/videos.json`과 똑같이, 들여쓰기 2칸 한 줄에 한 객체), 콘솔 확인 코드(`// 확인용 (Day 20에서 지워요)` 아래 `forEach`로 `` `${categoryNames[video.category]} · ${video.title}` `` 출력, `filter`로 게임 영상 개수, `map`으로 제목 배열).
+  - `C:\dev\my-creator-site\js\contents.js` — 새 파일. 머리 주석(Day 19 버전: "contents.js - 영상 목록 페이지 / 지금은 영상 데이터를 만들고 콘솔에서 살펴봐요"), `// 카테고리 코드 → 화면에 보여 줄 이름, 썸네일 그림 (Day 19: 객체)` + `categoryNames`·`thumbnails`(레퍼런스 원문), 주석 `// 지금 상태: 전체 영상` + `let allVideos = [ … ];`(6개 객체 — 값은 레퍼런스 `data/videos.json`과 똑같이, 들여쓰기 2칸 한 줄에 한 객체; 위치는 `thumbnails` 바로 아래 — 0.6절), 콘솔 확인 코드(`// 확인용 (Day 20에서 지워요)` 아래 `forEach`로 `` `${categoryNames[video.category]} · ${video.title}` `` 출력, `filter`로 게임 영상 개수, `map`으로 제목 배열).
   - `C:\dev\my-creator-site\contents.html` — `head`의 main.js script 다음 줄에 `<script src="js/contents.js" defer></script>`.
 - 끝 상태 확인: 영상 페이지 콘솔에 "음악 · 기타로 연주하는 신청곡" 등 6줄, 게임 영상 2개, 제목 6개 배열; 화면은 Day 12 정적 카드 그대로; 다른 페이지 콘솔에는 영상 줄이 없음; GitHub에 `Day 19` 커밋.
 - 과제: 1) 음악 영상 개수(쉬움): `filter`로 `music`만 골라 `length` 출력 → 정답 요지: 2. 2) 제목과 날짜(보통): `map`으로 `` `${video.title} (${video.date})` `` 배열 → 정답 요지: 코드와 6개 결과. 3) (도전) `forEach`와 `for...of`로 같은 출력 만들고 차이 한 줄 → 정답 요지: 결과 같음, forEach는 콜백을 넘김.
@@ -840,7 +852,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
   - VS Code에서 `C:\dev\my-creator-site` 폴더를 열어 두면 바로 시작할 수 있어요.
 - 오늘 만들/바꿀 파일:
   - `C:\dev\my-creator-site\contents.html` — Day 12 정적 카드 `div`를 지우고 `<h2>영상 목록</h2>`, 주석 `<!-- 카드는 contents.js가 영상 데이터를 읽어서 여기에 그려 줘요 -->`, `<div id="video-list" class="card-grid"></div>`, `<noscript><p class="error-box">영상 목록을 보려면 JavaScript를 켜 주세요.</p></noscript>`(`.error-box` 모양은 Day 25).
-  - `C:\dev\my-creator-site\js\contents.js` — 콘솔 확인 코드 삭제. `// 화면의 요소들을 미리 찾아 둬요 (Day 20)` + `const listElement = document.querySelector('#video-list');`, `createElementWithText`(Day 18 주석 포함)·`createCard`(레퍼런스 원문 그대로), `render()` Day 20 버전(`listElement.textContent = '';` + `allVideos.forEach((video) => { listElement.appendChild(createCard(video)); });`), 파일 끝 `render();`.
+  - `C:\dev\my-creator-site\js\contents.js` — 콘솔 확인 코드 삭제. 머리 주석 둘째 줄을 "영상 데이터로 카드를 그려요"로. `thumbnails`와 `// 지금 상태: 전체 영상` 주석 **사이**에 `// 화면의 요소들을 미리 찾아 둬요 (Day 20)` + `const listElement = document.querySelector('#video-list');`(0.6절 배치), `createElementWithText`(Day 18 주석 포함)·`createCard`(레퍼런스 원문 그대로), `render()` Day 20 버전(`listElement.textContent = '';` + `allVideos.forEach((video) => { listElement.appendChild(createCard(video)); });`), 파일 끝 `render();`.
   - `C:\dev\my-creator-site\css\style.css` — `5`의 `.card-body p` 다음에 `.card-body time { display: block; color: var(--muted); font-size: 0.9rem; }`, `.badge { … }`(레퍼런스 값).
 - 끝 상태 확인: 영상 페이지에 카드 6장(썸네일·보라 배지 `음악`/`게임`/`토크`·제목 링크·날짜); 제목을 누르면 새 탭으로 YouTube 주소가 열림; Elements에서 `#video-list` 안에 `article.card` 6개; 콘솔 오류 0개; 배포 주소에서도 6장; GitHub에 `Day 20` 커밋.
 - 과제: 1) DOM 나무 그리기(쉬움): Elements에서 첫 카드를 펼쳐 `article > img, div.card-body > span.badge, h3 > a, time` 구조를 들여 쓴 목록으로 → 정답 요지: 트리와 각 요소를 만든 코드 줄. 2) 데이터만 고치기(보통): `allVideos` 첫 영상 제목을 바꿔 카드가 바뀌는 것 확인하고 되돌리기 → 정답 요지: 화면 글은 HTML이 아니라 데이터에서 옴. 3) (도전) `link.textContent` 대신 `innerHTML`에 `'<b>굵게</b>'`를 넣으면? 실험 후 되돌리기 → 정답 요지: textContent는 꺾쇠까지 글자로, innerHTML은 태그로 해석 — 남이 쓴 글이면 위험.
@@ -851,6 +863,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
 ## Day 21 — 이벤트 (110분)
 - 목표:
   - **이벤트**(클릭·입력 같은 일), **이벤트 리스너** `요소.addEventListener('click', () => { … })` — 콜백은 이벤트가 날 때마다 불림(Day 19 콜백 복습). 이벤트 객체 `event`, `event.target`(실제로 누른 요소).
+  - CSS **복합 선택자**: 빈칸 없이 붙여 쓴 `.site-nav.open`(= `site-nav`와 `open` 클래스를 **둘 다** 가진 요소). 띄어 쓴 `.site-nav .open`은 Day 10 자손 선택자라 뜻이 달라진다는 것. 요소 이름 + 클래스(`tr.today`, Day 26)도 같은 규칙. Day 24 `.form-status.is-error`, Day 27 `.countdown.hint`에서 다시 써요.
   - **햄버거 메뉴**: 좁은 화면에서 메뉴 목록을 숨기고 `☰ 메뉴` 버튼으로 열고 닫기. `classList.toggle('open')`이 돌려주는 참/거짓, `setAttribute('aria-expanded', String(isOpen))`(불리언 → 글자는 Day 15 `String()`), `aria-controls`, `nav`에 `id="site-nav"`와 `aria-label="주 메뉴"`.
   - **data 속성** `data-category="game"`과 JS의 `button.dataset.category`.
   - **이벤트 위임**: 버튼 4개가 아니라 감싸는 상자 하나에 리스너 → `event.target.closest('button')`(누른 곳에서 가장 가까운 button, 없으면 `null` → 이른 `return`). `querySelectorAll('button').forEach(…)`로 `aria-pressed` 바꾸기. `role="group"` + `aria-label`.
@@ -882,12 +895,12 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
 - 오늘 만들/바꿀 파일:
   - 다섯 페이지 — 로고 링크 다음에 주석 `<!-- 모바일에서만 보이는 메뉴 버튼. main.js가 aria-expanded 값을 바꿔요 -->`와 `<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">☰ 메뉴</button>`, `<nav id="site-nav" class="site-nav" aria-label="주 메뉴">`.
   - `C:\dev\my-creator-site\js\main.js` — 머리 주석 목록을 `1) 모바일 메뉴 열기/닫기  3) 시간대별 인사말`로(2는 Day 22), 3번 구역 **위에** `// ---------- 1. 모바일 메뉴 (Day 21) ----------` 구역(레퍼런스 원문).
-  - `C:\dev\my-creator-site\css\style.css` — `4`: 주석 `/* 모바일: 메뉴 버튼은 보이고, 메뉴 목록은 숨겨져 있어요 */` + `.menu-toggle { margin-left: auto; }`(`.site-nav` 앞), `.site-nav`에 `display: none;`(맨 앞), `.site-nav.open { display: block; }`(주석 포함); `5`: `.button-outline` 선택자를 `.button-outline, .menu-toggle, .filters button`으로, 그 아래 `.filters button[aria-pressed="true"] { background: var(--accent); color: var(--accent-text); }`; `6`: 주석 `/* 영상 목록: 필터 + 검색 */` + `.filters { display: flex; flex-wrap: wrap; gap: 0.5rem; }`(`.video-frame`·소개 규칙 다음, `.schedule-table` 앞 — 레퍼런스 순서); `8`: `h1` 다음에 `.menu-toggle { display: none; }`, `.site-nav`에 `display: block;`(맨 앞, 주석 "메뉴 버튼은 숨기고, 메뉴 목록은 가로로 늘어놔요").
+  - `C:\dev\my-creator-site\css\style.css` — `4`: 주석 `/* 모바일: 메뉴 버튼은 보이고, 메뉴 목록은 숨겨져 있어요 */` + `.menu-toggle { margin-left: auto; }`(`.site-nav` 앞), `.site-nav`에 `display: none;`(맨 앞), `.site-nav.open { display: block; }`(주석 포함); `5`: `.button-outline` 선택자를 `.button-outline, .menu-toggle, .filters button`으로, 그 아래 `.filters button[aria-pressed="true"] { background: var(--accent); color: var(--accent-text); }`; `6`: 주석 `/* 영상 목록: 필터 + 검색 */` + `.filters { display: flex; flex-wrap: wrap; gap: 0.5rem; }`(`.video-frame`·소개 규칙 다음, `.schedule-table` 앞 — 레퍼런스 순서); `8`: Day 13의 주석 `/* 메뉴 목록은 가로로 늘어놔요 */`를 레퍼런스 원문 `/* 메뉴 버튼은 숨기고, 메뉴 목록은 가로로 늘어놔요 */`로 바꾸고 `h1` 규칙 바로 다음으로 옮긴 뒤, 그 주석 아래에 `.menu-toggle { display: none; }`를 새로 넣고, `.site-nav`에 `display: block;`(맨 앞)을 더해요 — 이로써 768px 구역의 메뉴 부분이 레퍼런스와 같아짐.
   - `C:\dev\my-creator-site\contents.html` — 안내 문장 다음, `<h2>영상 목록</h2>` 앞에 주석 `<!-- 버튼 4개를 감싼 상자 하나에만 클릭 이벤트를 달아요 (이벤트 위임, Day 21) -->` + `<div id="category-filters" class="filters" role="group" aria-label="카테고리 선택">` 버튼 4개(`data-category` `all`·`game`·`talk`·`music`, 글자 전체·게임·토크·음악, `aria-pressed`는 전체만 `true`).
-  - `C:\dev\my-creator-site\js\contents.js` — 요소 구역에 `const filterBox = document.querySelector('#category-filters');`, `// 지금 상태: …` 구역에 `let selectedCategory = 'all';`, 파일 끝 `render();` 위에 위임 리스너(레퍼런스 원문과 같되 마지막 줄 `render();` 대신 `console.log('선택한 카테고리:', selectedCategory); // Day 23에서 render()로 바꿔요`).
+  - `C:\dev\my-creator-site\js\contents.js` — 요소 구역 끝에 `const filterBox = document.querySelector('#category-filters');`, `let allVideos` 바로 아래에 `let selectedCategory = 'all';`(상태 주석을 `// 지금 상태: 전체 영상, 선택한 카테고리`로), 파일 끝 `render();` 위에 위임 리스너(레퍼런스 원문과 같되 마지막 줄 `render();` 대신 `console.log('선택한 카테고리:', selectedCategory); // Day 23에서 render()로 바꿔요`).
 - 끝 상태 확인: 기기 모드 360px: 메뉴 목록이 숨고 오른쪽에 `☰ 메뉴` 버튼, 누르면 메뉴가 펼쳐지고 다시 누르면 접힘, Elements에서 `aria-expanded`가 `true`/`false`로 바뀜; 768px 이상: 버튼이 없고 메뉴가 가로; 영상 페이지: 카테고리 버튼을 누르면 그 버튼만 보라로 채워지고 콘솔에 `선택한 카테고리: game`(카드는 아직 그대로); 다섯 페이지 콘솔 오류 0개; GitHub에 `Day 21` 커밋.
 - 과제: 1) 빈 곳 클릭(쉬움): 버튼 사이 빈 곳을 눌렀을 때 콘솔에 아무것도 안 나오는 이유 → 정답 요지: `closest('button')`이 `null` → `return`. 2) 위임 없이 쓰면?(보통): 버튼마다 리스너를 다는 코드를 콘솔에서 써 보고 위임과 비교(파일은 그대로) → 정답 요지: 코드와 "버튼이 늘어도 리스너 하나" 장점. 3) (도전) 키보드만으로 메뉴 열기: 360px에서 `Tab`으로 버튼까지 가서 `Enter`/`Space` → 정답 요지: `<button>`이라 키보드가 저절로 됨(`div`였다면 안 됨).
-- 용어(사전 담당): 이벤트, 이벤트 리스너, 이벤트 위임, 햄버거 메뉴, data 속성
+- 용어(사전 담당): 이벤트, 이벤트 리스너, 이벤트 위임, 햄버거 메뉴, data 속성, 복합 선택자
 - 자주 막히는 곳 후보: 버튼을 눌러도 안 열림(`.site-nav.open`을 `.site-nav .open`으로 띄어 씀, `#site-nav` id 빠짐); 한 페이지에서만 `Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')`(그 페이지에 버튼을 안 넣음 — 원문 실측); 넓은 화면에서 메뉴가 사라짐(768px 규칙의 `display: block` 빠짐); `addEventListener('Click', …)`·`'onclick'`; 콜백 자리에 `toggleMenu()`처럼 괄호를 붙여 바로 실행; `dataset.category`가 `undefined`(`data-catagory` 철자); 버튼 글자 `☰`가 네모로 보임(글꼴 — 실기 미확인); 기기 모드에서 메뉴를 연 채 넓히면 상태가 남음(정상).
 - 레퍼런스 대응: `main.js` `1. 모바일 메뉴`(완성), 다섯 페이지의 `.menu-toggle` 버튼·주석·nav `id`/`aria-label`(완성), `contents.html` `#category-filters`와 주석(완성), `style.css` `.menu-toggle`·`.site-nav`·`.site-nav.open`·`.filters`·필터 버튼 규칙·768px의 `.menu-toggle`·`.site-nav`(완성), `contents.js` `filterBox`·`selectedCategory`. 중간 단계 — 레퍼런스와 다름: 위임 리스너 끝이 `console.log`(Day 23에 `render()`), `.toolbar` 상자 없음(Day 23), 머리 주석 목록에 2) 없음(Day 22).
 
@@ -895,7 +908,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
 - 목표:
   - **다크 모드** 설계: `<html data-theme="dark">`가 붙으면 CSS 변수 값만 바뀜(`:root[data-theme="dark"] { … }`, Day 14 변수 덕분), `color-scheme`(입력칸·스크롤바 색).
   - `document.documentElement`(html 요소)와 `dataset.theme`(Day 21 data 속성 복습).
-  - **localStorage**: `localStorage.setItem('theme', 'dark')`, `getItem('theme')`(없으면 `null`), 글자만 저장, 브라우저·주소마다 따로(파일로 연 사이트와 Live Preview·배포 주소는 서로 다른 저장소 — "주소 앞부분이 다르면 따로"로만 설명). 개발자 도구 **Application**(애플리케이션) → Local storage에서 보고 지우기.
+  - **localStorage**: `localStorage.setItem('theme', 'dark')`, `getItem('theme')`(없으면 `null`), 글자만 저장, 브라우저·주소마다 따로(파일로 연 사이트와 Live Preview·배포 주소는 서로 다른 저장소 — "주소 앞부분이 다르면 따로"로만 설명). 개발자 도구 **Application**(애플리케이션) → Local storage에서 보고 지우기(Edge에서 연 페이지 — 0.2절. 저장소가 주소마다 따로라서 Live Preview 주소를 Edge에 붙여 연 페이지와 VS Code 미리 보기 창도 서로 다를 수 있다는 점까지 실측해 적어요).
   - **prefers-color-scheme**와 `window.matchMedia('(prefers-color-scheme: dark)').matches`: 처음 방문이면 Windows 설정(**설정 → 개인 설정 → 색 → 모드 선택**, 이름은 버전에 따라 다를 수 있음)을 따름. 개발자 도구 **Rendering**의 prefers-color-scheme 흉내 기능(위치 실측).
   - 함수로 나누기: `getSavedTheme`, `saveTheme`, `applyTheme`(Day 18). 삼항 연산자(Day 16)로 다음 테마 고르기.
   - 버튼 글자는 고정 `🌙 다크 모드`, 켜졌는지는 `aria-pressed`로(스크린 리더가 "눌림"으로 읽음) — 라벨을 바꾸지 않는 이유.
@@ -936,13 +949,13 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
 
 ## Day 23 — 필터와 검색 (100분)
 - 목표:
-  - **input 이벤트**(글자를 칠 때마다), `input.value`, `<input type="search">` + `label for`.
+  - **input 이벤트**(글자를 칠 때마다), `input.value`, `<input type="search">` + `label for`, `placeholder`(칸이 비었을 때 흐리게 보이는 예시 글자 — label을 대신하지 않음), `autocomplete="off"`(Day 8 autocomplete 복습).
   - **문자열 메서드** `trim()`(앞뒤 빈칸), `toLowerCase()`(영어 소문자로 — `Q&A` 검색), `includes()`(들어 있나).
   - 상태 변수 + 다시 그리기 패턴: `selectedCategory`·`searchText`를 바꾸고 `render()`가 `getVisibleVideos()`(Day 19 filter + `&&`/`||`)로 걸러 그림. 카테고리와 검색을 함께 적용.
   - 결과 개수 문장 `` `영상 ${videos.length}개` ``, 빈 목록 안내 — **hidden 속성**과 `element.hidden = 참/거짓`. CSS `[hidden] { display: none !important; }`가 필요한 이유(다른 `display` 규칙에 지지 않게, `!important`는 꼭 필요할 때만).
   - 한글 검색: 글자를 조합하는 중에도 input 이벤트가 난다는 것(정상).
   - 입력칸 공통 모양(`input, select, textarea`)과 `:focus` 테두리 — 문의 폼에도 함께 적용됨.
-- 이미 배운 것: Day 21 이벤트 리스너·위임·dataset·aria-pressed·`#category-filters`·`selectedCategory`; Day 20 render·createCard·textContent; Day 19 filter·콜백; Day 18 함수·return; Day 16 `===`·`&&`·`||`·템플릿 리터럴; Day 12~13 Grid·미디어 쿼리; Day 8 label·input.
+- 이미 배운 것: Day 21 이벤트 리스너·위임·dataset·aria-pressed·`#category-filters`·`selectedCategory`; Day 10 자손 선택자(`.search-box label`); Day 20 render·createCard·textContent; Day 19 filter·콜백; Day 18 함수·return; Day 16 `===`·`&&`·`||`·템플릿 리터럴; Day 12~13 Grid·미디어 쿼리; Day 8 label·input.
 - 시작 상태: (Day 22 끝 상태와 같아요)
   - 프로젝트 `C:\dev\my-creator-site\`:
     - `C:\dev\my-creator-site\index.html`
@@ -968,7 +981,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
   - VS Code에서 `C:\dev\my-creator-site` 폴더를 열어 두면 바로 시작할 수 있어요.
 - 오늘 만들/바꿀 파일:
   - `C:\dev\my-creator-site\contents.html` — 안내 문장을 `<p>카테고리를 고르거나 제목으로 검색해 보세요.</p>`로; 주석과 `#category-filters`를 `<div class="toolbar">`로 감싸고 그 안 끝에 `<div class="search-box"><label for="search">제목 검색</label><input id="search" type="search" placeholder="예: 게임" autocomplete="off"></div>`; `<h2>영상 목록</h2>` 다음에 `<p id="result-count" class="result-count"></p>`(aria-live는 Day 24 과제), `<p id="empty-message" hidden>조건에 맞는 영상이 없어요. 다른 검색어를 써 보세요.</p>`.
-  - `C:\dev\my-creator-site\js\contents.js` — 요소 구역에 `searchInput`·`countElement`·`emptyMessage`, 상태 구역에 `let searchText = '';`, `getVisibleVideos()`(레퍼런스 원문, Day 19·18 주석), `render()`에 `const videos = getVisibleVideos();`·개수·`emptyMessage.hidden`(레퍼런스와 같되 `isLoaded` 검사 없음), 위임 리스너 끝을 `render();`로, `// 검색창: 글자를 입력할 때마다 바로 걸러요 (Day 23)` input 리스너(레퍼런스 원문).
+  - `C:\dev\my-creator-site\js\contents.js` — 머리 주석 둘째 줄을 "영상 데이터를 카드로 그리고, 카테고리 버튼과 검색창으로 걸러서 보여 줘요"로, 요소 구역 끝에 `searchInput`·`countElement`·`emptyMessage`, `selectedCategory` 아래에 `let searchText = '';`(상태 주석 `// 지금 상태: 전체 영상, 선택한 카테고리, 검색어`), `getVisibleVideos()`(레퍼런스 원문, Day 19·18 주석), `render()`에 `const videos = getVisibleVideos();`·개수·`emptyMessage.hidden`(레퍼런스와 같되 `isLoaded` 검사 없음), 위임 리스너 끝을 `render();`로, `// 검색창: 글자를 입력할 때마다 바로 걸러요 (Day 23)` input 리스너(레퍼런스 원문).
   - `C:\dev\my-creator-site\css\style.css` — `2`: `img` 앞에 `[hidden] { display: none !important; }`(주석 포함); `6` 영상 목록 구역: `.filters` 앞에 `.toolbar`, `.filters` 다음에 `.search-box label`, `input, select, textarea { … }`, `input:focus, select:focus, textarea:focus { border-color: var(--accent); }`, `.result-count`(레퍼런스 값과 순서); `8`: `.about-intro` 다음에 `.toolbar { grid-template-columns: 1fr minmax(240px, 320px); align-items: end; }`.
 - 끝 상태 확인: 영상 페이지 처음 `영상 6개`; **게임** → 2장 `영상 2개`; 검색 `기타` → 1장; 게임 + `기타` → 0장 `영상 0개` + 빈 목록 안내; `q&a` → `구독자 1000명 기념 Q&A`; **전체** + 빈 검색 → 6장; 768px 이상에서 버튼과 검색칸이 한 줄; 문의 폼 칸이 넓고 둥근 모양; GitHub에 `Day 23` 커밋.
 - 과제: 1) 대소문자(쉬움): `toLowerCase()`를 한쪽에서 빼면 `q&a`가 왜 안 찾아지는지 → 정답 요지: `'Q&A'.includes('q&a')`는 false, 둘 다 소문자로 맞춤. 2) 빈칸(보통): 검색어 `  게임  `이 찾아지는 이유와 `trim()`을 빼면? → 정답 요지: 앞뒤 빈칸이 제목에 없어서 0개. 3) (도전) 카테고리 이름(게임·토크·음악)도 검색되게 하려면 `matchesSearch`를 어떻게 바꿀지 코드만 쓰고 끝 상태엔 넣지 않기 → 정답 요지: `|| categoryNames[video.category].includes(searchText)`.
@@ -986,7 +999,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
   - CSS: 의사 클래스 `:empty`(오류 문장이 비면 자리도 차지하지 않게, Day 14 의사 클래스 복습), 상태 클래스 `is-error`·`is-success`.
   - 고치는 중 다시 검사: form 하나에 `input` 리스너(이벤트 위임 복습).
   - 연습용이라 실제로 전송하지 않음, 진짜 전송은 P2에서 서버를 만들어서 한다는 예고.
-- 이미 배운 것: Day 23 input 이벤트·문자열 메서드(trim)·hidden; Day 21 이벤트 리스너·위임·setAttribute·aria 속성; Day 20 querySelector·textContent·className; Day 19 객체·대괄호 표기; Day 18 함수·화살표 함수·return; Day 17 배열·for...of·push; Day 16 조건문·템플릿 리터럴; Day 14 CSS 변수; Day 11 속성 선택자; Day 8 폼·label·input·select·textarea.
+- 이미 배운 것: Day 23 input 이벤트·문자열 메서드(trim)·hidden; Day 21 이벤트 리스너·위임·setAttribute·aria 속성; Day 20 querySelector·textContent·className; Day 19 객체·대괄호 표기; Day 18 함수·화살표 함수·return; Day 17 배열·for...of·push; Day 16 조건문·템플릿 리터럴; Day 14 CSS 변수·의사 클래스; Day 21 복합 선택자(`.form-status.is-error`); Day 11 속성 선택자; Day 10 자손 선택자(`.field label`); Day 8 폼·label·input·select·textarea.
 - 시작 상태: (Day 23 끝 상태와 같아요)
   - 프로젝트 `C:\dev\my-creator-site\`:
     - `C:\dev\my-creator-site\index.html`
@@ -1027,7 +1040,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
   - **비동기**: 파일을 받아 오는 동안 기다리지 않고 다른 일을 하는 방식. **fetch**(`fetch('data/videos.json')`), **async 함수**와 **await**(기다렸다가 결과 받기), `response.ok`·`response.status`(404 같은 응답 번호 — 상태 코드 용어는 P2), `await response.json()`(JSON 글자 → 배열). fetch가 "나중에 결과를 주는 약속(Promise)"을 돌려준다는 것은 한 줄만(P2 Day 8).
   - 오류 처리 **try...catch**, `throw new Error(…)`, `console.error`. 로딩 문장(`#load-status`)·오류 상자(`#load-error`, `role="alert"`)·`hidden`, `isLoaded`로 다 불러오기 전엔 그리지 않기(그 사이 누른 버튼·검색어는 기억).
   - `file://`의 제약: 더블클릭으로 연 페이지는 브라우저 보안 때문에 fetch로 다른 파일을 못 읽음 → **Live Preview**(http 주소)나 배포 주소로 열기. 콘솔 오류 원문(실측)과 오류 상자 확인.
-  - 개발자 도구 **Network**(네트워크) 패널: `videos.json` 줄과 200·404 숫자 보기.
+  - 개발자 도구 **Network**(네트워크) 패널: `videos.json` 줄과 200·404 숫자 보기. fetch 때문에 Live Preview로 여는데 개발자 도구는 VS Code 미리 보기 창에서 안 열리므로, Live Preview 주소를 Edge 주소창에 붙여 열어요(0.2절, 오늘부터 Day 26·28·29도 같은 방법).
   - Day 22 예고 회수: `main.js`의 `getSavedTheme`·`saveTheme`를 try/catch로 감싸 저장소를 못 쓰는 브라우저에서도 사이트가 멈추지 않게.
 - 이미 배운 것: Day 24 이벤트·폼; Day 23 render·getVisibleVideos·hidden·상태 변수; Day 22 localStorage·`getSavedTheme`/`saveTheme`; Day 20 DOM·textContent; Day 19 객체 배열·데이터 형식; Day 18 함수·return·이른 return; Day 16 조건문·템플릿 리터럴·`!`; Day 15 자료형·null; Day 2 Live Preview.
 - 시작 상태: (Day 24 끝 상태와 같아요)
@@ -1056,7 +1069,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
   - VS Code에서 `C:\dev\my-creator-site` 폴더를 열어 두면 바로 시작할 수 있어요.
 - 오늘 만들/바꿀 파일:
   - `C:\dev\my-creator-site\data\videos.json` — 새 파일, 레퍼런스 원문(6개, 한 줄에 한 객체).
-  - `C:\dev\my-creator-site\js\contents.js` — 레퍼런스 완성: 머리 주석 최종, `let allVideos = [];`·`let isLoaded = false;`, 요소 구역에 `loadStatus`·`loadError`, `render()` 맨 앞 `isLoaded` 검사(주석 포함), `// data/videos.json 불러오기 (Day 25: async/await, 오류 처리)` `loadVideos()`, 파일 끝 `render();` → `loadVideos();`.
+  - `C:\dev\my-creator-site\js\contents.js` — 레퍼런스 완성: 머리 주석 최종, `let allVideos = [];`·바로 아래 `let isLoaded = false;`(상태 주석 레퍼런스 원문), 요소 구역 끝에 `loadStatus`·`loadError`, `render()` 맨 앞 `isLoaded` 검사(주석 포함), `// data/videos.json 불러오기 (Day 25: async/await, 오류 처리)` `loadVideos()`, 파일 끝 `render();` → `loadVideos();`.
   - `C:\dev\my-creator-site\contents.html` — `#result-count` 다음에 `<p id="load-status">영상 목록을 불러오는 중이에요…</p>`, `<p id="load-error" class="error-box" role="alert" hidden></p>`, 카드 주석을 `<!-- 카드는 contents.js가 data/videos.json을 읽어서 여기에 그려 줘요 -->`로.
   - `C:\dev\my-creator-site\css\style.css` — `6` 영상 목록 구역 `.result-count` 다음에 `.error-box { … }`(레퍼런스 값).
   - `C:\dev\my-creator-site\js\main.js` — `getSavedTheme`·`saveTheme`를 레퍼런스처럼 try/catch로 감싸고 주석 `// (try/catch는 Day 25에서 자세히 배워요) …` 포함(완성).
@@ -1073,8 +1086,8 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
   - **setInterval**(함수, 1000)로 1초마다 다시 계산. 괄호 없이 함수 이름만 넘기는 이유(Day 21 콜백 복습).
   - `data\schedule.json`(`{ day, start, title }`, `day`는 getDay와 같은 숫자)과 표의 `data-day` 값 맞추기. 템플릿 리터럴 선택자 `` `tr[data-day="${today}"]` ``, `aria-current="date"`, `role="timer"`(1초마다 바뀌어도 계속 읽지 않음), `aria-labelledby`(구역 이름을 제목과 연결).
   - CSS **의사 요소** `::after` + `content: " (오늘)"`(색만으로 구분하지 않기), `font-variant-numeric: tabular-nums`(숫자가 흔들리지 않게).
-  - 컴퓨터 시계 기준 문구(0.4절), fetch라 Live Preview로 연다(Day 25).
-- 이미 배운 것: Day 25 fetch·async/await·try...catch·JSON·Live Preview; Day 21 data 속성·setAttribute·classList; Day 20 querySelector·textContent; Day 19 객체(`{ item: item, time: time }`)·배열 인덱스; Day 18 함수·return; Day 17 for...of·`let next = null` 최솟값 찾기 모양; Day 16 Date·getHours·삼항 연산자·템플릿 리터럴; Day 15 `%`·`String()`·`Number()`·NaN; Day 11 속성 선택자; Day 9 id 선택자; Day 8 table.
+  - 컴퓨터 시계 기준 문구(0.4절), fetch라 Live Preview로 열고, 콘솔·Elements로 확인할 때는 그 주소를 Edge에 붙여 연다(Day 25, 0.2절).
+- 이미 배운 것: Day 25 fetch·async/await·try...catch·JSON·Live Preview; Day 21 data 속성·setAttribute·`classList.toggle`·복합 선택자(`tr.today`); Day 20 classList.add; Day 10 자손 선택자(`.next-box h2`); Day 20 querySelector·textContent; Day 19 객체(`{ item: item, time: time }`)·배열 인덱스; Day 18 함수·return; Day 17 for...of·`let next = null` 최솟값 찾기 모양; Day 16 Date·getHours·삼항 연산자·템플릿 리터럴; Day 15 `%`·`String()`·`Number()`·NaN; Day 11 속성 선택자; Day 9 id 선택자; Day 8 table.
 - 시작 상태: (Day 25 끝 상태와 같아요)
   - 프로젝트 `C:\dev\my-creator-site\`:
     - `C:\dev\my-creator-site\index.html`
@@ -1122,7 +1135,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
   - 타이머 멈추기: `let timerId = null;` → `timerId = setInterval(update, 1000)` → 지나면 `clearInterval(timerId)` + `곧 시작해요!`. 잘못된 주소면 `classList.add('hint')` + 사용법 문장.
   - OBS 설치(선택, 작성 기준 33.0.1, `https://obsproject.com/`, 사용자 계정 컨트롤 창): **소스 목록**의 **+** → **브라우저** → 이름 → 속성 창 **URL**에 배포 주소(`https://<내 아이디>.github.io/my-creator-site/overlay/countdown.html?title=저녁%20방송&start=20:00`) 또는 VS Code가 켜져 있을 때의 Live Preview 주소, **너비** 1920·**높이** 1080(기본 800×600, external-facts 5절). **로컬 파일**을 체크하면 주소 뒤 값을 붙이기 어렵다는 것(실기 미확인 — URL 칸 사용 권장). OBS 화면·메뉴는 실기 미확인 표시. OBS를 설치하지 않아도 브라우저로 끝까지 확인할 수 있게 해요.
   - 컴퓨터 시계 기준 문구(0.4절).
-- 이미 배운 것: Day 26 Date·setHours·setInterval·밀리초·`Math.floor`·`%`·`pad`·`padStart`·`split`·`Number`·role="timer"; Day 22 classList; Day 20 querySelector·textContent; Day 18 함수·return; Day 16 `||`·`&&`·조건문·템플릿 리터럴; Day 15 NaN·`!==`; Day 14 배포 주소; Day 13 viewport·미디어 쿼리 없이 크기 맞추기의 필요; Day 11 Flexbox·flex-direction; Day 5 상위 폴더 `../`(Day 28에 씀).
+- 이미 배운 것: Day 26 Date·setHours·setInterval·밀리초·`Math.floor`·`%`·`pad`·`padStart`·`split`·`Number`·role="timer"; Day 21 복합 선택자(`.countdown.hint`); Day 20 querySelector·textContent·`classList.add`; Day 18 함수·return; Day 16 `||`·`&&`·`!==`·조건문·템플릿 리터럴; Day 15 NaN; Day 14 배포 주소; Day 13 viewport·미디어 쿼리 없이 크기 맞추기의 필요; Day 11 Flexbox·flex-direction; Day 5 상위 폴더 `../`(Day 28에 씀).
 - 시작 상태: (Day 26 끝 상태와 같아요)
   - 프로젝트 `C:\dev\my-creator-site\`:
     - `C:\dev\my-creator-site\index.html`
@@ -1167,7 +1180,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
   - **Open Graph**: `og:title`·`og:description`·`og:type`·`og:locale`(링크를 공유할 때 미리 보기). `og:image`는 `https://` 전체 주소가 필요해서 배포 주소가 정해진 뒤 선택으로 넣는다는 것(레퍼런스 README, 레퍼런스 파일에는 없음).
   - **파비콘**: `favicon.svg`(레퍼런스 원문) + `<link rel="icon" href="favicon.svg" type="image/svg+xml">`; `overlay/countdown.html`은 `../favicon.svg`(Day 5 상위 폴더).
   - 성능: **지연 로딩** `loading="lazy"`(홈 카드 그림·iframe, Day 20 `image.loading`의 뜻), `width`·`height`로 자리 미리 잡기(화면 밀림 방지), 그림 파일 크기.
-  - **Lighthouse**: Chrome 개발자 도구 **Lighthouse** 탭(안 보이면 `»` 안) → 분석. 시크릿 창(`Ctrl + Shift + N`)과 배포 주소로 검사하는 이유(확장 프로그램 영향·Live Preview와 차이), 점수는 매번 조금 다름, 항목을 하나 골라 고쳐 보기.
+  - **Lighthouse**: Chrome 개발자 도구 **Lighthouse** 탭(안 보이면 `»` 안) → 분석. Live Preview 미리 보기 창에서는 개발자 도구가 안 열리므로 배포 주소나 Edge·Chrome에 붙여 연 Live Preview 주소로 검사(0.2절). 시크릿 창(`Ctrl + Shift + N`)과 배포 주소로 검사하는 이유(확장 프로그램 영향·Live Preview와 차이), 점수는 매번 조금 다름, 항목을 하나 골라 고쳐 보기.
 - 이미 배운 것: Day 27 overlay 폴더; Day 26 aria-labelledby·의사 요소; Day 24 aria-live·aria-describedby; Day 21 aria-expanded·aria-label·키보드로 버튼; Day 20 `image.loading`(뜻은 오늘); Day 14 의사 클래스·배포; Day 13 미디어 쿼리·prefers 계열(prefers-color-scheme Day 22); Day 11 ARIA; Day 6 개발자 도구·시맨틱 HTML; Day 5 대체 텍스트·접근성·스크린 리더·상위 폴더; Day 3 head·meta·title.
 - 시작 상태: (Day 27 끝 상태와 같아요)
   - 프로젝트 `C:\dev\my-creator-site\`:
@@ -1216,7 +1229,7 @@ Day 30 끝 상태의 프로젝트 파일은 레퍼런스와 같은 22개예요(`
 - 목표:
   - **버그**와 **디버깅** 순서: 다시 일어나게 하기 → 오류 원문 읽기(종류·문장·파일:줄) → 위치 찾기 → 가설 → 확인.
   - 흔한 오류 원문 모음(실측해서 실음): `TypeError: Cannot read properties of null (reading '…')`, `ReferenceError: … is not defined`, `SyntaxError: …`, Network 404, `file://` fetch 오류. 각 오류가 P1의 어느 Day에서 나왔는지 링크.
-  - 개발자 도구 **Sources**(소스) 패널: 파일 찾기(`Ctrl + P`), 줄 번호 클릭으로 **중단점**, 새로 고침·버튼 클릭으로 멈추기, Scope에서 변수 값 보기, 한 줄씩(`F10`), 계속(`F8`), 중단점 해제. `console.log` 디버깅과 비교.
+  - 개발자 도구 **Sources**(소스) 패널(Edge에서 연 Live Preview 주소나 배포 주소 — 0.2절): 파일 찾기(`Ctrl + P`), 줄 번호 클릭으로 **중단점**, 새로 고침·버튼 클릭으로 멈추기, Scope에서 변수 값 보기, 한 줄씩(`F10`), 계속(`F8`), 중단점 해제. `console.log` 디버깅과 비교.
   - 버그 고치기 연습: 오늘 시작할 때 커밋이 깨끗한지 확인 → 교재가 준 버그 3개를 일부러 넣고 찾아 고치기 → 다 끝나면 소스 제어 패널의 **변경 내용 취소**로 되돌릴 수 있다는 것(Git이 안전망, 되돌린 내용은 복구할 수 없다는 `:::warn`).
   - 폴더 정리: 레퍼런스 폴더 구조(1절 표)와 비교, 안 쓰는 파일·`index copy.html` 같은 남은 파일 지우기, 이름 규칙(소문자·`-`) 점검, 모든 페이지 콘솔 오류 0 확인.
   - **README** 쓰기: **Markdown** 문법(`#`, `##`, `-`, 숫자 목록, `` ` ``, 코드 블록 `text`, 표, 링크), VS Code Markdown 미리 보기(`Ctrl + Shift + V`). GitHub 저장소 첫 화면에 README가 보이는 것.
