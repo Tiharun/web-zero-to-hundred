@@ -110,7 +110,7 @@ docker compose up --build -d
    dotnet user-secrets set "ConnectionStrings:Default" "Host=localhost;Port=5432;Database=image_donation;Username=postgres;Password=<설치 때 정한 비밀번호>"
    dotnet user-secrets set "Security:IpHashKey" "<아무도 모르는 긴 문자열>"
    ```
-   무작위 문자열은 PowerShell에서 `[Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))`로 만들 수 있어요.
+   무작위 문자열은 PowerShell에서 `$b = New-Object byte[] 32; [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b); [Convert]::ToBase64String($b)`로 만들 수 있어요(Windows PowerShell 5.1에서도 되는 형식, Windows 실기 미확인).
 4. 화면을 빌드해서 서버의 `wwwroot`에 넣고, 서버를 실행해요 (처음 실행할 때 테이블을 자동으로 만들어요):
    ```powershell
    cd C:\dev\image-donation\client

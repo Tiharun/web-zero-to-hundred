@@ -11,17 +11,19 @@
 
 ## 1. SP 고정 규칙 (모든 Day 공통)
 
-1. **돈 흐름 원칙**(설계서 2.4). 운영자(학습자)는 결제를 전혀 다루지 않는다. PG 연동·정산이 없다. 무료 이미지 후원은 돈이 오가지 않는다. 치즈 연동(선택)은 시청자가 치지직 공식 치즈 후원 메시지에 후원 코드를 넣고, 서버는 세션 이벤트로 코드를 "확인만" 한다. 돈은 치지직이 스트리머에게 직접 정산한다. Day 1에 `:::warn`으로 분명히 쓰고, 치즈가 나오는 Day(20·26~29)에서 한 줄로 다시 짚는다.
+1. **돈 흐름 원칙**(설계서 2.4). 운영자(학습자)는 결제를 전혀 다루지 않는다. PG 연동·정산이 없다. 무료 이미지 후원은 돈이 오가지 않는다. 치즈 연동(선택)은 시청자가 치지직 공식 치즈 후원 메시지에 후원 코드를 넣고, 서버는 세션 이벤트로 코드를 "확인만" 한다. 돈은 치지직이 스트리머에게 직접 정산한다. Day 1에 `:::warn`으로 분명히 쓰고, 치즈가 나오는 Day(20·26~30)에서 한 줄로 다시 짚는다.
 2. **테스트 모드가 기본 경로**(Day 21~28). 치지직 앱 승인이 없어도 모든 Day를 끝낼 수 있어야 한다. 각 Day의 "끝 상태 확인"을 **기본 경로(치지직 승인 없이)** 와 **선택 단계(승인된 치지직 앱이 있을 때만)** 로 나눠 적었다. 본문도 이 두 갈래를 `:::info`로 구분한다. 승인을 기다리는 동안 다음 Day로 넘어가도 된다고 적는다.
 3. **치지직 실서버 연동은 작성 환경에서 검증하지 못했다**(계정·인증 정보 없음). OAuth 로그인·토큰 교환·갱신, `users/me` 응답 필드, 세션 URL, 후원 구독, 실제 DONATION 페이로드 모양, 채팅 전송은 공식 문서 대조와 가짜 HTTP 처리기(`StubChzzkHandler`)·로컬 Socket.IO 2.5.0 에뮬레이터로만 확인했다. 해당 Day 본문에 이 사실을 적고, 출처 `https://chzzk.gitbook.io/chzzk`와 "작성 기준일 2026-11, 문서는 바뀔 수 있음"을 둔다.
 4. **법적 고려**(Day 32): 처리방침·약관은 연습용 초안이고 **"법률 자문이 필요하다"** 를 `:::warn`으로 명시한다. 법 조항·의무를 단정하지 않는다.
 5. **P3를 전제하지 않는다.** SP는 P2 완료 후 열리고 P3보다 먼저 할 수 있다. Docker·컨테이너·PostgreSQL·psql·WebSocket·트랜잭션·Dockerfile은 SP Day(7·9·15·31·37)가 처음부터 가르친다. 다만 그 용어의 사전 항목은 이미 P3 사전에 있으므로 SP 사전에 다시 정의하지 않고 `[[제목]]`으로 링크한다(7절).
 6. **Docker 없는 경로**(CONTENT-GUIDE 2.3): Docker를 쓰는 Day(7·37과 DB를 켜는 모든 Day)는 PostgreSQL 직접 설치(`winget install PostgreSQL.PostgreSQL.18`, 관리자 권한, 5432) + `dotnet run`을 같은 무게로 둔다. Docker Desktop 설치 Day는 `winver`·에디션 확인으로 시작하고, Windows 11 Home의 지원 여부는 단정하지 않는다. 이미지는 `postgres:18`, 볼륨은 `/var/lib/postgresql`.
 7. **비밀 값**: 연결 문자열·`Security:IpHashKey`·치지직 Client Secret은 user-secrets(개발) 또는 `.env`/환경 변수(Docker)에만. `appsettings.json`과 커밋에는 없다. 실행 정책은 `RemoteSigned -Scope CurrentUser`만, 방화벽·백신을 끄게 하지 않는다. 방송·스크린샷에 user-secrets·오버레이 주소가 보이지 않게 주의시킨다.
-8. **연습 폴더** `C:\dev\sp-practice\`(프로젝트 밖): `api.http`(REST Client, P2 Day 16에서 설치)와 `images\`(학습자가 준비하는 사진). 레퍼런스에 없고 최종 프로젝트 폴더에도 들어가지 않는다. 화면(대시보드·후원 페이지)이 생기기 전 Day 10~27에서 API를 부를 때 쓴다.
-9. **마이그레이션 이력**: 학습자는 Day 9·13·23·26·31에 하나씩, 모두 5개(InitialCreate, AddIdentity, AddChzzkTokens, AddDonationEvents, AddSafety)를 만든다. 레퍼런스는 최종 모습만 담아 2개다. 파일 이름·시각은 다르고 Day 31 이후의 모델 스냅샷(스키마)은 같다. P2 레퍼런스 README와 같은 설명을 Day 9에 둔다.
+8. **연습 폴더** `C:\dev\sp-practice\`(프로젝트 밖): `api.http`(REST Client, P2 Day 16에서 설치)와 `images\`(학습자가 준비하는 사진). 레퍼런스에 없고 최종 프로젝트 폴더에도 들어가지 않는다. 화면(대시보드·후원 페이지)이 생기기 전 Day 10~27에서 API를 부를 때 쓴다. 변수·요청 이름·순서·multipart 경계 문자열은 9절 부록 F로 고정한다.
+9. **마이그레이션 이력**: 학습자는 Day 9·13·23·26·31·32에 하나씩, 모두 6개(InitialCreate, AddIdentity, AddChzzkTokens, AddDonationEvents, AddSafety, AddImageFileIndex)를 만든다. 레퍼런스는 최종 모습만 담아 2개다. 파일 이름·시각은 다르고 Day 32 이후의 모델 스냅샷(스키마)은 같다. P2 레퍼런스 README와 같은 설명을 Day 9에 둔다.
 10. **버전**(external-facts 0.3 그대로): .NET SDK 10.0.x(10.0.403), Node LTS 26(22.22.2+ / 24.15+), create-vite 9.3.3, React·ReactDOM 19.3.1, React Router 8.5.1(`react-router`), TypeScript 7.0.2, Vite 8.3.5, Vitest 5.0.5, Testing Library react 16.3.3 / dom 10.4.2 / jest-dom 7.0.1 / user-event 14.6.8, jsdom 30.1.3, `@microsoft/signalr` 10.0.11, Npgsql.EntityFrameworkCore.PostgreSQL 10.0.3, EF Core Design·Identity.EntityFrameworkCore·Mvc.Testing·SignalR.Client 10.0.14, dotnet-ef 10.0.14, SkiaSharp + SkiaSharp.NativeAssets.Linux.NoDependencies 4.154.0(MIT, ImageSharp는 쓰지 않음 — R28), SocketIOClient 4.0.5(`EIO = V3`), socket.io 2.5.0(에뮬레이터만), PostgreSQL 18(`postgres:18`). 버전이 나오는 곳에는 "작성 기준일 2026-11"과 `--version` 확인을 둔다.
 11. **레퍼런스에서 정한 정책**(바꾸지 않음): 움직이는 GIF·WebP는 첫 장면만(R29), EXIF 방향을 픽셀에 적용 후 WebP 80 재인코딩, 원본 1억 픽셀·디코딩 4096² 상한, 상태 7개(AwaitingCheese·Pending·Approved·Shown·Rejected·Expired·Cleared)와 모든 전이는 조건부 `ExecuteUpdate`, 오버레이가 연결되면 최근 30분 안의 미표시 승인 후원을 다시 보냄, 긴급 정지는 `Clear()`를 먼저 보내고 Cleared로 저장, 신고는 기록·거절·차단을 한 트랜잭션으로 하고 이미지는 `/media`로 내보내지 않는 증거로 7일 보관(R33·R35), 운영자 화면 없이 SQL로 검토, 매칭되지 않은 이벤트의 닉네임·메시지 미저장(최소 수집), 리프레시 토큰 잠금은 프로세스 하나 안에서만, 린터는 Oxlint(ESLint 없음, R23), `/api/auth/me`는 비로그인 204.
+12. **중간 단계의 모양은 9절 부록으로 고정한다**(R42): 예시 후원 데이터(A), Day 5 `DonationForm` props(B), Day 15 오버레이 첫 버전(C), `ChzzkSessionSource` 생성자 변화(D), Day 25 연습 테스트(E), `api.http`(F), Day 10 `LocalImageStorage`(G). 그 밖의 중간 단계는 각 Day의 "오늘 만들/바꿀 파일" 요지가 기준이다.
+13. **설계서 3.4와 다르게 배치한 것**(시간을 60~120분에 맞추고 테스트 모드를 기본 경로로 만들기 위함, 각 Day 제목의 핵심 주제는 그대로): 테스트 프로젝트를 Day 25에 만듦(3.4는 Day 33) / 테스트 모드 백엔드(`FakeDonationSource`, `test-donation`)를 Day 26에(3.4는 Day 28) / 세션·구독·채팅 API 메서드를 Day 22에 / 진짜 수신기의 BackgroundService 전환을 Day 28에 / 대시보드의 테스트 모드 패널과 "치즈 대기" 탭을 Day 30에(3.4 Day 30의 "테스트 후원") / `/media` 상태 확인(신고 이미지 격리)과 `ImageFile` 인덱스를 Day 32에 / 금지어 거르기(`BannedWordFilter`)를 Day 33에(3.4는 Day 31) / `ChzzkApiClientTests`·`StubChzzkHandler`를 Day 36에(테스트 대역) / Day 11 `ImageProcessor`·Day 19 `LoginPage`·Day 25 `ChzzkEmulator`·Day 34 테스트 대부분은 붙여 넣고 읽는 방식.
 
 ## 2. P2·P1에서 가져오는 지식 (SP가 기대는 것)
 
@@ -45,7 +47,7 @@ SP Day 1은 P2를 모두 마쳤다고 가정한다(P3는 가정하지 않음). �
 - [P2 Day 35](#/day/p2-d35)·[P2 Day 36](#/day/p2-d36): xUnit 단위 테스트, WebApplicationFactory 통합 테스트, `tsc --noEmit`
 - [P2 Day 37](#/day/p2-d37)~[P2 Day 40](#/day/p2-d40): dotnet format·Prettier·브랜치, vite build → wwwroot·`dotnet publish`·`UseStaticFiles`·`MapFallbackToFile`, 배포·환경 변수 `__`·리버스 프록시·X-Forwarded-For, 포트폴리오
 
-SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttpClient`, C# `event`, `[GeneratedRegex]`, `ConcurrentDictionary`, `SemaphoreSlim`, `ExecuteUpdateAsync`, 트랜잭션)은 그 Day의 목표·이미 배운 것에 "오늘 처음"으로 적었다.
+SP에서 처음 나오는 문법은 그 Day의 목표·이미 배운 것에 "오늘 처음"으로 적었다: React 전체(Day 3~6), `byte[]`·`MemoryStream`·`[GeneratedRegex]`·partial(Day 10), `ReadOnlySpan`·`u8`·범위·컬렉션 식(Day 11, 읽기만), `SignInManager.SignOutAsync`(Day 13), `keydown`·`e.key`·`reduce`(Day 19), `IOptions<T>`·`AddHttpClient`(Day 21), `UserManager`·`SignInManager.SignInAsync`(Day 23), `SemaphoreSlim`(Day 24), `ConcurrentDictionary`(Day 25), C# `event`(Day 26), `ExecuteUpdateAsync`(Day 17), 트랜잭션(Day 31), SQL `count`·`GROUP BY`·`JOIN`(Day 35).
 
 ## 3. 주소·포트·비밀 값
 
@@ -84,21 +86,21 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 | 19 | 검수 대시보드(React) | 120 |
 | 20 | 설정 화면 | 110 |
 | 21 | OAuth 2.0 원리 | 100 |
-| 22 | 치지직 개발자 센터 | 90 |
+| 22 | 치지직 개발자 센터 | 105 |
 | 23 | 치지직 로그인 | 110 |
 | 24 | 토큰 관리 | 100 |
 | 25 | 세션 소켓 이해 | 120 |
-| 26 | 후원 이벤트 수신 | 120 |
+| 26 | 후원 이벤트 수신 | 110 |
 | 27 | 후원 코드 매칭 | 120 |
 | 28 | 테스트 모드·채팅 안내 | 110 |
 | 29 | 후원 페이지 화면 | 110 |
-| 30 | 스트리머 온보딩 | 90 |
-| 31 | 안전 장치 | 120 |
-| 32 | 개인정보·법적 고려 | 90 |
-| 33 | 단위 테스트 | 110 |
-| 34 | 통합·프론트 테스트 | 120 |
-| 35 | 관측성 | 80 |
-| 36 | 저장소 추상화 | 90 |
+| 30 | 스트리머 온보딩 | 110 |
+| 31 | 안전 장치 | 110 |
+| 32 | 개인정보·법적 고려 | 110 |
+| 33 | 단위 테스트 | 120 |
+| 34 | 통합·프론트 테스트 | 115 |
+| 35 | 관측성 | 95 |
+| 36 | 저장소 추상화 | 110 |
 | 37 | Docker 이미지 | 120 |
 | 38 | 배포와 HTTPS | 100 |
 | 39 | 방송 리허설 | 90 |
@@ -246,7 +248,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 
 ## Day 4 — React ② (100분)
 - 목표:
-  - 상태(state)와 훅의 규칙(컴포넌트 맨 위, 조건문 안에서 부르지 않기), `useState`로 예시 후원 3건을 기억하기.
+  - 상태(state)와 훅의 규칙(컴포넌트 맨 위, 조건문 안에서 부르지 않기), `useState`로 예시 후원 3건을 기억하기(값은 9절 부록 A 그대로).
   - 이벤트: `onClick={() => onApprove(d.id)}`(함수를 넘긴다, 바로 부르지 않는다).
   - 조건부 렌더링(`&&`, 삼항)으로 검수 대기일 때만 승인·거절 버튼, 목록이 비면 "검수할 후원이 없어요.".
   - 목록 렌더링 `map` + `key={d.id}`, 불변 업데이트: `src\donationList.ts`의 `upsertDonation`(같은 id면 바꾸고 없으면 맨 앞에 넣은 **새 배열**)과 `statusLabel`(`Record<DonationStatus, string>`, 7개 상태 이름 — 상태 뜻은 Day 1 개요를 다시 짚고 정식 설계는 Day 9라고 예고).
@@ -254,7 +256,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - 필터 버튼 "전체 / 검수 대기"(`aria-pressed`)로 보이는 목록 거르기.
 - 이미 배운 것:
   - [Day 3](#/day/sp-d03) 컴포넌트·TSX·props
-  - 배열·객체·`map`/`filter`/`some`([P1 Day 17](#/day/p1-d17)~[P1 Day 19](#/day/p1-d19)), 이벤트([P1 Day 21](#/day/p1-d21)), 펼침 문법은 오늘 한 줄로 설명
+  - 배열·객체·`map`/`filter`/`some`([P1 Day 17](#/day/p1-d17)~[P1 Day 19](#/day/p1-d19)), 이벤트([P1 Day 21](#/day/p1-d21)), [[전개 구문]] `...`([P2 Day 8](#/day/p2-d08)), `Record<K, V>` 유틸리티 타입([P2 Day 6](#/day/p2-d06))
   - 유니온·리터럴 타입([P2 Day 5](#/day/p2-d05)), `enum` 대신 유니온([P2 Day 7](#/day/p2-d07))
 - 시작 상태:
   - [Day 3](#/day/sp-d03) 끝 상태와 같다. 아래 파일이 이렇게 있어야 한다(없으면 [Day 3](#/day/sp-d03)의 "오늘 끝 상태 전체 코드"로 맞춘다).
@@ -266,7 +268,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `client`에서 `npm run dev`를 켤 수 있다(http://localhost:5173).
   - 도구가 만드는 폴더(`node_modules`, `bin`, `obj`, `dist`, 업로드된 `media` 파일)는 목록에서 뺐다.
 - 오늘 만들/바꿀 파일:
-  - `C:\dev\image-donation\client\src\App.tsx` [바꿈] — useState로 예시 후원 3건 + 승인/거절(upsertDonation) + "전체/검수 대기" 필터 (레퍼런스 `client/src/App.tsx`)
+  - `C:\dev\image-donation\client\src\App.tsx` [바꿈] — useState로 예시 후원 3건(9절 부록 A) + 승인/거절(upsertDonation) + "전체/검수 대기" 필터 (레퍼런스 `client/src/App.tsx`)
   - `C:\dev\image-donation\client\src\index.css` [바꿈] — + `.cards`, `.card-body`, `.badge`, `.actions`, `button.quiet`, `.tabs` (레퍼런스 `client/src/index.css`)
   - `C:\dev\image-donation\client\src\api.ts` [새로] — 타입만: `DonationStatus`(7개 유니온), `Donation { id, status, nickname, message, imageUrl, createdAt }` (레퍼런스 `client/src/api.ts`)
   - `C:\dev\image-donation\client\src\donationList.ts` [새로] — `statusLabel`(7개 상태 한국어 이름), `upsertDonation`(새 배열을 돌려주는 불변 업데이트) (레퍼런스 `client/src/donationList.ts`)
@@ -294,11 +296,11 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 
 ## Day 5 — React ③ (110분)
 - 목표:
-  - `useEffect`(의존성 배열 `[]` = 처음 한 번)로 데이터 불러오기. 아직 API가 없으므로 `client\public\sample-donations.json`(연습용, Day 19에서 지움)을 `fetch('/sample-donations.json')`로 읽는다.
+  - `useEffect`(의존성 배열 `[]` = 처음 한 번)로 데이터 불러오기. 아직 API가 없으므로 `client\public\sample-donations.json`(연습용, 내용은 9절 부록 A, Day 19에서 지움)을 `fetch('/sample-donations.json')`로 읽는다.
   - 응답이 늦게 오는 동안 화면이 사라지면 결과를 버리는 `ignore` 깃발 + 정리 함수. "불러오는 중…"·오류 문장.
   - `src\api.ts`에 레퍼런스의 공통 요청 도구를 넣는다: `ApiError`(status), `messageFrom`(ProblemDetails의 detail·errors), `parseBody`(빈 본문·JSON 아님 → null), `request<T>`. 연습용 `getSampleDonations()`는 Day 19에서 지운다.
   - 커스텀 훅 `src\hooks\useImagePreview.ts`(레퍼런스와 같은 최종 코드): FileReader로 `data:` 주소를 만들고 정리 함수에서 `reader.abort()`, 지금 고른 파일의 미리보기만 돌려준다.
-  - 제어 컴포넌트 폼 `src\components\DonationForm.tsx` 첫 버전: 이미지 선택(`accept="image/jpeg,image/png,image/webp,image/gif"`) + 미리보기, 닉네임(`required`, `maxLength={20}`), 메시지(`maxLength={100}`, "메시지 (n/100)"), `e.preventDefault()`, 보내기 → `onSubmit(값)` prop. 서버 업로드는 Day 29에서 바꾼다.
+  - 제어 컴포넌트 폼 `src\components\DonationForm.tsx` 첫 버전: 이미지 선택(`accept="image/jpeg,image/png,image/webp,image/gif"`) + 미리보기, 닉네임(`required`, `maxLength={20}`), 메시지(`maxLength={100}`, "메시지 (n/100)"), `e.preventDefault()`, 보내기 → `onSubmit(draft)` prop(`DonationDraft` 타입은 9절 부록 B). 서버 업로드는 Day 29에서 바꾼다.
   - App: 불러온 예시 목록 + 폼으로 보낸 값을 목록 맨 앞에 추가(이미지는 미리보기 주소).
 - 이미 배운 것:
   - [Day 3](#/day/sp-d03)~[Day 4](#/day/sp-d04)
@@ -314,11 +316,11 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `client`에서 `npm run dev`(5173).
   - 도구가 만드는 폴더(`node_modules`, `bin`, `obj`, `dist`, 업로드된 `media` 파일)는 목록에서 뺐다.
 - 오늘 만들/바꿀 파일:
-  - `C:\dev\image-donation\client\public\sample-donations.json` [새로] — 예시 후원 3건 `[{id,status,nickname,message,imageUrl,createdAt}]`
+  - `C:\dev\image-donation\client\public\sample-donations.json` [새로] — 예시 후원 3건 `[{id,status,nickname,message,imageUrl,createdAt}]` — 값은 9절 부록 A
   - `C:\dev\image-donation\client\src\App.tsx` [바꿈] — useEffect로 `/sample-donations.json` 불러오기(불러오는 중·오류), 아래에 `<DonationForm>` 연습(보내면 목록 맨 앞에 추가) (레퍼런스 `client/src/App.tsx`)
   - `C:\dev\image-donation\client\src\index.css` [바꿈] — + `textarea`/입력칸, `.donation-form`, `.preview`, `.hint`, `.error` (레퍼런스 `client/src/index.css`)
   - `C:\dev\image-donation\client\src\api.ts` [바꿈] — + `ApiError`, `messageFrom`, `parseBody`, `request<T>`, 연습용 `getSampleDonations()` (레퍼런스 `client/src/api.ts`)
-  - `C:\dev\image-donation\client\src\components\DonationForm.tsx` [새로] — 제어 컴포넌트 폼: 이미지 선택(accept 4형식) + useImagePreview 미리보기, 닉네임(20자), 메시지(100자, 글자 수), 보내기 → `onSubmit` prop으로 값 넘김(업로드는 Day 29) (레퍼런스 `client/src/components/DonationForm.tsx`)
+  - `C:\dev\image-donation\client\src\components\DonationForm.tsx` [새로] — 제어 컴포넌트 폼: 이미지 선택(accept 4형식) + useImagePreview 미리보기, 닉네임(20자), 메시지(100자, 글자 수), 보내기 → `onSubmit` prop으로 값 넘김(업로드는 Day 29) — `DonationDraft`·props 모양은 9절 부록 B (레퍼런스 `client/src/components/DonationForm.tsx`)
   - `C:\dev\image-donation\client\src\hooks\useImagePreview.ts` [새로] — FileReader로 data URL, 정리 함수 `reader.abort()`, 지금 파일의 미리보기만 돌려줌 (레퍼런스 `client/src/hooks/useImagePreview.ts`)
 - 끝 상태 확인:
   - 새로고침 → 잠깐 "불러오는 중…" 뒤 예시 3건. `sample-donations.json` 이름을 일부러 틀리면 오류 문장(되돌림).
@@ -347,7 +349,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `cd C:\dev\image-donation\client` → `npm i react-router@8.5.1`(패키지 이름은 `react-router`, `react-router-dom` 아님). Declarative 모드만 쓴다(external-facts 7절, Data 모드는 "더 알아보기").
   - `main.tsx`에서 `<BrowserRouter>`로 `<App />`을 감싼다(레퍼런스 최종). 해시 라우터([P2 Day 28](#/day/p2-d28))와 비교: # 없는 주소라 새로고침하면 서버가 index.html을 줘야 한다 → 개발 서버는 자동, 완성 앱은 Day 37의 `MapFallbackToFile`.
   - `App.tsx`: `/d/:slug` → `pages\DonatePage.tsx`, 레이아웃 라우트 `<Route element={<StreamerLayout />}>` 안에 `/dashboard` → `pages\DashboardPage.tsx`, `/` → `<Navigate to="/dashboard" replace />`, `*` → "없는 페이지예요." + `<Link to="/dashboard">`.
-  - `DonatePage`: `useParams()`의 `slug`로 제목, DonationForm(보내면 alert — Day 29에 진짜 업로드). `DashboardPage`: Day 4~5의 목록·필터·불러오기를 App에서 옮긴다.
+  - `DonatePage`: `useParams()`의 `slug`로 제목, DonationForm(`onSubmit`은 9절 부록 B의 alert — Day 29에 진짜 업로드). `DashboardPage`: Day 4~5의 목록·필터·불러오기를 App에서 옮긴다.
   - `components\StreamerLayout.tsx`: 위쪽 메뉴(굵은 "이미지 후원", `NavLink to="/dashboard"` 강조) + `<Outlet />`. 시청자 후원 페이지는 이 틀 밖이다(시청자에게 스트리머 메뉴가 보이면 안 됨).
 - 이미 배운 것:
   - [Day 3](#/day/sp-d03)~[Day 5](#/day/sp-d05)
@@ -369,7 +371,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\client\src\App.tsx` [바꿈] — `<Routes>`: `/d/:slug` → DonatePage, StreamerLayout 안에 `/dashboard`, `/` → `<Navigate to="/dashboard" replace />`, `*` → "없는 페이지예요." (레퍼런스 `client/src/App.tsx`)
   - `C:\dev\image-donation\client\src\index.css` [바꿈] — + `.topbar`(nav, `a.active`), `.page`, `.narrow`, `.grow` (레퍼런스 `client/src/index.css`)
   - `C:\dev\image-donation\client\src\components\StreamerLayout.tsx` [새로] — 위쪽 메뉴(`이미지 후원`, NavLink "대시보드") + `<Outlet />` (레퍼런스 `client/src/components/StreamerLayout.tsx`)
-  - `C:\dev\image-donation\client\src\pages\DonatePage.tsx` [새로] — `useParams`의 slug로 제목 "<slug>에게 이미지 후원" + `<DonationForm>`(보내면 alert) (레퍼런스 `client/src/pages/DonatePage.tsx`)
+  - `C:\dev\image-donation\client\src\pages\DonatePage.tsx` [새로] — `useParams`의 slug로 제목 "<slug>에게 이미지 후원" + `<DonationForm>`(보내면 부록 B의 alert) (레퍼런스 `client/src/pages/DonatePage.tsx`)
   - `C:\dev\image-donation\client\src\pages\DashboardPage.tsx` [새로] — Day 4~5의 목록·필터·불러오기를 App에서 옮김(아직 예시 JSON) (레퍼런스 `client/src/pages/DashboardPage.tsx`)
 - 끝 상태 확인:
   - `http://localhost:5173/dashboard` → 위쪽 메뉴의 "대시보드"가 강조되고 예시 목록이 보인다.
@@ -407,7 +409,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 - 이미 배운 것:
   - SQL 기초(테이블·키·SELECT/INSERT/UPDATE/DELETE, [P2 Day 19](#/day/p2-d19)), 설정 값과 비밀 값을 코드 밖에 두는 원칙([P2 Day 24](#/day/p2-d24), [P2 Day 26](#/day/p2-d26))
   - 터미널·전체 경로([P2 Day 2](#/day/p2-d02)), [Day 2](#/day/sp-d02) 포트 계획
-  - P3 [Day 33](#/day/p3-d33)~[Day 34](#/day/p3-d34)를 했다면 복습이지만, 하지 않았다고 가정하고 처음부터 설명한다
+  - P3 [P3 Day 33](#/day/p3-d33)~[P3 Day 34](#/day/p3-d34)를 했다면 복습이지만, 하지 않았다고 가정하고 처음부터 설명한다
 - 시작 상태:
   - [Day 6](#/day/sp-d06) 끝 상태와 같다. 아래 파일이 이렇게 있어야 한다(없으면 [Day 6](#/day/sp-d06)의 "오늘 끝 상태 전체 코드"로 맞춘다).
   - `C:\dev\image-donation\`: `README.md`, `.gitignore`
@@ -511,14 +513,14 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 ## Day 9 — 데이터 모델링 (120분)
 - 목표:
   - 상태 전이도(레퍼런스 README "후원 상태" 그림)를 그리고 7개 상태의 뜻을 정한다: AwaitingCheese(치즈 대기), Pending(검수 대기), Approved(승인됨), Shown(방송 완료), Rejected(거절됨, 신고 포함), Expired(만료됨), Cleared(긴급 정지됨). 오늘은 표와 enum만, 실제 전이 코드는 Day 17·27·31.
-  - `Entities\StreamerSettings.cs`(최종): `DonationMode { Free, Cheese }`, 기본값(MinCheese 1000, AutoApprove false, DisplaySeconds 8, MinIntervalSeconds 2, MaxFileMb 5, BannedWords `[]`, `MaxFileMbLimit = 10`). `Entities\Donation.cs`(최종): 7개 상태 + 필드 전부(Code·CheeseAmount·SenderIpHash는 Day 14·27에서 채운다고 주석으로).
+  - `Entities\StreamerSettings.cs`(최종): `DonationMode { Free, Cheese }`, 기본값(MinCheese 1000, AutoApprove false, DisplaySeconds 8, MinIntervalSeconds 2, MaxFileMb 5, BannedWords `[]`, `MaxFileMbLimit = 10`). `Entities\Donation.cs`(최종): 7개 상태 + 필드 전부(파일은 레퍼런스 그대로 — Code·CheeseAmount·SenderIpHash가 Day 14·27에서 채워진다는 설명은 본문에만 쓰고 파일에 주석을 더하지 않는다).
   - `Entities\Streamer.cs`는 Id·Slug·DisplayName·OverlayToken·CreatedAt·Settings만(UserId와 토큰 생성은 Day 13).
   - `AppDbContext.OnModelCreating`: Slug 30자·고유 인덱스, DisplayName 40자, OverlayToken 고유, Streamer ↔ Settings 1:1(`HasForeignKey<StreamerSettings>(x => x.StreamerId)`, Settings 키 = StreamerId), `Mode`·`Status`를 `HasConversion<string>()`(DB에 "Pending" 같은 글자), Nickname 20·Message 100·Code 5, 인덱스 (StreamerId, Status)·CreatedAt. `string[]` → `text[]`, `DateTimeOffset` → `timestamp with time zone`.
   - `dotnet ef migrations add InitialCreate` → `Program.cs`에 시작할 때 `Database.Migrate()`(레퍼런스와 같은 scope 블록), `/api/dbcheck` 지움.
   - psql로 확인하고 연습용 스트리머 1명을 SQL로 넣는다(Day 10~12 업로드 연습용, Day 13에서 지움): `INSERT INTO "Streamers" ("Slug","DisplayName","OverlayToken","CreatedAt") VALUES ('test-stream','Test Stream','dev-token-1', now()) RETURNING "Id";` → 그 Id로 `INSERT INTO "StreamerSettings" ("StreamerId","Mode","MinCheese","AutoApprove","DisplaySeconds","MinIntervalSeconds","MaxFileMb","BannedWords") VALUES (<Id>,'Free',1000,false,8,2,5,'{}');` (열 이름은 작성자가 생성된 마이그레이션으로 확인).
 - 이미 배운 것:
   - [Day 1](#/day/sp-d01) 후원 상태 개요, [Day 8](#/day/sp-d08)
-  - 클래스·속성·record([P2 Day 12](#/day/p2-d12)), C# enum과 switch([P2 Day 10](#/day/p2-d10)~[P2 Day 15](#/day/p2-d15) 사이에서 다룬 문법), 테이블·키([P2 Day 19](#/day/p2-d19)), 엔티티·마이그레이션·dotnet-ef([P2 Day 20](#/day/p2-d20)), 1:N·외래 키·Include([P2 Day 22](#/day/p2-d22)), UTC로 저장하기([P2 Day 29](#/day/p2-d29))
+  - 클래스·속성·record([P2 Day 12](#/day/p2-d12)), C# [[열거형]]과 switch([P2 Day 10](#/day/p2-d10)), 테이블·키([P2 Day 19](#/day/p2-d19)), 엔티티·마이그레이션·dotnet-ef([P2 Day 20](#/day/p2-d20)), 1:N·외래 키·Include([P2 Day 22](#/day/p2-d22)), UTC로 저장하기([P2 Day 29](#/day/p2-d29))
 - 시작 상태:
   - [Day 8](#/day/sp-d08) 끝 상태와 같다. 아래 파일이 이렇게 있어야 한다(없으면 [Day 8](#/day/sp-d08)의 "오늘 끝 상태 전체 코드"로 맞춘다).
   - `C:\dev\image-donation\`: `README.md`, `.gitignore`, `.env.example`, `.env`, `docker-compose.yml`
@@ -574,10 +576,11 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `Endpoints\PublicEndpoints.cs`: `MapGroup("/api/public/streamers/{slug}")` + `POST /donations`(`IFormFile? image`, `[FromForm] string? nickname`, `[FromForm] string? message`). 없는 slug 404, 이미지 없음 400, 스트리머 `MaxFileMb` 초과 413(ProblemDetails "이미지는 5MB까지 올릴 수 있어요."). 이 Day에는 닉네임·메시지를 받은 그대로 저장(검사는 Day 14).
   - 크기 제한 두 겹: 서버 전체 `MaxUploadBytes`(10MB) + 64KB 여유로 `Configure<FormOptions>(o => o.MultipartBodyLengthLimit = …)`와 `RequestSizeLimitAttribute`, 스트리머별 `MaxFileMb`.
   - `.DisableAntiforgery()`: 쿠키를 쓰지 않는 공개 API라 위조 방지 토큰이 필요 없다([P2 Day 34](#/day/p2-d34)의 CSRF와 연결).
-  - `Services\Storage\LocalImageStorage.cs` 첫 버전: `Storage:MediaPath`(appsettings `"media"`)를 `ContentRootPath` 기준 전체 경로로 + 폴더 만들기, 파일 이름은 `Guid.NewGuid():N` + `.bin`(아직 무엇인지 검사 전인 바이트라는 뜻, Day 11에 `.webp`로), 정해진 형식만 허용하는 `IsValidFileName`. 시청자가 보낸 파일 이름은 쓰지 않는다.
+  - `Services\Storage\LocalImageStorage.cs` 첫 버전: `Storage:MediaPath`(appsettings `"media"`)를 `ContentRootPath` 기준 전체 경로로 + 폴더 만들기, 파일 이름은 `Guid.NewGuid():N` + `.bin`(아직 무엇인지 검사 전인 바이트라는 뜻, Day 11에 `.webp`로), 정해진 형식만 허용하는 `IsValidFileName`. 시청자가 보낸 파일 이름은 쓰지 않는다. 첫 버전의 정확한 모양은 9절 부록 G.
   - Donation 행을 Pending으로 저장하고 201 `{ "id": 1, "status": "Pending" }`(`Dtos\DonationDtos.cs`의 `CreateDonationResponse`). enum을 글자로 주도록 `ConfigureHttpJsonOptions(JsonStringEnumConverter)`.
   - `.gitignore`에 `server/ImageDonation.Api/media/`.
-  - 연습 폴더 `C:\dev\sp-practice\`(프로젝트 밖)를 만든다: `api.http`(REST Client, [P2 Day 16](#/day/p2-d16))와 `images\`(휴대폰 사진 `photo.jpg`, `small.png`, 메모장 글자 파일의 이름만 바꾼 `fake.png`, PowerShell `$b = New-Object byte[] 11000000; [IO.File]::WriteAllBytes("C:\dev\sp-practice\images\big.jpg", $b)`로 만든 11MB `big.jpg`). REST Client multipart 문법(boundary 줄, 파일은 `< ./images/photo.jpg`)을 정확히 싣는다(작성자가 REST Client로 실행 확인 — 이 환경에서 확장 실행은 미확인).
+  - 연습 폴더 `C:\dev\sp-practice\`(프로젝트 밖)를 만든다: `api.http`(REST Client, [P2 Day 16](#/day/p2-d16))와 `images\`(휴대폰 사진 `photo.jpg`, `small.png`, 메모장 글자 파일의 이름만 바꾼 `fake.png`, PowerShell `$b = New-Object byte[] 7000000; [IO.File]::WriteAllBytes("C:\dev\sp-practice\images\big.jpg", $b)`로 만든 7MB `big.jpg` — 스트리머 한도 5MB보다 크고 서버 전체 상한(10MB + 64KB)보다 작아야 엔드포인트의 "이미지는 5MB까지…"가 보인다). REST Client multipart 문법(boundary 줄, 파일은 `< ./images/photo.jpg`)을 정확히 싣는다 — `api.http`의 변수·요청 이름·boundary는 9절 부록 F를 그대로 쓴다(작성자가 REST Client로 실행 확인 — 이 환경에서 확장 실행은 미확인).
+  - 오늘 처음(C#): 업로드 바이트를 담는 `byte[]`와 `MemoryStream`·`CopyToAsync`, 그리고 정규 표현식([[정규 표현식]], [P1 Day 24](#/day/p1-d24))을 C#에서 쓰는 법 — `[GeneratedRegex("…")]` 특성을 붙인 `static partial` 메서드와 `partial class`(빌드할 때 소스 생성기가 나머지 절반을 만든다), 패턴 끝의 `\z`(문자열 끝. `$`는 끝의 줄바꿈 한 개를 통과시킨다). 파일 모양은 9절 부록 G.
 - 이미 배운 것:
   - [Day 9](#/day/sp-d09) Donation·StreamerSettings, 연습 스트리머 `test-stream`
   - HTTP 메서드·상태 코드·헤더·`.http` 파일([P2 Day 16](#/day/p2-d16)), POST·`TypedResults.Created`([P2 Day 18](#/day/p2-d18)), MapGroup·DI·DTO([P2 Day 23](#/day/p2-d23)), ProblemDetails([P2 Day 24](#/day/p2-d24)), CSRF·SameSite([P2 Day 34](#/day/p2-d34)), 비동기 DB 저장([P2 Day 21](#/day/p2-d21))
@@ -605,9 +608,9 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Program.cs` [바꿈] — + `ConfigureHttpJsonOptions`(JsonStringEnumConverter), `Configure<FormOptions>`, `AddSingleton<LocalImageStorage>()`, `MapPublicEndpoints()` (레퍼런스 `server/ImageDonation.Api/Program.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Dtos\DonationDtos.cs` [새로] — `CreateDonationResponse(int Id, DonationStatus Status)` + "AddValidation은 public 타입에만" 주석 (레퍼런스 `server/ImageDonation.Api/Dtos/DonationDtos.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\PublicEndpoints.cs` [새로] — `MapGroup("/api/public/streamers/{slug}")`, `POST /donations`(IFormFile, [FromForm] nickname·message, 404·400·413, `DisableAntiforgery`, `RequestSizeLimit`) → 파일 저장 + Donation(Pending) → 201 `{id,status}`, `MaxUploadBytes` (레퍼런스 `server/ImageDonation.Api/Endpoints/PublicEndpoints.cs`)
-  - `C:\dev\image-donation\server\ImageDonation.Api\Services\Storage\LocalImageStorage.cs` [새로] — `Storage:MediaPath`를 ContentRootPath 기준 전체 경로로, 폴더 만들기, `IsValidFileName`(`^[0-9a-f]{32}\.bin\z`), `SaveAsync`(GUID 이름) (레퍼런스 `server/ImageDonation.Api/Services/Storage/LocalImageStorage.cs`)
-  - `C:\dev\sp-practice\api.http` [새로] — `@host = http://localhost:5080`, multipart 업로드 요청(`< ./images/photo.jpg`), 413 확인용 요청
-  - `C:\dev\sp-practice\images\` [새로] — `photo.jpg`(휴대폰으로 세로로 찍은 사진), `small.png`, `big.jpg`(PowerShell로 만든 11MB 파일), `fake.png`(메모장 글자 파일의 이름만 바꾼 것)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Services\Storage\LocalImageStorage.cs` [새로] — `Storage:MediaPath`를 ContentRootPath 기준 전체 경로로, 폴더 만들기, `IsValidFileName`(`^[0-9a-f]{32}\.bin\z`), `SaveAsync`(GUID 이름) — 정확한 모양은 9절 부록 G (레퍼런스 `server/ImageDonation.Api/Services/Storage/LocalImageStorage.cs`)
+  - `C:\dev\sp-practice\api.http` [새로] — `@host = http://localhost:5080`, multipart 업로드 요청(`< ./images/photo.jpg`), 413 확인용 요청 — 정확한 모양은 9절 부록 F
+  - `C:\dev\sp-practice\images\` [새로] — `photo.jpg`(휴대폰으로 세로로 찍은 사진), `small.png`, `big.jpg`(PowerShell로 만든 7MB 파일), `fake.png`(메모장 글자 파일의 이름만 바꾼 것)
 - 끝 상태 확인:
   - REST Client로 `photo.jpg` 업로드 → `HTTP/1.1 201 Created`, 본문 `{"id":1,"status":"Pending"}`.
   - `C:\dev\image-donation\server\ImageDonation.Api\media\`에 32자리 16진수 + `.bin` 파일이 생기고, psql `SELECT "Id","ImageFile","Status" FROM "Donations";`의 ImageFile과 이름이 같다.
@@ -622,7 +625,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `< ./images/photo.jpg` 경로는 `.http` 파일이 있는 폴더 기준. OneDrive·바탕 화면의 사진을 직접 가리키지 말고 `C:\dev\sp-practice\images`로 복사
   - `DisableAntiforgery()`를 빠뜨리면 폼 바인딩이 위조 방지 검사에 걸림(원문은 작성자가 실행해 캡처)
   - `media` 폴더가 `bin\Debug\…` 아래에 생겼다고 착각 → `dotnet run`은 프로젝트 폴더가 ContentRoot
-  - 11MB 파일에서 413 대신 연결이 끊긴 것처럼 보임(본문 제한) → 응답 탭 확인, 메시지 원문 기록
+  - 10MB 넘는 파일을 보내면 엔드포인트에 닿기 전에 서버의 본문 상한에 걸려 "이미지는 5MB까지…" 대신 다른 413 응답이나 연결 끊김이 보인다 → 연습 파일은 7MB(원문은 작성자가 실행해 기록)
   - 백신 프로그램이 새로 쓴 파일을 잠시 잠금 → 다시 시도
 - 레퍼런스 대응:
   - `C:\dev\image-donation\.gitignore`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/.gitignore`)와 다름: 다시 바뀜 → [Day 37](#/day/sp-d37)
@@ -638,13 +641,14 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 - 목표:
   - 왜 확장자·Content-Type을 믿지 않는가(이름만 바꾼 `fake.png`). 매직 넘버: JPEG `FF D8 FF`, PNG `89 50 4E 47 0D 0A 1A 0A`, GIF `47 49 46 38`, WebP `RIFF….WEBP`. PowerShell `Format-Hex`로 직접 본다.
   - 라이브러리 선택(`:::info` 한 번): ImageSharp 3.2+/4.x는 빌드할 때 라이선스 키가 필요하고 Split License라 매출 기준이 있다 → 이 교재는 MIT인 SkiaSharp 4.154.0을 쓴다(R28). `dotnet add package SkiaSharp --version 4.154.0` + `SkiaSharp.NativeAssets.Linux.NoDependencies --version 4.154.0`(Docker용, Windows는 SkiaSharp가 Win32 네이티브를 함께 받음).
-  - `Services\ImageProcessor.cs`(레퍼런스 최종) 순서: 매직 넘버 → `SKCodec.Create`(머리글만, 이미지가 아니면 null) → 원본 1억 픽셀(`MaxSourcePixels`) 넘으면 거절 → 축소 디코딩 크기 선택(`GetScaledDimensions`, JPEG는 1/8 단위) → 첫 장면만 sRGB로 디코딩(4096×4096 `MaxDecodePixels`, 잘린 파일 거절, 움직이는 GIF는 첫 장면 — R29) → 긴 변 1280px(작으면 키우지 않음) → EXIF 방향 1~8을 캔버스로 적용 → WebP 품질 80 재인코딩(색 공간 없는 비트맵이라 EXIF·XMP·ICC가 안 따라감).
+  - `Services\ImageProcessor.cs`(레퍼런스 최종, 181줄)는 **직접 타이핑하지 않고** 오늘 끝 코드를 붙여 넣은 뒤 위에서부터 읽는다(Day 34와 같은 방식). 직접 써 보는 것은 매직 넘버 검사 `HasAllowedSignature`와 `Process`의 단계 주석뿐이고, `ChooseDecodeSize`·`ApplyOrigin`은 붙여 넣고 읽기만 한다. 순서: 매직 넘버 → `SKCodec.Create`(머리글만, 이미지가 아니면 null) → 원본 1억 픽셀(`MaxSourcePixels`) 넘으면 거절 → 축소 디코딩 크기 선택(`GetScaledDimensions`, JPEG는 1/8 단위) → 첫 장면만 sRGB로 디코딩(4096×4096 `MaxDecodePixels`, 잘린 파일 거절, 움직이는 GIF는 첫 장면 — R29) → 긴 변 1280px(작으면 키우지 않음) → EXIF 방향 1~8을 캔버스로 적용 → WebP 품질 80 재인코딩(색 공간 없는 비트맵이라 EXIF·XMP·ICC가 안 따라감).
   - 네이티브 메모리를 쓰는 `SKData`·`SKCodec`·`SKBitmap`·`SKImage`·`SKCanvas`는 모두 `using`. `DrawBitmap(bitmap, x, y, SKSamplingOptions.Default, null)`(샘플링 없는 오버로드는 CS0618 obsolete).
-  - 업로드 엔드포인트가 `ImageProcessor.Process`를 거쳐 저장하고 `InvalidImageException`은 400. `LocalImageStorage`의 이름 형식을 `.webp`로(`$` 대신 `\z`인 이유: `$`는 끝의 줄바꿈을 통과시킨다). `AddSingleton<ImageProcessor>()`.
+  - 업로드 엔드포인트가 `ImageProcessor.Process`를 거쳐 저장하고 `InvalidImageException`은 400. `LocalImageStorage`의 이름 형식을 `.webp`로(Day 10에서 본 `\z` 그대로). `AddSingleton<ImageProcessor>()`.
   - 연습 이미지에 `animated.gif`를 추가한다. Day 10에 생긴 `.bin` 파일은 지워도 된다(Day 12 정리 작업도 7일 뒤 지움).
+  - `:::info 읽기만 해요` 상자 하나로 오늘 처음 보는 C# 문법을 짚는다(직접 쓰지 않고 뜻만): `ReadOnlySpan<byte>`(배열의 한 부분을 복사 없이 보는 창), `"GIF87a"u8`(글자를 UTF-8 바이트로 쓰는 리터럴), 범위 `h[..4]`·`h[8..12]`, 컬렉션 식 `[0x89, 0x50, …]`, `is not (A or B)`([P2 Day 13](#/day/p2-d13) 패턴 매칭의 확장), `switch`로 방향 8가지 나누기.
 - 이미 배운 것:
   - [Day 10](#/day/sp-d10) 업로드·저장
-  - 예외 던지기·잡기([P2 Day 15](#/day/p2-d15)), record([P2 Day 12](#/day/p2-d12)), 바이트·배열([P2 Day 11](#/day/p2-d11)), NuGet 패키지 설치([P2 Day 20](#/day/p2-d20))
+  - 예외 던지기·잡기([P2 Day 15](#/day/p2-d15)), record([P2 Day 12](#/day/p2-d12)), `byte[]`([Day 10](#/day/sp-d10)), using 선언([P2 Day 15](#/day/p2-d15)), 패턴 매칭([P2 Day 13](#/day/p2-d13)), NuGet 패키지 설치([P2 Day 20](#/day/p2-d20))
 - 시작 상태:
   - [Day 10](#/day/sp-d10) 끝 상태와 같다. 아래 파일이 이렇게 있어야 한다(없으면 [Day 10](#/day/sp-d10)의 "오늘 끝 상태 전체 코드"로 맞춘다).
   - `C:\dev\image-donation\`: `README.md`, `.gitignore`, `.env.example`, `.env`, `docker-compose.yml`
@@ -672,7 +676,8 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Program.cs` [바꿈] — + `AddSingleton<ImageProcessor>()` (레퍼런스 `server/ImageDonation.Api/Program.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\PublicEndpoints.cs` [바꿈] — 이미지 처리(`ImageProcessor.Process`) 후 저장, `InvalidImageException` → 400 (레퍼런스 `server/ImageDonation.Api/Endpoints/PublicEndpoints.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\ImageProcessor.cs` [새로] — 매직 넘버 → SKCodec 머리글 → 1억 픽셀 상한 → 축소 디코딩 크기 → 첫 장면 sRGB 디코딩(4096² 상한) → 긴 변 1280 → EXIF 방향 → WebP 80, `InvalidImageException`, `ProcessedImage` (레퍼런스 `server/ImageDonation.Api/Services/ImageProcessor.cs`)
-  - `C:\dev\image-donation\server\ImageDonation.Api\Services\Storage\LocalImageStorage.cs` [바꿈] — 이름 형식을 `.webp`로(`\z`를 쓰는 이유 주석) (레퍼런스 `server/ImageDonation.Api/Services/Storage/LocalImageStorage.cs`)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Services\Storage\LocalImageStorage.cs` [바꿈] — 이름 형식을 `.webp`로, `SaveAsync(content, extension)`(레퍼런스 서명)으로 (레퍼런스 `server/ImageDonation.Api/Services/Storage/LocalImageStorage.cs`)
+  - `C:\dev\sp-practice\api.http` [바꿈] — + `### 3`(fake.png → 400), `### 4`(animated.gif) — 정확한 모양은 9절 부록 F
   - `C:\dev\sp-practice\images\` [바꿈] — + `animated.gif`(움직이는 GIF 하나)
 - 끝 상태 확인:
   - `photo.jpg` 업로드 → `media`에 `.webp` 파일(원본보다 작음). 탐색기에서 그 파일 → 속성 → 자세히에 카메라·GPS 항목이 없고, 브라우저로 열면 세로 사진이 똑바로 서 있다(브라우저로 여는 주소는 Day 12에 생기므로 오늘은 파일을 Edge로 끌어다 놓아 본다).
@@ -695,6 +700,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\PublicEndpoints.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Endpoints/PublicEndpoints.cs`)와 다름: 다시 바뀜 → [Day 12](#/day/sp-d12)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\ImageProcessor.cs`: `reference/sp-image-donation/server/ImageDonation.Api/Services/ImageProcessor.cs` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Storage\LocalImageStorage.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Services/Storage/LocalImageStorage.cs`)와 다름: 다시 바뀜 → [Day 12](#/day/sp-d12)
+  - `C:\dev\sp-practice\api.http`: 레퍼런스에 없음(프로젝트 밖 연습 파일(P2 Day 16의 REST Client로 실행). 레퍼런스에는 없고 최종 프로젝트 폴더에도 들어가지 않음)
   - `C:\dev\sp-practice\images\`: 레퍼런스에 없음(학습자가 준비하는 연습 이미지 폴더)
 
 ## Day 12 — 이미지 제공과 정리 (100분)
@@ -761,7 +767,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - 로그인 설계: 지금은 **개발용 로컬 로그인**(Identity, 이메일·비밀번호), 나중에(Day 23) 치지직 로그인이 **같은 Identity 쿠키**로 로그인시킨다. 인터넷에 공개할 때는 `Auth:LocalLoginEnabled=false`로 끄는 것을 권장(Day 38).
   - `dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore --version 10.0.14`. `AppDbContext : IdentityDbContext<IdentityUser>`, `base.OnModelCreating(builder)`를 맨 먼저, `Streamer.UserId` 고유 인덱스(계정 1개 = 스트리머 1명), `FindStreamerAsync(ClaimsPrincipal)`(레퍼런스 최종).
   - `Streamer`에 `UserId`와 `NewOverlayToken()`: `RandomNumberGenerator.GetBytes(32)` → `Base64Url.EncodeToString` 43자. 오버레이는 이 토큰만으로 접속하므로 비밀번호처럼 다룬다(Day 16).
-  - `Endpoints\AuthEndpoints.cs`: `/api/auth` 그룹에 `MapIdentityApi<IdentityUser>()`(LocalLoginEnabled일 때만), `POST /logout`, `GET /me`(비로그인 204 — [P2 Day 26](#/day/p2-d26)와 같은 이유), `POST /onboarding`(이미 있으면 409 "이미 후원 페이지가 있어요.", 주소 중복 409, 동시에 같은 주소를 골랐을 때 UNIQUE 인덱스가 막은 `DbUpdateException`도 409, 성공 201 + StreamerInfo). `Dtos\AuthDtos.cs`: `OnboardingRequest`(`[RegularExpression("^[a-z0-9-]{3,30}$")]`, DisplayName 1~40), `MeResponse(UserName, StreamerInfo?)`(치지직 정보는 Day 23).
+  - `Endpoints\AuthEndpoints.cs`: `/api/auth` 그룹에 `MapIdentityApi<IdentityUser>()`(LocalLoginEnabled일 때만), `POST /logout`(`SignInManager.SignOutAsync` — 오늘 처음, MapIdentityApi가 안에서 쓰는 로그인 도우미를 직접 부르는 것), `GET /me`(비로그인 204 — [P2 Day 26](#/day/p2-d26)와 같은 이유), `POST /onboarding`(이미 있으면 409 "이미 후원 페이지가 있어요.", 주소 중복 409, 동시에 같은 주소를 골랐을 때 UNIQUE 인덱스가 막은 `DbUpdateException`도 409, 성공 201 + StreamerInfo). `Dtos\AuthDtos.cs`: `OnboardingRequest`(`[RegularExpression("^[a-z0-9-]{3,30}$")]`, DisplayName 1~40), `MeResponse(UserName, StreamerInfo?)`(치지직 정보는 Day 23).
   - `Program.cs`: `AddAuthorization()`, `AddIdentityApiEndpoints<IdentityUser>().AddEntityFrameworkStores<AppDbContext>()`, `AddValidation()`(public record만 검사하는 함정, [P2 Day 23](#/day/p2-d23)), `UseAuthentication()`·`UseAuthorization()`, `MapAuthEndpoints(config.GetValue("Auth:LocalLoginEnabled", true))`.
   - 순서 주의: **먼저** psql로 연습 스트리머를 지운다(`DELETE FROM "Streamers" WHERE "Slug" = 'test-stream';` — 설정·후원도 함께 지워짐), 그다음 `dotnet ef migrations add AddIdentity`. `api.http`에 가입·로그인(`?useCookies=true`)·me·온보딩(`{"slug":"my-stream","displayName":"내 방송"}`)·로그아웃 요청을 추가한다.
 - 이미 배운 것:
@@ -800,7 +806,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\AuthEndpoints.cs` [새로] — `/api/auth` 그룹: `MapIdentityApi<IdentityUser>()`(LocalLoginEnabled일 때), `POST /logout`, `GET /me`(비로그인 204), `POST /onboarding`(409 두 가지, DbUpdateException 경합, 201) (레퍼런스 `server/ImageDonation.Api/Endpoints/AuthEndpoints.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\<시각>_AddIdentity.cs (+ .Designer.cs)` [새로] — `dotnet ef migrations add AddIdentity` (AspNet* 표, Streamers.UserId + 고유 인덱스)
   - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\AppDbContextModelSnapshot.cs` [바꿈] — dotnet-ef가 갱신 (레퍼런스 `server/ImageDonation.Api/Migrations/AppDbContextModelSnapshot.cs`)
-  - `C:\dev\sp-practice\api.http` [바꿈] — + 가입·로그인(`?useCookies=true`)·me·온보딩·로그아웃
+  - `C:\dev\sp-practice\api.http` [바꿈] — + 가입·로그인(`?useCookies=true`)·me·온보딩·로그아웃 — 정확한 모양은 9절 부록 F
 - 끝 상태 확인:
   - REST Client: `GET /api/auth/me` → `204 No Content`. `POST /api/auth/register` → 200. `POST /api/auth/login?useCookies=true` → 200 + `Set-Cookie: .AspNetCore.Identity.Application=…`. 다시 me → 200 `{"userName":"…","streamer":null}`.
   - `POST /api/auth/onboarding` → 201 `{"id":…,"slug":"my-stream","displayName":"내 방송"}`. 같은 요청 다시 → 409 "이미 후원 페이지가 있어요.". `"slug":"My Stream"` → 400.
@@ -832,7 +838,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 - 목표:
   - `GET /api/public/streamers/{slug}` → `PublicStreamerDto(Slug, DisplayName, Mode, MinCheese, MaxFileMb)`. 오버레이 토큰 같은 비밀 값은 절대 넣지 않는다.
   - 후원 생성의 서버 쪽 입력 검사(브라우저 검사는 우회할 수 있다): trim 후 닉네임 1~20자, 메시지 100자 이하(`MaxNicknameLength`, `MaxMessageLength`), 이미지 없음 400. `Problem(status, detail)` 도우미.
-  - `Services\DonationService.cs` 첫 버전: 엔드포인트는 얇게, 규칙은 서비스에([P2 Day 23](#/day/p2-d23)). `CreateAsync(streamer, nickname, message, upload, senderIpHash)`(Process → Save → Pending 저장), `HashSenderIp`: IP 원문 대신 `HMACSHA256.HashData(키, IP)` → 16진수 64자. 키는 `Security:IpHashKey`(user-secrets, `[Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))`로 만든 값) + `Program.cs` 빠른 실패.
+  - `Services\DonationService.cs` 첫 버전: 엔드포인트는 얇게, 규칙은 서비스에([P2 Day 23](#/day/p2-d23)). `CreateAsync(streamer, nickname, message, upload, senderIpHash)`(Process → Save → Pending 저장), `HashSenderIp`: IP 원문 대신 `HMACSHA256.HashData(키, IP)` → 16진수 64자. 키는 `Security:IpHashKey`(user-secrets, `$b = New-Object byte[] 32; [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b); [Convert]::ToBase64String($b)`로 만든 값 (Windows PowerShell 5.1에서도 되는 형식. Windows 실기 미확인 — 작성자가 실행해 확인)) + `Program.cs` 빠른 실패.
   - 요청 제한: `AddRateLimiter`에 정책 두 개 "donations"(IP당 1분 `RateLimit:DonationsPerMinute` 5건), "auth"(20건), `RejectionStatusCode = 429`, `PerIpPerMinute`(고정 창, IP를 모르면 "unknown"), `UseRateLimiter()`, 업로드에 `.RequireRateLimiting("donations")`, `MapIdentityApi`에 `.RequireRateLimiting("auth")`.
   - `AddScoped<DonationService>()`. `api.http`에 공개 정보·검증 실패·요청 제한 확인 요청을 추가.
 - 이미 배운 것:
@@ -868,7 +874,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\PublicEndpoints.cs` [바꿈] — + `GET /` 스트리머 공개 정보, 상수(`MaxNicknameLength` 20, `MaxMessageLength` 100), 서버 쪽 입력 검사, `DonationService.CreateAsync` 호출, `.RequireRateLimiting("donations")`, `Problem()` 도우미 (레퍼런스 `server/ImageDonation.Api/Endpoints/PublicEndpoints.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\AuthEndpoints.cs` [바꿈] — `MapIdentityApi`에 `.RequireRateLimiting("auth")` (레퍼런스 `server/ImageDonation.Api/Endpoints/AuthEndpoints.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\DonationService.cs` [새로] — `HashSenderIp`(HMAC-SHA256, `Security:IpHashKey`), `CreateAsync`(Process → Save → Donation Pending 저장) (레퍼런스 `server/ImageDonation.Api/Services/DonationService.cs`)
-  - `C:\dev\sp-practice\api.http` [바꿈] — + 공개 스트리머 정보, 요청 제한 확인
+  - `C:\dev\sp-practice\api.http` [바꿈] — + 공개 스트리머 정보, 요청 제한 확인 — 정확한 모양은 9절 부록 F
 - 끝 상태 확인:
   - `GET /api/public/streamers/my-stream` → `{"slug":"my-stream","displayName":"내 방송","mode":"Free","minCheese":1000,"maxFileMb":5}`.
   - 닉네임 21자 → 400 "닉네임은 1~20자로 써 주세요.". 메시지 101자 → 400.
@@ -899,7 +905,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - 비교: 폴링(주기적으로 묻기)·SSE(서버 → 브라우저 한 방향, [P2 Day 33](#/day/p2-d33))·WebSocket(양방향, 연결 유지). 오버레이는 "보여 줬다(MarkShown)"를 서버에 알려야 하고, 대시보드·오버레이·그룹·재연결이 필요해서 SignalR을 쓴다(WebSocket을 우선 쓰고 안 되면 다른 방식으로 바꿈). P3를 안 했다고 가정하고 WebSocket을 처음부터 설명한다.
   - 서버: `AddSignalR().AddJsonProtocol(o => o.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter()))`, `Hubs\OverlayHub.cs` 첫 버전(타입 있는 허브 `Hub<IOverlayClient>`, `IOverlayClient { Task ShowDonation(OverlayDonationDto); Task Clear(); }`), `MapHub<OverlayHub>("/hubs/overlay")`. `OverlayDonationDto`(Id, ImageUrl, Nickname, Message, DisplaySeconds, MinIntervalSeconds).
   - `DonationService`가 `IHubContext<OverlayHub, IOverlayClient>`를 받아 새 후원을 **임시로 모든 오버레이에 바로** 보낸다(`Clients.All.ShowDonation`). 검수 없이 뜨는 것은 오늘만이고 Day 16(스트리머별 그룹)·Day 17(승인 후에만)에서 고친다고 분명히 적는다.
-  - 클라이언트: `npm i @microsoft/signalr@10.0.11`. `vite.config.ts`에 `server.proxy`(`/api`, `/media` → `http://localhost:5080`, `/hubs` → `{ target, ws: true }`). `client\overlay.html`(최종), `src\overlay\main.tsx`(토큰 없이), `src\overlay\useOverlayHub.ts`(HubConnectionBuilder → `on("ShowDonation")` → 큐 뒤에 추가 → `start()`, 정리 함수 `stop()`), `src\overlay\Overlay.tsx`(받은 것을 목록으로), `src\overlay\overlay.css`(배경 투명), `api.ts`의 `OverlayDonation` 타입.
+  - 클라이언트: `npm i @microsoft/signalr@10.0.11`. `vite.config.ts`에 `server.proxy`(`/api`, `/media` → `http://localhost:5080`, `/hubs` → `{ target, ws: true }`). `client\overlay.html`(최종), `src\overlay\main.tsx`(토큰 없이), `src\overlay\useOverlayHub.ts`(서명과 돌려주는 값은 9절 부록 C. HubConnectionBuilder → `on("ShowDonation")` → 큐 뒤에 추가 → `start()`, 정리 함수 `stop()`), `src\overlay\Overlay.tsx`(받은 것을 목록으로, 부록 C), `src\overlay\overlay.css`(배경 투명), `api.ts`의 `OverlayDonation` 타입.
 - 이미 배운 것:
   - [Day 5](#/day/sp-d05) useEffect·정리 함수, [Day 14](#/day/sp-d14) DonationService
   - 폴링 → SSE([P2 Day 33](#/day/p2-d33)), Vite 프록시·CORS([P2 Day 27](#/day/p2-d27)), OBS 오버레이 투명 배경([P1 Day 27](#/day/p1-d27))
@@ -933,8 +939,8 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\client\vite.config.ts` [바꿈] — + `server.proxy`: `/api`, `/media` → `http://localhost:5080`, `/hubs` → `{ target, ws: true }` (레퍼런스 `client/vite.config.ts`)
   - `C:\dev\image-donation\client\src\api.ts` [바꿈] — + `OverlayDonation` 타입 (레퍼런스 `client/src/api.ts`)
   - `C:\dev\image-donation\client\src\overlay\main.tsx` [새로] — `overlay-root`에 `<Overlay />` (아직 토큰 없음), `./overlay.css` (레퍼런스 `client/src/overlay/main.tsx`)
-  - `C:\dev\image-donation\client\src\overlay\Overlay.tsx` [새로] — 받은 후원을 목록(닉네임·메시지·이미지)으로 쌓아 보여 줌 + 연결 상태 글자 (레퍼런스 `client/src/overlay/Overlay.tsx`)
-  - `C:\dev\image-donation\client\src\overlay\useOverlayHub.ts` [새로] — `/hubs/overlay` 연결 + `ShowDonation` → 큐 뒤에 추가 + 상태 (레퍼런스 `client/src/overlay/useOverlayHub.ts`)
+  - `C:\dev\image-donation\client\src\overlay\Overlay.tsx` [새로] — 받은 후원을 목록(닉네임·메시지·이미지)으로 쌓아 보여 줌 + 연결 상태 글자 — 9절 부록 C (레퍼런스 `client/src/overlay/Overlay.tsx`)
+  - `C:\dev\image-donation\client\src\overlay\useOverlayHub.ts` [새로] — `/hubs/overlay` 연결 + `ShowDonation` → 큐 뒤에 추가 + 상태 — 서명·돌려주는 값은 9절 부록 C (레퍼런스 `client/src/overlay/useOverlayHub.ts`)
   - `C:\dev\image-donation\client\src\overlay\overlay.css` [새로] — `body` 배경 투명, 글자 그림자 정도 (레퍼런스 `client/src/overlay/overlay.css`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Program.cs` [바꿈] — + `AddSignalR().AddJsonProtocol(...JsonStringEnumConverter)`, `MapHub<OverlayHub>("/hubs/overlay")` (레퍼런스 `server/ImageDonation.Api/Program.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Dtos\DonationDtos.cs` [바꿈] — + `OverlayDonationDto(Id, ImageUrl, Nickname, Message, DisplaySeconds, MinIntervalSeconds)` (레퍼런스 `server/ImageDonation.Api/Dtos/DonationDtos.cs`)
@@ -978,7 +984,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `DonationService`: 새 후원을 대시보드 그룹에 `DonationCreated(DonationDto)`, 오버레이는 **그 스트리머의 토큰 그룹에만**(아직 검수 없이 — Day 17). `Dtos\DonationDtos.cs`에 `DonationDto`(Id, Status, Nickname, Message, ImageUrl, Code, CheeseAmount, CreatedAt + `From`, `MediaUrl`, `ImageVisible`: 거절·만료·긴급 정지면 이미지 주소 null).
   - `Endpoints\DashboardEndpoints.cs` 첫 버전: `MapGroup("/api/dashboard").RequireAuthorization()`, `NeedsOnboarding()`(403), `GET /overlay-token` → `OverlayTokenResponse`(`Dtos\SettingsDto.cs`).
   - 보안 헤더 미들웨어(모든 응답): `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`(오버레이 주소의 토큰이 다른 사이트로 새지 않게).
-  - 클라이언트: `useOverlayHub(token, …)`가 `/hubs/overlay?token=${encodeURIComponent(token)}`로, `overlay\main.tsx`가 `?token=`을 읽고 없으면 안내(최종).
+  - 클라이언트(부록 C의 Day 16 줄): `useOverlayHub(token, setQueue)`가 `/hubs/overlay?token=${encodeURIComponent(token)}`로, `overlay\main.tsx`가 `?token=`을 읽고 없으면 안내(최종).
 - 이미 배운 것:
   - [Day 13](#/day/sp-d13) 오버레이 토큰·쿠키 로그인·FindStreamerAsync, [Day 15](#/day/sp-d15)
   - 미들웨어 순서([P2 Day 17](#/day/p2-d17)·[P2 Day 24](#/day/p2-d24)), RequireAuthorization([P2 Day 26](#/day/p2-d26)), 보안 점검([P2 Day 34](#/day/p2-d34))
@@ -1009,7 +1015,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - 도구가 만드는 폴더(`node_modules`, `bin`, `obj`, `dist`, 업로드된 `media` 파일)는 목록에서 뺐다.
 - 오늘 만들/바꿀 파일:
   - `C:\dev\image-donation\client\src\overlay\main.tsx` [바꿈] — `?token=` 읽기, 없으면 "오버레이 주소에 토큰이 없어요…" 안내 (레퍼런스와 같아짐) (레퍼런스 `client/src/overlay/main.tsx`)
-  - `C:\dev\image-donation\client\src\overlay\useOverlayHub.ts` [바꿈] — `withUrl("/hubs/overlay?token=...")`(encodeURIComponent), 매개변수 `token` (레퍼런스 `client/src/overlay/useOverlayHub.ts`)
+  - `C:\dev\image-donation\client\src\overlay\useOverlayHub.ts` [바꿈] — `withUrl("/hubs/overlay?token=...")`(encodeURIComponent), 매개변수 `token` — 9절 부록 C (레퍼런스 `client/src/overlay/useOverlayHub.ts`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Program.cs` [바꿈] — + 보안 헤더 미들웨어, `UseWhen(/hubs/overlay, OverlayHub.CheckTokenAsync)`, `MapDashboardEndpoints()`, `MapHub<DashboardHub>("/hubs/dashboard")` (레퍼런스 `server/ImageDonation.Api/Program.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Dtos\DonationDtos.cs` [바꿈] — + `DonationDto(Id, Status, Nickname, Message, ImageUrl, Code, CheeseAmount, CreatedAt)` + `From`, `MediaUrl`, `ImageVisible` (레퍼런스 `server/ImageDonation.Api/Dtos/DonationDtos.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Dtos\SettingsDto.cs` [새로] — `OverlayTokenResponse(string OverlayToken)`만 (레퍼런스 `server/ImageDonation.Api/Dtos/SettingsDto.cs`)
@@ -1017,7 +1023,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Hubs\OverlayHub.cs` [바꿈] — + `GroupName(token)`, `FindStreamerAsync`, `CheckTokenAsync`(401), `OnConnectedAsync`(다시 확인·Context.Items·그룹 가입) (레퍼런스 `server/ImageDonation.Api/Hubs/OverlayHub.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Hubs\DashboardHub.cs` [새로] — `[Authorize]`, `IDashboardClient { DonationCreated, DonationUpdated }`, 그룹 `dashboard:{streamerId}`, 온보딩 전이면 Abort (레퍼런스 `server/ImageDonation.Api/Hubs/DashboardHub.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\DonationService.cs` [바꿈] — + `IHubContext<DashboardHub, …>`: `DonationCreated`, 오버레이는 그 스트리머 토큰 그룹에만 (레퍼런스 `server/ImageDonation.Api/Services/DonationService.cs`)
-  - `C:\dev\sp-practice\api.http` [바꿈] — + `GET /api/dashboard/overlay-token`
+  - `C:\dev\sp-practice\api.http` [바꿈] — + `GET /api/dashboard/overlay-token` — 정확한 모양은 9절 부록 F
 - 끝 상태 확인:
   - REST Client `GET /api/dashboard/overlay-token` → `{"overlayToken":"…43자"}`. 로그아웃 상태 → 401.
   - `http://localhost:5173/overlay.html?token=<토큰>` → 연결됨, 업로드하면 표시. 토큰 한 글자 바꿈 → 콘솔에 401과 연결 실패. `?token=` 없이 → "오버레이 주소에 토큰이 없어요…".
@@ -1055,7 +1061,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `ToOverlayDto`(표시 시간·간격을 설정에서), `SendToOverlayAsync`, `NotifyUpdatedAsync`. `api.http`에 목록·승인·거절.
 - 이미 배운 것:
   - [Day 9](#/day/sp-d09) 상태 전이, [Day 16](#/day/sp-d16)
-  - 비동기 쿼리·AsNoTracking 같은 읽기 전용 조회([P2 Day 21](#/day/p2-d21)), 본인 것만 수정·404/403([P2 Day 30](#/day/p2-d30)), 라우트 매개변수 `{id:int}`([P2 Day 18](#/day/p2-d18)), LINQ([P2 Day 14](#/day/p2-d14))
+  - 비동기 쿼리([P2 Day 21](#/day/p2-d21)), 읽기 전용 조회 `AsNoTracking`([P2 Day 30](#/day/p2-d30)), 본인 것만 수정·404/403([P2 Day 30](#/day/p2-d30)), 라우트 매개변수 `{id:int}`([P2 Day 18](#/day/p2-d18)), LINQ([P2 Day 14](#/day/p2-d14))
 - 시작 상태:
   - [Day 16](#/day/sp-d16) 끝 상태와 같다. 아래 파일이 이렇게 있어야 한다(없으면 [Day 16](#/day/sp-d16)의 "오늘 끝 상태 전체 코드"로 맞춘다).
   - `C:\dev\image-donation\`: `README.md`, `.gitignore`, `.env.example`, `.env`, `docker-compose.yml`
@@ -1085,7 +1091,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\DashboardEndpoints.cs` [바꿈] — + `GET /donations?status=`(최신 100건), `POST /donations/{id:int}/approve`·`/reject`, `ChangeAsync`(남의 후원 404, 불가 409) (레퍼런스 `server/ImageDonation.Api/Endpoints/DashboardEndpoints.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Hubs\OverlayHub.cs` [바꿈] — + 연결 시 백로그를 `Clients.Caller`에, `MarkShown(id)` (레퍼런스 `server/ImageDonation.Api/Hubs/OverlayHub.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\DonationService.cs` [바꿈] — + `OverlayBacklogWindow`(30분), `ApproveAsync`, `RejectAsync`(이미지 삭제), `MarkShownAsync`, `GetOverlayBacklogAsync`, `TransitionAsync`(조건부 ExecuteUpdate), `SendToOverlayAsync`, `ToOverlayDto`, `NotifyUpdatedAsync`; CreateAsync는 AutoApprove일 때만 오버레이로 (레퍼런스 `server/ImageDonation.Api/Services/DonationService.cs`)
-  - `C:\dev\sp-practice\api.http` [바꿈] — + 후원 목록·승인·거절
+  - `C:\dev\sp-practice\api.http` [바꿈] — + 후원 목록·승인·거절 — 정확한 모양은 9절 부록 F
 - 끝 상태 확인:
   - 업로드 → 오버레이에 **아무것도 안 뜬다**. `GET /api/dashboard/donations` → 그 후원이 `"status":"Pending"`.
   - `POST …/approve` → 200 + 오버레이에 표시. 같은 요청 다시 → 409.
@@ -1114,7 +1120,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - OBS 설정([P1 Day 27](#/day/p1-d27) 복습): 소스 목록 **+** → **브라우저** → URL에 `http://localhost:5173/overlay.html?token=…`(개발 중) → 너비 1920, 높이 1080. 배경이 투명해야 방송 화면 위에 이미지만 겹친다. OBS 실제 화면은 작성 환경에서 확인하지 못했다고 적는다.
 - 이미 배운 것:
   - [Day 5](#/day/sp-d05) useEffect·정리 함수, [Day 15](#/day/sp-d15)~[Day 17](#/day/sp-d17)
-  - transition·hover와 CSS 변수([P1 Day 14](#/day/p1-d14)), setTimeout·타이머([P1 Day 26](#/day/p1-d26)), OBS 브라우저 소스·투명 배경·URL 파라미터([P1 Day 27](#/day/p1-d27))
+  - transition·hover와 CSS 변수([P1 Day 14](#/day/p1-d14)), `setTimeout`([P2 Day 8](#/day/p2-d08)), `setInterval`·밀리초([P1 Day 26](#/day/p1-d26)), OBS 브라우저 소스·투명 배경·URL 파라미터([P1 Day 27](#/day/p1-d27))
 - 시작 상태:
   - [Day 17](#/day/sp-d17) 끝 상태와 같다. 아래 파일이 이렇게 있어야 한다(없으면 [Day 17](#/day/sp-d17)의 "오늘 끝 상태 전체 코드"로 맞춘다).
   - `C:\dev\image-donation\`: `README.md`, `.gitignore`, `.env.example`, `.env`, `docker-compose.yml`
@@ -1165,15 +1171,16 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 
 ## Day 19 — 검수 대시보드(React) (120분)
 - 목표:
-  - `pages\LoginPage.tsx`: 이메일·비밀번호, "로그인"과 "처음이에요 (가입하고 로그인)", 401이면 "이메일 또는 비밀번호가 맞지 않아요.", 비밀번호 규칙 안내(치지직 버튼은 Day 21).
+  - `pages\LoginPage.tsx`는 [P2 Day 31](#/day/p2-d31)의 로그인 화면과 같은 모양(폼·오류 문장·가입 후 바로 로그인)이라 오늘 끝 코드를 붙여 넣고 React로 바뀐 점(제어 입력, `useNavigate`, `busy` 상태)만 읽는다: 이메일·비밀번호, "로그인"과 "처음이에요 (가입하고 로그인)", 401이면 "이메일 또는 비밀번호가 맞지 않아요.", 비밀번호 규칙 안내(치지직 버튼은 Day 21).
   - `hooks\useMe.ts`(최종): `getMe()`(204 → null) + ignore 깃발 + `reload()`. `StreamerLayout`: 불러오는 중, 비로그인 → `<Navigate to="/login" replace />`, 스트리머가 없으면 "먼저 온보딩을 해 주세요(api.http의 온보딩 요청)" 안내(온보딩 화면은 Day 30), 사용자 이름·로그아웃, `<Outlet context={{ me, reload }} />`.
   - `hooks\useDashboardHub.ts`(최종): `/hubs/dashboard`(로그인 쿠키가 함께 감) → `DonationCreated`·`DonationUpdated`를 `upsertDonation`으로 목록에 반영, 연결 상태 4가지.
   - `DashboardPage`: `listDonations()` 결과를 그 사이 실시간으로 온 것과 합치기(`list.reduce(upsertDonation, current)`), `act()`(승인·거절 결과로 카드 바꾸기, 실패는 notice), 필터 탭(전체·검수 대기), 단축키 A 승인·R 거절(맨 위 검수 대기, 입력칸에서는 무시, 의존성 배열을 생략한 effect로 항상 최신 목록), 허브 상태 글자.
   - `DonationCard`: 이미지가 null이면 "이미지 삭제됨", `loading="lazy"`, alt. 닉네임·메시지는 `{}`로만 넣는다 → React가 글자로 출력, `dangerouslySetInnerHTML` 금지([P2 Day 34](#/day/p2-d34)의 XSS).
   - `api.ts`: `Me`, `sendJson`, `getMe`, `register`, `login`(`?useCookies=true`), `logout`, `listDonations`, `approveDonation`, `rejectDonation`, Donation에 `code`·`cheeseAmount`. `getSampleDonations`와 `public\sample-donations.json`을 지운다. App에 `/login`.
+  - 오늘 처음(JS): `window.addEventListener('keydown', …)`와 `e.key`(누른 키 글자), 정리 함수의 `removeEventListener`, 배열 `reduce`(목록 여러 개를 하나로 합치기 — 여기서 한 번만 쓴다), `e.target instanceof HTMLInputElement`([P2 Day 27](#/day/p2-d27)의 instanceof 복습).
 - 이미 배운 것:
   - [Day 4](#/day/sp-d04)~[Day 6](#/day/sp-d06), [Day 13](#/day/sp-d13) 로그인 API, [Day 16](#/day/sp-d16)~[Day 17](#/day/sp-d17)
-  - 로그인·가입 화면([P2 Day 31](#/day/p2-d31)), XSS와 글자로 출력하기([P2 Day 34](#/day/p2-d34)), 쿠키는 같은 출처에서([P2 Day 27](#/day/p2-d27)), keydown 이벤트([P1 Day 21](#/day/p1-d21)), `role="status"`·`role="alert"`([P1 Day 24](#/day/p1-d24), [P1 Day 28](#/day/p1-d28))
+  - 로그인·가입 화면([P2 Day 31](#/day/p2-d31)), XSS와 글자로 출력하기([P2 Day 34](#/day/p2-d34)), 쿠키는 같은 출처에서([P2 Day 27](#/day/p2-d27)), `addEventListener`([P1 Day 21](#/day/p1-d21), 오늘은 `window`에 `keydown`을 붙인다), `instanceof`([P2 Day 27](#/day/p2-d27)), `role="status"`·`role="alert"`([P1 Day 24](#/day/p1-d24), [P1 Day 28](#/day/p1-d28))
 - 시작 상태:
   - [Day 18](#/day/sp-d18) 끝 상태와 같다. 아래 파일이 이렇게 있어야 한다(없으면 [Day 18](#/day/sp-d18)의 "오늘 끝 상태 전체 코드"로 맞춘다).
   - `C:\dev\image-donation\`: `README.md`, `.gitignore`, `.env.example`, `.env`, `docker-compose.yml`
@@ -1223,7 +1230,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - 앞 프로젝트(P1·P2)에서 배운 용어, 다시 짚을 때 `[[제목]]`으로 링크: `[[XSS]]`, `[[쿠키]]`, `[[출처]]`
 - 자주 막히는 곳 후보:
   - `http://localhost:5080/dashboard`로 열어 화면이 없음 → 개발 중 화면은 5173(Vite), 5080은 API만(Day 37 전)
-  - 로그인했는데 대시보드 허브가 401 → 5173이 아닌 다른 주소에서 로그인해 쿠키가 다름
+  - 로그인했는데 대시보드 허브가 401 → `localhost`와 `127.0.0.1`(또는 LAN IP)은 서로 다른 호스트라 쿠키가 따로 저장된다(포트는 쿠키를 나누지 않는다) → 로그인한 것과 같은 주소 `http://localhost:5173`으로 연다
   - Caps Lock이 켜져 `e.key`가 `A` → 단축키 안 됨(레퍼런스는 소문자만)
   - 가입 오류가 영어(`Passwords must have at least one uppercase…`) → Identity 기본 메시지, 그대로 보여 주고 안내 문장으로 보충
   - 개발 모드 negotiation 오류 1회 → Day 15와 같음
@@ -1236,13 +1243,13 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\client\src\components\StreamerLayout.tsx`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/client/src/components/StreamerLayout.tsx`)와 다름: 다시 바뀜 → [Day 20](#/day/sp-d20)
   - `C:\dev\image-donation\client\src\hooks\useMe.ts`: `reference/sp-image-donation/client/src/hooks/useMe.ts` 최종(같음)
   - `C:\dev\image-donation\client\src\hooks\useDashboardHub.ts`: `reference/sp-image-donation/client/src/hooks/useDashboardHub.ts` 최종(같음)
-  - `C:\dev\image-donation\client\src\pages\DashboardPage.tsx`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/client/src/pages/DashboardPage.tsx`)와 다름: 다시 바뀜 → [Day 28](#/day/sp-d28)
+  - `C:\dev\image-donation\client\src\pages\DashboardPage.tsx`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/client/src/pages/DashboardPage.tsx`)와 다름: 다시 바뀜 → [Day 30](#/day/sp-d30)
   - `C:\dev\image-donation\client\src\pages\LoginPage.tsx`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/client/src/pages/LoginPage.tsx`)와 다름: 다시 바뀜 → [Day 21](#/day/sp-d21)
 
 ## Day 20 — 설정 화면 (110분)
 - 목표:
   - `Dtos\SettingsDto.cs`(최종): `SettingsDto(Mode, [Range(0, 10_000_000)] MinCheese, AutoApprove, [Range(3, 30)] DisplaySeconds, [Range(0, 60)] MinIntervalSeconds, [Range(1, 10)] MaxFileMb, [Required, MaxLength(100)] BannedWords)` + `From`, `MaxBannedWordLength = 30`.
-  - `GET`·`PUT /api/dashboard/settings`: 범위 검사는 `AddValidation()`이 먼저(400), 금지어는 `["a", null]`처럼 null이 섞이면 500 대신 400 "금지어 목록에 빈 값(null)이 있어요.", trim·빈 값 제거·중복 제거, 30자 넘으면 400. 금지어는 **오늘은 저장만** 하고 실제로 거르는 것은 Day 31이라고 화면 안내에 적는다.
+  - `GET`·`PUT /api/dashboard/settings`: 범위 검사는 `AddValidation()`이 먼저(400), 금지어는 `["a", null]`처럼 null이 섞이면 500 대신 400 "금지어 목록에 빈 값(null)이 있어요.", trim·빈 값 제거·중복 제거, 30자 넘으면 400. 금지어는 **오늘은 저장만** 하고 실제로 거르는 것은 Day 33이라고 화면 안내에 적는다.
   - `POST /api/dashboard/overlay-token/rotate`: 새 토큰 저장 → 옛 그룹에 `Clear()` → 옛 주소로 열린 오버레이는 아무것도 못 받고, 서버를 부르면(`MarkShown`) `OverlayHub`가 토큰을 다시 확인해 `Context.Abort()`(오늘 OverlayHub 최종).
   - `pages\SettingsPage.tsx`: 후원 방식 라디오(무료 / 치즈 후원 연동 — 치즈 동작은 Day 26~27), 최소 치즈(치즈 모드일 때만), 자동 승인 체크, 숫자 칸 3개, 금지어 textarea(한 줄에 하나), 저장 → notice, 후원 페이지 주소, 오버레이 주소(읽기 전용 칸, 비밀) + 복사(`navigator.clipboard.writeText`, 실패하면 직접 선택 안내) + 재발급. 레이아웃 값은 `useOutletContext<StreamerContext>()`. 치지직 연결 절은 Day 23.
   - `api.ts`: `DonationMode`, `Settings`, `getSettings`, `saveSettings`, `getOverlayToken`, `rotateOverlayToken`, `overlayUrl`(`window.location.origin` + `/overlay.html?token=`), `donatePageUrl`. StreamerLayout에 "설정" 링크, App에 `/settings`.
@@ -1367,19 +1374,20 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - dummy 값을 지우지 않아 나중에 "왜 설정이 있다고 나오지?" → `dotnet user-secrets list`로 확인
   - 쿠키 Path가 `/api/chzzk`라서 다른 경로에서는 안 보임 → 정상
 - 레퍼런스 대응:
-  - `C:\dev\image-donation\client\src\index.css`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/client/src/index.css`)와 다름: 다시 바뀜 → [Day 28](#/day/sp-d28)
+  - `C:\dev\image-donation\client\src\index.css`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/client/src/index.css`)와 다름: 다시 바뀜 → [Day 29](#/day/sp-d29)
   - `C:\dev\image-donation\client\src\pages\LoginPage.tsx`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/client/src/pages/LoginPage.tsx`)와 다름: 다시 바뀜 → [Day 23](#/day/sp-d23)
-  - `C:\dev\image-donation\server\ImageDonation.Api\appsettings.json`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/appsettings.json`)와 다름: 다시 바뀜 → [Day 26](#/day/sp-d26)
+  - `C:\dev\image-donation\server\ImageDonation.Api\appsettings.json`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/appsettings.json`)와 다름: 다시 바뀜 → [Day 28](#/day/sp-d28)
   - `C:\dev\image-donation\server\ImageDonation.Api\Program.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Program.cs`)와 다름: 다시 바뀜 → [Day 24](#/day/sp-d24)
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\ChzzkEndpoints.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Endpoints/ChzzkEndpoints.cs`)와 다름: 다시 바뀜 → [Day 23](#/day/sp-d23)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\ChzzkApiClient.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Services/ChzzkApiClient.cs`)와 다름: 다시 바뀜 → [Day 22](#/day/sp-d22)
 
-## Day 22 — 치지직 개발자 센터 (90분)
+## Day 22 — 치지직 개발자 센터 (105분)
 - 목표:
   - **선택 단계(승인된 치지직 앱이 있을 때만):** (치지직 계정 필요) `https://developers.chzzk.naver.com`에서 애플리케이션 만들기. 앱 이름·ID에 "chzzk", "치지직", "naver", "네이버"를 넣을 수 없다. 로그인 리디렉션 URL: 개발 `http://localhost:5173/api/chzzk/callback`(`localhost` 허용 여부는 **미확인** → 입력칸 안내를 확인), Scope: **후원 조회**, **유저 정보 조회**(+ 선택 **채팅 메시지 쓰기**, Day 28). 심사 기간은 미확인, 90일 동안 API 사용량이 0이면 앱이 삭제된다, 개발자 센터 이용 약관은 학습자가 직접 읽는다(조항 미확인). 화면 메뉴 이름은 확인하지 못했으므로 "작성 기준일 2026-11, 화면이 다를 수 있어요"를 붙인다.
   - Client Secret 보관: `dotnet user-secrets set "Chzzk:ClientId" "…"`, `"Chzzk:ClientSecret"`, `"Chzzk:RedirectUri" "http://localhost:5173/api/chzzk/callback"`. 코드·커밋·스크린샷·방송 화면에 절대 노출하지 않고, 노출되면 개발자 센터에서 재발급. `dotnet user-secrets list`는 값을 그대로 보여 주므로 방송 중 실행 금지.
   - **기본 경로(치지직 승인 없이):** 승인을 기다리는 동안 할 일: `ChzzkApiClient`의 공통 부분. 치지직 응답 공통 형식(성공 `{"code":200,"message":null,"content":{…}}`, 실패 `{"code":401,"message":"INVALID_TOKEN"}` — `[교차]` 확인이라 공식 문서 대조 필요), `ChzzkApiException(StatusCode)`, `SendAsync`(실패·JSON 아님이면 예외, 성공이면 `content`), `TryParse`(`using var document` + `RootElement.Clone()`), `WithBearer`(`Bearer {토큰}`, 사이 공백 주의), `ReadInt`(`expiresIn`이 문자열이든 숫자든), `ChzzkTokenResponse`, `ChzzkUser`, `PostTokenAsync`, `ExchangeCodeAsync`(`grantType: authorization_code`, clientId, clientSecret, code, state), `GetMeAsync`(`GET /open/v1/users/me` → channelId, channelName — 실제 응답 필드는 미확인).
   - README에 "치지직 연동(선택)" 절: 앱 등록 체크리스트, user-secrets 이름 3개, 미확인 항목(localhost 허용, 심사 기간, Quota 수치, 실서버 응답 모양), "승인이 없어도 테스트 모드로 전체 흐름을 연습할 수 있어요".
+  - **기본 경로(치지직 승인 없이):** 세션·채팅을 부르는 짧은 메서드도 오늘 같이 만든다(부르는 곳은 Day 25~28, 설계서 3.4와 다른 배치): `GetSessionUrlAsync`(`GET /open/v1/sessions/auth` → `content.url`, 1회용), `SubscribeDonationAsync`(`POST /open/v1/sessions/events/subscribe/donation?sessionKey=` — 구독 완료는 HTTP 응답이 아니라 소켓의 `SYSTEM subscribed`로 온다), `SendChatAsync`(`POST /open/v1/chats/send`, 본문 `{"message"}` 100자로 자르기, Scope 채팅 메시지 쓰기). 셋 다 오늘 만든 `WithBearer`·`SendAsync`를 다시 쓴다.
 - 이미 배운 것:
   - [Day 21](#/day/sp-d21)
   - async·예외([P2 Day 8](#/day/p2-d08), [P2 Day 15](#/day/p2-d15)), HTTP 헤더·상태 코드·JSON 본문([P2 Day 16](#/day/p2-d16)), user-secrets([P2 Day 26](#/day/p2-d26)), `JsonElement`로 JSON 읽기는 오늘 처음(짧게 설명)
@@ -1410,7 +1418,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - 도구가 만드는 폴더(`node_modules`, `bin`, `obj`, `dist`, 업로드된 `media` 파일)는 목록에서 뺐다.
 - 오늘 만들/바꿀 파일:
   - `C:\dev\image-donation\README.md` [바꿈] — "치지직 연동(선택)" 절: 앱 등록 체크리스트, user-secrets 이름, 미확인 항목 (레퍼런스 `README.md`)
-  - `C:\dev\image-donation\server\ImageDonation.Api\Services\ChzzkApiClient.cs` [바꿈] — + `ChzzkApiException`, `ChzzkTokenResponse`, `ChzzkUser`, `ExchangeCodeAsync`, `GetMeAsync`, `PostTokenAsync`, `WithBearer`, `SendAsync`(공통 응답에서 content), `TryParse`(JsonDocument using + Clone), `ReadInt`(문자열·숫자) (레퍼런스 `server/ImageDonation.Api/Services/ChzzkApiClient.cs`)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Services\ChzzkApiClient.cs` [바꿈] — + `ChzzkApiException`, `ChzzkTokenResponse`, `ChzzkUser`, `ExchangeCodeAsync`, `GetMeAsync`, `PostTokenAsync`, `WithBearer`, `SendAsync`(공통 응답에서 content), `TryParse`(JsonDocument using + Clone), `ReadInt`(문자열·숫자), `GetSessionUrlAsync`, `SubscribeDonationAsync`, `SendChatAsync`(100자 자르기) (레퍼런스 `server/ImageDonation.Api/Services/ChzzkApiClient.cs`)
 - 끝 상태 확인:
   - **기본 경로(치지직 승인 없이):** `dotnet build` 경고 0, 서버가 평소처럼 켜지고, README 미리보기에 "치지직 연동(선택)" 절과 체크리스트가 보인다.
   - **선택 단계(승인된 치지직 앱이 있을 때만):** 개발자 센터 앱 목록에 내 앱이 보이고, `dotnet user-secrets list`에 `Chzzk:ClientId`·`Chzzk:ClientSecret`·`Chzzk:RedirectUri` 세 이름이 있다(값은 남에게 보이지 않게). `/login`의 치지직 버튼을 누르면 치지직 동의 화면이 나온다(돌아온 뒤 처리는 Day 23).
@@ -1437,7 +1445,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - 치지직 실서버 연동은 작성 환경에서 검증하지 못했다(계정·인증 정보 없음). 코드는 공식 문서 대조와 가짜 HTTP 처리기·로컬 에뮬레이터로만 확인했다고 본문에 적는다.
 - 이미 배운 것:
   - [Day 13](#/day/sp-d13) Identity·온보딩, [Day 20](#/day/sp-d20) 설정 화면, [Day 21](#/day/sp-d21)~[Day 22](#/day/sp-d22)
-  - Identity의 UserManager·SignInManager·클레임([P2 Day 25](#/day/p2-d25)·[P2 Day 26](#/day/p2-d26)), 관계·외래 키([P2 Day 22](#/day/p2-d22))
+  - Identity 표·MapIdentityApi([P2 Day 25](#/day/p2-d25)), 클레임·`/api/me`([P2 Day 26](#/day/p2-d26)), `SignInManager.SignOutAsync`([Day 13](#/day/sp-d13)). 오늘 처음: `UserManager<IdentityUser>`의 `FindByIdAsync`·`GetUserAsync`·`CreateAsync`(계정 찾기·만들기)와 `SignInManager.SignInAsync`(비밀번호 없이 쿠키 로그인), 관계·외래 키([P2 Day 22](#/day/p2-d22))
 - 시작 상태:
   - [Day 22](#/day/sp-d22) 끝 상태와 같다. 아래 파일이 이렇게 있어야 한다(없으면 [Day 22](#/day/sp-d22)의 "오늘 끝 상태 전체 코드"로 맞춘다).
   - `C:\dev\image-donation\`: `README.md`, `.gitignore`, `.env.example`, `.env`, `docker-compose.yml`
@@ -1483,7 +1491,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - 2) `state == expected` 대신 FixedTimeEquals를 쓰는 이유 → 정답 요지: 일반 비교는 다른 글자를 만나는 순간 멈춰 걸리는 시간이 값마다 다르다. 이 차이로 비밀 값을 추측하는 공격을 막는다
 - 용어(사전 담당): `토큰 교환`, `계정 연결`, `타이밍 공격`
 - 자주 막히는 곳 후보:
-  - 선택 단계에서 늘 chzzk-state → 로그인을 5173에서 시작했는데 리디렉션 URL은 5080(포트가 다르면 같은 쿠키라도 흐름이 꼬일 수 있음) → Day 21의 개발용 주소로 통일
+  - 선택 단계에서 늘 chzzk-state → state 쿠키는 로그인을 시작한 호스트(`localhost`)에 저장되는데 리디렉션 URL이 `127.0.0.1`이나 LAN IP라 쿠키가 따라오지 않음(포트 차이는 상관없다). 리디렉션이 5080에 도착하면 처리는 되지만 이어지는 `/dashboard`가 화면이 없는 5080으로 간다 → 두 경우 모두 Day 21의 개발용 주소 `http://localhost:5173/api/chzzk/callback`으로 통일
   - 치지직 쪽 "redirect uri mismatch" 계열 오류 → 개발자 센터 등록값과 user-secrets 값을 글자까지 비교
   - `/login?error=chzzk-token` → 서버 로그의 `치지직 토큰 교환 실패 (401)` 등 확인(Secret 오타가 많음)
   - 실서버 응답에 `channelId`가 없어 `KeyNotFoundException` → 미확인 영역이므로 공식 문서와 대조하고 보고
@@ -1506,7 +1514,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `ChzzkApiClient` 생성자에 `IDataProtectionProvider`·`TimeProvider`. `StoreTokens(entity, tokens)`(두 토큰을 암호화해 넣고 만료 시각 계산, 저장은 호출한 쪽), `ReadRefreshToken`, `RefreshAsync`(`grantType: refresh_token`), `GetValidAccessTokenAsync(db, userId)`: 만료 5분 전까지는 그대로 → 아니면 `SemaphoreSlim(1, 1)` 잠금 → 잠금 안에서 `db.Entry(token).ReloadAsync()`로 다시 읽기(그 사이 다른 요청이 갱신했을 수 있음) → 갱신 → 새 토큰 쌍을 잠금 안에서 바로 저장(옛 리프레시 토큰은 이제 무효).
   - 한계를 분명히: 이 잠금은 서버 프로세스 하나 안에서만 지켜진다. 서버를 여러 대 띄우면 DB 잠금 같은 다른 방법이 필요하다(레퍼런스 README).
   - 콜백(Day 23)에 `api.StoreTokens(token, tokens)` 한 줄 → 이제 토큰이 암호문으로만 DB에 들어간다.
-  - **기본 경로(치지직 승인 없이):** 갱신·회전을 실제로 돌려 보는 것은 Day 34의 `ChzzkApiClientTests`(가짜 치지직 HTTP 처리기)에서 한다고 예고한다. 치지직 실서버 연동은 작성 환경에서 검증하지 못했다(계정·인증 정보 없음). 코드는 공식 문서 대조와 가짜 HTTP 처리기·로컬 에뮬레이터로만 확인했다고 본문에 적는다.
+  - **기본 경로(치지직 승인 없이):** 갱신·회전을 실제로 돌려 보는 것은 Day 36의 `ChzzkApiClientTests`(가짜 치지직 HTTP 처리기)에서 한다고 예고한다. 치지직 실서버 연동은 작성 환경에서 검증하지 못했다(계정·인증 정보 없음). 코드는 공식 문서 대조와 가짜 HTTP 처리기·로컬 에뮬레이터로만 확인했다고 본문에 적는다.
 - 이미 배운 것:
   - [Day 12](#/day/sp-d12) TimeProvider, [Day 14](#/day/sp-d14) HMAC 해시, [Day 21](#/day/sp-d21)~[Day 23](#/day/sp-d23)
   - async·Task와 try/finally([P2 Day 15](#/day/p2-d15)), 해싱([P2 Day 25](#/day/p2-d25)), lock으로 동시 접근 막기([P2 Day 33](#/day/p2-d33) NoticeBroadcaster)
@@ -1541,7 +1549,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\ChzzkApiClient.cs` [바꿈] — + 생성자에 `IDataProtectionProvider`·`TimeProvider`, `_protector`("ImageDonation.ChzzkTokens"), `RefreshLock`(SemaphoreSlim 1), `RefreshAsync`, `StoreTokens`, `ReadRefreshToken`, `GetValidAccessTokenAsync`(만료 5분 전 갱신, 잠금 안에서 Reload·저장), `IsFresh` (레퍼런스 `server/ImageDonation.Api/Services/ChzzkApiClient.cs`)
 - 끝 상태 확인:
   - **기본 경로(치지직 승인 없이):** `dotnet build` 경고 0. 파일 탐색기 주소창에 `%LOCALAPPDATA%\ASP.NET\DataProtection-Keys` → `key-<GUID>.xml` 파일이 있다(위치가 다르면 서버 시작 로그의 키 저장 위치 안내를 확인 — 문구는 작성자 확인).
-  - **기본 경로(치지직 승인 없이):** 서버를 껐다 켜도 대시보드 로그인이 유지된다(쿠키를 같은 키로 풀 수 있으므로).
+  - **기본 경로(치지직 승인 없이):** `SetApplicationName`을 처음 넣으면 Data Protection의 구분값이 바뀌어 지금까지의 로그인 쿠키를 풀 수 없다 → **한 번은 다시 로그인**한다(정상). 그 뒤로는 서버를 껐다 켜도 대시보드 로그인이 유지된다.
   - **선택 단계(승인된 치지직 앱이 있을 때만):** 치지직으로 다시 로그인한 뒤 psql `SELECT left("AccessTokenProtected", 5) FROM "ChzzkTokens";` → `CfDJ8`(Data Protection 암호문의 시작). 원래 토큰 글자는 DB 어디에도 없다.
 - 과제:
   - 1) 잠금 안에서 다시 읽지 않으면 어떤 일이 생기는지 두 요청 A·B로 설명 → 정답 요지: A·B가 같은 만료 토큰을 읽음 → A가 갱신해 r1을 쓰고 r2를 저장 → B가 기다렸다가 옛 r1로 갱신 → 1회용이라 실패(401). 다시 읽으면 B는 A가 저장한 새 토큰을 그대로 쓴다
@@ -1552,21 +1560,23 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `No XML encryptor configured` 경고 → Linux·Docker에서 보이는 경고(Day 37에서 설명), Windows 개발에서는 보통 안 보임
   - 갱신이 401로 실패 → 리프레시 토큰이 이미 쓰였거나 30일 지남 → 치지직으로 다시 로그인
   - RefreshLock을 static이 아닌 필드로 둠 → 요청마다 새 잠금이라 효과 없음(ChzzkApiClient는 HttpClient 팩터리가 매번 만든다)
+  - `SetApplicationName`을 넣은 직후 대시보드가 로그인 화면으로 돌아감 → 구분값이 바뀌어 옛 쿠키가 무효(한 번만 다시 로그인)
 - 레퍼런스 대응:
   - `C:\dev\image-donation\server\ImageDonation.Api\Program.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Program.cs`)와 다름: 다시 바뀜 → [Day 26](#/day/sp-d26)
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\ChzzkEndpoints.cs`: `reference/sp-image-donation/server/ImageDonation.Api/Endpoints/ChzzkEndpoints.cs` 최종(같음)
-  - `C:\dev\image-donation\server\ImageDonation.Api\Services\ChzzkApiClient.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Services/ChzzkApiClient.cs`)와 다름: 다시 바뀜 → [Day 26](#/day/sp-d26)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Services\ChzzkApiClient.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Services/ChzzkApiClient.cs`)와 다름: 다시 바뀜 → [Day 28](#/day/sp-d28)
 
 ## Day 25 — 세션 소켓 이해 (120분)
 - 목표:
   - 흐름(text 그림): `GET /open/v1/sessions/auth`로 1회용 URL(`https://ssio08.nchat.naver.com:443?auth=…` 모양) → Socket.IO 2.x(EIO=3) 연결 → `SYSTEM`(`type: connected`)의 `data.sessionKey` → `POST /open/v1/sessions/events/subscribe/donation?sessionKey=` → `DONATION` 이벤트. 구독 완료는 HTTP 응답이 아니라 `SYSTEM subscribed` 메시지로 온다. 세션 URL이 1회용이라 같은 주소로 재연결하지 않고, 끊기면 다음 점검 때 새 세션(Day 26).
   - .NET 클라이언트 `SocketIOClient` 4.0.5(`dotnet add package SocketIOClient --version 4.0.5`): `EIO = EngineIO.V3`(기본은 V4), `Transport = TransportProtocol.WebSocket`, `Reconnection = false`, `ConnectionTimeout` 3초. 함정 세 가지(external-facts 11절, 실행 확인됨): ① `using SocketIOClient.Common;`(`SocketIOClient.Transport`라는 네임스페이스는 없어서 CS0234) ② EIO=3에서는 `Auth` 옵션이 동작하지 않음 → `Query["auth"]` ③ URL에 `?auth=`를 붙여 두면 서버로 전달되지 않음 → `SplitSessionUrl`로 origin과 auth를 나눈다.
   - 로컬 에뮬레이터 `C:\dev\image-donation\tools\chzzk-emulator`: `package.json`(레퍼런스와 같게, `npm install socket.io@2.5.0 --save-exact`로 lock 생성), `emulator.cjs`(레퍼런스 그대로 — 실제 치지직이 아님을 파일 맨 위 주석과 본문에 분명히). `npm start` → `LISTENING 5099`.
-  - `Services\Events\ChzzkSessionSource.cs` 첫 버전(아직 일반 클래스): 소켓 목록 `ConcurrentDictionary<int, SocketIO>`, `IsConnected`, `ConnectAsync(streamerId, sessionUrl, onSessionKey)`(SYSTEM connected → onSessionKey, DONATION은 원문만 로그), `DisconnectAsync`(그 소켓 인스턴스만 빼고 끊고 Dispose), `DisconnectAllAsync`, `SplitSessionUrl`. BackgroundService·이벤트 해석은 Day 26, 실패 처리는 Day 28.
-  - 테스트 프로젝트를 오늘 만든다(이 코드는 진짜 치지직 없이 테스트로만 실행해 볼 수 있으므로): `cd C:\dev\image-donation\server` → `dotnet new xunit -n ImageDonation.Tests` → `dotnet sln add ImageDonation.Tests\ImageDonation.Tests.csproj` → `dotnet add ImageDonation.Tests reference ImageDonation.Api` → `UnitTest1.cs` 지우기. `ChzzkEmulator.cs`(레퍼런스 최종: 빈 포트로 띄우고 처음 한 번 `npm ci`, Windows는 `cmd.exe /c npm`), `ChzzkSessionSourceTests.cs` 첫 버전: `SplitSessionUrl_MovesAuthToQueryOption`(최종과 같음) + 연습 테스트(에뮬레이터에 연결해 sessionKey `sess-123`과 출력 `CONNECTED auth=test-auth-token EIO=3` 확인, Day 26에서 최종 테스트로 바뀜).
+  - `Services\Events\ChzzkSessionSource.cs` 첫 버전(아직 일반 클래스, 생성자는 `ILogger<ChzzkSessionSource>` 하나 — 9절 부록 D): 소켓 목록 `ConcurrentDictionary<int, SocketIO>`, `IsConnected`, `ConnectAsync(streamerId, sessionUrl, onSessionKey)`(SYSTEM connected → onSessionKey, DONATION은 원문만 로그), `DisconnectAsync`(그 소켓 인스턴스만 빼고 끊고 Dispose), `DisconnectAllAsync`, `SplitSessionUrl`. BackgroundService·이벤트 해석은 Day 26, 실패 처리는 Day 28.
+  - 테스트 프로젝트를 오늘 만든다(이 코드는 진짜 치지직 없이 테스트로만 실행해 볼 수 있으므로): `cd C:\dev\image-donation\server` → `dotnet new xunit -n ImageDonation.Tests` → `dotnet sln add ImageDonation.Tests\ImageDonation.Tests.csproj` → `dotnet add ImageDonation.Tests reference ImageDonation.Api` → `UnitTest1.cs` 지우기. `ChzzkEmulator.cs`(테스트 도구라 붙여 넣고 읽기, 레퍼런스 최종: 빈 포트로 띄우고 처음 한 번 `npm ci`, Windows는 `cmd.exe /c npm`), `ChzzkSessionSourceTests.cs` 첫 버전: `SplitSessionUrl_MovesAuthToQueryOption`(최종과 같음) + 연습 테스트 `ChzzkSessionSource_ConnectsToEmulator_GetsSessionKey`(9절 부록 E: 에뮬레이터에 연결해 sessionKey `sess-123`과 출력 `CONNECTED auth=test-auth-token EIO=3` 확인, Day 26에서 최종 테스트로 바뀜).
+  - `:::warn` 치지직 Open API로 할 수 없는 것 두 가지(설계서 2.5, 이 Day에서 분명히): ① **미션 후원은 받을 수 없다** — DONATION의 `donationType`은 `CHAT`·`VIDEO`만 가정한다(비공식 SDK 문서의 보고이고 공식 문서 문장은 직접 확인하지 못함, external-facts 10.7). ② **API로 방송 화면에 미디어를 직접 넣는 기능은 없다** → 그래서 이 서비스의 모든 화면 표시는 우리가 만든 OBS 브라우저 소스(오버레이, Day 18)로 한다.
 - 이미 배운 것:
   - [Day 15](#/day/sp-d15) WebSocket·SignalR, [Day 21](#/day/sp-d21)~[Day 24](#/day/sp-d24)
-  - xUnit·Fact·Assert·`dotnet test`([P2 Day 35](#/day/p2-d35)), npm([P2 Day 3](#/day/p2-d03)), async·Task([P2 Day 15](#/day/p2-d15)), Dictionary([P2 Day 11](#/day/p2-d11)), 프로젝트 참조·솔루션([P2 Day 35](#/day/p2-d35)·[P2 Day 36](#/day/p2-d36))
+  - xUnit·Fact·Assert·`dotnet test`([P2 Day 35](#/day/p2-d35)), npm([P2 Day 3](#/day/p2-d03)), async·Task([P2 Day 15](#/day/p2-d15)), Dictionary([P2 Day 11](#/day/p2-d11)) — 여러 스레드가 함께 쓰는 `ConcurrentDictionary`는 오늘 처음, 프로젝트 참조·솔루션([P2 Day 35](#/day/p2-d35)·[P2 Day 36](#/day/p2-d36))
 - 시작 상태:
   - [Day 24](#/day/sp-d24) 끝 상태와 같다. 아래 파일이 이렇게 있어야 한다(없으면 [Day 24](#/day/sp-d24)의 "오늘 끝 상태 전체 코드"로 맞춘다).
   - `C:\dev\image-donation\`: `README.md`, `.gitignore`, `.env.example`, `.env`, `docker-compose.yml`
@@ -1595,17 +1605,18 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 - 오늘 만들/바꿀 파일:
   - `C:\dev\image-donation\server\ImageDonation.slnx` [바꿈] — + `dotnet sln add ImageDonation.Tests` (레퍼런스와 같아짐) (레퍼런스 `server/ImageDonation.slnx`)
   - `C:\dev\image-donation\server\ImageDonation.Api\ImageDonation.Api.csproj` [바꿈] — + SocketIOClient 4.0.5 (레퍼런스와 같아짐) (레퍼런스 `server/ImageDonation.Api/ImageDonation.Api.csproj`)
-  - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\ChzzkSessionSource.cs` [새로] — 아직 BackgroundService가 아닌 클래스: `_sockets`(ConcurrentDictionary), `IsConnected`, `ConnectAsync`(EIO V3·WebSocket·Reconnection false·3초·`Query["auth"]`, SYSTEM connected → onSessionKey, DONATION은 원문 로그만), `DisconnectAsync`, `DisconnectAllAsync`, `SplitSessionUrl` (레퍼런스 `server/ImageDonation.Api/Services/Events/ChzzkSessionSource.cs`)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\ChzzkSessionSource.cs` [새로] — 아직 BackgroundService가 아닌 일반 클래스, 생성자는 `ILogger<ChzzkSessionSource> logger` 하나(9절 부록 D): `_sockets`(ConcurrentDictionary), `IsConnected`, `ConnectAsync`(EIO V3·WebSocket·Reconnection false·3초·`Query["auth"]`, SYSTEM connected → onSessionKey, DONATION은 원문 로그만), `DisconnectAsync`, `DisconnectAllAsync`, `SplitSessionUrl` (레퍼런스 `server/ImageDonation.Api/Services/Events/ChzzkSessionSource.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Tests\ImageDonation.Tests.csproj` [새로] — `dotnet new xunit -n ImageDonation.Tests`(xunit 2.9.3, runner 3.1.4, Test.Sdk 17.14.1, coverlet 6.0.4, `<Using Include="Xunit" />`) + `dotnet add reference ..\ImageDonation.Api`; 템플릿의 `UnitTest1.cs`는 지움 (레퍼런스 `server/ImageDonation.Tests/ImageDonation.Tests.csproj`)
   - `C:\dev\image-donation\server\ImageDonation.Tests\ChzzkEmulator.cs` [새로] — tools/chzzk-emulator를 빈 포트로 띄우고(처음 한 번 `npm ci`), `LISTENING` 줄로 포트를 읽고, 끝나면 그 프로세스만 끔 (레퍼런스 `server/ImageDonation.Tests/ChzzkEmulator.cs`)
-  - `C:\dev\image-donation\server\ImageDonation.Tests\ChzzkSessionSourceTests.cs` [새로] — `SplitSessionUrl_MovesAuthToQueryOption` + 연습 테스트 하나(에뮬레이터에 연결해 sessionKey "sess-123"과 `CONNECTED auth=test-auth-token EIO=3` 확인) (레퍼런스 `server/ImageDonation.Tests/ChzzkSessionSourceTests.cs`)
+  - `C:\dev\image-donation\server\ImageDonation.Tests\ChzzkSessionSourceTests.cs` [새로] — `CreateSource()`(부록 D의 Day 25 생성자) + `SplitSessionUrl_MovesAuthToQueryOption` + 연습 테스트 `ChzzkSessionSource_ConnectsToEmulator_GetsSessionKey`(부록 E) (레퍼런스 `server/ImageDonation.Tests/ChzzkSessionSourceTests.cs`)
   - `C:\dev\image-donation\tools\chzzk-emulator\package.json` [새로] — `chzzk-emulator`, `"start": "node emulator.cjs 5099"`, `socket.io` 2.5.0(정확한 버전) (레퍼런스 `tools/chzzk-emulator/package.json`)
   - `C:\dev\image-donation\tools\chzzk-emulator\package-lock.json` [새로] — npm이 만듦 (레퍼런스 `tools/chzzk-emulator/package-lock.json`)
   - `C:\dev\image-donation\tools\chzzk-emulator\emulator.cjs` [새로] — 레퍼런스 그대로(상황 donations·revoked·kick·malformed는 Day 28에서 씀) (레퍼런스 `tools/chzzk-emulator/emulator.cjs`)
 - 끝 상태 확인:
-  - `cd C:\dev\image-donation\tools\chzzk-emulator` → `npm start` → `LISTENING 5099`. `Ctrl + C`로 끈다.
-  - `cd C:\dev\image-donation\server` → `dotnet test` → 테스트 2개 통과(`Passed!  - Failed: 0, Passed: 2` 모양, 숫자·시간은 달라도 됨).
-  - `ImageDonation.slnx`에 두 프로젝트가 있다(`dotnet sln list`).
+  - **기본 경로(치지직 승인 없이):** `cd C:\dev\image-donation\tools\chzzk-emulator` → `npm start` → `LISTENING 5099`. `Ctrl + C`로 끈다.
+  - **기본 경로(치지직 승인 없이):** `cd C:\dev\image-donation\server` → `dotnet test` → 테스트 2개 통과(`Passed!  - Failed: 0, Passed: 2` 모양, 숫자·시간은 달라도 됨).
+  - **기본 경로(치지직 승인 없이):** `ImageDonation.slnx`에 두 프로젝트가 있다(`dotnet sln list`).
+  - **선택 단계(승인된 치지직 앱이 있을 때만):** 오늘은 없다. 진짜 치지직 세션에 붙는 것은 Day 28의 자동 점검(승인된 앱 + 치즈 모드)에서 확인한다.
 - 과제:
   - 1) `SplitSessionUrl`을 쓰지 않고 `new SocketIO(new Uri(url))`에 `?auth=`를 붙인 주소를 그대로 넣으면 테스트가 어떻게 되는지 확인 후 되돌린다 → 정답 요지: 에뮬레이터 출력이 `CONNECTED auth=undefined EIO=3`가 되어 연습 테스트의 Assert가 실패한다 → 함정 ③을 직접 본다
   - 2) `Reconnection = false`로 두는 이유 → 정답 요지: 세션 URL은 1회용이라 같은 주소로 다시 붙어도 소용없다. 끊기면 Day 26의 60초 점검이 새 세션 URL을 받아 새로 연결한다
@@ -1630,16 +1641,15 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\tools\chzzk-emulator\package-lock.json`: `reference/sp-image-donation/tools/chzzk-emulator/package-lock.json` 최종(같음)
   - `C:\dev\image-donation\tools\chzzk-emulator\emulator.cjs`: `reference/sp-image-donation/tools/chzzk-emulator/emulator.cjs` 최종(같음)
 
-## Day 26 — 후원 이벤트 수신 (120분)
+## Day 26 — 후원 이벤트 수신 (110분)
 - 목표:
   - 설계: `Services\Events\IDonationEventSource.cs` — `CheeseDonationEvent(StreamerId, Source "chzzk"/"test", DonationType, DonatorNickname, PayAmount, DonationText, ReceivedAt)`와 `event Func<CheeseDonationEvent, Task>? DonationReceived`. 진짜(ChzzkSessionSource)와 가짜(FakeDonationSource)가 같은 이벤트를 내므로 받는 쪽은 출처를 신경 쓰지 않는다. 함정 주석: 처리기를 여러 개 붙이면 `await handler(evt)`는 마지막 처리기의 Task만 기다린다 → 하나만 붙인다.
-  - `ParseDonation`(+ `ToObject`, `ToAmount`, `ReadString`): 페이로드가 JSON 문자열이든 객체든, `payAmount`가 문자열이든 숫자든 받고(문서 표기는 문자열, 실측 보고는 다름 — 미확인), 깨진 JSON·음수·int 범위 밖 금액은 null.
+  - `ChzzkSessionSource`가 `IDonationEventSource`를 구현한다(아직 BackgroundService가 아님 — 스스로 연결을 점검하는 부분은 Day 28). 생성자에 `TimeProvider` 추가(9절 부록 D), DONATION → `ParseDonation` → `DonationReceived`. 오늘 진짜 소켓은 테스트(에뮬레이터)에서만 붙는다. `ParseDonation`(+ `ToObject`, `ToAmount`, `ReadString`): 페이로드가 JSON 문자열이든 객체든, `payAmount`가 문자열이든 숫자든 받고(문서 표기는 문자열, 실측 보고는 다름 — 미확인), 깨진 JSON·음수·int 범위 밖 금액은 null.
   - **테스트 모드 백엔드를 먼저**: `FakeDonationSource.PublishAsync`가 치지직 문서와 같은 DONATION JSON(payAmount 문자열)을 만들어 같은 해석기에 통과시키고 처리기를 끝까지 기다린다. `Endpoints\TestModeEndpoints.cs`: `POST /api/dashboard/test-donation`(로그인 필요, 자기 방송에만, 본문 `TestDonationRequest {amount, message, nickname?}`) → 202. 돈은 전혀 오가지 않는다.
-  - 진짜 수신기 완성: `ChzzkSessionSource : BackgroundService, IDonationEventSource` — `ExecuteAsync`(치지직 설정이 없으면 "치지직 ClientId/ClientSecret이 없어 세션 수신기를 끕니다. 테스트 모드는 그대로 쓸 수 있어요." 로그 후 종료, 있으면 `Chzzk:SessionCheckSeconds` 60초마다 점검), `SyncConnectionsAsync`(치즈 모드 + 치지직 연결된 스트리머마다 연결, 무료 모드로 바꾼 스트리머는 끊기), `SubscribeAsync`, DONATION → ParseDonation → `DonationReceived`. `ChzzkApiClient`에 `GetSessionUrlAsync`, `SubscribeDonationAsync`.
   - 이벤트 기록 `Entities\DonationEvent.cs`(금액·받은 시각·출처·매칭된 후원 ID만, 후원자 닉네임·메시지 열은 처음부터 없음) + `dotnet ef migrations add AddDonationEvents`. `DonationService.HandleCheeseEventAsync` 첫 버전: **무료 모드 스트리머의 이벤트는 아무것도 저장하지 않고**, 치즈 모드면 기록만(매칭은 Day 27). `RetentionService`가 7일 지난 이벤트도 지운다.
-  - `Program.cs`: ChzzkSessionSource를 싱글턴 + HostedService로, FakeDonationSource 싱글턴, 둘 다 `IDonationEventSource`로 등록(같은 인스턴스), `foreach` 로 각 출처에 처리기 하나(이벤트마다 새 scope의 DonationService). `/api/auth/me`의 `SessionConnected`가 이제 `sessions.IsConnected(streamer.Id)`.
-  - `:::info` 대안: 서버가 직접 실서버 소켓에 붙지 못하면 "브라우저 중계"(대시보드가 `socket.io-client@2.0.3`으로 연결해 서버로 넘기기)를 쓸 수 있다는 설계만 소개한다(레퍼런스에 코드 없음 → 교재에 코드로 싣지 않음).
-  - 테스트: 연습 테스트를 `ChzzkSessionSource_ReceivesDonations_FromSocketIo2Emulator`로 바꾸고 ParseDonation 테스트 2개 추가(레퍼런스와 같은 코드).
+  - `Program.cs`: ChzzkSessionSource를 싱글턴으로(HostedService 등록은 Day 28), FakeDonationSource 싱글턴, 둘 다 `IDonationEventSource`로 등록(같은 인스턴스), `foreach` 로 각 출처에 처리기 하나(이벤트마다 새 scope의 DonationService). `/api/auth/me`의 `SessionConnected`가 이제 `sessions.IsConnected(streamer.Id)`.
+  - `:::info` 대안: 서버가 직접 실서버 소켓에 붙지 못하면 "브라우저 중계"(대시보드가 `socket.io-client@2.0.3`으로 연결해 서버로 넘기기)를 쓸 수 있다는 설계만 소개한다. external-facts 11절은 최소 코드를 함께 보이자고 적었지만, 레퍼런스에 중계 코드가 없고 이 환경에서 실행·검증하지 않았으므로(설계서 5.3·CONTENT-GUIDE: 검증한 코드만 싣는다) 교재에는 흐름 그림과 쓸 패키지 이름만 두고 코드는 싣지 않는다.
+  - 테스트(`CreateSource()`는 부록 D의 Day 26 생성자): 연습 테스트를 `ChzzkSessionSource_ReceivesDonations_FromSocketIo2Emulator`로 바꾸고 ParseDonation 테스트 2개 추가(레퍼런스와 같은 코드).
 - 이미 배운 것:
   - [Day 12](#/day/sp-d12) BackgroundService, [Day 17](#/day/sp-d17) 대시보드 알림, [Day 20](#/day/sp-d20) 후원 방식 설정, [Day 25](#/day/sp-d25)
   - interface([P2 Day 13](#/day/p2-d13)), DI·서비스 수명([P2 Day 23](#/day/p2-d23)), 람다([P2 Day 14](#/day/p2-d14)), C#의 `event` 키워드는 오늘 처음(짧게 설명)
@@ -1672,8 +1682,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - 터미널 두 개, PostgreSQL 실행 중, REST Client 로그인 상태.
   - 도구가 만드는 폴더(`node_modules`, `bin`, `obj`, `dist`, 업로드된 `media` 파일)는 목록에서 뺐다.
 - 오늘 만들/바꿀 파일:
-  - `C:\dev\image-donation\server\ImageDonation.Api\appsettings.json` [바꿈] — + `Chzzk:SessionCheckSeconds: 60` (레퍼런스 `server/ImageDonation.Api/appsettings.json`)
-  - `C:\dev\image-donation\server\ImageDonation.Api\Program.cs` [바꿈] — + ChzzkSessionSource(싱글턴 + HostedService), FakeDonationSource, `IDonationEventSource` 두 개 등록, 처리기 연결 foreach, `MapTestModeEndpoints()` (레퍼런스 `server/ImageDonation.Api/Program.cs`)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Program.cs` [바꿈] — + ChzzkSessionSource 싱글턴(HostedService 등록은 Day 28), FakeDonationSource, `IDonationEventSource` 두 개 등록(같은 인스턴스), 처리기 연결 foreach, `MapTestModeEndpoints()` (레퍼런스 `server/ImageDonation.Api/Program.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Data\AppDbContext.cs` [바꿈] — + DbSet `DonationEvents`(ReceivedAt 인덱스) (레퍼런스 `server/ImageDonation.Api/Data/AppDbContext.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Entities\DonationEvent.cs` [새로] — StreamerId, Source("chzzk"/"test"), PayAmount, ReceivedAt, MatchedDonationId — 닉네임·메시지 열 없음(최소 수집) (레퍼런스 `server/ImageDonation.Api/Entities/DonationEvent.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Dtos\DonationDtos.cs` [바꿈] — + `TestDonationRequest([Range(1, 10_000_000)] Amount, [Required, MaxLength(100)] Message, [MaxLength(20)] Nickname?)` (레퍼런스 `server/ImageDonation.Api/Dtos/DonationDtos.cs`)
@@ -1681,20 +1690,18 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\TestModeEndpoints.cs` [새로] — `POST /api/dashboard/test-donation`(로그인 필요, 자기 방송에만) → `FakeDonationSource.PublishAsync` → 202 (레퍼런스 `server/ImageDonation.Api/Endpoints/TestModeEndpoints.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\RetentionService.cs` [바꿈] — + 7일 지난 DonationEvents `ExecuteDeleteAsync` (레퍼런스 `server/ImageDonation.Api/Services/RetentionService.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\DonationService.cs` [바꿈] — + `HandleCheeseEventAsync` 첫 버전: 치즈 모드 스트리머만 DonationEvent(금액·시각·출처) 저장 (레퍼런스 `server/ImageDonation.Api/Services/DonationService.cs`)
-  - `C:\dev\image-donation\server\ImageDonation.Api\Services\ChzzkApiClient.cs` [바꿈] — + `GetSessionUrlAsync`, `SubscribeDonationAsync`, `ChzzkOptions.SessionCheckSeconds` (레퍼런스 `server/ImageDonation.Api/Services/ChzzkApiClient.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\IDonationEventSource.cs` [새로] — `CheeseDonationEvent` record + `IDonationEventSource { event DonationReceived }` + "처리기 여러 개면 마지막 Task만 기다림" 주석 (레퍼런스 `server/ImageDonation.Api/Services/Events/IDonationEventSource.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\FakeDonationSource.cs` [새로] — 치지직 DONATION과 같은 JSON(payAmount 문자열) → `ChzzkSessionSource.ParseDonation` → 처리기 await (레퍼런스 `server/ImageDonation.Api/Services/Events/FakeDonationSource.cs`)
-  - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\ChzzkSessionSource.cs` [바꿈] — `BackgroundService, IDonationEventSource`로: `ExecuteAsync`(설정 없으면 안내 로그 후 종료, 60초 점검), `SyncConnectionsAsync`, `SubscribeAsync`, DONATION → `ParseDonation` → `DonationReceived`, `ParseDonation`·`ToObject`·`ToAmount`·`ReadString` (레퍼런스 `server/ImageDonation.Api/Services/Events/ChzzkSessionSource.cs`)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\ChzzkSessionSource.cs` [바꿈] — `: IDonationEventSource` + 생성자에 `TimeProvider time`(부록 D), DONATION → `ParseDonation` → `DonationReceived`, `ParseDonation`·`ToObject`·`ToAmount`·`ReadString` (아직 BackgroundService 아님) (레퍼런스 `server/ImageDonation.Api/Services/Events/ChzzkSessionSource.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\<시각>_AddDonationEvents.cs (+ .Designer.cs)` [새로] — `dotnet ef migrations add AddDonationEvents` (처음부터 최소 열만)
   - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\AppDbContextModelSnapshot.cs` [바꿈] — dotnet-ef가 갱신 (레퍼런스 `server/ImageDonation.Api/Migrations/AppDbContextModelSnapshot.cs`)
-  - `C:\dev\image-donation\server\ImageDonation.Tests\ChzzkSessionSourceTests.cs` [바꿈] — 연습 테스트를 `ChzzkSessionSource_ReceivesDonations_FromSocketIo2Emulator`로 바꾸고 `ParseDonation_AcceptsStringOrObjectPayload`, `ParseDonation_ReturnsNullForBrokenPayloads` 추가 (레퍼런스 `server/ImageDonation.Tests/ChzzkSessionSourceTests.cs`)
-  - `C:\dev\sp-practice\api.http` [바꿈] — + `POST /api/dashboard/test-donation`
+  - `C:\dev\image-donation\server\ImageDonation.Tests\ChzzkSessionSourceTests.cs` [바꿈] — `CreateSource()`를 Day 26 생성자로, 연습 테스트를 `ChzzkSessionSource_ReceivesDonations_FromSocketIo2Emulator`로 바꾸고 `ParseDonation_AcceptsStringOrObjectPayload`, `ParseDonation_ReturnsNullForBrokenPayloads` 추가 (레퍼런스 `server/ImageDonation.Tests/ChzzkSessionSourceTests.cs`)
+  - `C:\dev\sp-practice\api.http` [바꿈] — + `POST /api/dashboard/test-donation` — 정확한 모양은 9절 부록 F
 - 끝 상태 확인:
-  - **기본 경로(치지직 승인 없이):** 서버 시작 로그에 "치지직 ClientId/ClientSecret이 없어 세션 수신기를 끕니다. 테스트 모드는 그대로 쓸 수 있어요.".
   - **기본 경로(치지직 승인 없이):** 설정 화면에서 "치즈 후원 연동"으로 저장 → api.http `POST /api/dashboard/test-donation` `{"amount":1000,"message":"안녕"}` → `202 Accepted` → psql `SELECT * FROM "DonationEvents";` → 1행(Source `test`, PayAmount 1000, MatchedDonationId NULL). 열 목록에 닉네임·메시지가 없다.
   - **기본 경로(치지직 승인 없이):** 무료 모드로 바꾸고 다시 보냄 → DonationEvents 행 수가 늘지 않는다.
   - **기본 경로(치지직 승인 없이):** `dotnet test` → 4개 통과.
-  - **선택 단계(승인된 치지직 앱이 있을 때만):** 치지직 연결 + 치즈 모드 → 1분 안에 로그 "스트리머 N의 치지직 세션에 연결했습니다.", 설정 화면 "세션 소켓 연결됨". 실제 치즈 후원 이벤트 수신은 실서버 미검증.
+  - **선택 단계(승인된 치지직 앱이 있을 때만):** 오늘은 없다. 서버가 치지직 세션에 스스로 붙는 점검은 Day 28에서 한다.
 - 과제:
   - 1) `payAmount`가 `"-5"`, `"99999999999"`, `2500`일 때 ParseDonation 결과 → 정답 요지: null, null(int 범위 밖), PayAmount 2500. 테스트 `ParseDonation_ReturnsNullForBrokenPayloads`와 같은 생각
   - 2) 무료 모드 스트리머의 이벤트를 저장하지 않는 이유 → 정답 요지: 매칭할 후원이 없으니 쓸모가 없다 → 필요 없는 정보는 모으지 않는다(최소 수집, Day 32)
@@ -1702,12 +1709,10 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 - 자주 막히는 곳 후보:
   - test-donation 401 → REST Client 로그인 쿠키, 403 → 온보딩 전 계정
   - 이벤트가 안 쌓임 → 무료 모드면 정상(위 확인 항목)
-  - ChzzkSessionSource를 `AddHostedService<ChzzkSessionSource>()`로만 등록 → 인스턴스가 두 개가 되어 IsConnected가 늘 false → 레퍼런스처럼 싱글턴 하나를 HostedService와 IDonationEventSource로 함께 씀
   - 처리기 안의 예외가 사라져 원인을 모름 → Day 28에서 try/catch와 로그
   - PendingModelChangesWarning → 마이그레이션 만들기
 - 레퍼런스 대응:
-  - `C:\dev\image-donation\server\ImageDonation.Api\appsettings.json`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/appsettings.json`)와 다름: 다시 바뀜 → [Day 28](#/day/sp-d28)
-  - `C:\dev\image-donation\server\ImageDonation.Api\Program.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Program.cs`)와 다름: 다시 바뀜 → [Day 35](#/day/sp-d35)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Program.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Program.cs`)와 다름: 다시 바뀜 → [Day 28](#/day/sp-d28)
   - `C:\dev\image-donation\server\ImageDonation.Api\Data\AppDbContext.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Data/AppDbContext.cs`)와 다름: 다시 바뀜 → [Day 31](#/day/sp-d31)
   - `C:\dev\image-donation\server\ImageDonation.Api\Entities\DonationEvent.cs`: `reference/sp-image-donation/server/ImageDonation.Api/Entities/DonationEvent.cs` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Api\Dtos\DonationDtos.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Dtos/DonationDtos.cs`)와 다름: 다시 바뀜 → [Day 27](#/day/sp-d27)
@@ -1715,7 +1720,6 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\TestModeEndpoints.cs`: `reference/sp-image-donation/server/ImageDonation.Api/Endpoints/TestModeEndpoints.cs` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\RetentionService.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Services/RetentionService.cs`)와 다름: 다시 바뀜 → [Day 27](#/day/sp-d27)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\DonationService.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Services/DonationService.cs`)와 다름: 다시 바뀜 → [Day 27](#/day/sp-d27)
-  - `C:\dev\image-donation\server\ImageDonation.Api\Services\ChzzkApiClient.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Services/ChzzkApiClient.cs`)와 다름: 다시 바뀜 → [Day 28](#/day/sp-d28)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\IDonationEventSource.cs`: `reference/sp-image-donation/server/ImageDonation.Api/Services/Events/IDonationEventSource.cs` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\FakeDonationSource.cs`: `reference/sp-image-donation/server/ImageDonation.Api/Services/Events/FakeDonationSource.cs` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\ChzzkSessionSource.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Services/Events/ChzzkSessionSource.cs`)와 다름: 다시 바뀜 → [Day 28](#/day/sp-d28)
@@ -1733,7 +1737,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - DTO: `CreateDonationResponse.Code`(null이면 JSON에서 빠짐), `DonationDto.ExpiresAt`(AwaitingCheese일 때 CreatedAt + 30분). 화면: `api.ts`의 `expiresAt`, `DonationCard`의 "코드 #AB12 · HH:MM까지"(`toLocaleTimeString('ko-KR')`, 브라우저 시간대로 표시 — [P2 Day 29](#/day/p2-d29))와 "치즈 N개 확인".
 - 이미 배운 것:
   - [Day 13](#/day/sp-d13) 암호학적 난수, [Day 17](#/day/sp-d17) 조건부 업데이트, [Day 12](#/day/sp-d12) 정리 작업, [Day 26](#/day/sp-d26)
-  - 정규 표현식([P1 Day 24](#/day/p1-d24)), LINQ([P2 Day 14](#/day/p2-d14)), UTC와 한국 시간 표시([P2 Day 29](#/day/p2-d29)), C#의 `[GeneratedRegex]`·partial은 오늘 처음(짧게 설명)
+  - 정규 표현식([P1 Day 24](#/day/p1-d24)), LINQ([P2 Day 14](#/day/p2-d14)), UTC와 한국 시간 표시([P2 Day 29](#/day/p2-d29)), `[GeneratedRegex]`·partial([Day 10](#/day/sp-d10))
 - 시작 상태:
   - [Day 26](#/day/sp-d26) 끝 상태와 같다. 아래 파일이 이렇게 있어야 한다(없으면 [Day 26](#/day/sp-d26)의 "오늘 끝 상태 전체 코드"로 맞춘다).
   - `C:\dev\image-donation\`: `README.md`, `.gitignore`, `.env.example`, `.env`, `docker-compose.yml`
@@ -1769,7 +1773,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\RetentionService.cs` [바꿈] — + 30분 만료: `FindExpiryCandidatesAsync` → 후보마다 조건부 `ExpireAsync`(이미지 삭제·대시보드 알림), `IHubContext<DashboardHub,…>`, `RetentionResult(ExpiredDonations, …)` (레퍼런스 `server/ImageDonation.Api/Services/RetentionService.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\DonationService.cs` [바꿈] — + 치즈 모드면 AwaitingCheese + `NewUniqueCodeAsync`, `HandleCheeseEventAsync` 매칭(후보 → FindMatch → 조건부 UPDATE → 기록 → 알림·자동 승인) (레퍼런스 `server/ImageDonation.Api/Services/DonationService.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\DonationCodeMatcher.cs` [새로] — `CodeLifetime` 30분, `NewCode()`(# + 4자, RandomNumberGenerator.GetString), `[GeneratedRegex]` 코드 패턴, `ExtractCodes`, `FindMatch` (레퍼런스 `server/ImageDonation.Api/Services/DonationCodeMatcher.cs`)
-  - `C:\dev\sp-practice\api.http` [바꿈] — + 치즈 모드 업로드 → 코드, 코드를 넣은 테스트 후원
+  - `C:\dev\sp-practice\api.http` [바꿈] — + 치즈 모드 업로드 → 코드, 코드를 넣은 테스트 후원 — 정확한 모양은 9절 부록 F
 - 끝 상태 확인:
   - **기본 경로(치지직 승인 없이):** 치즈 모드에서 api.http로 업로드 → `201` `{"id":…,"status":"AwaitingCheese","code":"#K3P9"}`(코드는 매번 다름). 대시보드 카드 "치즈 대기 · 코드 #K3P9 · 13:45까지".
   - **기본 경로(치지직 승인 없이):** api.http test-donation `{"amount":1000,"message":"이미지 부탁해요 #k3p9"}`(소문자여도 됨) → 카드가 실시간으로 "검수 대기 · 치즈 1,000개 확인". 같은 요청을 다시 보내도 변화 없음. 최소 치즈 미만(999) → 그대로 치즈 대기.
@@ -1787,7 +1791,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - 만료 시각이 9시간 다르게 보임 → 서버는 UTC, 화면은 브라우저 시간대로 바꿔 보여 줌([P2 Day 29](#/day/p2-d29))
   - 코드를 메시지에 두 개 넣음 → 먼저 나온 코드 1건만
 - 레퍼런스 대응:
-  - `C:\dev\image-donation\client\src\api.ts`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/client/src/api.ts`)와 다름: 다시 바뀜 → [Day 28](#/day/sp-d28)
+  - `C:\dev\image-donation\client\src\api.ts`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/client/src/api.ts`)와 다름: 다시 바뀜 → [Day 29](#/day/sp-d29)
   - `C:\dev\image-donation\client\src\components\DonationCard.tsx`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/client/src/components/DonationCard.tsx`)와 다름: 다시 바뀜 → [Day 31](#/day/sp-d31)
   - `C:\dev\image-donation\server\ImageDonation.Api\Dtos\DonationDtos.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Dtos/DonationDtos.cs`)와 다름: 다시 바뀜 → [Day 31](#/day/sp-d31)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\RetentionService.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Services/RetentionService.cs`)와 다름: 다시 바뀜 → [Day 36](#/day/sp-d36)
@@ -1797,13 +1801,14 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 
 ## Day 28 — 테스트 모드·채팅 안내 (110분)
 - 목표:
-  - `components\TestDonationPanel.tsx`(최종): 치즈 금액·후원 메시지 입력, "대기 중인 코드 넣기"(목록의 첫 치즈 대기 코드로 "이미지 부탁해요 #코드"), "가짜 치즈 후원 보내기" → `sendTestDonation` → "가짜 치즈 후원을 보냈어요. 코드와 금액이 맞으면 목록의 상태가 바뀌어요.". 패널 제목·설명에 "돈은 오가지 않아요". `DashboardPage`에 패널 + `waitingCode` + 필터 탭 "치즈 대기". index.css `.panel`, `.inline-form`.
-  - 이로써 **치지직 승인 없이** 업로드 → 코드 → 가짜 치즈 후원 → 검수 대기 → 승인 → OBS 표시를 화면만으로 끝까지 할 수 있다(레퍼런스 README "처음 써 보기"와 같은 순서, e2e 테스트가 확인한 흐름).
-  - 채팅 안내(선택): `ChzzkApiClient.SendChatAsync`(`POST /open/v1/chats/send`, 100자 자르기, Scope 채팅 메시지 쓰기), `ChzzkOptions.ChatOnMatch`(기본 false, `dotnet user-secrets set "Chzzk:ChatOnMatch" "true"`), `DonationService.TrySendChatAsync`: 출처가 `chzzk`이고 켜져 있을 때만, 실패해도 후원 처리는 이미 끝났으므로 경고 로그만(`ILogger<DonationService>` 의존성 추가).
+  - 진짜 수신기 완성(Day 26에서 옮김, 설계서 3.4와 다른 배치): `ChzzkSessionSource : BackgroundService, IDonationEventSource` — `ExecuteAsync`(치지직 설정이 없으면 "치지직 ClientId/ClientSecret이 없어 세션 수신기를 끕니다. 테스트 모드는 그대로 쓸 수 있어요." 로그 후 종료, 있으면 `Chzzk:SessionCheckSeconds` 60초마다 점검), `SyncConnectionsAsync`(치즈 모드 + 치지직 연결된 스트리머마다 연결, 무료 모드로 바꾼 스트리머는 끊기), `SubscribeAsync`(Day 22의 `GetSessionUrlAsync`·`SubscribeDonationAsync`를 부름), DONATION → ParseDonation → `DonationReceived`. `ChzzkApiClient`에 `GetSessionUrlAsync`, `SubscribeDonationAsync`. 생성자는 레퍼런스와 같은 `(IServiceScopeFactory scopes, IOptions<ChzzkOptions> options, ILogger<ChzzkSessionSource> logger, TimeProvider time)`(부록 D). `Program.cs`에 `AddHostedService(sp => sp.GetRequiredService<ChzzkSessionSource>())`, `appsettings.json`에 `Chzzk:SessionCheckSeconds`.
+  - 채팅 안내(선택): Day 22에서 만든 `SendChatAsync`를 쓴다, `ChzzkOptions.ChatOnMatch`(기본 false, `dotnet user-secrets set "Chzzk:ChatOnMatch" "true"`), `DonationService.TrySendChatAsync`: 출처가 `chzzk`이고 켜져 있을 때만, 실패해도 후원 처리는 이미 끝났으므로 경고 로그만(`ILogger<DonationService>` 의존성 추가).
   - 실패 처리(ChzzkSessionSource 최종): 권한 회수(`SYSTEM revoked`) → 끊기, SYSTEM 처리기 예외(구독 실패 등) → "연결은 됐지만 후원은 못 받는" 소켓을 남기지 않게 끊기, DONATION 처리기 예외·깨진 페이로드 → 기록하고 다음 후원 계속, 서버가 끊음(`OnDisconnected`) → 목록에서 빼고 Dispose, 연결 전에 목록에 넣어 두기·연결 실패 소켓 정리, `StopAsync`에서 모두 끊기. 모든 경우 다음 60초 점검이 새 세션으로 다시 연결.
   - 할당량: 치지직 Quota 수치는 미확인 → 429를 받으면 기록하고 다음 점검에 다시(레퍼런스에는 지수 백오프 코드가 없으므로 개념만 설명).
   - 테스트 5개 추가(레퍼런스와 같은 코드): 에뮬레이터 상황 `revoked`, `kick`, `malformed`와 구독 실패, 처리기 예외.
+  - 테스트 모드는 Day 26부터 `api.http`의 `test-donation` 요청으로 쓸 수 있고, 대시보드의 가짜 후원 발생기 화면은 Day 30(스트리머 온보딩의 "테스트 후원")에서 붙인다고 안내한다.
 - 이미 배운 것:
+  - [Day 22](#/day/sp-d22) 세션·채팅 API 메서드, [Day 12](#/day/sp-d12) BackgroundService·PeriodicTimer
   - [Day 19](#/day/sp-d19) 대시보드, [Day 25](#/day/sp-d25)~[Day 27](#/day/sp-d27)
   - 예외 처리·로그 수준([P2 Day 15](#/day/p2-d15), [P2 Day 24](#/day/p2-d24))
 - 시작 상태:
@@ -1835,35 +1840,29 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - 터미널 두 개, 대시보드(로그인), 오버레이 창 또는 OBS, 후원 방식 "치즈 후원 연동".
   - 도구가 만드는 폴더(`node_modules`, `bin`, `obj`, `dist`, 업로드된 `media` 파일)는 목록에서 뺐다.
 - 오늘 만들/바꿀 파일:
-  - `C:\dev\image-donation\client\src\index.css` [바꿈] — + `.panel`, `.inline-form` (레퍼런스 `client/src/index.css`)
-  - `C:\dev\image-donation\client\src\api.ts` [바꿈] — + `sendTestDonation` (레퍼런스 `client/src/api.ts`)
-  - `C:\dev\image-donation\client\src\components\TestDonationPanel.tsx` [새로] — 치즈 금액·메시지 입력, "대기 중인 코드 넣기", "가짜 치즈 후원 보내기", 결과 `role="status"` (레퍼런스 `client/src/components/TestDonationPanel.tsx`)
-  - `C:\dev\image-donation\client\src\pages\DashboardPage.tsx` [바꿈] — + `<TestDonationPanel waitingCode>`, 필터 탭 "치즈 대기" (레퍼런스 `client/src/pages/DashboardPage.tsx`)
-  - `C:\dev\image-donation\server\ImageDonation.Api\appsettings.json` [바꿈] — + `Chzzk:ChatOnMatch: false` (레퍼런스 `server/ImageDonation.Api/appsettings.json`)
+  - `C:\dev\image-donation\server\ImageDonation.Api\appsettings.json` [바꿈] — + `Chzzk:SessionCheckSeconds: 60`, `Chzzk:ChatOnMatch: false` (레퍼런스 `server/ImageDonation.Api/appsettings.json`)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Program.cs` [바꿈] — + `AddHostedService(sp => sp.GetRequiredService<ChzzkSessionSource>())` (레퍼런스 `server/ImageDonation.Api/Program.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\DonationService.cs` [바꿈] — + `ChzzkApiClient`·`IOptions<ChzzkOptions>`·`ILogger` 의존성, `TrySendChatAsync`(ChatOnMatch이고 source가 chzzk일 때) (레퍼런스 `server/ImageDonation.Api/Services/DonationService.cs`)
-  - `C:\dev\image-donation\server\ImageDonation.Api\Services\ChzzkApiClient.cs` [바꿈] — + `SendChatAsync`(100자 자르기), `ChzzkOptions.ChatOnMatch` (레퍼런스와 같아짐) (레퍼런스 `server/ImageDonation.Api/Services/ChzzkApiClient.cs`)
-  - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\ChzzkSessionSource.cs` [바꿈] — + SYSTEM revoked → 끊기, SYSTEM 처리기 예외 → 끊기, DONATION 처리기 try/catch, `OnDisconnected` 정리, 연결 전에 목록에 넣기·연결 실패 정리, `StopAsync` (레퍼런스와 같아짐) (레퍼런스 `server/ImageDonation.Api/Services/Events/ChzzkSessionSource.cs`)
-  - `C:\dev\image-donation\server\ImageDonation.Tests\ChzzkSessionSourceTests.cs` [바꿈] — + `SubscribeFailure_DisconnectsSoNextCheckRetries`, `Revoked_Disconnects`, `ServerDisconnect_RemovesSocket`, `MalformedDonations_AreSkipped_SocketKeepsWorking`, `HandlerException_IsCaught_SocketKeepsWorking` (레퍼런스와 같아짐) (레퍼런스 `server/ImageDonation.Tests/ChzzkSessionSourceTests.cs`)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Services\ChzzkApiClient.cs` [바꿈] — + `ChzzkOptions.SessionCheckSeconds`(60), `ChzzkOptions.ChatOnMatch` (레퍼런스와 같아짐) (레퍼런스 `server/ImageDonation.Api/Services/ChzzkApiClient.cs`)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\ChzzkSessionSource.cs` [바꿈] — `BackgroundService`로: 생성자를 레퍼런스와 같은 4개로, `ExecuteAsync`(설정 없으면 안내 로그 후 종료, 60초 점검), `SyncConnectionsAsync`, `SubscribeAsync` + SYSTEM revoked → 끊기, SYSTEM 처리기 예외 → 끊기, DONATION 처리기 try/catch, `OnDisconnected` 정리, 연결 전에 목록에 넣기·연결 실패 정리, `StopAsync` (레퍼런스와 같아짐) (레퍼런스 `server/ImageDonation.Api/Services/Events/ChzzkSessionSource.cs`)
+  - `C:\dev\image-donation\server\ImageDonation.Tests\ChzzkSessionSourceTests.cs` [바꿈] — `CreateSource()`를 레퍼런스(4개 인자)로 + `SubscribeFailure_DisconnectsSoNextCheckRetries`, `Revoked_Disconnects`, `ServerDisconnect_RemovesSocket`, `MalformedDonations_AreSkipped_SocketKeepsWorking`, `HandlerException_IsCaught_SocketKeepsWorking` (레퍼런스와 같아짐) (레퍼런스 `server/ImageDonation.Tests/ChzzkSessionSourceTests.cs`)
 - 끝 상태 확인:
-  - **기본 경로(치지직 승인 없이):** 후원 페이지 대신 api.http로 업로드 → 대시보드 "치즈 대기" 탭에 카드 → 테스트 모드 패널 "대기 중인 코드 넣기" → "가짜 치즈 후원 보내기" → 카드가 "검수 대기"로 → `A` → 오버레이(OBS)에 표시 → 잠시 뒤 "방송 완료".
+  - **기본 경로(치지직 승인 없이):** 서버 시작 로그에 "치지직 ClientId/ClientSecret이 없어 세션 수신기를 끕니다. 테스트 모드는 그대로 쓸 수 있어요.". 그래도 api.http의 업로드 → 코드 → `test-donation` → 대시보드 "검수 대기" → 승인 → 오버레이 흐름은 Day 27과 똑같이 동작한다.
   - **기본 경로(치지직 승인 없이):** `dotnet test` → 9개 통과(ChzzkSessionSourceTests 전체).
+  - **선택 단계(승인된 치지직 앱이 있을 때만):** 치지직 연결 + 치즈 모드 → 1분 안에 로그 "스트리머 N의 치지직 세션에 연결했습니다.", 설정 화면 "세션 소켓 연결됨". 실제 치즈 후원 이벤트 수신은 실서버 미검증.
   - **선택 단계(승인된 치지직 앱이 있을 때만):** 채팅 메시지 쓰기 Scope + `ChatOnMatch=true` + 실제 치즈 후원 매칭 → 방송 채팅에 "…님의 이미지 후원(#코드)이 확인됐어요!"(실서버 미검증).
 - 과제:
-  - 1) 테스트 모드 패널의 금액을 최소 치즈보다 1 작게, 같게, 크게 보내 결과를 표로 적는다 → 정답 요지: 작으면 그대로 치즈 대기, 같거나 크면 검수 대기(조건은 `>=`). Day 33의 경계값 테스트로 이어진다
+  - 1) api.http `test-donation`의 금액을 최소 치즈보다 1 작게, 같게, 크게 보내 결과를 표로 적는다 → 정답 요지: 작으면 그대로 치즈 대기, 같거나 크면 검수 대기(조건은 `>=`). Day 33의 경계값 테스트로 이어진다
   - 2) 채팅 안내가 실패하면 후원 매칭도 취소해야 할까? → 정답 요지: 아니요. 채팅은 "있으면 좋은 것"이고 치즈는 이미 치지직에서 결제·정산됐다. 매칭은 유지하고 실패만 기록한다
 - 용어(사전 담당): `할당량`
 - 자주 막히는 곳 후보:
-  - "대기 중인 코드 넣기" 버튼이 안 보임 → 치즈 대기 후원이 없거나 무료 모드
-  - 금액 칸 0 → 400(`[Range(1, 10_000_000)]`)
+  - ChzzkSessionSource를 `AddHostedService<ChzzkSessionSource>()`로만 등록 → 인스턴스가 두 개가 되어 IsConnected가 늘 false → 레퍼런스처럼 싱글턴 하나를 HostedService와 IDonationEventSource로 함께 씀
   - 채팅 403 → 스코프에 채팅 메시지 쓰기가 없음(선택 단계)
   - 에뮬레이터 테스트가 느리거나 시간 초과 → 처음 한 번 `npm ci`가 돎, 백신 검사
   - Windows에서 테스트가 `npm`을 못 찾음 → `ChzzkEmulator.cs`의 `cmd.exe /c` 분기 확인
 - 레퍼런스 대응:
-  - `C:\dev\image-donation\client\src\index.css`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/client/src/index.css`)와 다름: 다시 바뀜 → [Day 29](#/day/sp-d29)
-  - `C:\dev\image-donation\client\src\api.ts`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/client/src/api.ts`)와 다름: 다시 바뀜 → [Day 29](#/day/sp-d29)
-  - `C:\dev\image-donation\client\src\components\TestDonationPanel.tsx`: `reference/sp-image-donation/client/src/components/TestDonationPanel.tsx` 최종(같음)
-  - `C:\dev\image-donation\client\src\pages\DashboardPage.tsx`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/client/src/pages/DashboardPage.tsx`)와 다름: 다시 바뀜 → [Day 31](#/day/sp-d31)
   - `C:\dev\image-donation\server\ImageDonation.Api\appsettings.json`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/appsettings.json`)와 다름: 다시 바뀜 → [Day 35](#/day/sp-d35)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Program.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Program.cs`)와 다름: 다시 바뀜 → [Day 35](#/day/sp-d35)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\DonationService.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Services/DonationService.cs`)와 다름: 다시 바뀜 → [Day 31](#/day/sp-d31)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\ChzzkApiClient.cs`: `reference/sp-image-donation/server/ImageDonation.Api/Services/ChzzkApiClient.cs` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\ChzzkSessionSource.cs`: `reference/sp-image-donation/server/ImageDonation.Api/Services/Events/ChzzkSessionSource.cs` 최종(같음)
@@ -1872,7 +1871,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 ## Day 29 — 후원 페이지 화면 (110분)
 - 목표:
   - `DonatePage`(최종): `getStreamer(slug)` + ignore 깃발, 404면 "없는 후원 페이지예요.", 그 밖의 오류 "후원 페이지를 불러오지 못했어요.", 불러오는 중, 제목 "<이름>에게 이미지 후원", 치즈 모드면 "이 방송은 치지직 치즈 후원과 연동돼요. 이미지를 보내면 후원 코드가 나와요. 이 사이트는 돈을 받지 않아요.", 보낸 뒤에는 결과 화면.
-  - `DonationForm`(최종): `FormData`(`image`, `nickname`, `message`) + `uploadDonation`(fetch는 업로드 진행률을 알려 주지 않으므로 `XMLHttpRequest`의 `upload.onprogress`), `<progress>`, 스트리머 `maxFileMb`로 보내기 전 크기 검사(서버도 다시 검사), 서버 오류 문장(400·413·429 ProblemDetails)을 `role="alert"`로, 보내는 중에는 버튼 잠금. hint "JPEG·PNG·WebP·GIF, NMB까지. 움직이는 GIF는 첫 장면만 보여요.".
+  - `DonationForm`(최종, 부록 B의 `DonationDraft`·`onSubmit`은 지운다): `FormData`(`image`, `nickname`, `message`) + `uploadDonation`(fetch는 업로드 진행률을 알려 주지 않으므로 `XMLHttpRequest`의 `upload.onprogress`), `<progress>`, 스트리머 `maxFileMb`로 보내기 전 크기 검사(서버도 다시 검사), 서버 오류 문장(400·413·429 ProblemDetails)을 `role="alert"`로, 보내는 중에는 버튼 잠금. hint "JPEG·PNG·WebP·GIF, NMB까지. 움직이는 GIF는 첫 장면만 보여요.".
   - `DonationResult`(최종): 무료 → "보냈어요!" + 자동 승인 여부 문장, 치즈 → "거의 다 됐어요!", 최소 치즈, 코드 크게(`aria-label="후원 코드"`), "30분 안에 후원해야 해요…", "다른 이미지 보내기".
   - `api.ts`: `PublicStreamer`, `CreateDonationResult`, `getStreamer`, `uploadDonation`. index.css: `progress`, `.result`, `.code`.
   - 휴대폰 화면: 개발자 도구 기기 모드 360px에서 가로 스크롤 없음([P1 Day 13](#/day/p1-d13)). 선택: 같은 Wi-Fi 휴대폰으로 열기 — `npm run dev -- --host` → Vite가 보여 주는 `Network:` 주소, Windows 방화벽 창은 **개인 네트워크만** 허용(공용 네트워크 허용·방화벽 끄기 금지), 업로드는 PC의 `dotnet run`으로 프록시됨.
@@ -1885,7 +1884,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\client\`: `package.json`, `package-lock.json`, `.gitignore`, `.oxlintrc.json`, `index.html`, `overlay.html`, `tsconfig.json`, `tsconfig.app.json`, `tsconfig.node.json`, `vite.config.ts`
   - `C:\dev\image-donation\client\public\`: `favicon.svg`
   - `C:\dev\image-donation\client\src\`: `main.tsx`, `App.tsx`, `index.css`, `api.ts`, `donationList.ts`
-  - `C:\dev\image-donation\client\src\components\`: `DonationCard.tsx`, `DonationForm.tsx`, `StreamerLayout.tsx`, `TestDonationPanel.tsx`
+  - `C:\dev\image-donation\client\src\components\`: `DonationCard.tsx`, `DonationForm.tsx`, `StreamerLayout.tsx`
   - `C:\dev\image-donation\client\src\hooks\`: `useImagePreview.ts`, `useMe.ts`, `useDashboardHub.ts`
   - `C:\dev\image-donation\client\src\overlay\`: `main.tsx`, `Overlay.tsx`, `useOverlayHub.ts`, `overlay.css`
   - `C:\dev\image-donation\client\src\pages\`: `DonatePage.tsx`, `DashboardPage.tsx`, `LoginPage.tsx`, `SettingsPage.tsx`
@@ -1910,7 +1909,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 - 오늘 만들/바꿀 파일:
   - `C:\dev\image-donation\client\src\index.css` [바꿈] — + `progress`, `.result`, `.code` (레퍼런스 `client/src/index.css`)
   - `C:\dev\image-donation\client\src\api.ts` [바꿈] — + `PublicStreamer`, `CreateDonationResult`, `getStreamer`, `uploadDonation`(XMLHttpRequest 진행률) (레퍼런스 `client/src/api.ts`)
-  - `C:\dev\image-donation\client\src\components\DonationForm.tsx` [바꿈] — props `streamer`·`onDone`, `FormData` + `uploadDonation` 진행률, 크기 미리 검사(`tooBig`), 오류 `role="alert"` (레퍼런스와 같아짐) (레퍼런스 `client/src/components/DonationForm.tsx`)
+  - `C:\dev\image-donation\client\src\components\DonationForm.tsx` [바꿈] — props `streamer`·`onDone`, `FormData` + `uploadDonation` 진행률, 크기 미리 검사(`tooBig`), 오류 `role="alert"` (레퍼런스와 같아짐), `DonationDraft` 타입은 지움 (레퍼런스 `client/src/components/DonationForm.tsx`)
   - `C:\dev\image-donation\client\src\components\DonationResult.tsx` [새로] — 무료: "보냈어요!"·자동 승인 문구 / 치즈: 최소 치즈 + 코드 크게 + 30분 안내 (레퍼런스 `client/src/components/DonationResult.tsx`)
   - `C:\dev\image-donation\client\src\pages\DonatePage.tsx` [바꿈] — `getStreamer` + ignore 깃발, 없는 주소·오류·불러오는 중, 치즈 모드 안내("이 사이트는 돈을 받지 않아요"), 결과 화면 전환 (레퍼런스와 같아짐) (레퍼런스 `client/src/pages/DonatePage.tsx`)
 - 끝 상태 확인:
@@ -1934,13 +1933,16 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\client\src\components\DonationResult.tsx`: `reference/sp-image-donation/client/src/components/DonationResult.tsx` 최종(같음)
   - `C:\dev\image-donation\client\src\pages\DonatePage.tsx`: `reference/sp-image-donation/client/src/pages/DonatePage.tsx` 최종(같음)
 
-## Day 30 — 스트리머 온보딩 (90분)
+## Day 30 — 스트리머 온보딩 (110분)
 - 목표:
   - 스트리머의 사용자 여정을 그린다(text): 가입 → 후원 페이지 만들기 → 시작 가이드(후원 페이지 주소 / OBS 오버레이 / 테스트 후원) → 대시보드.
   - `pages\OnboardingPage.tsx`(최종): 스트리머가 없으면 `CreateStreamerForm`(주소 `pattern="[a-z0-9\-]{3,30}"`, "시청자는 …/d/<주소> 로 들어와요" 미리 보기, 방송 이름 40자, 409 문장 표시, 성공하면 `reload()`로 내 정보 다시 불러오기), 있으면 `OnboardingGuide`(후원 페이지 링크, OBS 설정 순서: 소스 목록 **+** → **브라우저** → URL에 오버레이 주소 → 너비 1920·높이 1080, "이 주소는 비밀번호처럼 다루세요(유출되면 설정에서 재발급)", 설정·대시보드 링크로 테스트 후원 안내, 오버레이 토큰 불러오기 실패 시 `role="alert"`).
   - `StreamerLayout`(최종): 스트리머가 없으면 어느 화면이든 `/onboarding`으로(그 화면 자체는 예외), 메뉴에 "시작 가이드". `App.tsx`(최종)에 `/onboarding`. `api.ts`에 `onboard`. index.css `.steps li`.
   - Day 13에 api.http로 하던 온보딩을 이제 화면으로 한다. 새 계정으로 처음부터: 시크릿 창 가입 → 자동으로 온보딩 → 시작 가이드 → OBS에 주소 넣기 → (무료) 후원 페이지에서 업로드·승인 또는 (치즈) 테스트 모드 → OBS 표시.
+  - 테스트 후원 도구(Day 28에서 옮김, 설계서 3.4 Day 30의 "테스트 후원"): `components\TestDonationPanel.tsx`(최종): 치즈 금액·후원 메시지 입력, "대기 중인 코드 넣기"(목록의 첫 치즈 대기 코드로 "이미지 부탁해요 #코드"), "가짜 치즈 후원 보내기" → `sendTestDonation` → "가짜 치즈 후원을 보냈어요. 코드와 금액이 맞으면 목록의 상태가 바뀌어요.". 패널 제목·설명에 "돈은 오가지 않아요". `DashboardPage`에 패널 + `waitingCode` + 필터 탭 "치즈 대기". index.css `.panel`, `.inline-form`.
+  - 이로써 **치지직 승인 없이** 업로드 → 코드 → 가짜 치즈 후원 → 검수 대기 → 승인 → OBS 표시를 화면만으로 끝까지 할 수 있다(레퍼런스 README "처음 써 보기"와 같은 순서, e2e 테스트가 확인한 흐름).
 - 이미 배운 것:
+  - [Day 26](#/day/sp-d26)~[Day 28](#/day/sp-d28) 테스트 모드·코드 매칭
   - [Day 13](#/day/sp-d13) 온보딩 API, [Day 18](#/day/sp-d18) OBS 설정, [Day 19](#/day/sp-d19)~[Day 20](#/day/sp-d20), [Day 28](#/day/sp-d28)~[Day 29](#/day/sp-d29)
   - pattern 속성·폼 검증([P1 Day 24](#/day/p1-d24))
 - 시작 상태:
@@ -1949,7 +1951,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\client\`: `package.json`, `package-lock.json`, `.gitignore`, `.oxlintrc.json`, `index.html`, `overlay.html`, `tsconfig.json`, `tsconfig.app.json`, `tsconfig.node.json`, `vite.config.ts`
   - `C:\dev\image-donation\client\public\`: `favicon.svg`
   - `C:\dev\image-donation\client\src\`: `main.tsx`, `App.tsx`, `index.css`, `api.ts`, `donationList.ts`
-  - `C:\dev\image-donation\client\src\components\`: `DonationCard.tsx`, `DonationForm.tsx`, `DonationResult.tsx`, `StreamerLayout.tsx`, `TestDonationPanel.tsx`
+  - `C:\dev\image-donation\client\src\components\`: `DonationCard.tsx`, `DonationForm.tsx`, `DonationResult.tsx`, `StreamerLayout.tsx`
   - `C:\dev\image-donation\client\src\hooks\`: `useImagePreview.ts`, `useMe.ts`, `useDashboardHub.ts`
   - `C:\dev\image-donation\client\src\overlay\`: `main.tsx`, `Overlay.tsx`, `useOverlayHub.ts`, `overlay.css`
   - `C:\dev\image-donation\client\src\pages\`: `DonatePage.tsx`, `DashboardPage.tsx`, `LoginPage.tsx`, `SettingsPage.tsx`
@@ -1973,14 +1975,17 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - 도구가 만드는 폴더(`node_modules`, `bin`, `obj`, `dist`, 업로드된 `media` 파일)는 목록에서 뺐다.
 - 오늘 만들/바꿀 파일:
   - `C:\dev\image-donation\client\src\App.tsx` [바꿈] — + `/onboarding` → OnboardingPage (StreamerLayout 안) (레퍼런스 `client/src/App.tsx`)
-  - `C:\dev\image-donation\client\src\index.css` [바꿈] — + `.steps li` (레퍼런스 `client/src/index.css`)
-  - `C:\dev\image-donation\client\src\api.ts` [바꿈] — + `onboard` (레퍼런스 `client/src/api.ts`)
+  - `C:\dev\image-donation\client\src\index.css` [바꿈] — + `.panel`, `.inline-form`(테스트 모드 패널), `.steps li` (레퍼런스 `client/src/index.css`)
+  - `C:\dev\image-donation\client\src\api.ts` [바꿈] — + `sendTestDonation`, `onboard` (레퍼런스 `client/src/api.ts`)
   - `C:\dev\image-donation\client\src\components\StreamerLayout.tsx` [바꿈] — 스트리머가 없으면 `/onboarding`으로 보냄, + NavLink "시작 가이드" (레퍼런스와 같아짐) (레퍼런스 `client/src/components/StreamerLayout.tsx`)
+  - `C:\dev\image-donation\client\src\components\TestDonationPanel.tsx` [새로] — 치즈 금액·메시지 입력, "대기 중인 코드 넣기", "가짜 치즈 후원 보내기", 결과 `role="status"` (레퍼런스 `client/src/components/TestDonationPanel.tsx`)
+  - `C:\dev\image-donation\client\src\pages\DashboardPage.tsx` [바꿈] — + `<TestDonationPanel waitingCode>`, 필터 탭 "치즈 대기" (레퍼런스 `client/src/pages/DashboardPage.tsx`)
   - `C:\dev\image-donation\client\src\pages\OnboardingPage.tsx` [새로] — CreateStreamerForm(주소 pattern·이름) → reload, OnboardingGuide(후원 페이지 주소, OBS 오버레이 주소·설정 방법, 테스트 후원 안내) (레퍼런스 `client/src/pages/OnboardingPage.tsx`)
 - 끝 상태 확인:
   - 시크릿 창에서 새 이메일로 가입 → 자동으로 `/onboarding` "후원 페이지 만들기". 이미 있는 주소(`my-stream`) → "이미 쓰고 있는 주소예요. 다른 주소를 골라 주세요.".
   - `my-stream2`로 만들기 → "시작 가이드" 3단계와 오버레이 주소 칸. 주소를 OBS에 넣고 테스트 후원 → OBS에 표시.
   - 온보딩 전 계정으로 `/settings`를 직접 열면 `/onboarding`으로 간다. `/`는 `/dashboard`로.
+  - **기본 경로(치지직 승인 없이):** 후원 방식을 "치즈 후원 연동"으로 → 후원 페이지에서 업로드(코드 받음) → 대시보드 "치즈 대기" 탭 → 테스트 모드 패널 "대기 중인 코드 넣기" → "가짜 치즈 후원 보내기" → 카드가 "검수 대기" → `A` → OBS 표시 → 잠시 뒤 "방송 완료". 치지직 없이 전체 흐름이 화면만으로 끝난다.
 - 과제:
   - 1) 시작 가이드에 "방송 설명·채팅 공지에 붙여 넣을 문구" 예시를 추가한다 → 정답 요지: 예: "이미지 후원: <후원 페이지 주소> (스트리머가 확인한 이미지만 방송에 나와요)". 오버레이 주소는 절대 공지에 넣지 않는다는 문장을 함께
   - 2) CreateStreamerForm이 성공한 뒤 `reload()`를 부르지 않으면 어떻게 되는지 → 정답 요지: 레이아웃의 me에 아직 streamer가 없어서 계속 만들기 폼이 보이거나 다시 /onboarding으로 보낸다
@@ -1990,20 +1995,23 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - 오버레이 주소 대신 후원 페이지 주소를 OBS에 넣음 → 후원 폼이 방송에 보임
   - 시크릿 창을 닫으면 쿠키가 사라짐 → 다시 로그인
   - 온보딩 화면과 설정 화면을 오가며 무한 이동 → StreamerLayout의 `/onboarding` 예외 조건 확인
+  - "대기 중인 코드 넣기" 버튼이 안 보임 → 치즈 대기 후원이 없거나 무료 모드
+  - 금액 칸 0 → 400(`[Range(1, 10_000_000)]`)
 - 레퍼런스 대응:
   - `C:\dev\image-donation\client\src\App.tsx`: `reference/sp-image-donation/client/src/App.tsx` 최종(같음)
   - `C:\dev\image-donation\client\src\index.css`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/client/src/index.css`)와 다름: 다시 바뀜 → [Day 31](#/day/sp-d31)
   - `C:\dev\image-donation\client\src\api.ts`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/client/src/api.ts`)와 다름: 다시 바뀜 → [Day 31](#/day/sp-d31)
   - `C:\dev\image-donation\client\src\components\StreamerLayout.tsx`: `reference/sp-image-donation/client/src/components/StreamerLayout.tsx` 최종(같음)
+  - `C:\dev\image-donation\client\src\components\TestDonationPanel.tsx`: `reference/sp-image-donation/client/src/components/TestDonationPanel.tsx` 최종(같음)
+  - `C:\dev\image-donation\client\src\pages\DashboardPage.tsx`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/client/src/pages/DashboardPage.tsx`)와 다름: 다시 바뀜 → [Day 31](#/day/sp-d31)
   - `C:\dev\image-donation\client\src\pages\OnboardingPage.tsx`: `reference/sp-image-donation/client/src/pages/OnboardingPage.tsx` 최종(같음)
 
-## Day 31 — 안전 장치 (120분)
+## Day 31 — 안전 장치 (110분)
 - 목표:
-  - 금지어(Day 20에 저장만 했던 것): `Services\BannedWordFilter.cs`(trim, 빈 단어 무시, 대소문자 무시 포함 검사) → 업로드 때 닉네임+메시지에 걸리면 400 "사용할 수 없는 단어가 들어 있어요.".
   - 차단: `Entities\BlockEntry.cs`(StreamerId, SenderIpHash, 참고용 Nickname, CreatedAt) → 업로드 때 그 스트리머의 차단 목록에 IP 해시가 있으면 403 "이 방송에는 후원할 수 없어요.". `POST /donations/{id}/block`: 차단 목록에 넣고 검수 대기면 함께 거절. 한계: IP 기준이라 같은 공유기·와이파이를 쓰는 다른 사람도 막힐 수 있고, IP를 바꾸면 피할 수 있다.
-  - 신고: `Entities\Report.cs` + `POST /donations/{id}/report` 본문 `{"reason":"…"}`(1~200자, `ReportRequest`). `ReportAsync`는 **트랜잭션 하나**로 ① 조건부 전이(거절·만료가 아니면 → Rejected) ② Report 행 ③ BlockEntry. 이미지는 **지우지 않고 증거로 격리**(R33·R35): 저장소에는 남지만 `GET /media/{file}`이 DB에서 상태를 확인해 보여 줄 수 있는 상태(치즈 대기·검수 대기·승인·방송 완료)일 때만 주므로 누구에게도 404, 7일 보관 기간이 지나면 정리 작업이 지운다. 운영자 화면은 없고 SQL로 검토한다(Day 35). 목록 DTO에 `Reported`.
+  - 신고: `Entities\Report.cs` + `POST /donations/{id}/report` 본문 `{"reason":"…"}`(1~200자, `ReportRequest`). `ReportAsync`는 **트랜잭션 하나**로 ① 조건부 전이(거절·만료가 아니면 → Rejected) ② Report 행 ③ BlockEntry. 이미지는 **지우지 않고 증거로 남긴다**(R33·R35). 7일 보관 기간이 지나면 정리 작업이 지운다. 오늘은 아직 `/media`가 후원 상태를 보지 않아 신고된 이미지 주소가 열린다 → Day 32에서 상태를 확인해 404로 격리한다(그 하루의 빈틈을 본문에 분명히 적는다). 운영자 화면은 없고 SQL로 검토한다(Day 35). 목록 DTO에 `Reported`.
   - 긴급 정지 `POST /api/dashboard/overlay/clear` → `ClearOverlayAsync`: 오버레이에 `Clear()`를 **가장 먼저** → 아직 안 나간 승인 후원을 하나씩 조건부로 Approved → Cleared(그 사이 Shown이 된 것은 그대로) + 이미지 삭제 + 대시보드 알림 → 한 건이 실패해도(DB 오류, Windows에서 다른 프로그램이 파일을 잡음) 나머지 계속·기록 → 끝에 `Clear()`를 한 번 더(정리하는 사이에 막 연결된 오버레이는 첫 Clear를 못 받았을 수 있음). Cleared라서 다시 연결해도 다시 나오지 않는다.
-  - `AppDbContext`(최종): BlockEntries·Reports, Donations `ImageFile` 인덱스(`/media` 요청마다 상태 확인) → `dotnet ef migrations add AddSafety`.
+  - `AppDbContext`: BlockEntries·Reports → `dotnet ef migrations add AddSafety`(ImageFile 인덱스는 Day 32).
   - 화면(최종): `DonationCard`에 차단(검수 대기일 때)·신고(이미지가 남아 있을 때만 — 증거가 있어야 하므로, 방송에 나간 뒤에도 가능) 버튼, "신고됨" 배지, "증거로 보관 중 (7일 뒤 삭제)". `DashboardPage`: 차단은 `window.confirm`, 신고는 `window.prompt`(200자) → 성공 notice "신고했어요. 이미지는 운영자 확인용으로 7일 동안 보관돼요.", 빨간 "긴급 정지 (오버레이 비우기)" 버튼. `api.ts`에 `reported`, `blockSender`, `reportDonation`, `clearOverlay`. index.css `button.danger`, `.no-image`, `.status-Cleared`.
 - 이미 배운 것:
   - [Day 14](#/day/sp-d14) IP 해시, [Day 17](#/day/sp-d17) 조건부 업데이트, [Day 18](#/day/sp-d18) Clear, [Day 19](#/day/sp-d19)~[Day 20](#/day/sp-d20)
@@ -2041,20 +2049,18 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\client\src\api.ts` [바꿈] — `Donation`에 `reported`, + `blockSender`, `reportDonation`, `clearOverlay` (레퍼런스와 같아짐) (레퍼런스 `client/src/api.ts`)
   - `C:\dev\image-donation\client\src\components\DonationCard.tsx` [바꿈] — + `onBlock`(차단), `onReport`(신고: 이미지가 있을 때만), "신고됨" 배지, "증거로 보관 중 (7일 뒤 삭제)" (레퍼런스와 같아짐) (레퍼런스 `client/src/components/DonationCard.tsx`)
   - `C:\dev\image-donation\client\src\pages\DashboardPage.tsx` [바꿈] — + 차단(confirm), 신고(prompt, 200자), 긴급 정지 버튼(`danger`) (레퍼런스와 같아짐) (레퍼런스 `client/src/pages/DashboardPage.tsx`)
-  - `C:\dev\image-donation\server\ImageDonation.Api\Data\AppDbContext.cs` [바꿈] — + DbSet `BlockEntries`((StreamerId, SenderIpHash) 인덱스), `Reports`(Reason 200, CreatedAt 인덱스), Donations `ImageFile` 인덱스 (레퍼런스와 같아짐) (레퍼런스 `server/ImageDonation.Api/Data/AppDbContext.cs`)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Data\AppDbContext.cs` [바꿈] — + DbSet `BlockEntries`((StreamerId, SenderIpHash) 인덱스), `Reports`(Reason 200, CreatedAt 인덱스) (레퍼런스 `server/ImageDonation.Api/Data/AppDbContext.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Entities\BlockEntry.cs` [새로] — StreamerId, SenderIpHash, Nickname(참고용), CreatedAt (레퍼런스 `server/ImageDonation.Api/Entities/BlockEntry.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Entities\Report.cs` [새로] — DonationId, StreamerId, Reason(200자), CreatedAt (레퍼런스 `server/ImageDonation.Api/Entities/Report.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Dtos\DonationDtos.cs` [바꿈] — + `ReportRequest`, `DonationDto.Reported` (레퍼런스와 같아짐) (레퍼런스 `server/ImageDonation.Api/Dtos/DonationDtos.cs`)
-  - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\PublicEndpoints.cs` [바꿈] — + 금지어 검사(400), 차단 검사(403), `/media`는 DB에서 상태를 확인해 보여 줄 수 있을 때만 (레퍼런스 `server/ImageDonation.Api/Endpoints/PublicEndpoints.cs`)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\PublicEndpoints.cs` [바꿈] — + 차단 검사(403 "이 방송에는 후원할 수 없어요.") (레퍼런스 `server/ImageDonation.Api/Endpoints/PublicEndpoints.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\DashboardEndpoints.cs` [바꿈] — + `/block`, `/report`(ReportRequest), `POST /overlay/clear`, 목록의 `reported` (레퍼런스와 같아짐) (레퍼런스 `server/ImageDonation.Api/Endpoints/DashboardEndpoints.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\DonationService.cs` [바꿈] — + `IsBlockedAsync`, `BlockSenderAsync`, `ReportAsync`(트랜잭션), `ClearOverlayAsync`(Clear 먼저 → 하나씩 Cleared → 실패 기록 → Clear 한 번 더) (레퍼런스 `server/ImageDonation.Api/Services/DonationService.cs`)
-  - `C:\dev\image-donation\server\ImageDonation.Api\Services\BannedWordFilter.cs` [새로] — `FindBannedWord`(trim, 빈 단어 무시, OrdinalIgnoreCase 포함 검사) (레퍼런스 `server/ImageDonation.Api/Services/BannedWordFilter.cs`)
-  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\<시각>_AddSafety.cs (+ .Designer.cs)` [새로] — `dotnet ef migrations add AddSafety` (BlockEntries, Reports, IX_Donations_ImageFile)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\<시각>_AddSafety.cs (+ .Designer.cs)` [새로] — `dotnet ef migrations add AddSafety` (BlockEntries, Reports)
   - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\AppDbContextModelSnapshot.cs` [바꿈] — dotnet-ef가 갱신 (레퍼런스 `server/ImageDonation.Api/Migrations/AppDbContextModelSnapshot.cs`)
 - 끝 상태 확인:
-  - 설정 금지어에 `광고` → 메시지에 `광고` 넣은 업로드 → 400 "사용할 수 없는 단어가 들어 있어요.".
   - 검수 대기 카드에서 **차단** → 확인 → 같은 PC에서 다음 업로드 → 403 "이 방송에는 후원할 수 없어요.". 그다음 psql `DELETE FROM "BlockEntries";`로 내 PC 차단을 푼다.
-  - **신고** → 사유 입력 → 카드 "거절됨 · 신고됨"과 "증거로 보관 중 (7일 뒤 삭제)". 그 이미지 `/media/…` 주소 → 404인데 `media` 폴더에는 파일이 있다. psql `SELECT * FROM "Reports";` → 1행.
+  - **신고** → 사유 입력 → 카드 "거절됨 · 신고됨"과 "증거로 보관 중 (7일 뒤 삭제)". `media` 폴더에 그 파일이 남아 있다(`/media` 주소는 아직 열림 — Day 32에서 막음). psql `SELECT * FROM "Reports";` → 1행.
   - 승인 3건이 오버레이에 줄 서 있을 때 **긴급 정지** → 오버레이가 즉시 비고 카드들이 "긴급 정지됨". 오버레이를 새로고침해도 다시 안 나온다.
 - 과제:
   - 1) 신고에서 세 가지 작업을 트랜잭션으로 묶지 않으면 생길 수 있는 문제 → 정답 요지: 예: 거절은 됐는데 Report 행 저장 중 오류 → 운영자는 신고를 모르고 보낸 사람도 차단 안 됨. 트랜잭션이면 모두 되거나 모두 안 된다
@@ -2063,7 +2069,6 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - P3 사전 항목에 `[[제목]]`으로 링크하되 **P3를 안 했다고 가정하고 이 Day가 처음부터 설명**(정의만 P3 담당): `[[트랜잭션]]`
 - 자주 막히는 곳 후보:
   - 내 PC를 차단해 연습이 막힘 → psql로 BlockEntries 지우기(위 확인 항목)
-  - 금지어를 `a`처럼 짧게 넣어 거의 모든 메시지가 거절됨 → 포함 검사라는 점
   - 신고 prompt에서 취소 → 아무 일도 없음(정상)
   - 긴급 정지 중 `IOException`(파일 잠김) 로그 → 화면은 이미 비워졌고 7일 뒤 정리됨(정상 동작)
   - 마이그레이션 빠뜨림 → `relation "BlockEntries" does not exist` 또는 PendingModelChangesWarning
@@ -2072,25 +2077,26 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\client\src\api.ts`: `reference/sp-image-donation/client/src/api.ts` 최종(같음)
   - `C:\dev\image-donation\client\src\components\DonationCard.tsx`: `reference/sp-image-donation/client/src/components/DonationCard.tsx` 최종(같음)
   - `C:\dev\image-donation\client\src\pages\DashboardPage.tsx`: `reference/sp-image-donation/client/src/pages/DashboardPage.tsx` 최종(같음)
-  - `C:\dev\image-donation\server\ImageDonation.Api\Data\AppDbContext.cs`: `reference/sp-image-donation/server/ImageDonation.Api/Data/AppDbContext.cs` 최종(같음)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Data\AppDbContext.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Data/AppDbContext.cs`)와 다름: 다시 바뀜 → [Day 32](#/day/sp-d32)
   - `C:\dev\image-donation\server\ImageDonation.Api\Entities\BlockEntry.cs`: `reference/sp-image-donation/server/ImageDonation.Api/Entities/BlockEntry.cs` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Api\Entities\Report.cs`: `reference/sp-image-donation/server/ImageDonation.Api/Entities/Report.cs` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Api\Dtos\DonationDtos.cs`: `reference/sp-image-donation/server/ImageDonation.Api/Dtos/DonationDtos.cs` 최종(같음)
-  - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\PublicEndpoints.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Endpoints/PublicEndpoints.cs`)와 다름: 다시 바뀜 → [Day 36](#/day/sp-d36)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\PublicEndpoints.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Endpoints/PublicEndpoints.cs`)와 다름: 다시 바뀜 → [Day 32](#/day/sp-d32)
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\DashboardEndpoints.cs`: `reference/sp-image-donation/server/ImageDonation.Api/Endpoints/DashboardEndpoints.cs` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\DonationService.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Services/DonationService.cs`)와 다름: 다시 바뀜 → [Day 36](#/day/sp-d36)
-  - `C:\dev\image-donation\server\ImageDonation.Api\Services\BannedWordFilter.cs`: `reference/sp-image-donation/server/ImageDonation.Api/Services/BannedWordFilter.cs` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\<시각>_AddSafety.cs (+ .Designer.cs)`: 레퍼런스와 이름 다름: 학습자 마이그레이션 이력(레퍼런스는 InitialCreate·SafetyReportsAndMinimalEvents 2개). 최종 스키마는 AppDbContextModelSnapshot.cs로 같음
-  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\AppDbContextModelSnapshot.cs`: `reference/sp-image-donation/server/ImageDonation.Api/Migrations/AppDbContextModelSnapshot.cs` 최종(같음) — dotnet-ef가 만든다. Day 31 이후 모델은 레퍼런스와 같은 스키마
+  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\AppDbContextModelSnapshot.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Migrations/AppDbContextModelSnapshot.cs`)와 다름: 다시 바뀜 → [Day 32](#/day/sp-d32)
 
-## Day 32 — 개인정보·법적 고려 (90분)
+## Day 32 — 개인정보·법적 고려 (110분)
 - 목표:
   - 수집 항목 표(학습자가 psql로 직접 확인): 시청자 — 닉네임·메시지·이미지(재인코딩본)·보낸 IP의 HMAC 해시(원문 아님), 7일 뒤 삭제 / 치즈 이벤트 — 금액·받은 시각·출처·매칭 ID만(치지직 후원자 닉네임·메시지는 저장 안 함, 무료 모드 이벤트는 아예 저장 안 함) / 스트리머 — 로그인 계정, 치지직 채널 이름, 암호화된 토큰 / 차단·신고 기록은 보관 기간 정리 대상이 아님(차단은 IP 해시와 참고용 닉네임, 신고는 후원 ID·사유) → 이 보관 기간을 어떻게 정할지 스스로 결정해 적는다.
   - 저장하지 않는 것: IP 원문, 사진의 위치·기기 정보(EXIF), 원본 파일. 로그에도 닉네임·메시지 같은 개인정보를 넣지 않고 ID만(코드의 로그 문장을 확인).
   - 저작권·초상권·부적절 이미지 정책: 남의 그림·사진·얼굴이 담긴 이미지를 허락 없이 보내지 않기, 스트리머 검수·거절·신고, 운영자는 신고를 7일 안에 확인.
   - README에 "개인정보 처리방침(초안)"과 "이용약관(초안)"을 쓴다(수집 항목·목적·보관 기간·삭제 방법·문의처 / 금지 행위·책임 범위·서비스 중단). 두 초안 맨 위와 Day 본문에 `:::warn`으로 **"이 초안은 연습용이고 법률 자문을 대신하지 않아요. 실제로 공개 서비스로 운영하기 전에는 반드시 변호사 등 법률 전문가의 자문을 받아야 해요."**를 명시한다. 관련 법(예: 개인정보 보호법)이 있다는 사실만 말하고 조항·의무를 단정해서 쓰지 않는다. 미성년자 이용, 해외 이용자 같은 문제도 "자문이 필요한 질문" 목록으로 남긴다.
   - 치지직 개발자 센터 이용 약관(후원 데이터 저장·재가공 제한 등)은 작성 환경에서 확인하지 못했다 → 앱을 등록할 때 학습자가 직접 읽게 한다.
+  - 신고 이미지 격리(Day 31에서 옮김, 설계서 3.4와 다른 배치 — 개인정보·증거 보관의 문제라 이 Day에서): `GET /media/{file}`이 이름 형식을 확인한 뒤 DB에서 그 파일의 후원 상태를 읽어, 보여 줄 수 있는 상태(치즈 대기·검수 대기·승인·방송 완료 = `DonationDto.ImageVisible`, Day 16)일 때만 준다 → 거절(신고 포함)·만료·긴급 정지된 후원의 이미지는 파일이 남아 있어도 누구에게나 404, DB에 없는 파일도 404. 요청마다 조회하므로 `AppDbContext`에 Donations `ImageFile` 인덱스 + `dotnet ef migrations add AddImageFileIndex`.
 - 이미 배운 것:
+  - [Day 16](#/day/sp-d16) `DonationDto.ImageVisible`, [Day 12](#/day/sp-d12) `/media`
   - [Day 1](#/day/sp-d01) 위험, [Day 11](#/day/sp-d11) EXIF 제거, [Day 12](#/day/sp-d12) 보관 기간, [Day 14](#/day/sp-d14) HMAC, [Day 26](#/day/sp-d26) 최소 이벤트 기록, [Day 31](#/day/sp-d31) 신고
 - 시작 상태:
   - [Day 31](#/day/sp-d31) 끝 상태와 같다. 아래 파일이 이렇게 있어야 한다(없으면 [Day 31](#/day/sp-d31)의 "오늘 끝 상태 전체 코드"로 맞춘다).
@@ -2111,7 +2117,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Hubs\`: `OverlayHub.cs`, `DashboardHub.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\`: `<시각>_InitialCreate.cs (+ .Designer.cs)`, `<시각>_AddIdentity.cs (+ .Designer.cs)`, `<시각>_AddChzzkTokens.cs (+ .Designer.cs)`, `<시각>_AddDonationEvents.cs (+ .Designer.cs)`, `<시각>_AddSafety.cs (+ .Designer.cs)`, `AppDbContextModelSnapshot.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Properties\`: `launchSettings.json`
-  - `C:\dev\image-donation\server\ImageDonation.Api\Services\`: `ImageProcessor.cs`, `RetentionService.cs`, `DonationService.cs`, `DonationCodeMatcher.cs`, `BannedWordFilter.cs`, `ChzzkApiClient.cs`
+  - `C:\dev\image-donation\server\ImageDonation.Api\Services\`: `ImageProcessor.cs`, `RetentionService.cs`, `DonationService.cs`, `DonationCodeMatcher.cs`, `ChzzkApiClient.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\`: `IDonationEventSource.cs`, `FakeDonationSource.cs`, `ChzzkSessionSource.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Storage\`: `LocalImageStorage.cs`
   - `C:\dev\image-donation\server\ImageDonation.Tests\`: `ImageDonation.Tests.csproj`, `ChzzkEmulator.cs`, `ChzzkSessionSourceTests.cs`
@@ -2122,9 +2128,14 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - 도구가 만드는 폴더(`node_modules`, `bin`, `obj`, `dist`, 업로드된 `media` 파일)는 목록에서 뺐다.
 - 오늘 만들/바꿀 파일:
   - `C:\dev\image-donation\README.md` [바꿈] — 개인정보 수집 항목·보관 기간, 개인정보 처리방침 초안, 이용약관 초안, "법률 자문이 필요해요" 경고 (레퍼런스 `README.md`)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Data\AppDbContext.cs` [바꿈] — + Donations `ImageFile` 인덱스 (레퍼런스와 같아짐) (레퍼런스 `server/ImageDonation.Api/Data/AppDbContext.cs`)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\PublicEndpoints.cs` [바꿈] — `/media`는 DB에서 후원 상태를 확인해 `ImageVisible`일 때만(아니면 404) (레퍼런스 `server/ImageDonation.Api/Endpoints/PublicEndpoints.cs`)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\<시각>_AddImageFileIndex.cs (+ .Designer.cs)` [새로] — `dotnet ef migrations add AddImageFileIndex` (IX_Donations_ImageFile)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\AppDbContextModelSnapshot.cs` [바꿈] — dotnet-ef가 갱신 (레퍼런스 `server/ImageDonation.Api/Migrations/AppDbContextModelSnapshot.cs`)
 - 끝 상태 확인:
   - README 미리보기에 수집 항목 표, "개인정보 처리방침(초안)", "이용약관(초안)", 그리고 "법률 자문을 대신하지 않아요… 법률 전문가의 자문을 받아야 해요" 경고가 보인다.
   - psql `\d "Donations"`·`\d "DonationEvents"` → IP 원문·후원자 닉네임·후원 메시지를 담는 열이 없다(Donations의 Nickname·Message는 시청자가 우리 후원 페이지에 쓴 것).
+  - Day 31에 신고한 이미지의 `/media/…` 주소 → 404, 그런데 `server\ImageDonation.Api\media` 폴더에는 그 파일이 있다(증거 보관). 검수 대기·승인된 후원의 이미지는 그대로 보인다.
 - 과제:
   - 1) 보관 기간을 3일로 줄이려면 무엇을 바꿔야 하는지(코드·문서·테스트) → 정답 요지: `RetentionService.KeepFor`, 처리방침 초안의 문구, 보관 기간 테스트(Day 34 RetentionTests)와 신고 확인 기한 안내. 실제로 바꾸지는 않는다(레퍼런스는 7일)
   - 2) 법률 전문가에게 물어볼 질문 5개를 쓴다 → 정답 요지: 예: 닉네임·메시지·이미지가 개인정보인지와 동의 방법, 보관 기간, 미성년자 이용, 신고 이미지 보관 근거, 해외 이용자. 답은 교재가 주지 않는다(자문 필요)
@@ -2133,18 +2144,25 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - "초안이 있으니 그대로 공개해도 되겠지" → 아니요, 법률 자문 필요(위 경고)
   - 스크린샷·리허설 영상에 시청자 닉네임·이미지가 그대로 → 가리고 공유
   - 로그에 메시지를 찍는 디버그 코드를 남김 → 지운다
+  - 마이그레이션을 빠뜨림 → PendingModelChangesWarning
+  - 모든 이미지가 404 → 상태 조건을 거꾸로 씀(`ImageVisible`이 true일 때만 준다)
 - 레퍼런스 대응:
   - `C:\dev\image-donation\README.md`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/README.md`)와 다름: 다시 바뀜 → [Day 35](#/day/sp-d35)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Data\AppDbContext.cs`: `reference/sp-image-donation/server/ImageDonation.Api/Data/AppDbContext.cs` 최종(같음)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\PublicEndpoints.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Endpoints/PublicEndpoints.cs`)와 다름: 다시 바뀜 → [Day 33](#/day/sp-d33)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\<시각>_AddImageFileIndex.cs (+ .Designer.cs)`: 레퍼런스와 이름 다름: 학습자 마이그레이션 이력(레퍼런스는 InitialCreate·SafetyReportsAndMinimalEvents 2개). 최종 스키마는 AppDbContextModelSnapshot.cs로 같음
+  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\AppDbContextModelSnapshot.cs`: `reference/sp-image-donation/server/ImageDonation.Api/Migrations/AppDbContextModelSnapshot.cs` 최종(같음) — dotnet-ef가 만든다. Day 32 이후 모델은 레퍼런스와 같은 스키마
 
-## Day 33 — 단위 테스트 (110분)
+## Day 33 — 단위 테스트 (120분)
 - 목표:
+  - 금지어 거르기(Day 31에서 옮김, 설계서 3.4와 다른 배치): 테스트를 먼저 쓴다 — `BannedWordFilterTests.cs`의 `BannedWords_Rejects`를 쓰고 빨간 실패를 본 뒤 `Services\BannedWordFilter.cs`를 만든다. 그다음 `PublicEndpoints`에서 닉네임+메시지를 검사: (`FindBannedWord`: trim, 빈 단어 무시, 대소문자 무시 포함 검사) 걸리면 400 "사용할 수 없는 단어가 들어 있어요.".
   - 무엇을 단위 테스트하나: DB·네트워크 없이 입력 → 출력이 정해진 규칙(코드 매처, 이미지 처리기, 금지어). Day 25에 만든 테스트 프로젝트에 추가한다.
   - `DonationCodeMatcherTests.cs`(레퍼런스): 코드 형식, 대소문자 무시, `#AB123` 무시, 최소 치즈 미만 무시, 30분 지난 코드 무시, 이미 매칭된 후원 다시 안 맞춤. 경계값(999·1000·1001, 30분 ± 1초)을 설명한다.
   - `TestImages.cs`(레퍼런스): 테스트 이미지를 파일로 두지 않고 코드로 만든다 — SkiaSharp으로 PNG·JPEG, EXIF(APP1) 조각을 바이트로 끼운 JPEG(Orientation 6), 머리글에만 큰 크기를 적은 PNG, 코드에 바이트로 적어 둔 113바이트 3장면 GIF(SkiaSharp은 GIF를 저장하지 못함).
   - `ImageProcessorTests.cs`(레퍼런스): 이름만 바꾼 글자 파일 거절, 4형식 매직 넘버 통과, 가짜 머리글 + 쓰레기 거절, EXIF 제거·리사이즈(`Exif`·`ICCP` 글자가 결과에 없음), EXIF 방향 6 적용, 움직이는 GIF 첫 장면만, 해상도 상한, 큰 JPEG 축소 디코딩, 작은 이미지는 키우지 않음. `BannedWordFilterTests.cs`.
   - "테스트가 진짜 지키는지" 확인: `FindMatch`의 `<`를 `<=`로 바꿔 보거나 `>=`를 `>`로 바꿔 테스트가 실패하는 것을 보고 되돌린다.
 - 이미 배운 것:
-  - [Day 11](#/day/sp-d11) 이미지 처리, [Day 25](#/day/sp-d25) 테스트 프로젝트, [Day 27](#/day/sp-d27) 매칭, [Day 31](#/day/sp-d31) 금지어
+  - [Day 11](#/day/sp-d11) 이미지 처리, [Day 25](#/day/sp-d25) 테스트 프로젝트, [Day 27](#/day/sp-d27) 매칭, [Day 20](#/day/sp-d20) 금지어 저장
   - xUnit·Fact·Theory·Assert·AAA 패턴([P2 Day 35](#/day/p2-d35))
 - 시작 상태:
   - [Day 32](#/day/sp-d32) 끝 상태와 같다. 아래 파일이 이렇게 있어야 한다(없으면 [Day 32](#/day/sp-d32)의 "오늘 끝 상태 전체 코드"로 맞춘다).
@@ -2163,9 +2181,9 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\`: `PublicEndpoints.cs`, `AuthEndpoints.cs`, `DashboardEndpoints.cs`, `ChzzkEndpoints.cs`, `TestModeEndpoints.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Entities\`: `Streamer.cs`, `StreamerSettings.cs`, `Donation.cs`, `ChzzkToken.cs`, `DonationEvent.cs`, `BlockEntry.cs`, `Report.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Hubs\`: `OverlayHub.cs`, `DashboardHub.cs`
-  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\`: `<시각>_InitialCreate.cs (+ .Designer.cs)`, `<시각>_AddIdentity.cs (+ .Designer.cs)`, `<시각>_AddChzzkTokens.cs (+ .Designer.cs)`, `<시각>_AddDonationEvents.cs (+ .Designer.cs)`, `<시각>_AddSafety.cs (+ .Designer.cs)`, `AppDbContextModelSnapshot.cs`
+  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\`: `<시각>_InitialCreate.cs (+ .Designer.cs)`, `<시각>_AddIdentity.cs (+ .Designer.cs)`, `<시각>_AddChzzkTokens.cs (+ .Designer.cs)`, `<시각>_AddDonationEvents.cs (+ .Designer.cs)`, `<시각>_AddSafety.cs (+ .Designer.cs)`, `<시각>_AddImageFileIndex.cs (+ .Designer.cs)`, `AppDbContextModelSnapshot.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Properties\`: `launchSettings.json`
-  - `C:\dev\image-donation\server\ImageDonation.Api\Services\`: `ImageProcessor.cs`, `RetentionService.cs`, `DonationService.cs`, `DonationCodeMatcher.cs`, `BannedWordFilter.cs`, `ChzzkApiClient.cs`
+  - `C:\dev\image-donation\server\ImageDonation.Api\Services\`: `ImageProcessor.cs`, `RetentionService.cs`, `DonationService.cs`, `DonationCodeMatcher.cs`, `ChzzkApiClient.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\`: `IDonationEventSource.cs`, `FakeDonationSource.cs`, `ChzzkSessionSource.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Storage\`: `LocalImageStorage.cs`
   - `C:\dev\image-donation\server\ImageDonation.Tests\`: `ImageDonation.Tests.csproj`, `ChzzkEmulator.cs`, `ChzzkSessionSourceTests.cs`
@@ -2175,13 +2193,16 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `dotnet test`가 9개 통과하는 상태(Day 28).
   - 도구가 만드는 폴더(`node_modules`, `bin`, `obj`, `dist`, 업로드된 `media` 파일)는 목록에서 뺐다.
 - 오늘 만들/바꿀 파일:
+  - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\PublicEndpoints.cs` [바꿈] — + 금지어 검사(400 "사용할 수 없는 단어가 들어 있어요.") (레퍼런스 `server/ImageDonation.Api/Endpoints/PublicEndpoints.cs`)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Services\BannedWordFilter.cs` [새로] — `FindBannedWord`(trim, 빈 단어 무시, OrdinalIgnoreCase 포함 검사) (레퍼런스 `server/ImageDonation.Api/Services/BannedWordFilter.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Tests\DonationCodeMatcherTests.cs` [새로] — 코드 형식, 대소문자, 긴 토큰 무시, 최소 치즈, 만료, 이중 매칭 방지 (레퍼런스 `server/ImageDonation.Tests/DonationCodeMatcherTests.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Tests\ImageProcessorTests.cs` [새로] — 매직 넘버 2개, 가짜 머리글, EXIF 제거·리사이즈, EXIF 방향, GIF 첫 장면, 해상도 상한, 큰 JPEG 축소 디코딩, 작은 이미지 유지 (레퍼런스 `server/ImageDonation.Tests/ImageProcessorTests.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Tests\TestImages.cs` [새로] — 코드로 만드는 테스트 이미지(SkiaSharp PNG·JPEG, EXIF APP1 끼우기, 머리글만 큰 PNG, 113바이트 3장면 GIF) (레퍼런스 `server/ImageDonation.Tests/TestImages.cs`)
-  - `C:\dev\image-donation\server\ImageDonation.Tests\BannedWordFilterTests.cs` [새로] — `BannedWords_Rejects` (레퍼런스 `server/ImageDonation.Tests/BannedWordFilterTests.cs`)
+  - `C:\dev\image-donation\server\ImageDonation.Tests\BannedWordFilterTests.cs` [새로] — `BannedWords_Rejects` — 필터보다 먼저 쓴다 (레퍼런스 `server/ImageDonation.Tests/BannedWordFilterTests.cs`)
 - 끝 상태 확인:
   - `cd C:\dev\image-donation\server` → `dotnet test` → 실패 0. 개수는 작성자가 실행해 적는다(레퍼런스 기준 오늘 추가분: 매처 6, 이미지 9, 금지어 1).
   - 매처의 비교 연산자를 바꾸면 해당 테스트가 빨간 Failed로 바뀌고, 되돌리면 다시 통과.
+  - 설정 금지어에 `광고` → 메시지에 `광고` 넣은 업로드 → 400 "사용할 수 없는 단어가 들어 있어요.". 금지어가 없는 메시지는 그대로 들어간다.
 - 과제:
   - 1) "정확히 최소 금액이면 매칭된다" 테스트를 직접 하나 쓴다 → 정답 요지: PayAmount = minCheese인 이벤트로 FindMatch가 그 후원을 돌려주는지 `Assert.Equal`. 레퍼런스의 미만 테스트와 짝을 이룬다
   - 2) 금지어에 빈 문자열이 있어도 모든 글이 걸리지 않는지 확인하는 테스트를 쓴다 → 정답 요지: `FindBannedWord("안녕", ["", "  "])`가 null. 빈 금지어는 무시한다는 규칙
@@ -2192,20 +2213,23 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - Windows에서 SkiaSharp 테스트가 네이티브 로드 오류 → Day 11과 같은 확인(레퍼런스는 Windows 실행 미확인)
   - 실패 메시지 `Assert.Equal() Failure` 아래의 Expected/Actual을 읽는 법
   - 테스트 이름은 영어(레퍼런스 그대로), 설명은 주석으로
+  - 금지어를 `a`처럼 짧게 넣어 거의 모든 메시지가 거절됨 → 포함 검사라는 점
 - 레퍼런스 대응:
+  - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\PublicEndpoints.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Endpoints/PublicEndpoints.cs`)와 다름: 다시 바뀜 → [Day 36](#/day/sp-d36)
+  - `C:\dev\image-donation\server\ImageDonation.Api\Services\BannedWordFilter.cs`: `reference/sp-image-donation/server/ImageDonation.Api/Services/BannedWordFilter.cs` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Tests\DonationCodeMatcherTests.cs`: `reference/sp-image-donation/server/ImageDonation.Tests/DonationCodeMatcherTests.cs` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Tests\ImageProcessorTests.cs`: `reference/sp-image-donation/server/ImageDonation.Tests/ImageProcessorTests.cs` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Tests\TestImages.cs`: `reference/sp-image-donation/server/ImageDonation.Tests/TestImages.cs` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Tests\BannedWordFilterTests.cs`: `reference/sp-image-donation/server/ImageDonation.Tests/BannedWordFilterTests.cs` 최종(같음)
 
-## Day 34 — 통합·프론트 테스트 (120분)
+## Day 34 — 통합·프론트 테스트 (115분)
 - 목표:
   - `ImageDonation.Tests.csproj`에 `Microsoft.AspNetCore.Mvc.Testing`·`Microsoft.AspNetCore.SignalR.Client` 10.0.14. `ApiFactory.cs`(replaceServices 없이, Day 36에 추가): 진짜 `Program`을 메모리에서 실행, DB는 `TEST_DATABASE_URL`의 PostgreSQL에 **테스트마다 새 스키마**(`Search Path`)를 만들어 마이그레이션 적용·끝나면 `DROP SCHEMA … CASCADE`, 임시 MediaPath, 설정 덮어쓰기(IP 키·요청 제한·정리 간격), `CreateStreamerClientAsync`(가입·로그인·온보딩한 쿠키 클라이언트), `DonationForm`, 오버레이 연결(TestServer 안의 웹소켓), `StartOverlayAsync`(SignalR은 연결 응답을 먼저 보내고 그룹 가입을 나중에 하므로 아무 일 없는 `MarkShown(0)`으로 기다리는 요령).
-  - 준비: 테스트 DB 만들기 — Docker `docker compose exec db psql -U imagedonation -d image_donation -c "CREATE DATABASE image_donation_test;"`, Docker 없는 경로는 psql.exe로 같은 SQL. `TEST_DATABASE_URL`을 내 값으로: `[Environment]::SetEnvironmentVariable("TEST_DATABASE_URL", "Host=127.0.0.1;Port=5432;Database=image_donation_test;Username=imagedonation;Password=<값>", "User")` 후 터미널 새로 열기. **레퍼런스 ApiFactory의 기본값(`Username=wzh;Password=wzh`)은 교재 작성 환경의 값**이라 학습자 PC에서는 맞지 않는다고 분명히 적는다.
-  - 테스트가 많으므로 2~3개(예: `PublicDonation_FreeMode_CreatesPending`, `Approve_SendsShowDonation_ToOverlayGroup`)는 따라 쓰며 설명하고, 나머지 파일(`PublicDonationTests`, `OverlayHubTests`(파일 삭제 실패 테스트 제외), `SafetyTests`, `SettingsTests`, `TestModeTests`, `RetentionTests`, `ChzzkApiClientTests` + `StubChzzkHandler`)은 "오늘 끝 상태 전체 코드"를 붙여 넣고 테스트 이름을 읽어 무엇을 지키는지 표로 정리한다. `ChzzkApiClientTests`로 Day 24의 토큰 회전·동시 갱신 1회를 가짜 치지직으로 처음 실행해 본다.
+  - 준비: 테스트 DB 만들기 — Docker `docker compose exec db psql -U imagedonation -d image_donation -c "CREATE DATABASE image_donation_test;"`, Docker 없는 경로는 psql.exe로 같은 SQL. `TEST_DATABASE_URL`을 내 값으로: `[Environment]::SetEnvironmentVariable("TEST_DATABASE_URL", "Host=127.0.0.1;Port=5432;Database=image_donation_test;Username=imagedonation;Password=<값>", "User")` 후 터미널 새로 열기. **Docker 없는 경로**(직접 설치한 PostgreSQL): `[Environment]::SetEnvironmentVariable("TEST_DATABASE_URL", "Host=localhost;Port=5432;Database=image_donation_test;Username=postgres;Password=<설치 때 정한 비밀번호>", "User")`. **레퍼런스 ApiFactory의 기본값(`Username=wzh;Password=wzh`)은 교재 작성 환경의 값**이라 학습자 PC에서는 맞지 않는다고 분명히 적는다.
+  - 테스트가 많으므로 2~3개(예: `PublicDonation_FreeMode_CreatesPending`, `Approve_SendsShowDonation_ToOverlayGroup`)는 따라 쓰며 설명하고, 나머지 파일(`PublicDonationTests`, `OverlayHubTests`(파일 삭제 실패 테스트 제외), `SafetyTests`, `SettingsTests`, `TestModeTests`, `RetentionTests`)은 "오늘 끝 상태 전체 코드"를 붙여 넣고 테스트 이름을 읽어 무엇을 지키는지 표로 정리한다. (치지직 토큰 테스트는 테스트 대역을 배우는 Day 36.)
   - 프론트: `npm i -D vitest@5.0.5 @testing-library/react@16.3.3 @testing-library/dom@10.4.2 @testing-library/jest-dom@7.0.1 @testing-library/user-event@14.6.8 jsdom@30.1.3`, 스크립트 `"test": "vitest run"`, `vite.config.ts`의 `test` 블록과 `/// <reference types="vitest/config" />`, `src\test\setup.ts`, `DashboardPage.test.tsx`(`vi.mock`으로 API와 대시보드 허브를 가짜로, 승인 버튼, `<b>`가 글자로), `DonatePage.test.tsx`(MemoryRouter).
 - 이미 배운 것:
-  - [Day 7](#/day/sp-d07) psql, [Day 24](#/day/sp-d24) 토큰 회전, [Day 16](#/day/sp-d16)~[Day 19](#/day/sp-d19), [Day 33](#/day/sp-d33)
+  - [Day 7](#/day/sp-d07) psql, [Day 16](#/day/sp-d16)~[Day 19](#/day/sp-d19), [Day 33](#/day/sp-d33)
   - WebApplicationFactory 통합 테스트·`tsc --noEmit`([P2 Day 36](#/day/p2-d36)), 환경 변수([P2 Day 3](#/day/p2-d03)·[P2 Day 39](#/day/p2-d39))
 - 시작 상태:
   - [Day 33](#/day/sp-d33) 끝 상태와 같다. 아래 파일이 이렇게 있어야 한다(없으면 [Day 33](#/day/sp-d33)의 "오늘 끝 상태 전체 코드"로 맞춘다).
@@ -2224,7 +2248,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\`: `PublicEndpoints.cs`, `AuthEndpoints.cs`, `DashboardEndpoints.cs`, `ChzzkEndpoints.cs`, `TestModeEndpoints.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Entities\`: `Streamer.cs`, `StreamerSettings.cs`, `Donation.cs`, `ChzzkToken.cs`, `DonationEvent.cs`, `BlockEntry.cs`, `Report.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Hubs\`: `OverlayHub.cs`, `DashboardHub.cs`
-  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\`: `<시각>_InitialCreate.cs (+ .Designer.cs)`, `<시각>_AddIdentity.cs (+ .Designer.cs)`, `<시각>_AddChzzkTokens.cs (+ .Designer.cs)`, `<시각>_AddDonationEvents.cs (+ .Designer.cs)`, `<시각>_AddSafety.cs (+ .Designer.cs)`, `AppDbContextModelSnapshot.cs`
+  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\`: `<시각>_InitialCreate.cs (+ .Designer.cs)`, `<시각>_AddIdentity.cs (+ .Designer.cs)`, `<시각>_AddChzzkTokens.cs (+ .Designer.cs)`, `<시각>_AddDonationEvents.cs (+ .Designer.cs)`, `<시각>_AddSafety.cs (+ .Designer.cs)`, `<시각>_AddImageFileIndex.cs (+ .Designer.cs)`, `AppDbContextModelSnapshot.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Properties\`: `launchSettings.json`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\`: `ImageProcessor.cs`, `RetentionService.cs`, `DonationService.cs`, `DonationCodeMatcher.cs`, `BannedWordFilter.cs`, `ChzzkApiClient.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\`: `IDonationEventSource.cs`, `FakeDonationSource.cs`, `ChzzkSessionSource.cs`
@@ -2250,10 +2274,8 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Tests\SettingsTests.cs` [새로] — 범위 밖 400, null 금지어 400 (레퍼런스 `server/ImageDonation.Tests/SettingsTests.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Tests\TestModeTests.cs` [새로] — 테스트 후원 매칭, 이벤트 최소 저장, 로그인 필요 (레퍼런스 `server/ImageDonation.Tests/TestModeTests.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Tests\RetentionTests.cs` [새로] — 오래된 파일 삭제, 30분 만료, 그 사이 매칭된 후원은 만료하지 않음 (레퍼런스 `server/ImageDonation.Tests/RetentionTests.cs`)
-  - `C:\dev\image-donation\server\ImageDonation.Tests\ChzzkApiClientTests.cs` [새로] — 토큰 회전(r1 → r2 → r3), 동시 갱신 1회, 갱신 실패 401 (Day 24 코드를 가짜 치지직으로 실행) (레퍼런스 `server/ImageDonation.Tests/ChzzkApiClientTests.cs`)
-  - `C:\dev\image-donation\server\ImageDonation.Tests\StubChzzkHandler.cs` [새로] — 1회용 리프레시 토큰을 흉내 내는 가짜 HttpMessageHandler (레퍼런스 `server/ImageDonation.Tests/StubChzzkHandler.cs`)
 - 끝 상태 확인:
-  - 새 터미널에서 `cd C:\dev\image-donation\server` → `dotnet test` → 실패 0(레퍼런스 54개 중 Day 36에 추가할 1개를 뺀 수 — 작성자가 실행해 정확한 수를 적는다).
+  - 새 터미널에서 `cd C:\dev\image-donation\server` → `dotnet test` → 실패 0(레퍼런스 54개 중 Day 36에 추가할 4개를 뺀 50개 — 작성자가 실행해 정확한 수를 적는다).
   - `cd C:\dev\image-donation\client` → `npx tsc -b` 오류 0, `npm test` → 화면 테스트 8개 통과, `npm run lint` 경고 0.
   - psql로 테스트 DB를 보면 `test_…` 스키마가 남아 있지 않다(끝나면 지워짐).
 - 과제:
@@ -2283,18 +2305,17 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Tests\SettingsTests.cs`: `reference/sp-image-donation/server/ImageDonation.Tests/SettingsTests.cs` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Tests\TestModeTests.cs`: `reference/sp-image-donation/server/ImageDonation.Tests/TestModeTests.cs` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Tests\RetentionTests.cs`: `reference/sp-image-donation/server/ImageDonation.Tests/RetentionTests.cs` 최종(같음)
-  - `C:\dev\image-donation\server\ImageDonation.Tests\ChzzkApiClientTests.cs`: `reference/sp-image-donation/server/ImageDonation.Tests/ChzzkApiClientTests.cs` 최종(같음)
-  - `C:\dev\image-donation\server\ImageDonation.Tests\StubChzzkHandler.cs`: `reference/sp-image-donation/server/ImageDonation.Tests/StubChzzkHandler.cs` 최종(같음)
 
-## Day 35 — 관측성 (80분)
+## Day 35 — 관측성 (95분)
 - 목표:
   - 구조화 로깅: 지금까지 쓴 로그(`"정리 완료: {Result}"`, `"긴급 정지 중 후원 {DonationId} 정리 실패"`, `"스트리머 {StreamerId}의 치지직 세션에 연결했습니다."`)를 다시 보며 문장 안에 값을 이어 붙이지 않고 이름 붙은 자리(`{DonationId}`)를 쓰는 이유, 수준(Information·Warning·Error) 고르는 법, 개인정보(닉네임·메시지·토큰)를 로그에 넣지 않는 규칙.
   - `appsettings.json`(최종): `"Microsoft.EntityFrameworkCore.Database.Command": "Warning"` → 실행한 SQL이 터미널을 덮지 않게(P2와 비교).
   - 헬스 체크: `AddHealthChecks()` + `MapHealthChecks("/healthz")` → `Healthy`. 이 체크는 앱이 응답하는지만 보고 DB까지는 확인하지 않는다(레퍼런스 그대로, 확장은 "더 알아보기").
   - 운영자 확인(관리자 화면은 아직 없음): README에 "신고 확인 (서비스 운영자)" 절 — 레퍼런스 README의 신고 조회 SQL(Reports ⋈ Streamers ⟕ Donations), 신고된 이미지는 `/media`로 열리지 않으니 `server\ImageDonation.Api\media`(Docker는 `appdata` 볼륨의 `/data/media`)에서 `ImageFile` 이름으로 직접 연다, **7일 보관 기간 안에** 확인해야 한다. 통계 SQL: 상태별 후원 수(`GROUP BY "Status"`), 오늘(한국 날짜) 받은 후원 수, 스트리머별 후원 수.
+  - 오늘 처음(SQL): 집계 `count(*)`와 `GROUP BY`, 표 잇기 `JOIN … ON`과 `LEFT JOIN`(신고 조회 쿼리를 한 절씩 읽으며: 신고는 꼭 스트리머가 있으니 JOIN, 후원 행은 7일 뒤 지워질 수 있으니 LEFT JOIN). P2는 EF Core `Include`로 관계를 읽었고 SQL 조인은 여기서 처음 쓴다.
 - 이미 배운 것:
   - [Day 12](#/day/sp-d12) 정리 로그, [Day 31](#/day/sp-d31) 신고, [Day 7](#/day/sp-d07) psql
-  - ILogger·로그 수준·appsettings([P2 Day 24](#/day/p2-d24)), SQL GROUP BY·JOIN([P2 Day 19](#/day/p2-d19)·[P2 Day 22](#/day/p2-d22)), UTC ↔ 한국 날짜([P2 Day 29](#/day/p2-d29))
+  - ILogger·로그 수준·appsettings([P2 Day 24](#/day/p2-d24)), SQL SELECT·WHERE·ORDER BY([P2 Day 19](#/day/p2-d19)), 표 사이 관계·외래 키([P2 Day 22](#/day/p2-d22)), UTC ↔ 한국 날짜([P2 Day 29](#/day/p2-d29))
 - 시작 상태:
   - [Day 34](#/day/sp-d34) 끝 상태와 같다. 아래 파일이 이렇게 있어야 한다(없으면 [Day 34](#/day/sp-d34)의 "오늘 끝 상태 전체 코드"로 맞춘다).
   - `C:\dev\image-donation\`: `README.md`, `.gitignore`, `.env.example`, `.env`, `docker-compose.yml`
@@ -2313,12 +2334,12 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\`: `PublicEndpoints.cs`, `AuthEndpoints.cs`, `DashboardEndpoints.cs`, `ChzzkEndpoints.cs`, `TestModeEndpoints.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Entities\`: `Streamer.cs`, `StreamerSettings.cs`, `Donation.cs`, `ChzzkToken.cs`, `DonationEvent.cs`, `BlockEntry.cs`, `Report.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Hubs\`: `OverlayHub.cs`, `DashboardHub.cs`
-  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\`: `<시각>_InitialCreate.cs (+ .Designer.cs)`, `<시각>_AddIdentity.cs (+ .Designer.cs)`, `<시각>_AddChzzkTokens.cs (+ .Designer.cs)`, `<시각>_AddDonationEvents.cs (+ .Designer.cs)`, `<시각>_AddSafety.cs (+ .Designer.cs)`, `AppDbContextModelSnapshot.cs`
+  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\`: `<시각>_InitialCreate.cs (+ .Designer.cs)`, `<시각>_AddIdentity.cs (+ .Designer.cs)`, `<시각>_AddChzzkTokens.cs (+ .Designer.cs)`, `<시각>_AddDonationEvents.cs (+ .Designer.cs)`, `<시각>_AddSafety.cs (+ .Designer.cs)`, `<시각>_AddImageFileIndex.cs (+ .Designer.cs)`, `AppDbContextModelSnapshot.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Properties\`: `launchSettings.json`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\`: `ImageProcessor.cs`, `RetentionService.cs`, `DonationService.cs`, `DonationCodeMatcher.cs`, `BannedWordFilter.cs`, `ChzzkApiClient.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\`: `IDonationEventSource.cs`, `FakeDonationSource.cs`, `ChzzkSessionSource.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Storage\`: `LocalImageStorage.cs`
-  - `C:\dev\image-donation\server\ImageDonation.Tests\`: `ImageDonation.Tests.csproj`, `ChzzkEmulator.cs`, `ChzzkSessionSourceTests.cs`, `DonationCodeMatcherTests.cs`, `ImageProcessorTests.cs`, `TestImages.cs`, `BannedWordFilterTests.cs`, `ApiFactory.cs`, `PublicDonationTests.cs`, `OverlayHubTests.cs`, `SafetyTests.cs`, `SettingsTests.cs`, `TestModeTests.cs`, `RetentionTests.cs`, `ChzzkApiClientTests.cs`, `StubChzzkHandler.cs`
+  - `C:\dev\image-donation\server\ImageDonation.Tests\`: `ImageDonation.Tests.csproj`, `ChzzkEmulator.cs`, `ChzzkSessionSourceTests.cs`, `DonationCodeMatcherTests.cs`, `ImageProcessorTests.cs`, `TestImages.cs`, `BannedWordFilterTests.cs`, `ApiFactory.cs`, `PublicDonationTests.cs`, `OverlayHubTests.cs`, `SafetyTests.cs`, `SettingsTests.cs`, `TestModeTests.cs`, `RetentionTests.cs`
   - `C:\dev\image-donation\tools\chzzk-emulator\`: `package.json`, `package-lock.json`, `emulator.cjs`
   - `C:\dev\sp-practice\`: `api.http`
   - `C:\dev\sp-practice\images\`: `(폴더)`
@@ -2345,13 +2366,15 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\appsettings.json`: `reference/sp-image-donation/server/ImageDonation.Api/appsettings.json` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Api\Program.cs`: 중간 단계 — 레퍼런스(`reference/sp-image-donation/server/ImageDonation.Api/Program.cs`)와 다름: 다시 바뀜 → [Day 36](#/day/sp-d36)
 
-## Day 36 — 저장소 추상화 (90분)
+## Day 36 — 저장소 추상화 (110분)
 - 목표:
   - 왜 인터페이스인가: 지금은 서버 PC의 `media` 폴더에 저장하지만, 서버를 여러 대 띄우거나 디스크가 사라지는 호스팅(Day 38)에서는 객체 스토리지가 필요하다. 사용하는 쪽이 "어디에 저장되는지" 모르게 하면 구현만 바꿔 끼울 수 있다([P2 Day 13](#/day/p2-d13) 다형성).
   - `Services\Storage\IImageStorage.cs`(최종): `SaveAsync`, `OpenRead`, `Exists`, `DeleteAsync`, `DeleteOlderThanAsync`. `LocalImageStorage : IImageStorage`. 쓰는 곳 네 군데(`DonationService`, `RetentionService`, `PublicEndpoints.GetMedia`, `Program.cs` 등록 `AddSingleton<IImageStorage, LocalImageStorage>()`)를 인터페이스로 바꾼다.
   - 테스트 대역: `FailingDeleteStorage`(지우기만 항상 `IOException("The process cannot access the file because it is being used by another process.")`, 나머지는 진짜 저장소에 맡김 — Windows에서 다른 프로그램이 파일을 잡은 상황), `ApiFactory`에 `replaceServices` → `ConfigureTestServices`, `OverlayHubTests`에 `EmergencyStop_ClearsOverlayFirst_EvenIfFileDeleteFails`.
   - S3 호환 구현은 개념과 설계만: 버킷·키·공개 여부, `/media` 대신 서명된 주소를 줄 수 있다는 점, 요금(저장 용량·요청 수·트래픽). 레퍼런스에 S3 코드가 없고 검증하지 않았으므로 **교재에 구현 코드를 싣지 않는다**.
+  - 두 번째 테스트 대역(Day 34에서 옮김): 가짜 치지직 HTTP 처리기 `StubChzzkHandler`(1회용 리프레시 토큰을 흉내 냄: 마지막으로 준 값만 받고 쓰면 새 값으로) + `ChzzkApiClientTests` 3개 — 토큰 회전 r1 → r2 → r3, 두 요청이 동시에 갱신해도 1번만, 이미 쓴 토큰이면 401. Day 24의 `GetValidAccessTokenAsync`를 치지직 없이 처음 실제로 실행해 본다. 테스트 파일은 붙여 넣고 읽는다.
 - 이미 배운 것:
+  - [Day 24](#/day/sp-d24) 토큰 회전
   - [Day 10](#/day/sp-d10)~[Day 12](#/day/sp-d12) 저장소, [Day 31](#/day/sp-d31) 긴급 정지, [Day 34](#/day/sp-d34) ApiFactory
   - interface·다형성([P2 Day 13](#/day/p2-d13)), 의존성 주입·서비스 수명([P2 Day 23](#/day/p2-d23))
 - 시작 상태:
@@ -2372,12 +2395,12 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\`: `PublicEndpoints.cs`, `AuthEndpoints.cs`, `DashboardEndpoints.cs`, `ChzzkEndpoints.cs`, `TestModeEndpoints.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Entities\`: `Streamer.cs`, `StreamerSettings.cs`, `Donation.cs`, `ChzzkToken.cs`, `DonationEvent.cs`, `BlockEntry.cs`, `Report.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Hubs\`: `OverlayHub.cs`, `DashboardHub.cs`
-  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\`: `<시각>_InitialCreate.cs (+ .Designer.cs)`, `<시각>_AddIdentity.cs (+ .Designer.cs)`, `<시각>_AddChzzkTokens.cs (+ .Designer.cs)`, `<시각>_AddDonationEvents.cs (+ .Designer.cs)`, `<시각>_AddSafety.cs (+ .Designer.cs)`, `AppDbContextModelSnapshot.cs`
+  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\`: `<시각>_InitialCreate.cs (+ .Designer.cs)`, `<시각>_AddIdentity.cs (+ .Designer.cs)`, `<시각>_AddChzzkTokens.cs (+ .Designer.cs)`, `<시각>_AddDonationEvents.cs (+ .Designer.cs)`, `<시각>_AddSafety.cs (+ .Designer.cs)`, `<시각>_AddImageFileIndex.cs (+ .Designer.cs)`, `AppDbContextModelSnapshot.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Properties\`: `launchSettings.json`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\`: `ImageProcessor.cs`, `RetentionService.cs`, `DonationService.cs`, `DonationCodeMatcher.cs`, `BannedWordFilter.cs`, `ChzzkApiClient.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\`: `IDonationEventSource.cs`, `FakeDonationSource.cs`, `ChzzkSessionSource.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Storage\`: `LocalImageStorage.cs`
-  - `C:\dev\image-donation\server\ImageDonation.Tests\`: `ImageDonation.Tests.csproj`, `ChzzkEmulator.cs`, `ChzzkSessionSourceTests.cs`, `DonationCodeMatcherTests.cs`, `ImageProcessorTests.cs`, `TestImages.cs`, `BannedWordFilterTests.cs`, `ApiFactory.cs`, `PublicDonationTests.cs`, `OverlayHubTests.cs`, `SafetyTests.cs`, `SettingsTests.cs`, `TestModeTests.cs`, `RetentionTests.cs`, `ChzzkApiClientTests.cs`, `StubChzzkHandler.cs`
+  - `C:\dev\image-donation\server\ImageDonation.Tests\`: `ImageDonation.Tests.csproj`, `ChzzkEmulator.cs`, `ChzzkSessionSourceTests.cs`, `DonationCodeMatcherTests.cs`, `ImageProcessorTests.cs`, `TestImages.cs`, `BannedWordFilterTests.cs`, `ApiFactory.cs`, `PublicDonationTests.cs`, `OverlayHubTests.cs`, `SafetyTests.cs`, `SettingsTests.cs`, `TestModeTests.cs`, `RetentionTests.cs`
   - `C:\dev\image-donation\tools\chzzk-emulator\`: `package.json`, `package-lock.json`, `emulator.cjs`
   - `C:\dev\sp-practice\`: `api.http`
   - `C:\dev\sp-practice\images\`: `(폴더)`
@@ -2392,6 +2415,8 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\DonationService.cs` [바꿈] — `IImageStorage`를 받음 (레퍼런스와 같아짐) (레퍼런스 `server/ImageDonation.Api/Services/DonationService.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Tests\ApiFactory.cs` [바꿈] — + 생성자 `replaceServices` → `ConfigureTestServices` (레퍼런스와 같아짐) (레퍼런스 `server/ImageDonation.Tests/ApiFactory.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Tests\OverlayHubTests.cs` [바꿈] — + `EmergencyStop_ClearsOverlayFirst_EvenIfFileDeleteFails` (레퍼런스와 같아짐) (레퍼런스 `server/ImageDonation.Tests/OverlayHubTests.cs`)
+  - `C:\dev\image-donation\server\ImageDonation.Tests\ChzzkApiClientTests.cs` [새로] — 토큰 회전(r1 → r2 → r3), 동시 갱신 1회, 갱신 실패 401 (Day 24 코드를 가짜 치지직으로 처음 실행) (레퍼런스 `server/ImageDonation.Tests/ChzzkApiClientTests.cs`)
+  - `C:\dev\image-donation\server\ImageDonation.Tests\StubChzzkHandler.cs` [새로] — 1회용 리프레시 토큰을 흉내 내는 가짜 HttpMessageHandler (레퍼런스 `server/ImageDonation.Tests/StubChzzkHandler.cs`)
   - `C:\dev\image-donation\server\ImageDonation.Tests\FailingDeleteStorage.cs` [새로] — 지우기만 항상 IOException을 내는 IImageStorage 테스트 대역 (레퍼런스 `server/ImageDonation.Tests/FailingDeleteStorage.cs`)
 - 끝 상태 확인:
   - `dotnet build` 경고 0, `dotnet test` → 실패 0(레퍼런스와 같은 54개 — 작성자가 실제 수 확인).
@@ -2414,15 +2439,17 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\DonationService.cs`: `reference/sp-image-donation/server/ImageDonation.Api/Services/DonationService.cs` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Tests\ApiFactory.cs`: `reference/sp-image-donation/server/ImageDonation.Tests/ApiFactory.cs` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Tests\OverlayHubTests.cs`: `reference/sp-image-donation/server/ImageDonation.Tests/OverlayHubTests.cs` 최종(같음)
+  - `C:\dev\image-donation\server\ImageDonation.Tests\ChzzkApiClientTests.cs`: `reference/sp-image-donation/server/ImageDonation.Tests/ChzzkApiClientTests.cs` 최종(같음)
+  - `C:\dev\image-donation\server\ImageDonation.Tests\StubChzzkHandler.cs`: `reference/sp-image-donation/server/ImageDonation.Tests/StubChzzkHandler.cs` 최종(같음)
   - `C:\dev\image-donation\server\ImageDonation.Tests\FailingDeleteStorage.cs`: `reference/sp-image-donation/server/ImageDonation.Tests/FailingDeleteStorage.cs` 최종(같음)
 
 ## Day 37 — Docker 이미지 (120분)
 - 목표:
-  - P3([Day 40](#/day/p3-d40))를 안 했다고 가정하고 Dockerfile·이미지 빌드·멀티스테이지를 처음부터 설명한다(사전 항목은 P3 것을 링크).
+  - P3([P3 Day 40](#/day/p3-d40))를 안 했다고 가정하고 Dockerfile·이미지 빌드·멀티스테이지를 처음부터 설명한다(사전 항목은 P3 것을 링크).
   - 하나의 앱으로: `vite.config.ts`(최종)의 `build.outDir: '../server/ImageDonation.Api/wwwroot'`, `emptyOutDir`, `rolldownOptions.input: { main: 'index.html', overlay: 'overlay.html' }`. `Program.cs`(최종): `UseDefaultFiles()`, `UseStaticFiles()`, 없는 `/api/...`는 404(`MapFallback("/api/{**path}", …)`), 나머지는 `MapFallbackToFile("index.html")`(BrowserRouter 새로고침, Day 6). [P2 Day 38](#/day/p2-d38)의 단일 앱과 같은 생각.
   - `Dockerfile`(최종): ① `node:26-slim`에서 `npm ci` + `npm run build` ② `mcr.microsoft.com/dotnet/sdk:10.0`에서 `dotnet restore`(csproj 먼저 복사해 캐시) + `dotnet publish -c Release` ③ `aspnet:10.0`에 결과물과 wwwroot만, `/data/media`·`/data/keys` 만들고 `USER $APP_UID`(루트가 아닌 사용자), `ENV Storage__MediaPath`·`DataProtection__KeysPath`, 8080. `.dockerignore`(최종): node_modules·bin·obj·wwwroot·media·Tests·tools·.env.
   - Data Protection 키를 볼륨에: `Program.cs`에 `DataProtection:KeysPath`가 있으면 `PersistKeysToFileSystem` → 컨테이너를 다시 만들어도 로그인 쿠키·치지직 토큰을 읽을 수 있다. 시작 로그의 `No XML encryptor configured` 경고 = 키가 평문 XML로 저장된다는 뜻 → 운영에서는 폴더 권한 제한.
-  - `docker-compose.yml`(최종): `api` 서비스(build ., `8080:8080`, 환경 변수는 `:` 대신 `__`, 연결 문자열 `Host=db;…;GSS Encryption Mode=Disable`(런타임 이미지에 없는 Kerberos 라이브러리 경고 제거), `Security__IpHashKey`, `Chzzk__*`, 볼륨 `appdata:/data`, `depends_on: db: condition: service_healthy`). DB 포트 공개(`127.0.0.1:5432`)는 뺀다(운영 설정: DB를 밖에 열지 않음). `.env.example`(최종)·`.env`에 `IP_HASH_KEY`(PowerShell 무작위 값), 치지직 값(선택). **DB 값은 Day 7과 같게 유지**. `.gitignore`(최종).
+  - `docker-compose.yml`(최종): `api` 서비스(build ., `8080:8080`, 환경 변수는 `:` 대신 `__`, 연결 문자열 `Host=db;…;GSS Encryption Mode=Disable`(런타임 이미지에 없는 Kerberos 라이브러리 경고 제거), `Security__IpHashKey`, `Chzzk__*`, 볼륨 `appdata:/data`, `depends_on: db: condition: service_healthy`). DB 포트 공개(`127.0.0.1:5432`)는 뺀다(운영 설정: DB를 밖에 열지 않음). `.env.example`(최종)·`.env`에 `IP_HASH_KEY`(Day 14와 같은 명령 `$b = New-Object byte[] 32; [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b); [Convert]::ToBase64String($b)`으로 만든 값), 치지직 값(선택). **DB 값은 Day 7과 같게 유지**. `.gitignore`(최종).
   - `cd C:\dev\image-donation` → `docker compose up --build -d` → `http://localhost:8080`. 끌 때 `docker compose down`, 데이터까지 지울 때만 `down -v`.
   - 이후 다시 개발 모드(`dotnet run` + `npm run dev`)로 돌아갈 때: `docker compose down`으로 전체 앱을 먼저 끄고 `docker compose run -d --rm --name image-donation-devdb -p 127.0.0.1:5432:5432 db`로 DB만 포트를 열어 띄운다(같은 `pgdata` 볼륨). 이 명령은 작성 환경(Linux, Docker Compose v5.6.1)에서 레퍼런스 compose로 실행해 `psql` 접속까지 확인했다. 끝나면 `docker stop image-donation-devdb`.
   - **Docker 없는 경로**: `cd C:\dev\image-donation\client` → `npm ci` → `npm run build`(wwwroot로) → `cd …\server\ImageDonation.Api` → `dotnet run` → `http://localhost:5080/login`(레퍼런스 README 실행 방법 B). Dockerfile·compose 파일은 같게 만들어 두고, Docker를 쓸 수 있게 되면 그때 실행한다. README에 실행 방법 A/B.
@@ -2447,7 +2474,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\`: `PublicEndpoints.cs`, `AuthEndpoints.cs`, `DashboardEndpoints.cs`, `ChzzkEndpoints.cs`, `TestModeEndpoints.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Entities\`: `Streamer.cs`, `StreamerSettings.cs`, `Donation.cs`, `ChzzkToken.cs`, `DonationEvent.cs`, `BlockEntry.cs`, `Report.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Hubs\`: `OverlayHub.cs`, `DashboardHub.cs`
-  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\`: `<시각>_InitialCreate.cs (+ .Designer.cs)`, `<시각>_AddIdentity.cs (+ .Designer.cs)`, `<시각>_AddChzzkTokens.cs (+ .Designer.cs)`, `<시각>_AddDonationEvents.cs (+ .Designer.cs)`, `<시각>_AddSafety.cs (+ .Designer.cs)`, `AppDbContextModelSnapshot.cs`
+  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\`: `<시각>_InitialCreate.cs (+ .Designer.cs)`, `<시각>_AddIdentity.cs (+ .Designer.cs)`, `<시각>_AddChzzkTokens.cs (+ .Designer.cs)`, `<시각>_AddDonationEvents.cs (+ .Designer.cs)`, `<시각>_AddSafety.cs (+ .Designer.cs)`, `<시각>_AddImageFileIndex.cs (+ .Designer.cs)`, `AppDbContextModelSnapshot.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Properties\`: `launchSettings.json`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\`: `ImageProcessor.cs`, `RetentionService.cs`, `DonationService.cs`, `DonationCodeMatcher.cs`, `BannedWordFilter.cs`, `ChzzkApiClient.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\`: `IDonationEventSource.cs`, `FakeDonationSource.cs`, `ChzzkSessionSource.cs`
@@ -2462,7 +2489,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\README.md` [바꿈] — 실행 방법 A(Docker)·B(Docker 없이) (레퍼런스 `README.md`)
   - `C:\dev\image-donation\.gitignore` [바꿈] — + `client/dist/`, `server/ImageDonation.Api/wwwroot/` (레퍼런스와 같은 순서·주석으로 정리) (레퍼런스 `.gitignore`)
   - `C:\dev\image-donation\.env.example` [바꿈] — + `IP_HASH_KEY`, `CHZZK_CLIENT_ID`, `CHZZK_CLIENT_SECRET`, `CHZZK_REDIRECT_URI` (레퍼런스와 같음) (레퍼런스 `.env.example`)
-  - `C:\dev\image-donation\.env` [바꿈] — + `IP_HASH_KEY`(PowerShell로 만든 무작위 값), 치지직 값(선택). DB 값은 Day 7과 같게 유지
+  - `C:\dev\image-donation\.env` [바꿈] — + `IP_HASH_KEY`(Day 14와 같은 PowerShell 명령으로 만든 무작위 값), 치지직 값(선택). DB 값은 Day 7과 같게 유지
   - `C:\dev\image-donation\docker-compose.yml` [바꿈] — 레퍼런스와 같게: `api` 서비스(build ., 8080, 환경 변수 `__`, `GSS Encryption Mode=Disable`, `appdata:/data`, `depends_on: service_healthy`) 추가, DB 포트 공개는 뺌 (레퍼런스 `docker-compose.yml`)
   - `C:\dev\image-donation\Dockerfile` [새로] — 3단계 멀티스테이지(`node:26-slim` → `mcr.microsoft.com/dotnet/sdk:10.0` → `aspnet:10.0`), `/data/media`·`/data/keys`, `USER $APP_UID`, 8080 (레퍼런스 `Dockerfile`)
   - `C:\dev\image-donation\.dockerignore` [새로] — node_modules·bin·obj·wwwroot·media·Tests·tools·.env 제외 (레퍼런스 `.dockerignore`)
@@ -2470,7 +2497,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Program.cs` [바꿈] — + `DataProtection:KeysPath`가 있으면 `PersistKeysToFileSystem`, `UseDefaultFiles`, `UseStaticFiles`, `MapFallback("/api/{**path}", 404)`, `MapFallbackToFile("index.html")` (레퍼런스와 같아짐) (레퍼런스 `server/ImageDonation.Api/Program.cs`)
 - 끝 상태 확인:
   - Docker 경로: `docker compose up --build -d`가 끝나고 `docker compose ps`에 `api`·`db`가 실행 중. `http://localhost:8080/healthz` → `Healthy`, `/login` 화면.
-  - 8080에서 가입·온보딩·업로드·승인 → `http://localhost:8080/overlay.html?token=…`에 표시. `docker compose down` → `up -d` 후에도 로그인과 이미지가 남아 있다(새로 가입한 계정이므로 Day 36까지의 개발 DB 데이터와 같은 볼륨이다).
+  - Docker 앱은 Day 7부터 쓴 같은 `pgdata` 볼륨을 쓰므로 계정·스트리머가 이미 있다 → 8080에서 **기존 계정으로 로그인**(Docker 없이 개발해 compose DB를 처음 쓰는 사람만 새로 가입·온보딩) → 업로드·승인 → `http://localhost:8080/overlay.html?token=…`에 표시. 달라지는 것 두 가지를 본문에 설명: ① 개발 때 올린 이미지는 PC의 `server\ImageDonation.Api\media`에 있고 컨테이너는 `appdata` 볼륨의 `/data/media`를 쓰므로 옛 후원 이미지는 404(카드 이미지가 깨짐, 7일 뒤 정리 — 정상) ② Data Protection 키도 PC(`%LOCALAPPDATA%\ASP.NET\DataProtection-Keys`)와 컨테이너(`/data/keys`)가 달라서 개발 때의 로그인 쿠키는 무효(8080에서 다시 로그인)이고 저장된 치지직 토큰은 풀 수 없다 → 선택 단계라면 설정에서 치지직 계정을 다시 연결. `docker compose down` → `up -d` 후에는 로그인과 새 이미지가 남아 있다.
   - Docker 없는 경로: `npm run build` 후 `server\ImageDonation.Api\wwwroot\index.html`·`overlay.html`이 생기고, `http://localhost:5080/login`·`/d/my-stream`에서 새로고침해도 화면이 나온다. `/api/없는주소` → 404.
   - `git status`에 `wwwroot`·`.env`가 안 보인다.
 - 과제:
@@ -2527,7 +2554,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\`: `PublicEndpoints.cs`, `AuthEndpoints.cs`, `DashboardEndpoints.cs`, `ChzzkEndpoints.cs`, `TestModeEndpoints.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Entities\`: `Streamer.cs`, `StreamerSettings.cs`, `Donation.cs`, `ChzzkToken.cs`, `DonationEvent.cs`, `BlockEntry.cs`, `Report.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Hubs\`: `OverlayHub.cs`, `DashboardHub.cs`
-  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\`: `<시각>_InitialCreate.cs (+ .Designer.cs)`, `<시각>_AddIdentity.cs (+ .Designer.cs)`, `<시각>_AddChzzkTokens.cs (+ .Designer.cs)`, `<시각>_AddDonationEvents.cs (+ .Designer.cs)`, `<시각>_AddSafety.cs (+ .Designer.cs)`, `AppDbContextModelSnapshot.cs`
+  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\`: `<시각>_InitialCreate.cs (+ .Designer.cs)`, `<시각>_AddIdentity.cs (+ .Designer.cs)`, `<시각>_AddChzzkTokens.cs (+ .Designer.cs)`, `<시각>_AddDonationEvents.cs (+ .Designer.cs)`, `<시각>_AddSafety.cs (+ .Designer.cs)`, `<시각>_AddImageFileIndex.cs (+ .Designer.cs)`, `AppDbContextModelSnapshot.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Properties\`: `launchSettings.json`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\`: `ImageProcessor.cs`, `RetentionService.cs`, `DonationService.cs`, `DonationCodeMatcher.cs`, `BannedWordFilter.cs`, `ChzzkApiClient.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\`: `IDonationEventSource.cs`, `FakeDonationSource.cs`, `ChzzkSessionSource.cs`
@@ -2585,7 +2612,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\`: `PublicEndpoints.cs`, `AuthEndpoints.cs`, `DashboardEndpoints.cs`, `ChzzkEndpoints.cs`, `TestModeEndpoints.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Entities\`: `Streamer.cs`, `StreamerSettings.cs`, `Donation.cs`, `ChzzkToken.cs`, `DonationEvent.cs`, `BlockEntry.cs`, `Report.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Hubs\`: `OverlayHub.cs`, `DashboardHub.cs`
-  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\`: `<시각>_InitialCreate.cs (+ .Designer.cs)`, `<시각>_AddIdentity.cs (+ .Designer.cs)`, `<시각>_AddChzzkTokens.cs (+ .Designer.cs)`, `<시각>_AddDonationEvents.cs (+ .Designer.cs)`, `<시각>_AddSafety.cs (+ .Designer.cs)`, `AppDbContextModelSnapshot.cs`
+  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\`: `<시각>_InitialCreate.cs (+ .Designer.cs)`, `<시각>_AddIdentity.cs (+ .Designer.cs)`, `<시각>_AddChzzkTokens.cs (+ .Designer.cs)`, `<시각>_AddDonationEvents.cs (+ .Designer.cs)`, `<시각>_AddSafety.cs (+ .Designer.cs)`, `<시각>_AddImageFileIndex.cs (+ .Designer.cs)`, `AppDbContextModelSnapshot.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Properties\`: `launchSettings.json`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\`: `ImageProcessor.cs`, `RetentionService.cs`, `DonationService.cs`, `DonationCodeMatcher.cs`, `BannedWordFilter.cs`, `ChzzkApiClient.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\`: `IDonationEventSource.cs`, `FakeDonationSource.cs`, `ChzzkSessionSource.cs`
@@ -2644,7 +2671,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
   - `C:\dev\image-donation\server\ImageDonation.Api\Endpoints\`: `PublicEndpoints.cs`, `AuthEndpoints.cs`, `DashboardEndpoints.cs`, `ChzzkEndpoints.cs`, `TestModeEndpoints.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Entities\`: `Streamer.cs`, `StreamerSettings.cs`, `Donation.cs`, `ChzzkToken.cs`, `DonationEvent.cs`, `BlockEntry.cs`, `Report.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Hubs\`: `OverlayHub.cs`, `DashboardHub.cs`
-  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\`: `<시각>_InitialCreate.cs (+ .Designer.cs)`, `<시각>_AddIdentity.cs (+ .Designer.cs)`, `<시각>_AddChzzkTokens.cs (+ .Designer.cs)`, `<시각>_AddDonationEvents.cs (+ .Designer.cs)`, `<시각>_AddSafety.cs (+ .Designer.cs)`, `AppDbContextModelSnapshot.cs`
+  - `C:\dev\image-donation\server\ImageDonation.Api\Migrations\`: `<시각>_InitialCreate.cs (+ .Designer.cs)`, `<시각>_AddIdentity.cs (+ .Designer.cs)`, `<시각>_AddChzzkTokens.cs (+ .Designer.cs)`, `<시각>_AddDonationEvents.cs (+ .Designer.cs)`, `<시각>_AddSafety.cs (+ .Designer.cs)`, `<시각>_AddImageFileIndex.cs (+ .Designer.cs)`, `AppDbContextModelSnapshot.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Properties\`: `launchSettings.json`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\`: `ImageProcessor.cs`, `RetentionService.cs`, `DonationService.cs`, `DonationCodeMatcher.cs`, `BannedWordFilter.cs`, `ChzzkApiClient.cs`
   - `C:\dev\image-donation\server\ImageDonation.Api\Services\Events\`: `IDonationEventSource.cs`, `FakeDonationSource.cs`, `ChzzkSessionSource.cs`
@@ -2696,14 +2723,14 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 - `image-donation/client/vite.config.ts` — 만듦 3, 바뀜 15, 34, 37 — 레퍼런스: `client/vite.config.ts`
 - `image-donation/client/src/main.tsx` — 만듦 3, 바뀜 6 — 레퍼런스: `client/src/main.tsx`
 - `image-donation/client/src/App.tsx` — 만듦 3, 바뀜 4, 5, 6, 19, 20, 30 — 레퍼런스: `client/src/App.tsx`
-- `image-donation/client/src/index.css` — 만듦 3, 바뀜 4, 5, 6, 19, 20, 21, 28, 29, 30, 31 — 레퍼런스: `client/src/index.css`
-- `image-donation/client/src/api.ts` — 만듦 4, 바뀜 5, 15, 19, 20, 23, 27, 28, 29, 30, 31 — 레퍼런스: `client/src/api.ts`
+- `image-donation/client/src/index.css` — 만듦 3, 바뀜 4, 5, 6, 19, 20, 21, 29, 30, 31 — 레퍼런스: `client/src/index.css`
+- `image-donation/client/src/api.ts` — 만듦 4, 바뀜 5, 15, 19, 20, 23, 27, 29, 30, 31 — 레퍼런스: `client/src/api.ts`
 - `image-donation/client/src/donationList.ts` — 만듦 4 — 레퍼런스: `client/src/donationList.ts`
 - `image-donation/client/src/components/DonationCard.tsx` — 만듦 3, 바뀜 4, 19, 27, 31 — 레퍼런스: `client/src/components/DonationCard.tsx`
 - `image-donation/client/src/components/DonationForm.tsx` — 만듦 5, 바뀜 29 — 레퍼런스: `client/src/components/DonationForm.tsx`
 - `image-donation/client/src/components/DonationResult.tsx` — 만듦 29 — 레퍼런스: `client/src/components/DonationResult.tsx`
 - `image-donation/client/src/components/StreamerLayout.tsx` — 만듦 6, 바뀜 19, 20, 30 — 레퍼런스: `client/src/components/StreamerLayout.tsx`
-- `image-donation/client/src/components/TestDonationPanel.tsx` — 만듦 28 — 레퍼런스: `client/src/components/TestDonationPanel.tsx`
+- `image-donation/client/src/components/TestDonationPanel.tsx` — 만듦 30 — 레퍼런스: `client/src/components/TestDonationPanel.tsx`
 - `image-donation/client/src/hooks/useImagePreview.ts` — 만듦 5 — 레퍼런스: `client/src/hooks/useImagePreview.ts`
 - `image-donation/client/src/hooks/useMe.ts` — 만듦 19 — 레퍼런스: `client/src/hooks/useMe.ts`
 - `image-donation/client/src/hooks/useDashboardHub.ts` — 만듦 19 — 레퍼런스: `client/src/hooks/useDashboardHub.ts`
@@ -2712,7 +2739,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 - `image-donation/client/src/overlay/useOverlayHub.ts` — 만듦 15, 바뀜 16, 18 — 레퍼런스: `client/src/overlay/useOverlayHub.ts`
 - `image-donation/client/src/overlay/overlay.css` — 만듦 15, 바뀜 18 — 레퍼런스: `client/src/overlay/overlay.css`
 - `image-donation/client/src/pages/DonatePage.tsx` — 만듦 6, 바뀜 29 — 레퍼런스: `client/src/pages/DonatePage.tsx`
-- `image-donation/client/src/pages/DashboardPage.tsx` — 만듦 6, 바뀜 19, 28, 31 — 레퍼런스: `client/src/pages/DashboardPage.tsx`
+- `image-donation/client/src/pages/DashboardPage.tsx` — 만듦 6, 바뀜 19, 30, 31 — 레퍼런스: `client/src/pages/DashboardPage.tsx`
 - `image-donation/client/src/pages/LoginPage.tsx` — 만듦 19, 바뀜 21, 23 — 레퍼런스: `client/src/pages/LoginPage.tsx`
 - `image-donation/client/src/pages/OnboardingPage.tsx` — 만듦 30 — 레퍼런스: `client/src/pages/OnboardingPage.tsx`
 - `image-donation/client/src/pages/SettingsPage.tsx` — 만듦 20, 바뀜 23 — 레퍼런스: `client/src/pages/SettingsPage.tsx`
@@ -2722,10 +2749,10 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 - `image-donation/server/ImageDonation.slnx` — 만듦 8, 바뀜 25 — 레퍼런스: `server/ImageDonation.slnx`
 - `image-donation/server/ImageDonation.Api/ImageDonation.Api.csproj` — 만듦 8, 바뀜 11, 13, 25 — 레퍼런스: `server/ImageDonation.Api/ImageDonation.Api.csproj`
 - `image-donation/server/ImageDonation.Api/Properties/launchSettings.json` — 만듦 8 — 레퍼런스: `server/ImageDonation.Api/Properties/launchSettings.json`
-- `image-donation/server/ImageDonation.Api/appsettings.json` — 만듦 8, 바뀜 10, 12, 13, 14, 21, 26, 28, 35 — 레퍼런스: `server/ImageDonation.Api/appsettings.json`
+- `image-donation/server/ImageDonation.Api/appsettings.json` — 만듦 8, 바뀜 10, 12, 13, 14, 21, 28, 35 — 레퍼런스: `server/ImageDonation.Api/appsettings.json`
 - `image-donation/server/ImageDonation.Api/appsettings.Development.json` — 만듦 8 — 레퍼런스: `server/ImageDonation.Api/appsettings.Development.json`
-- `image-donation/server/ImageDonation.Api/Program.cs` — 만듦 8, 바뀜 9, 10, 11, 12, 13, 14, 15, 16, 21, 24, 26, 35, 36, 37 — 레퍼런스: `server/ImageDonation.Api/Program.cs`
-- `image-donation/server/ImageDonation.Api/Data/AppDbContext.cs` — 만듦 8, 바뀜 9, 13, 23, 26, 31 — 레퍼런스: `server/ImageDonation.Api/Data/AppDbContext.cs`
+- `image-donation/server/ImageDonation.Api/Program.cs` — 만듦 8, 바뀜 9, 10, 11, 12, 13, 14, 15, 16, 21, 24, 26, 28, 35, 36, 37 — 레퍼런스: `server/ImageDonation.Api/Program.cs`
+- `image-donation/server/ImageDonation.Api/Data/AppDbContext.cs` — 만듦 8, 바뀜 9, 13, 23, 26, 31, 32 — 레퍼런스: `server/ImageDonation.Api/Data/AppDbContext.cs`
 - `image-donation/server/ImageDonation.Api/Entities/Streamer.cs` — 만듦 9, 바뀜 13 — 레퍼런스: `server/ImageDonation.Api/Entities/Streamer.cs`
 - `image-donation/server/ImageDonation.Api/Entities/StreamerSettings.cs` — 만듦 9 — 레퍼런스: `server/ImageDonation.Api/Entities/StreamerSettings.cs`
 - `image-donation/server/ImageDonation.Api/Entities/Donation.cs` — 만듦 9 — 레퍼런스: `server/ImageDonation.Api/Entities/Donation.cs`
@@ -2736,7 +2763,7 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 - `image-donation/server/ImageDonation.Api/Dtos/DonationDtos.cs` — 만듦 10, 바뀜 14, 15, 16, 26, 27, 31 — 레퍼런스: `server/ImageDonation.Api/Dtos/DonationDtos.cs`
 - `image-donation/server/ImageDonation.Api/Dtos/AuthDtos.cs` — 만듦 13, 바뀜 23 — 레퍼런스: `server/ImageDonation.Api/Dtos/AuthDtos.cs`
 - `image-donation/server/ImageDonation.Api/Dtos/SettingsDto.cs` — 만듦 16, 바뀜 20 — 레퍼런스: `server/ImageDonation.Api/Dtos/SettingsDto.cs`
-- `image-donation/server/ImageDonation.Api/Endpoints/PublicEndpoints.cs` — 만듦 10, 바뀜 11, 12, 14, 31, 36 — 레퍼런스: `server/ImageDonation.Api/Endpoints/PublicEndpoints.cs`
+- `image-donation/server/ImageDonation.Api/Endpoints/PublicEndpoints.cs` — 만듦 10, 바뀜 11, 12, 14, 31, 32, 33, 36 — 레퍼런스: `server/ImageDonation.Api/Endpoints/PublicEndpoints.cs`
 - `image-donation/server/ImageDonation.Api/Endpoints/AuthEndpoints.cs` — 만듦 13, 바뀜 14, 23, 26 — 레퍼런스: `server/ImageDonation.Api/Endpoints/AuthEndpoints.cs`
 - `image-donation/server/ImageDonation.Api/Endpoints/DashboardEndpoints.cs` — 만듦 16, 바뀜 17, 20, 31 — 레퍼런스: `server/ImageDonation.Api/Endpoints/DashboardEndpoints.cs`
 - `image-donation/server/ImageDonation.Api/Endpoints/ChzzkEndpoints.cs` — 만듦 21, 바뀜 23, 24 — 레퍼런스: `server/ImageDonation.Api/Endpoints/ChzzkEndpoints.cs`
@@ -2749,8 +2776,8 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 - `image-donation/server/ImageDonation.Api/Services/RetentionService.cs` — 만듦 12, 바뀜 26, 27, 36 — 레퍼런스: `server/ImageDonation.Api/Services/RetentionService.cs`
 - `image-donation/server/ImageDonation.Api/Services/DonationService.cs` — 만듦 14, 바뀜 15, 16, 17, 26, 27, 28, 31, 36 — 레퍼런스: `server/ImageDonation.Api/Services/DonationService.cs`
 - `image-donation/server/ImageDonation.Api/Services/DonationCodeMatcher.cs` — 만듦 27 — 레퍼런스: `server/ImageDonation.Api/Services/DonationCodeMatcher.cs`
-- `image-donation/server/ImageDonation.Api/Services/BannedWordFilter.cs` — 만듦 31 — 레퍼런스: `server/ImageDonation.Api/Services/BannedWordFilter.cs`
-- `image-donation/server/ImageDonation.Api/Services/ChzzkApiClient.cs` — 만듦 21, 바뀜 22, 24, 26, 28 — 레퍼런스: `server/ImageDonation.Api/Services/ChzzkApiClient.cs`
+- `image-donation/server/ImageDonation.Api/Services/BannedWordFilter.cs` — 만듦 33 — 레퍼런스: `server/ImageDonation.Api/Services/BannedWordFilter.cs`
+- `image-donation/server/ImageDonation.Api/Services/ChzzkApiClient.cs` — 만듦 21, 바뀜 22, 24, 28 — 레퍼런스: `server/ImageDonation.Api/Services/ChzzkApiClient.cs`
 - `image-donation/server/ImageDonation.Api/Services/Events/IDonationEventSource.cs` — 만듦 26 — 레퍼런스: `server/ImageDonation.Api/Services/Events/IDonationEventSource.cs`
 - `image-donation/server/ImageDonation.Api/Services/Events/FakeDonationSource.cs` — 만듦 26 — 레퍼런스: `server/ImageDonation.Api/Services/Events/FakeDonationSource.cs`
 - `image-donation/server/ImageDonation.Api/Services/Events/ChzzkSessionSource.cs` — 만듦 25, 바뀜 26, 28 — 레퍼런스: `server/ImageDonation.Api/Services/Events/ChzzkSessionSource.cs`
@@ -2759,7 +2786,8 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 - `image-donation/server/ImageDonation.Api/Migrations/<시각>_AddChzzkTokens.cs (+ .Designer.cs)` — 만듦 23 — 레퍼런스: 이름 다름(마이그레이션)
 - `image-donation/server/ImageDonation.Api/Migrations/<시각>_AddDonationEvents.cs (+ .Designer.cs)` — 만듦 26 — 레퍼런스: 이름 다름(마이그레이션)
 - `image-donation/server/ImageDonation.Api/Migrations/<시각>_AddSafety.cs (+ .Designer.cs)` — 만듦 31 — 레퍼런스: 이름 다름(마이그레이션)
-- `image-donation/server/ImageDonation.Api/Migrations/AppDbContextModelSnapshot.cs` — 만듦 9, 바뀜 13, 23, 26, 31 — 레퍼런스: `server/ImageDonation.Api/Migrations/AppDbContextModelSnapshot.cs`
+- `image-donation/server/ImageDonation.Api/Migrations/<시각>_AddImageFileIndex.cs (+ .Designer.cs)` — 만듦 32 — 레퍼런스: 이름 다름(마이그레이션)
+- `image-donation/server/ImageDonation.Api/Migrations/AppDbContextModelSnapshot.cs` — 만듦 9, 바뀜 13, 23, 26, 31, 32 — 레퍼런스: `server/ImageDonation.Api/Migrations/AppDbContextModelSnapshot.cs`
 - `image-donation/server/ImageDonation.Tests/ImageDonation.Tests.csproj` — 만듦 25, 바뀜 34 — 레퍼런스: `server/ImageDonation.Tests/ImageDonation.Tests.csproj`
 - `image-donation/server/ImageDonation.Tests/ChzzkEmulator.cs` — 만듦 25 — 레퍼런스: `server/ImageDonation.Tests/ChzzkEmulator.cs`
 - `image-donation/server/ImageDonation.Tests/ChzzkSessionSourceTests.cs` — 만듦 25, 바뀜 26, 28 — 레퍼런스: `server/ImageDonation.Tests/ChzzkSessionSourceTests.cs`
@@ -2774,13 +2802,13 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 - `image-donation/server/ImageDonation.Tests/SettingsTests.cs` — 만듦 34 — 레퍼런스: `server/ImageDonation.Tests/SettingsTests.cs`
 - `image-donation/server/ImageDonation.Tests/TestModeTests.cs` — 만듦 34 — 레퍼런스: `server/ImageDonation.Tests/TestModeTests.cs`
 - `image-donation/server/ImageDonation.Tests/RetentionTests.cs` — 만듦 34 — 레퍼런스: `server/ImageDonation.Tests/RetentionTests.cs`
-- `image-donation/server/ImageDonation.Tests/ChzzkApiClientTests.cs` — 만듦 34 — 레퍼런스: `server/ImageDonation.Tests/ChzzkApiClientTests.cs`
-- `image-donation/server/ImageDonation.Tests/StubChzzkHandler.cs` — 만듦 34 — 레퍼런스: `server/ImageDonation.Tests/StubChzzkHandler.cs`
+- `image-donation/server/ImageDonation.Tests/ChzzkApiClientTests.cs` — 만듦 36 — 레퍼런스: `server/ImageDonation.Tests/ChzzkApiClientTests.cs`
+- `image-donation/server/ImageDonation.Tests/StubChzzkHandler.cs` — 만듦 36 — 레퍼런스: `server/ImageDonation.Tests/StubChzzkHandler.cs`
 - `image-donation/server/ImageDonation.Tests/FailingDeleteStorage.cs` — 만듦 36 — 레퍼런스: `server/ImageDonation.Tests/FailingDeleteStorage.cs`
 - `image-donation/tools/chzzk-emulator/package.json` — 만듦 25 — 레퍼런스: `tools/chzzk-emulator/package.json`
 - `image-donation/tools/chzzk-emulator/package-lock.json` — 만듦 25 — 레퍼런스: `tools/chzzk-emulator/package-lock.json`
 - `image-donation/tools/chzzk-emulator/emulator.cjs` — 만듦 25 — 레퍼런스: `tools/chzzk-emulator/emulator.cjs`
-- `sp-practice/api.http` — 만듦 10, 바뀜 13, 14, 16, 17, 26, 27 — 레퍼런스: 없음
+- `sp-practice/api.http` — 만듦 10, 바뀜 11, 13, 14, 16, 17, 26, 27 — 레퍼런스: 없음
 - `sp-practice/images/` — 만듦 10, 바뀜 11 — 레퍼런스: 없음
 
 ## 7. 용어 배정표
@@ -2856,3 +2884,273 @@ SP에서 처음 나오는 C#·React 문법(React 전체, `IOptions<T>`, `AddHttp
 - SP의 실제 배포(Day 38의 선택지는 문서 조사만).
 - 이 환경에서 직접 확인한 것: 레퍼런스 README의 검증 기록(서버 54개·화면 8개 테스트, e2e, Docker), create-vite 9.3.3 `react-ts` 템플릿 파일 목록(`npm pack`으로 확인: README.md, `_gitignore`, `_oxlintrc.json`, index.html, package.json, public/favicon.svg, public/icons.svg, src/App.css, src/App.tsx, src/assets/{hero.png,react.svg,vite.svg}, src/index.css, src/main.tsx, tsconfig 3개, vite.config.ts — tsconfig 3개·`.oxlintrc.json`·`.gitignore`·favicon은 레퍼런스와 같고 index.html은 lang·title만 다름), Day 37의 `docker compose run -d --rm --name … -p 127.0.0.1:5432:5432 db`(레퍼런스 compose, Docker Compose v5.6.1, postgres 18.6에 psql 접속 확인).
 - Day 작성자가 실행해서 원문을 캡처해야 하는 것: 각 Day의 오류 메시지 원문(TypeScript·dotnet·EF·SignalR·브라우저 콘솔), `dotnet new web`이 만드는 파일 목록, 테스트 개수.
+
+## 9. 부록: 중간 단계 파일의 정해진 모양
+
+레퍼런스에 없는 중간 단계 코드는 아래 모양을 **그대로** 쓴다(이름·타입·값을 바꾸지 않는다). 여러 Day가 이 모양을 이어받기 때문이다. 아래 코드는 작성 환경에서 컴파일·실행하지 않았다. Day 작성자는 CONTENT-GUIDE 6장대로 실행해 확인하고, 고쳐야 하면 이 개요와 함께 고친다.
+
+### 부록 A. 예시 후원 3건 (Day 4 `App.tsx`의 배열, Day 5 `public\sample-donations.json`)
+
+Day 4는 `App.tsx`에 `const initialDonations: Donation[] = [ … ]`로, Day 5는 같은 값을 JSON 파일로 옮긴다(Day 6 `DashboardPage`가 이어 쓰고 Day 19에서 지운다). 이미지는 아직 없어서 `imageUrl`은 모두 `null`이다(카드는 Day 3부터 `imageUrl`이 없으면 그림 자리를 비운다).
+
+```json
+[
+  { "id": 3, "status": "Pending", "nickname": "고양이집사", "message": "오늘 방송 재밌어요!", "imageUrl": null, "createdAt": "2026-11-01T12:30:00Z" },
+  { "id": 2, "status": "Pending", "nickname": "밤하늘", "message": "첫 후원이에요", "imageUrl": null, "createdAt": "2026-11-01T12:10:00Z" },
+  { "id": 1, "status": "Approved", "nickname": "단골시청자", "message": "", "imageUrl": null, "createdAt": "2026-11-01T11:50:00Z" }
+]
+```
+
+### 부록 B. Day 5 `DonationForm`의 props (Day 6이 쓰고 Day 29가 바꾼다)
+
+```tsx
+// Day 5: 보내기를 누르면 고른 값을 부모에게 넘긴다(서버 업로드는 Day 29)
+export interface DonationDraft {
+  file: File
+  previewUrl: string | null // useImagePreview가 아직 읽는 중이면 null
+  nickname: string
+  message: string
+}
+
+interface Props {
+  onSubmit: (draft: DonationDraft) => void
+}
+```
+
+- Day 5 `App.tsx`: `onSubmit={(d) => setDonations((list) => [{ id: Date.now(), status: 'Pending', nickname: d.nickname, message: d.message, imageUrl: d.previewUrl, createdAt: new Date().toISOString() }, ...list])}`
+- Day 6 `DonatePage.tsx`: ``onSubmit={(d) => window.alert(`${d.nickname}님의 후원을 보낼 준비가 됐어요. 진짜로 보내는 것은 Day 29에서 만들어요.`)}``
+- Day 29: props가 레퍼런스의 `{ streamer: PublicStreamer; onDone: (result: CreateDonationResult) => void }`로 바뀌고 `DonationDraft`는 지운다.
+
+### 부록 C. 오버레이 첫 버전 (Day 15 → Day 16에서 토큰 → Day 18에서 레퍼런스로)
+
+```ts
+// Day 15 src/overlay/useOverlayHub.ts의 겉모양
+export type OverlayStatus = 'connecting' | 'connected' | 'failed'
+
+// Day 15: 토큰 없음. 받은 후원을 setQueue로 큐 뒤에 붙이고, 연결 상태를 돌려준다
+export function useOverlayHub(setQueue: Dispatch<SetStateAction<OverlayDonation[]>>): OverlayStatus
+// Day 16: 첫 매개변수로 token 추가, 주소는 `/hubs/overlay?token=${encodeURIComponent(token)}`
+export function useOverlayHub(token: string, setQueue: Dispatch<SetStateAction<OverlayDonation[]>>): OverlayStatus
+// Day 18(레퍼런스): 'reconnecting' 추가, 돌려주는 값이 { status, markShown }으로 바뀐다
+```
+
+```tsx
+// Day 15 src/overlay/Overlay.tsx (목록 버전. Day 16에서 ({ token }: { token: string })를 받는다)
+import { useState } from 'react'
+import type { OverlayDonation } from '../api'
+import { useOverlayHub } from './useOverlayHub'
+
+export default function Overlay() {
+  const [queue, setQueue] = useState<OverlayDonation[]>([])
+  const status = useOverlayHub(setQueue)
+
+  return (
+    <div className="overlay" data-status={status}>
+      <p className="overlay-error">{status === 'connected' ? '연결됨' : status === 'failed' ? '연결 실패' : '연결 중…'}</p>
+      {queue.map((d) => (
+        <figure key={d.id} className="donation">
+          <img src={d.imageUrl} alt="" />
+          <figcaption>
+            <strong>{d.nickname}</strong>
+            {d.message && <span>{d.message}</span>}
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  )
+}
+```
+
+Day 15 `src/overlay/main.tsx`는 `createRoot(document.getElementById('overlay-root')!).render(<StrictMode><Overlay /></StrictMode>)`이고 `./overlay.css`를 import한다. Day 16에 레퍼런스(토큰 읽기·없으면 안내)로 바뀐다.
+
+### 부록 D. `ChzzkSessionSource` 생성자 (Day 25 → 26 → 28)
+
+```csharp
+// Day 25: 아직 일반 클래스. 쓰는 것만 받는다(쓰지 않는 주 생성자 매개변수는 CS9113 경고가 난다)
+public sealed class ChzzkSessionSource(ILogger<ChzzkSessionSource> logger)
+
+// Day 26: 이벤트 출처가 되고, DONATION을 해석할 때 받은 시각이 필요하다
+public sealed class ChzzkSessionSource(ILogger<ChzzkSessionSource> logger, TimeProvider time) : IDonationEventSource
+
+// Day 28(레퍼런스): 스스로 세션을 점검하는 BackgroundService. 매개변수 순서도 레퍼런스와 같게
+public sealed class ChzzkSessionSource(
+    IServiceScopeFactory scopes,
+    IOptions<ChzzkOptions> options,
+    ILogger<ChzzkSessionSource> logger,
+    TimeProvider time) : BackgroundService, IDonationEventSource
+```
+
+테스트의 `CreateSource()`도 같은 Day에 같이 바뀐다.
+
+```csharp
+// Day 25
+private static ChzzkSessionSource CreateSource() => new(NullLogger<ChzzkSessionSource>.Instance);
+// Day 26
+private static ChzzkSessionSource CreateSource() => new(NullLogger<ChzzkSessionSource>.Instance, TimeProvider.System);
+// Day 28: 레퍼런스의 CreateSource() 그대로(IServiceScopeFactory, Options.Create(new ChzzkOptions()), NullLogger, TimeProvider.System)
+```
+
+Day 26의 `Program.cs`는 `AddSingleton<ChzzkSessionSource>()`(로거·TimeProvider는 DI가 채움)이고, Day 28에 `AddHostedService(sp => sp.GetRequiredService<ChzzkSessionSource>())`를 더한다.
+
+### 부록 E. Day 25 연습 테스트 (Day 26에서 레퍼런스의 `ChzzkSessionSource_ReceivesDonations_FromSocketIo2Emulator`로 바뀐다)
+
+`ChzzkSessionSourceTests.cs`의 `Url(...)`, `WaitUntilAsync(...)` 도우미와 `SplitSessionUrl_MovesAuthToQueryOption`은 레퍼런스와 같게 쓰고, 이 테스트 하나를 더한다(using은 레퍼런스 파일 맨 위와 같음).
+
+```csharp
+[Fact]
+public async Task ChzzkSessionSource_ConnectsToEmulator_GetsSessionKey()
+{
+    // 로컬 Socket.IO 2.5.0(EIO=3) 에뮬레이터: 실제 치지직 서버가 아니다
+    await using var emulator = await ChzzkEmulator.StartAsync();
+    var source = CreateSource();
+
+    var gotKey = new TaskCompletionSource<string>();
+    await source.ConnectAsync(7, Url(emulator), key =>
+    {
+        gotKey.TrySetResult(key); // 실제 서비스는 이 키로 후원 이벤트 구독 API를 부른다(Day 28)
+        return Task.CompletedTask;
+    });
+
+    Assert.Equal("sess-123", await gotKey.Task.WaitAsync(TimeSpan.FromSeconds(15)));
+    await WaitUntilAsync(() => emulator.Output.Contains("CONNECTED auth=test-auth-token EIO=3"));
+    Assert.True(source.IsConnected(7));
+
+    await source.DisconnectAllAsync();
+    Assert.False(source.IsConnected(7));
+}
+```
+
+### 부록 F. `C:\dev\sp-practice\api.http` (Day 10에 만들고 Day 11·13·14·16·17·26·27에 요청을 덧붙인다)
+
+- 변수: `@host = http://localhost:5080`(바뀌지 않음), `@slug = test-stream`(Day 10~12) → Day 13부터 `@slug = my-stream`, `@id = 1`(Day 17부터, 목록에서 본 후원 번호로 고쳐 쓴다).
+- 요청 이름은 `### 번호. 설명 (Day N)`으로 쓰고, 번호는 아래 순서를 지킨다(Day 작성자는 자기 Day의 요청만 덧붙인다).
+- multipart 경계 문자열은 항상 `ImageDonationBoundary`(헤더는 `boundary=ImageDonationBoundary`, 본문 줄은 앞에 `--`, 마지막 줄은 `--ImageDonationBoundary--`).
+- REST Client에서 실제로 보내 보는 것은 작성 환경에서 확인하지 못했다(작성자가 실행해 확인).
+
+```http
+@host = http://localhost:5080
+@slug = my-stream
+@id = 1
+
+### 1. 이미지 후원 보내기 (Day 10)
+POST {{host}}/api/public/streamers/{{slug}}/donations
+Content-Type: multipart/form-data; boundary=ImageDonationBoundary
+
+--ImageDonationBoundary
+Content-Disposition: form-data; name="image"; filename="photo.jpg"
+Content-Type: image/jpeg
+
+< ./images/photo.jpg
+--ImageDonationBoundary
+Content-Disposition: form-data; name="nickname"
+
+시청자
+--ImageDonationBoundary
+Content-Disposition: form-data; name="message"
+
+안녕하세요
+--ImageDonationBoundary--
+
+### 2. 너무 큰 파일 → 413 (Day 10)
+# 1번과 같고 filename="big.jpg", < ./images/big.jpg 만 다르다
+
+### 3. 이름만 바꾼 글자 파일 → 400 (Day 11)
+# 1번과 같고 filename="fake.png", Content-Type: image/png, < ./images/fake.png
+
+### 4. 움직이는 GIF → 정지 WebP (Day 11)
+# 1번과 같고 filename="animated.gif", Content-Type: image/gif, < ./images/animated.gif
+
+### 5. 가입 (Day 13)
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{ "email": "me@example.com", "password": "<대문자·소문자·숫자·기호 6자 이상>" }
+
+### 6. 로그인(쿠키) (Day 13)
+POST {{host}}/api/auth/login?useCookies=true
+Content-Type: application/json
+
+{ "email": "me@example.com", "password": "<5번과 같은 비밀번호>" }
+
+### 7. 내 정보 (Day 13)
+GET {{host}}/api/auth/me
+
+### 8. 온보딩 (Day 13)
+POST {{host}}/api/auth/onboarding
+Content-Type: application/json
+
+{ "slug": "my-stream", "displayName": "내 방송" }
+
+### 9. 로그아웃 (Day 13)
+POST {{host}}/api/auth/logout
+
+### 10. 후원 페이지 정보 (Day 14)
+GET {{host}}/api/public/streamers/{{slug}}
+
+### 11. 닉네임 21자 → 400 (Day 14)
+# 1번과 같고 nickname 칸만 21자
+
+### 12. 오버레이 토큰 (Day 16)
+GET {{host}}/api/dashboard/overlay-token
+
+### 13. 후원 목록 (Day 17)
+GET {{host}}/api/dashboard/donations
+
+### 14. 승인 (Day 17)
+POST {{host}}/api/dashboard/donations/{{id}}/approve
+
+### 15. 거절 (Day 17)
+POST {{host}}/api/dashboard/donations/{{id}}/reject
+
+### 16. 테스트 모드: 가짜 치즈 후원 (Day 26)
+POST {{host}}/api/dashboard/test-donation
+Content-Type: application/json
+
+{ "amount": 1000, "message": "안녕" }
+
+### 17. 테스트 모드: 코드를 넣은 가짜 치즈 후원 (Day 27)
+# 치즈 모드에서 1번으로 받은 코드(예: #K3P9)로 바꿔 보낸다. 코드는 JSON 따옴표 안에 둔다(줄 맨 앞의 #은 주석)
+POST {{host}}/api/dashboard/test-donation
+Content-Type: application/json
+
+{ "amount": 1000, "message": "이미지 부탁해요 #K3P9" }
+```
+
+Day 10~12 파일은 `@slug = test-stream`이고 1·2번 요청만(Day 11에 3·4번) 있다. 2·3·4·11번은 본문에서 1번을 복사해 바꾼 전체 요청을 싣는다(위 주석 줄은 개요용 줄임).
+
+### 부록 G. Day 10 `LocalImageStorage` 첫 버전 (Day 11 `.webp`, Day 12 읽기·지우기, Day 36 `IImageStorage`)
+
+```csharp
+using System.Text.RegularExpressions;
+
+namespace ImageDonation.Api.Services.Storage;
+
+// 서버 PC의 폴더에 업로드 파일을 저장한다 (설정 Storage:MediaPath, 기본은 프로젝트 폴더의 media)
+public sealed partial class LocalImageStorage
+{
+    private readonly string _root;
+
+    public LocalImageStorage(IConfiguration configuration, IWebHostEnvironment env)
+    {
+        _root = Path.GetFullPath(configuration["Storage:MediaPath"] ?? "media", env.ContentRootPath);
+        Directory.CreateDirectory(_root);
+    }
+
+    // 우리가 만든 이름(GUID 32자리 + .bin)만 허용 → "../" 같은 경로 조작을 원천 차단
+    // 끝은 $가 아니라 \z: $는 맨 끝의 줄바꿈("…bin\n")도 통과시킨다
+    [GeneratedRegex("^[0-9a-f]{32}\\.bin\\z")]
+    private static partial Regex FileNamePattern();
+
+    public static bool IsValidFileName(string fileName) => FileNamePattern().IsMatch(fileName);
+
+    // .bin = 아직 무엇인지 검사하지 않은 바이트 (Day 11부터는 검사·재인코딩한 .webp)
+    public async Task<string> SaveAsync(byte[] content, CancellationToken ct = default)
+    {
+        var fileName = $"{Guid.NewGuid():N}.bin"; // 시청자가 보낸 파일 이름은 쓰지 않는다
+        await File.WriteAllBytesAsync(Path.Combine(_root, fileName), content, ct);
+        return fileName;
+    }
+}
+```
+
+Day 10 엔드포인트는 `using var buffer = new MemoryStream(); await image.CopyToAsync(buffer, ct); var fileName = await storage.SaveAsync(buffer.ToArray(), ct);`로 부른다. Day 11에 레퍼런스처럼 `SaveAsync(byte[] content, string extension, CancellationToken ct = default)`(이름을 만든 뒤 `IsValidFileName`으로 확인)와 `.webp` 패턴으로 바뀐다.
