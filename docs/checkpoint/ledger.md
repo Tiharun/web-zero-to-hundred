@@ -245,3 +245,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Task 21: minor (deferred): Days 24, 26, 30 at 120 min remain the heaviest (copy-then-explain mitigation); spec-deviation list (7 items: D19→21 tests, D26→24 validation, D29→30 home, D30→31 static, minutes) lives in docs/checkpoint/reports/task-21-report.md "Fix round 1" — carry into HANDOFF (T36).
 - Task 21: complete (commits f85155c..f10a2c7, review clean)
 - T15 (P2 Days 1–10, sonnet, a4cb3a28d07200aa3) dispatched, NO GIT. T16–18 wait for slots.
+- T29 fix round 1 implementer DONE (14 fixed; spec 2.5 limits D25 :::warn; §9 skeletons A–G; rebalance per reviewer + ChzzkApiClientTests D34→36; 6 learner migrations incl. AddImageFileIndex D32; README line 113 PS 5.1 command (R47); skeletons not compiled; PS not run). Committed 066fdaf; curriculum re-merged; committed-tree check OK. Re-review dispatched (sonnet).
