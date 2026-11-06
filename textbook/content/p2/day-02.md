@@ -437,7 +437,7 @@ git commit -m "day02: 프로젝트 시작"
 
 ```text
 [main (root-commit) 1a2b3c4] day02: 프로젝트 시작
- 1 file changed, 33 insertions(+)
+ 1 file changed, 58 insertions(+)
  create mode 100644 README.md
 ```
 

@@ -171,7 +171,7 @@ for (const value of values) {
 1. 탐색기에서 **새 파일**을 만들어 이름을 `lab.js`로 해요. (`lab.js.txt`가 되지 않게 이름을 확인해요.)
 2. 아래 코드를 붙여 넣고 `Ctrl + S`로 저장해요.
 
-📄 C:\dev\hello\lab.js (일부)
+📄 C:\dev\hello\lab.js
 ```js
 // Day 17 연습: 배열과 반복문
 

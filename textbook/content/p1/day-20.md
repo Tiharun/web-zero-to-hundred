@@ -145,7 +145,7 @@ Elements에 들여쓰기가 된 나무가 보여요. 카드를 클릭하면 Elem
 
 **무엇을:**
 
-1. `<p>카테고리를 고르거나 제목으로 검색해 보세요.</p>` 줄 **아래**에 있는 `<div class="card-grid"> … </div>` 전체(카드 3장)를 드래그해서 지워요.
+1. `<p>지난 방송 영상을 모아 두는 페이지예요.</p>` 줄 **아래**에 있는 `<div class="card-grid"> … </div>` 전체(카드 3장)를 드래그해서 지워요.
 2. 그 자리에 아래 `<h2>`부터 `<noscript>`까지를 붙여 넣어요. 아래는 `<main>` 전체 모습이에요.
 3. `Ctrl + S`로 저장해요.
 
@@ -153,7 +153,7 @@ Elements에 들여쓰기가 된 나무가 보여요. 카드를 클릭하면 Elem
 ```html
   <main class="container">
     <h1>영상 모아보기</h1>
-    <p>카테고리를 고르거나 제목으로 검색해 보세요.</p>
+    <p>지난 방송 영상을 모아 두는 페이지예요.</p>
 
     <h2>영상 목록</h2>
     <!-- 카드는 contents.js가 영상 데이터를 읽어서 여기에 그려 줘요 -->
@@ -342,7 +342,7 @@ function createCard(video) {
 - **링크:** `link.href`는 YouTube 영상 주소 `` `https://www.youtube.com/watch?v=${video.youtubeId}` ``예요. `target = '_blank'`는 새 탭으로 열고, `rel = 'noopener noreferrer'`는 새 탭이 우리 페이지를 건드리지 못하게 하는 안전 장치예요.
 - **날짜:** `time`의 `dateTime`은 컴퓨터가 읽는 날짜, `textContent`는 사람이 읽는 날짜예요(둘 다 같은 값을 넣었어요).
 - **붙이기:** `appendChild`로 자식을 붙여요. 붙이는 **순서가 화면 순서**예요(배지 → 제목 → 날짜).
-- 마지막 `return card;`가 완성된 카드를 돌려줘요. 빠뜨리면 아래 🧯의 appendChild 오류가 나요.
+- 마지막 `return card;`가 완성된 카드를 돌려줘요. 빠뜨리면 아래 🧯의 "Failed to execute 'appendChild' on 'Node'" 오류가 나요.
 
 :::success
 저장해도 화면은 아직 그대로예요. `createCard`도 부르는 곳이 없으니까요. 줄 수가 많으니 괄호 `( )`와 중괄호 `{ }`가 짝이 맞는지 편집기에서 확인해요(괄호 위에 커서를 두면 짝이 되는 괄호가 진하게 표시돼요).
@@ -381,7 +381,7 @@ render();
 - `allVideos.forEach((video) => { … })`가 영상마다 카드를 만들어(`createCard(video)`) 상자에 붙여요(`appendChild`).
 
 :::success
-영상 페이지에 썸네일 카드 6장이 나타나요. 첫 카드는 `음악` 배지(보라색 알약), 제목 `기타로 연주하는 신청곡`, 날짜 `2026-10-27`이에요. 순서는 음악 → 게임 → 토크 → 게임 → 음악 → 토크 배지예요. 카드가 안 보이면 아래 🧯를, 빨간 오류가 있으면 오류 문장을 읽어요.
+영상 페이지에 썸네일 카드 6장이 나타나요. 첫 카드는 `음악` 배지(보라색 알약), 제목 `기타로 연주하는 신청곡`, 날짜 `2026-10-27`이에요. 순서는 음악 → 게임 → 토크 → 게임 → 음악 → 토크 배지예요. 카드가 안 보이거나 빨간 오류가 있으면 아래 🧯의 "Cannot set properties of null (setting 'textContent')"를 먼저 보세요. 오류 문장이 `appendChild`로 시작하면 "Failed to execute 'appendChild' on 'Node'" 항목을 보세요.
 :::
 
 ### 10단계 · 카드 점검하기 (6분)
@@ -684,7 +684,7 @@ render();
 
   <main class="container">
     <h1>영상 모아보기</h1>
-    <p>카테고리를 고르거나 제목으로 검색해 보세요.</p>
+    <p>지난 방송 영상을 모아 두는 페이지예요.</p>
 
     <h2>영상 목록</h2>
     <!-- 카드는 contents.js가 영상 데이터를 읽어서 여기에 그려 줘요 -->

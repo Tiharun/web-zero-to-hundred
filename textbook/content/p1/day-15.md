@@ -401,7 +401,7 @@ To https://github.com/<내 아이디>/my-creator-site.git
 | `days = 5` | `5` |
 | `name + '은 일주일에 ' + days + '번 방송해요'` | `'달빛곰은 일주일에 5번 방송해요'` |
 
-**왜 이렇게 하나요?** 문장 안의 숫자를 `days` 변수에 담아 두면, 변수 한 곳만 바꿔도 문장 전체가 따라 바뀌어요. 같은 일을 하는 더 읽기 쉬운 방법인 **템플릿 리터럴**(`` `${name}은 일주일에 ${days}번 방송해요` ``)은 내일(Day 16) 배워요. 콘솔에서는 `const name`이 이미 있다는 오류가 나면 페이지를 새로 고침(`F5`)한 뒤 다시 입력해요.
+**왜 이렇게 하나요?** 문장 안의 숫자를 `days` 변수에 담아 두면, 변수 한 곳만 바꿔도 문장 전체가 따라 바뀌어요. 같은 일을 하는 더 읽기 쉬운 방법인 **템플릿 리터럴**(`` `${name}은 일주일에 ${days}번 방송해요` ``)은 내일(Day 16) 배워요. 콘솔에서는 같은 이름의 `const`·`let`을 다시 만들어도 오류 없이 새 값으로 바뀌어요(Chrome·Edge 기준, 버전에 따라 다를 수 있어요). `.js` 파일 안에서는 같은 이름을 두 번 만들면 오류가 나요(문제 해결 모음의 "Identifier 'days' has already been declared" 항목).
 :::
 
 :::answer 과제 3 정답 · 오류 원문 두 개 만들기
@@ -648,7 +648,7 @@ console.log('main.js가 연결됐어요!');
 
   <main class="container">
     <h1>영상 모아보기</h1>
-    <p>카테고리를 고르거나 제목으로 검색해 보세요.</p>
+    <p>지난 방송 영상을 모아 두는 페이지예요.</p>
 
     <div class="card-grid">
       <article class="card">
@@ -787,17 +787,14 @@ console.log('main.js가 연결됐어요!');
         <label for="name">이름</label>
         <input id="name" name="name" type="text" autocomplete="name">
       </div>
-
       <div>
         <label for="email">이메일</label>
         <input id="email" name="email" type="email" autocomplete="email">
       </div>
-
       <div>
         <label for="nickname">채팅 닉네임 (선택)</label>
         <input id="nickname" name="nickname" type="text" autocomplete="nickname">
       </div>
-
       <div>
         <label for="topic">문의 종류</label>
         <select id="topic" name="topic">
@@ -806,12 +803,10 @@ console.log('main.js가 연결됐어요!');
           <option value="request">영상 요청</option>
         </select>
       </div>
-
       <div>
         <label for="message">내용</label>
         <textarea id="message" name="message" rows="6"></textarea>
       </div>
-
       <button type="submit">보내기</button>
     </form>
   </main>

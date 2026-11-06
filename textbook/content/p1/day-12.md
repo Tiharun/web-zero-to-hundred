@@ -388,11 +388,11 @@ To https://github.com/<내 아이디>/my-creator-site.git
 
 `contents.html`에 영상 카드 3장을 정적으로(손으로 써서) 넣어요. Day 20에 JavaScript가 이 카드를 데이터에서 자동으로 그려 주게 바꿔요.
 
-- 안내 문장 `<p>카테고리를 고르거나 제목으로 검색해 보세요.</p>` 아래에 `<div class="card-grid">`를 만들어요.
+- 안내 문장 `<p>지난 방송 영상을 모아 두는 페이지예요.</p>` 아래에 `<div class="card-grid">`를 만들어요.
 - 그 안에 `<article class="card">` 3개를 넣어요. 각 카드는 썸네일 `img`(`thumb-music.svg`, `thumb-game.svg`, `thumb-talk.svg` 순서) + `<div class="card-body">`(`h3` 영상 제목 + `p` 날짜)예요.
 - 제목과 날짜는 ① `기타로 연주하는 신청곡` 2026-10-27, ② `신작 공포 게임 첫 도전` 2026-10-25, ③ `구독자 1000명 기념 Q&A` 2026-10-20이에요. 내 영상으로 바꿔도 돼요.
 
-커밋·푸시는 7단계에서 이미 했으니, 과제를 마치면 소스 제어 패널에서 `Day 12: 영상 페이지 카드 3장`으로 한 번 더 커밋·푸시해요(안 해도 다음 Day의 커밋에 함께 올라가요).
+커밋·푸시는 7단계에서 이미 했으니, 과제를 마치면 소스 제어 패널에서 `Day 12: 영상 페이지 카드 3장`으로 한 번 더 커밋·푸시해요. 내일(Day 13)은 변경이 0개인 상태에서 시작하니 이 커밋까지 꼭 마쳐요.
 
 힌트: 홈의 카드와 구조가 같아요. 홈 카드를 복사해 `contents.html`에 붙여 넣고 글자만 바꿔요. `Q&A`는 그대로 써도 화면에 `Q&A`로 보여요.
 
@@ -448,7 +448,7 @@ To https://github.com/<내 아이디>/my-creator-site.git
 
   <main class="container">
     <h1>영상 모아보기</h1>
-    <p>카테고리를 고르거나 제목으로 검색해 보세요.</p>
+    <p>지난 방송 영상을 모아 두는 페이지예요.</p>
 
     <div class="card-grid">
       <article class="card">
@@ -693,7 +693,7 @@ SVG 3개는 1단계의 코드와 같아요(`images\thumb-game.svg`, `thumb-talk.
 
   <main class="container">
     <h1>영상 모아보기</h1>
-    <p>카테고리를 고르거나 제목으로 검색해 보세요.</p>
+    <p>지난 방송 영상을 모아 두는 페이지예요.</p>
 
     <div class="card-grid">
       <article class="card">
@@ -741,7 +741,7 @@ SVG 3개는 1단계의 코드와 같아요(`images\thumb-game.svg`, `thumb-talk.
 **해결:**
 
 1. `index.html`에서 `<div class="card-grid">`가 세 `article`을 모두 감싸는지 확인해요.
-2. `style.css`의 `repeat(auto-fit, minmax(240px, 1fr))`를 2단계 블록과 글자 하나씩 비교해요. 쉼표 두 개(`auto-fit,` 뒤, `240px,` 뒤)와 닫는 괄호 두 개가 있어야 해요.
+2. `style.css`의 `repeat(auto-fit, minmax(240px, 1fr))`를 3단계 블록과 글자 하나씩 비교해요. 쉼표 두 개(`auto-fit,` 뒤, `240px,` 뒤)와 닫는 괄호 두 개가 있어야 해요.
 3. 저장하고 `Ctrl + F5`로 새로 고침해서 카드가 가로로 나란히 놓이면 해결이에요.
 
 ### 그림이 카드 밖으로 튀어나오거나 모서리가 각져 보여요
@@ -792,7 +792,7 @@ SVG 3개는 1단계의 코드와 같아요(`images\thumb-game.svg`, `thumb-talk.
 - [ ] 영상 페이지(`contents.html`)에도 카드 3장이 있어요.
 - [ ] 홈 소개는 곰 그림이 위, 글이 아래로 쌓여 있어요.
 - [ ] 과제 1~3을 풀고 정답과 비교했어요.
-- [ ] GitHub 저장소에 `Day 12: Grid 카드 레이아웃` 커밋이 보여요.
+- [ ] GitHub 저장소에 `Day 12: Grid 카드 레이아웃`과 `Day 12: 영상 페이지 카드 3장` 커밋이 보여요.
 
 ## 📚 더 알아보기
 

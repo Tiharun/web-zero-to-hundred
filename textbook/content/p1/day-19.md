@@ -109,7 +109,7 @@ videos.forEach((video) => {
 1. 탐색기에서 `js` 폴더를 오른쪽 클릭 → **새 파일**을 클릭하고 이름 `contents.js`를 입력한 뒤 `Enter`를 눌러요.
 2. 열린 빈 파일에 아래 코드를 붙여 넣고 `Ctrl + S`로 저장해요.
 
-📄 C:\dev\my-creator-site\js\contents.js (일부)
+📄 C:\dev\my-creator-site\js\contents.js
 ```js
 // ==========================================================
 // contents.js - 영상 목록 페이지
@@ -226,7 +226,7 @@ allVideos.forEach((video) => {
 ```
 
 :::success
-콘솔에 `음악 · 기타로 연주하는 신청곡`부터 `토크 · 요즘 빠진 취미 이야기`까지 6줄이 나와요. 카테고리가 `music`이 아니라 `음악`으로 바뀐 것은 `categoryNames[video.category]`가 한 일이에요. 줄 오른쪽에 `contents.js:` 줄 번호가 보여요. 아무것도 안 나오면 아래 🧯의 "콘솔에 아무것도 안 나와요"를, 빨간 오류가 나오면 오류 문장을 읽어요.
+콘솔에 `음악 · 기타로 연주하는 신청곡`부터 `토크 · 요즘 빠진 취미 이야기`까지 6줄이 나와요. 카테고리가 `music`이 아니라 `음악`으로 바뀐 것은 `categoryNames[video.category]`가 한 일이에요. 줄 오른쪽에 `contents.js:` 줄 번호가 보여요. 아무것도 안 나오면 아래 🧯의 "영상 페이지 콘솔에 아무것도 안 나와요"를, 빨간 오류가 나오면 오류 문장을 읽어요.
 :::
 
 ### 5단계 · filter와 map 써 보기 (8분)
@@ -266,7 +266,7 @@ console.log('제목 목록:', titles);
 
 ### 6단계 · 콘솔에서 데이터 직접 살펴보기 (6분)
 
-`contents.js`에서 `let`으로 만든 변수는 콘솔에서도 이름으로 쓸 수 있어요. 데이터를 직접 눌러 보며 익혀요.
+`contents.js`의 최상위에서 `let`·`const`로 만든 변수(`allVideos`, `categoryNames` 등)는 콘솔에서도 이름으로 쓸 수 있어요. 데이터를 직접 눌러 보며 익혀요.
 
 **어디서:** `contents.html`의 개발자 도구 **Console**, 맨 아래 입력 칸(`>`)
 
@@ -520,7 +520,7 @@ console.log('제목 목록:', titles);
 
   <main class="container">
     <h1>영상 모아보기</h1>
-    <p>카테고리를 고르거나 제목으로 검색해 보세요.</p>
+    <p>지난 방송 영상을 모아 두는 페이지예요.</p>
 
     <div class="card-grid">
       <article class="card">

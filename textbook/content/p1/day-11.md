@@ -454,7 +454,7 @@ To https://github.com/<내 아이디>/my-creator-site.git
 - 강조된 메뉴(보라색)가 그 페이지의 이름과 같은지 표로 적어요.
 - 다르거나 강조가 없는 페이지가 있으면 `aria-current="page"` 위치를 고쳐요.
 
-힌트: `Ctrl + Shift + F`로 `aria-current`를 검색하면 5개 줄이 한눈에 보여요.
+힌트: `Ctrl + Shift + F`로 `aria-current`를 검색하면 다섯 페이지의 줄이 한눈에 보여요(`style.css`의 선택자 줄도 함께 나와서 합계는 6줄이에요).
 
 ### 과제 3 · align-items를 지우면? (도전 ⭐⭐⭐, 5분)
 
@@ -888,7 +888,7 @@ button,
 
   <main class="container">
     <h1>영상 모아보기</h1>
-    <p>카테고리를 고르거나 제목으로 검색해 보세요.</p>
+    <p>지난 방송 영상을 모아 두는 페이지예요.</p>
   </main>
 
   <footer class="site-footer">
@@ -1001,17 +1001,14 @@ button,
         <label for="name">이름</label>
         <input id="name" name="name" type="text" autocomplete="name">
       </div>
-
       <div>
         <label for="email">이메일</label>
         <input id="email" name="email" type="email" autocomplete="email">
       </div>
-
       <div>
         <label for="nickname">채팅 닉네임 (선택)</label>
         <input id="nickname" name="nickname" type="text" autocomplete="nickname">
       </div>
-
       <div>
         <label for="topic">문의 종류</label>
         <select id="topic" name="topic">
@@ -1020,12 +1017,10 @@ button,
           <option value="request">영상 요청</option>
         </select>
       </div>
-
       <div>
         <label for="message">내용</label>
         <textarea id="message" name="message" rows="6"></textarea>
       </div>
-
       <button type="submit">보내기</button>
     </form>
   </main>
@@ -1072,7 +1067,7 @@ button,
 
 1. `about.html`처럼 홈이 아닌 페이지를 열고, `홈` 줄에서 ` aria-current="page"`를 지워요.
 2. 그 페이지의 자기 메뉴(소개 페이지라면 `소개`) 링크에 ` aria-current="page"`를 써 넣어요.
-3. `Ctrl + Shift + F`로 `aria-current`를 검색해 다섯 줄이 서로 다른 글자인지 확인해요.
+3. `Ctrl + Shift + F`로 `aria-current`를 검색해요. 결과는 `style.css` 1줄과 페이지 5줄(합계 6줄)이에요. 페이지 5줄이 서로 다른 글자인지 확인해요.
 
 ### 현재 페이지 메뉴가 강조되지 않아요 (속성 선택자)
 
