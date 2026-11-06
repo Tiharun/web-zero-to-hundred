@@ -306,3 +306,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - content-batch-rules.md item 2 updated accordingly.
 - T12 step 1 implementer DONE (npm test 168; check OK; test:e2e 26 incl. smoke; smoke vs preview: 30 Days + 125 준비 중, 0 external requests; 0 content defects; Day 1 six fixes; CONTENT-GUIDE §1.5 heading; index.html 4.69 MB preview build). Committed 6166d21.
 - Ruling R57: keep the 5-concurrent cap (usage limit was hit once) — T12 reviewer ① (beginner simulation, opus) dispatched now; reviewer ② (technical accuracy, opus) when a slot frees — cost if wrong: T12 takes a little longer.
+- T12 reviewer ① beginner simulation dispatched (opus, aceb6c4b664eb693f) on head 6166d21.
