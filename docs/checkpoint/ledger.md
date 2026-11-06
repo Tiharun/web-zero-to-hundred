@@ -236,3 +236,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Task 14: complete (commits 37f03e1..d411c91, review clean)
 - T11 (P1 Days 21–30, sonnet) dispatched, NO GIT.
 - T21 fix round 1 implementer DONE (R39 fixed; OBS install D30 + recording D43; §5 P1/P2 map re-derived; §4 shape tables (R42); R43 rebalance incl. Day 21→120, Day 29 120→110, Day 31 110→120; R44 glossary). Committed f10a2c7; curriculum re-merged (check OK). Re-review dispatched (sonnet).
+- T21 fix round 1 re-review dispatched (sonnet, a4d6281c9c6e234df), FIX_BASE 8203077 HEAD f10a2c7. Committed tree check (git archive HEAD → scratch) passes: Day 155; transient 5 errors came from T9's in-progress day-02.md.
