@@ -262,3 +262,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Ruling R51: promote all T9 Minors — most are anti-block issues (the user's top requirement) — cost if wrong: one longer round.
 - Cross-batch lesson sent to running writers T10, T11, T15, T16: every "아래 🧯 …" reference must point to an item present in that Day's own 🧯 section (or name the 문제 해결 모음 entry by title); end each Day with the learner's folder/editor state matching the next Day's start (e.g. reopen the project folder); keep learner-visible text equal to later Days' full-code fallbacks.
 - Task 9: fix round 1/5 dispatched (resume a353aceed4b03090f; FIX_BASE b9b4bda).
+- T10 implementer DONE (Days 11–20; 116 checks + 16 intermediate; 8 outline problems incl. D20 null error text measured, .header-inner comment in D11 only, D14 full style.css). Final files at b69499d (base 342c1ed). Review dispatched (sonnet).
