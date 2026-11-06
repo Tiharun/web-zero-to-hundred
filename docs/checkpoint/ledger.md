@@ -280,3 +280,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Ruling R53: promote all T11 Minors — cost if wrong: one longer round.
 - Task 11: fix round 1/5 dispatched (resume a8a09e53510e4c0d4; FIX_BASE 32979ff).
 - T10 fix round 1 implementer DONE (10 fixed; Day 11 fallbacks now identical to day-10.md; D13 moved one 🧯 to 모음). Files at 30a8cca. Re-review dispatched (sonnet).
+- T15 implementer DONE_WITH_CONCERNS (P2 Days 1–10; code blocks executed: TS, create-vite + Playwright, dotnet, git vs local bare remote; 8 outline problems e.g. D1 videos.json via contents.html, D6 avoid Math.ceil, D7 HMR only for CSS, D8 Offline→Slow 4G + block URL). Files at 3173b9a. Review dispatched (sonnet). T10 fix-round-1 files are in WIP snapshot 30a8cca.
