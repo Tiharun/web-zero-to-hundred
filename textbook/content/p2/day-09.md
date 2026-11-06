@@ -377,7 +377,7 @@ dotnet bin\Debug\net10.0\HubConsole.dll
 ### 과제 2 · `CS1002` 직접 읽고 고치기 (쉬움 ⭐, 6분)
 
 - 6단계처럼 `;`를 일부러 하나 빼고 `dotnet run`의 오류에서 줄 번호와 칸 번호를 찾아 말해 봐요.
-- 이번에는 `string second = "픽셀토끼";` 줄에서 `;`를 빼요.
+- 이번에는 `Console.WriteLine(second);` 줄에서 `;`를 빼요.
 - 확인: 오류의 `(줄,칸)`이 그 줄을 가리켜요. 고치면 사라져요.
 - 힌트: 칸 번호는 줄의 맨 앞 글자를 1로 세요. 컴파일러는 "이 줄이 끝났는데 `;`가 없다"를 줄 끝에서 알아채요.
 
@@ -401,19 +401,19 @@ Console.WriteLine("시간: 밤 9시");
 :::
 
 :::answer 과제 2 정답 · CS1002
-`string second = "픽셀토끼"`에서 `;`를 빼면 이런 오류가 나요(줄과 칸은 같은 위치를 가리키면 맞아요).
+`Console.WriteLine(second)`에서 `;`를 빼면 이런 오류가 나요(줄과 칸은 같은 위치를 가리키면 맞아요).
 
 ```text
-C:\dev\cs-practice\Program.cs(5,26): error CS1002: ; expected [C:\dev\cs-practice\HubConsole.csproj]
+C:\dev\cs-practice\Program.cs(9,26): error CS1002: ; expected [C:\dev\cs-practice\HubConsole.csproj]
 ```
 
 고친 줄이에요.
 
 ```csharp
-string second = "픽셀토끼";
+Console.WriteLine(second);
 ```
 
-**왜 이렇게 하나요?** `(5,26)`은 5번째 줄의 26번째 칸이에요. 컴파일러는 줄 끝(`"픽셀토끼"` 다음)에서 "여기에 `;`가 있어야 해요"를 알아채요. 그래서 칸 번호는 줄의 마지막 글자 바로 뒤를 가리켜요. 오류가 가리키는 줄 또는 바로 윗줄을 확인하면 대부분 찾아요.
+**왜 이렇게 하나요?** `(9,26)`은 9번째 줄의 26번째 칸이에요. 컴파일러는 줄 끝(`)` 다음)에서 "여기에 `;`가 있어야 해요"를 알아채요. 그래서 칸 번호는 줄의 마지막 글자 바로 뒤를 가리켜요. 오류가 가리키는 줄 또는 바로 윗줄을 확인하면 대부분 찾아요. 참고로 변수 만드는 줄(`string third = "노을고양이"`)에서 `;`를 빼면 다음 줄을 같은 선언의 이어짐으로 읽어서 `error CS1003: Syntax error, ',' expected`처럼 다른 번호가 나올 수 있어요.
 :::
 
 :::answer 과제 3 정답 · 빌드 결과는 복사본
