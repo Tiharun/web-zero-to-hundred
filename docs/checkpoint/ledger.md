@@ -279,3 +279,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Cross-batch finding (from T10 review) added to T11: day-21.md:824 uses a third wording of the contents.html guide sentence; outline keeps "지난 방송 영상을 모아 두는 페이지예요." until Day 23, which changes it.
 - Ruling R53: promote all T11 Minors — cost if wrong: one longer round.
 - Task 11: fix round 1/5 dispatched (resume a8a09e53510e4c0d4; FIX_BASE 32979ff).
+- T10 fix round 1 implementer DONE (10 fixed; Day 11 fallbacks now identical to day-10.md; D13 moved one 🧯 to 모음). Files at 30a8cca. Re-review dispatched (sonnet).
