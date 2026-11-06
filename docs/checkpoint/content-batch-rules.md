@@ -6,7 +6,7 @@
    - textbook/content/troubleshooting/<batch>.md
    - docs/verification/<batch>.md (+ small JPEG screenshots under docs/verification/ only if useful, downscaled, R26)
    - (only if needed) textbook/content/glossary/<batch>-extra.md
-   NEVER edit curriculum.json, _outline.md, _meta.json, the existing glossary files, day-01.md, CONTENT-GUIDE or the reference code. If an outline-owned glossary term is missing or wrong, report it.
+   NEVER edit curriculum.json, _outline.md, _meta.json, the existing glossary files, day-01.md, CONTENT-GUIDE, docs/research/external-facts.md or the reference code. New external facts you verified go in your docs/verification/<batch>.md (with source + date); the controller merges them into external-facts.md. If an outline-owned glossary term is missing or wrong, report it.
 3. Follow docs/CONTENT-GUIDE.md exactly (anti-block rules (a)–(g), required h2 order, :::blocks at column 0, no raw HTML, no Markdown images, no placeholder words like TODO/TBD, code fences with a language, exact-case [[용어]], E_BOLD_UNRENDERED). Use textbook/content/p1/day-01.md as the style/depth exemplar (해요체, full Windows paths, every click spelled out, expected screen after every step).
 4. Glossary links: link a term with [[exact heading]] only if its heading exists in textbook/content/glossary/*.md. The Day that OWNS a term (per the outline) introduces and explains it in prose.
 5. Verification (brief Step 3):
