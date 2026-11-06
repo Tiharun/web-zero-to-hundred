@@ -86,8 +86,20 @@ body {
 3. `style.css`를 입력하고 `Enter`를 눌러요.
 4. 아래 코드를 붙여 넣고 `Ctrl + S`로 저장해요.
 
-@@FILE d09pre my-creator-site/css/style.css@@
+📄 C:\dev\my-creator-site\css\style.css
+```css
+/* ==========================================================
+   style.css - 달빛곰 방송국 전체 스타일 (모든 페이지가 함께 써요)
+   ========================================================== */
 
+/* ---------- 2. 기본 설정 (Day 9, 10) ---------- */
+body {
+  background: #ffffff;
+  color: #1d1b2e;
+  font-family: system-ui, "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  line-height: 1.7;
+}
+```
 규칙을 읽어 봐요. `body`는 페이지 전체 바탕이에요. 배경 `#ffffff`(흰색), 글자색 `#1d1b2e`(진한 남색), 글꼴 목록, 줄 높이 1.7이에요. 글꼴은 앞에서부터 컴퓨터에 있는 첫 글꼴을 쓰고, Windows에서는 보통 `Malgun Gothic`(맑은 고딕)이 걸려요.
 
 :::success

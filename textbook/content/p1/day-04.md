@@ -82,8 +82,41 @@ Windows는 `About.html`과 `about.html`을 같은 파일로 봐요. 하지만 �
 3. 아래 코드를 입력하거나, 코드 상자 오른쪽 위의 **복사** 버튼으로 복사해서 붙여 넣어요.
 4. `Ctrl + S`로 저장해요.
 
-@@FILE d04pre my-creator-site/about.html@@
-
+📄 C:\dev\my-creator-site\about.html
+```html
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>소개 - 달빛곰 방송국</title>
+</head>
+<body>
+  <ul>
+    <li><a href="index.html">홈</a></li>
+    <li><a href="about.html">소개</a></li>
+    <li><a href="contents.html">영상</a></li>
+    <li><a href="schedule.html">방송 일정</a></li>
+    <li><a href="contact.html">문의</a></li>
+  </ul>
+  <h1>달빛곰을 소개해요</h1>
+  <p>안녕하세요! <strong>달빛곰</strong>이에요. 2026년에 방송을 시작한 <em>버라이어티 스트리머</em>예요.</p>
+  <p>밤에 방송하는 걸 좋아해서 이름에 달빛이 들어갔어요. 시청자분들과 수다 떠는 시간이 가장 즐거워요.</p>
+  <h2>어떤 방송을 하나요?</h2>
+  <ul>
+    <li><strong>게임</strong>: 신작 게임을 첫 방송에서 같이 해 봐요.</li>
+    <li><strong>토크</strong>: 사연을 읽고 이야기를 나눠요.</li>
+    <li><strong>음악</strong>: 기타 연주와 신청곡 라이브를 해요.</li>
+  </ul>
+  <h2>방송 규칙</h2>
+  <ol>
+    <li>서로 존중하는 말을 써 주세요.</li>
+    <li>스포일러는 미리 말해 주세요.</li>
+    <li>개인 정보는 채팅에 올리지 마세요.</li>
+  </ol>
+</body>
+</html>
+```
 코드에서 새로 나온 것을 짚어 봐요.
 
 - `<ul>` 안의 `<li>` 세 개가 점 목록이에요. 점은 나중에 CSS로 바꿀 수 있어요.
