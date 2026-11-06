@@ -166,7 +166,7 @@ Day 8에서 `label`과 `input`을 연결했죠. 검색창도 같아요. `<label 
 
 바뀐 곳은 네 군데예요.
 
-- 안내 문장이 `카테고리를 고르거나 제목으로 검색해 보세요.`로 바뀌었어요.
+- 안내 문장이 `지난 방송 영상을 모아 두는 페이지예요.`에서 `카테고리를 고르거나 제목으로 검색해 보세요.`로 바뀌었어요.
 - 버튼 상자(`#category-filters`)가 `<div class="toolbar">`로 감싸지고, 그 안 끝에 검색칸(`.search-box`)이 생겼어요.
 - `<h2>영상 목록</h2>` 아래에 결과 개수를 보여 줄 `<p id="result-count" class="result-count"></p>`가 생겼어요(내용은 JavaScript가 채워요. `aria-live`는 Day 24 과제에서 다뤄요).
 - 빈 목록 안내 `<p id="empty-message" hidden>`가 생겼어요.
@@ -784,6 +784,12 @@ Uncaught TypeError: video.title.toLowerCase(...).Includes is not a function
 **원인:** 메서드 이름은 대소문자를 구분해요. `Includes`, `tolowercase`, `toLowercase`는 없는 이름이에요.
 
 **해결:** `includes`, `toLowerCase`, `trim`처럼 정확한 철자를 써요. 오류 문장에 이름이 그대로 나오니 그것과 코드를 비교해요.
+
+### 검색칸 오른쪽의 ✕ 버튼을 누르면 목록이 바뀌어요
+
+**원인:** 정상이에요. `type="search"` 입력칸은 글자를 쓰면 오른쪽에 ✕ 지우기 버튼이 나타나는 브라우저가 많아요(없는 브라우저도 있어요). 누르면 칸이 비워지면서 `input` 이벤트가 일어나 목록이 다시 전체로 돌아와요.
+
+**해결:** 할 일이 없어요. 지우기 버튼 대신 글자를 직접 지워도 같은 결과예요.
 
 ### 한글을 칠 때 중간 글자로 걸러져요
 

@@ -821,7 +821,7 @@ my-creator-site/
 
   <main class="container">
     <h1>영상 모아보기</h1>
-    <p>지난 방송 영상을 모아 놨어요. 제목을 누르면 YouTube에서 열려요.</p>
+    <p>지난 방송 영상을 모아 두는 페이지예요.</p>
 
     <!-- 버튼 4개를 감싼 상자 하나에만 클릭 이벤트를 달아요 (이벤트 위임, Day 21) -->
     <div id="category-filters" class="filters" role="group" aria-label="카테고리 선택">
@@ -1275,6 +1275,12 @@ Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')
 **원인:** `button.dataset.category`는 HTML의 `data-category`와 철자가 똑같아야 해요. HTML에 `data-catagory`라고 잘못 썼거나 JavaScript에 `dataset.categroy`라고 썼을 가능성이 높아요. 틀리면 에러가 아니라 `undefined`가 나와서 눈치채기 어려워요.
 
 **해결:** `contents.html`의 버튼 4개가 `data-category="…"`인지, `contents.js`가 `button.dataset.category`인지 철자를 하나씩 비교해요.
+
+### 메뉴를 연 채로 창을 넓히면 상태가 남아 있어요
+
+**원인:** 정상이에요. 개발자 도구 기기 모드에서 좁은 폭으로 메뉴를 열어 둔 채 폭을 넓히면 `<nav>`에 `open` 클래스와 `aria-expanded="true"`가 그대로 남아요. 넓은 화면 규칙이 버튼을 숨기고 메뉴를 항상 보여 주기 때문에 눈에 띄는 문제는 없어요.
+
+**해결:** 할 일이 없어요. 다시 좁게 줄이면 열린 상태로 보이니 버튼을 한 번 눌러 닫아요.
 
 ### ☰ 글자가 네모(□)로 보여요
 
