@@ -14,7 +14,8 @@ import { STORAGE_KEY } from '../../textbook/src/app/progress.js';
 import { launch, collectConsoleErrors } from '../helpers/browser.mjs';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
-const CONTENT = path.join(ROOT, 'textbook', 'content');
+// SMOKE_CONTENT=<폴더> 로 다른 content 사본을 검사할 수 있다 (누락 Day 를 잡는지 확인할 때 사용).
+const CONTENT = process.env.SMOKE_CONTENT ? path.resolve(process.env.SMOKE_CONTENT) : path.join(ROOT, 'textbook', 'content');
 const TIMEOUT = { timeout: 300_000 };
 
 // Day 필수 h2 (U+FE0F 유무는 무시). "📚 더 알아보기"는 선택이라 검사하지 않는다.
@@ -109,7 +110,7 @@ test('smoke: every day and page route renders cleanly at 360px', TIMEOUT, async 
   });
 
   const problems = [];
-  const stats = { withFile: 0, comingSoon: 0, pages: 0, codeBlocks: 0 };
+  const stats = { withFile: 0, p1WithFile: 0, comingSoon: 0, pages: 0, codeBlocks: 0 };
 
   for (const dayId of days) {
     const hash = `#/day/${dayId}`;
@@ -123,8 +124,11 @@ test('smoke: every day and page route renders cleanly at 360px', TIMEOUT, async 
     const { soon, h2, codeBlocks, copyButtons } = r.info;
     if (soon) {
       stats.comingSoon++;
+      // P1 은 30일 모두 내용이 있어야 한다 (다른 프로젝트는 준비 중일 수 있다)
+      if (dayId.startsWith('p1-')) problems.push(`${dayId}: P1 Day 가 준비 중(coming-soon)으로 나와요`);
     } else {
       stats.withFile++;
+      if (dayId.startsWith('p1-')) stats.p1WithFile++;
       stats.codeBlocks += codeBlocks;
       // 필수 h2 7개가 이 순서로 모두 있어야 한다 (사이에 다른 h2 가 끼는 것은 막지 않는다)
       let at = -1;
@@ -160,5 +164,5 @@ test('smoke: every day and page route renders cleanly at 360px', TIMEOUT, async 
   console.log(`smoke: Day ${stats.withFile}개 검사, 준비 중 ${stats.comingSoon}개, 페이지 ${stats.pages}개, 코드 블록 ${stats.codeBlocks}개`);
   await page.close();
   assert.deepEqual(problems, [], `\n${problems.join('\n')}`);
-  assert.ok(stats.withFile >= 30, 'P1 Day 30개는 모두 내용이 있어야 해요');
+  assert.equal(stats.p1WithFile, 30, 'P1 Day 30개는 모두 내용이 있어야 해요');
 });

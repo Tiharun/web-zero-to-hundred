@@ -67,7 +67,7 @@ GitHub (인터넷)
 
 ### 터미널과 PowerShell
 
-**[[터미널]]**(terminal)은 마우스 대신 글자로 명령을 입력해 컴퓨터를 다루는 창이에요. 한 줄 입력하고 `Enter`를 누르면 실행되고 결과가 글자로 나와요. **[[PowerShell]]**(파워셸)은 Windows에 들어 있는 터미널 프로그램이에요. 이 교재는 VS Code 안에 들어 있는 터미널(PowerShell)만 써요. 터미널 기초는 P2의 Day 2에서 제대로 배워요. 오늘은 필요한 만큼만 해요.
+**[[터미널]]**(terminal)은 마우스 대신 글자로 명령을 입력해 컴퓨터를 다루는 창이에요. 한 줄 입력하고 `Enter`를 누르면 실행되고 결과가 글자로 나와요. **[[PowerShell]]**(파워셸)은 터미널 안에서 내가 친 명령을 알아듣고 실행하는 프로그램이에요(Windows에 들어 있어요). 이 교재는 VS Code 안에 들어 있는 터미널(PowerShell)만 써요. 터미널 기초는 P2의 Day 2에서 제대로 배워요. 오늘은 필요한 만큼만 해요.
 
 터미널에 이런 줄이 보여요.
 
@@ -199,10 +199,10 @@ init.defaultbranch=main
 2. 이메일, 비밀번호, 사용자 이름(아이디)을 입력해요. 아이디는 **영어 소문자와 숫자**로 정하길 권해요. 이 아이디가 Day 14에 사이트 주소(`https://아이디.github.io/…`)에 들어가요.
 3. 로봇이 아닌지 확인하는 퍼즐 화면이 나오면 안내에 따라 풀어요.
 4. 입력한 이메일로 인증 코드가 와요. 메일에서 코드를 복사해 입력 칸에 붙여 넣어요. 메일이 안 오면 스팸 메일함도 살펴봐요.
-5. 로그인한 화면 오른쪽 위의 **+** 아이콘을 클릭하고 **New repository**를 클릭해요.
+5. 가입 직후 설문이나 안내 화면이 나오면 건너뛰어도 돼요. 로그인 화면이 다시 나오면 방금 만든 계정으로 로그인해요. 로그인한 화면 오른쪽 위의 **+** 아이콘을 클릭하고 **New repository**를 클릭해요.
 6. **Repository name** 칸에 `my-creator-site`를 입력해요.
 7. **Public**을 골라요. 무료 계정은 공개 저장소만 사이트로 공개할 수 있어요.
-8. **Add a README file**, **Add .gitignore**, **Choose a license**는 모두 건드리지 않아요(체크하지 않아요).
+8. **Add a README file**, **Add .gitignore**, **Choose a license**는 모두 건드리지 않아요(체크하지 않아요). 화면의 문구가 조금 달라도(예: `Add README`, `Add license`) README·.gitignore·license에 해당하는 항목은 모두 그대로 둬요.
 9. 맨 아래 **Create repository**를 클릭해요.
 
 :::success
@@ -262,7 +262,7 @@ nothing added to commit but untracked files present (use "git add" to track)
 git add .
 ```
 
-`add` 뒤에 한 칸 띄우고 점(`.`)이 있어요. 점은 "이 폴더의 모든 파일"이라는 뜻이에요. 아무것도 나오지 않으면 성공이에요. 다시 상태를 봐요.
+`add` 뒤에 한 칸 띄우고 점(`.`)이 있어요. 점은 "이 폴더의 모든 파일"이라는 뜻이에요. 아무것도 나오지 않으면 성공이에요. Git이 줄바꿈 때문에 `warning: in the working copy of …`를 보여 줘도 그냥 무시해도 되는 안내예요. 다시 상태를 봐요.
 
 ```powershell
 git status
@@ -307,7 +307,11 @@ git commit -m "Day 1~6: 첫 페이지들"
 ```
 
 :::success
-`[main (root-commit) …] Day 1~6: 첫 페이지들` 줄과 `7 files changed`가 나와요. 이제 내 컴퓨터에 첫 기록이 생겼어요. `Author identity unknown` 오류가 나면 4단계를 다시 해야 해요. 아래 🧯 자주 막히는 곳의 "Author identity unknown (이름과 이메일을 알려 달라는 오류)"를 보세요. Git이 줄바꿈 때문에 `warning: in the working copy of …`를 보여 줘도 무시해도 되는 안내예요.
+`[main (root-commit) …] Day 1~6: 첫 페이지들` 줄과 `7 files changed`가 나와요. 이제 내 컴퓨터에 첫 기록이 생겼어요. `Author identity unknown` 오류가 나면 4단계를 다시 해야 해요. 아래 🧯 자주 막히는 곳의 "Author identity unknown (이름과 이메일을 알려 달라는 오류)"를 보세요. 줄바꿈 경고(`warning: …`)가 보여도 무시해도 돼요.
+:::
+
+:::tip 여기까지 하고 쉬어도 돼요
+오늘은 하루 상한(120분)에 가까워요. 6단계 첫 커밋까지 하고 쉬었다가 내일 7단계부터 이어서 해도 돼요. 이어 할 때는 VS Code에서 `my-creator-site` 폴더를 열고 **터미널 → 새 터미널**로 터미널을 새로 열어요. 5단계에서 만든 GitHub 저장소 페이지를 다시 열 수 있어야 해요.
 :::
 
 ### 7단계 · GitHub에 올리기 (10분)
@@ -320,7 +324,7 @@ git commit -m "Day 1~6: 첫 페이지들"
 git branch -M main
 ```
 
-아무것도 나오지 않고 다음 줄에 `PS C:\dev\my-creator-site>`가 다시 보이면 성공이에요. 이제 원격 저장소의 주소를 `origin`이라는 이름으로 연결해요. 아래 주소는 예시예요. 5단계의 GitHub 저장소 페이지에서 보이는 주소(`https://github.com/아이디/my-creator-site.git`)를 복사해서, `moonbear-dev` 자리가 내 아이디인 주소로 바꿔 입력해요.
+아무것도 나오지 않고 다음 줄에 `PS C:\dev\my-creator-site>`가 다시 보이면 성공이에요. 이제 원격 저장소의 주소를 `origin`이라는 이름으로 연결해요. 아래 주소는 예시예요. 5단계의 GitHub 저장소 페이지에서 보이는 주소(`https://github.com/아이디/my-creator-site.git`)를 복사해서, `moonbear-dev` 자리가 내 아이디인 주소로 바꿔 입력해요. 아래 코드 상자의 복사 버튼을 누르면 예시 아이디 `moonbear-dev`가 그대로 들어가요. 붙여 넣은 뒤 `moonbear-dev`를 지우고 **내 아이디**를 꼭 넣어요.
 
 ```powershell
 git remote add origin https://github.com/moonbear-dev/my-creator-site.git
@@ -332,7 +336,7 @@ git remote add origin https://github.com/moonbear-dev/my-creator-site.git
 git push -u origin main
 ```
 
-처음 푸시할 때 Git이 GitHub 로그인을 요청하는 창을 띄울 수 있어요. 브라우저가 열리면 **Sign in with your browser**(브라우저로 로그인)를 눌러 GitHub 계정으로 로그인하고 허용해요. 창의 모양은 버전에 따라 달라요(실기 확인은 못 했어요).
+처음 푸시할 때 Git이 GitHub 로그인을 요청하는 창을 띄울 수 있어요. 브라우저가 열리면 **Sign in with your browser**(브라우저로 로그인)를 눌러 GitHub 계정으로 로그인하고 허용해요. 창의 모양은 버전에 따라 달라요(실기 확인은 못 했어요). 터미널이 멈춘 것처럼 보이면 로그인 창이 VS Code 뒤에 숨어 있을 수 있어요. 작업 표시줄에서 브라우저나 로그인 창을 찾아 로그인을 끝내요. 창을 닫아 버렸다면 `git push -u origin main`을 다시 입력해요. 이 줄에서 `Repository not found` 같은 오류가 나오면 아래 🧯 "푸시 주소·로그인 오류"를 보세요.
 
 예상 출력(숫자와 줄 수는 달라도 돼요):
 
@@ -372,7 +376,7 @@ git log --oneline
 ```
 
 :::success
-GitHub 저장소 페이지에 `images` 폴더와 HTML 파일 5개가 보이고, 위쪽에 "1 Commit"(또는 커밋 수 `1`)과 `Day 1~6: 첫 페이지들`이 보여요. 터미널의 `git log --oneline`에도 같은 메시지 한 줄이 있어요.
+GitHub 저장소 페이지에 `images` 폴더와 HTML 파일 5개가 보이고, 위쪽에 "1 Commit"(또는 커밋 수 `1`)과 `Day 1~6: 첫 페이지들`이 보여요. 터미널의 `git log --oneline`에도 같은 메시지 한 줄이 있어요. 한글이 `<EC><95>…` 같은 이상한 글자로 보이면 화면 표시 문제예요. 기록은 정상이고 GitHub 페이지에는 한글로 제대로 보이니 그대로 진행해요.
 :::
 
 ### 9단계 · 소스 제어 패널과 숨김 폴더 `.git` 알아보기 (3분)
@@ -640,9 +644,14 @@ error: failed to push some refs to 'https://github.com/moonbear-dev/my-creator-s
 4. 다시 `git push -u origin main`을 입력해요.
 5. `* [new branch] main -> main` 줄이 나오면 해결된 거예요.
 
-### error: remote origin already exists.
+### 푸시 주소·로그인 오류 (remote origin already exists / Repository not found / Authentication failed)
 
-**원인:** `git remote add origin …`을 이미 한 번 했어요. 같은 이름 `origin`을 두 번 만들 수 없어요. 처음 입력한 주소가 틀렸을 때도 이 오류가 나와요.
+**원인:** 연결한 저장소 주소나 로그인한 계정이 맞지 않아요. 가장 흔한 경우는 코드 상자를 복사해서 예시 아이디 `moonbear-dev`가 주소에 그대로 들어간 거예요. 오류 문구는 Git 버전에 따라 조금 달라요.
+
+- `error: remote origin already exists.`: `git remote add origin …`을 이미 한 번 했어요.
+- `remote: Repository not found.`(또는 `fatal: repository … not found`): 주소의 아이디나 저장소 이름이 틀렸어요.
+- `The requested URL returned error: 403`(또는 `Permission to … denied`): 다른 계정으로 로그인되어 있어요.
+- `fatal: Authentication failed`: 로그인 창을 닫았거나 로그인에 실패했어요.
 
 **해결:**
 
@@ -655,18 +664,18 @@ git remote -v
 예상 출력(주소는 내 아이디에 따라 달라요):
 
 ```text
-origin	https://github.com/moonbear-dev/my-creator-site.git (fetch)
-origin	https://github.com/moonbear-dev/my-creator-site.git (push)
+origin	https://github.com/내아이디/my-creator-site.git (fetch)
+origin	https://github.com/내아이디/my-creator-site.git (push)
 ```
 
-2. 주소가 맞으면 그대로 다음 단계로 가요.
-3. 틀렸다면 아래 명령으로 `origin`의 주소를 바꿔요. 주소는 내 저장소 주소로 바꿔요.
+2. 주소의 아이디가 `moonbear-dev`이거나 내 GitHub 아이디, 저장소 이름과 다르면 아래 명령으로 바꿔요. 주소는 5단계의 내 저장소 페이지에서 복사한 것으로 넣어요.
 
 ```powershell
 git remote set-url origin https://github.com/moonbear-dev/my-creator-site.git
 ```
 
-4. `git remote -v`의 주소가 내 저장소와 같으면 해결된 거예요.
+3. 주소가 맞는데 403이나 `Authentication failed`가 나오면 브라우저에서 GitHub에 내 계정으로 로그인되어 있는지 보고, `git push -u origin main`을 다시 입력해요. 로그인 창이 뜨면 이번에는 닫지 말고 끝까지 로그인해요.
+4. `* [new branch] main -> main` 줄이 나오면 해결된 거예요.
 
 ### ! [rejected] main -> main (fetch first)
 
