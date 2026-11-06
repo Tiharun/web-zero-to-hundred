@@ -1908,8 +1908,8 @@
         },
         {
           "title": "네트워크 게임의 원리",
-          "minutes": 90,
-          "summary": "권위 서버·지연·틱 레이트·스냅샷 빈도를 배우고, 로컬 게임에 일부러 지연을 넣어 왜 예측과 보간이 필요한지 몸으로 느껴요.",
+          "minutes": 120,
+          "summary": "권위 서버·지연·틱 레이트·스냅샷 빈도를 배우고, 서버가 믿을 게임 규칙을 테스트로 확인한 뒤, 로컬 게임에 일부러 지연을 넣어 왜 예측과 보간이 필요한지 몸으로 느껴요.",
           "keywords": [
             "권위 서버",
             "클라이언트-서버",
@@ -1926,7 +1926,9 @@
             "넷코드",
             "데디케이티드 서버",
             "Netcode for GameObjects",
-            "replication"
+            "replication",
+            "cargo test",
+            "규칙 테스트"
           ]
         },
         {
@@ -1995,7 +1997,9 @@
             "pong",
             "구별된 유니온",
             "net.ts",
-            "connect"
+            "connect",
+            "validate_name",
+            "NameError"
           ]
         },
         {
@@ -2031,8 +2035,6 @@
             "leave",
             "player_session",
             "wait_for_join",
-            "validate_name",
-            "NameError",
             "IDLE_TIMEOUT",
             "유휴 타임아웃",
             "sleep_until",
@@ -2085,8 +2087,8 @@
         },
         {
           "title": "방 시스템",
-          "minutes": 120,
-          "summary": "영문 4자 방 코드로 여러 방을 만들고 찾는 방 목록을 만들고, 연결이 없는 방은 60초 뒤 정리하며, Drop 경비원으로 어떤 경우에도 목록이 깨끗하게 남게 해요.",
+          "minutes": 110,
+          "summary": "영문 4자 방 코드로 여러 방을 만들고 찾는 방 목록을 서버에 만들고, 연결이 없는 방은 60초 뒤 정리하며, Drop 경비원으로 목록을 깨끗하게 지켜요. 휴대폰 화면은 주소의 방 코드로 참가해요.",
           "keywords": [
             "방 코드",
             "Rooms",
@@ -2104,13 +2106,15 @@
             "POST /api/rooms",
             "GET /api/rooms/{code}",
             "/ws/{code}",
-            "start_paused"
+            "start_paused",
+            "?room=",
+            "fetchRoom"
           ]
         },
         {
           "title": "호스트 화면(OBS)",
           "minutes": 120,
-          "summary": "OBS 브라우저 소스로 띄울 투명 배경 관전 화면(host.html)에 아레나·참가자 수·라운드 결과·참가 QR 코드를 그리고, Rust 서버가 빌드된 클라이언트를 직접 서빙하게 해요.",
+          "summary": "첫 화면에서 방을 만들고, OBS 브라우저 소스로 띄울 투명 배경 관전 화면(host.html)에 아레나·참가자 수·라운드 결과·참가 QR 코드를 그려요. OBS가 없으면 오늘 설치해요.",
           "keywords": [
             "관전 화면",
             "host.html",
@@ -2123,19 +2127,16 @@
             "QR 코드",
             "qrcode-generator",
             "멀티 페이지 앱",
-            "rolldownOptions",
-            "npm run build",
-            "tower-http",
-            "ServeDir",
-            "fallback_service",
-            "client/dist",
-            "다시 연결"
+            "다시 연결",
+            "방 만들기",
+            "createRoom",
+            "OBS 설치"
           ]
         },
         {
           "title": "플레이어 화면(휴대폰)",
-          "minutes": 110,
-          "summary": "서버를 0.0.0.0으로 열고 Windows 방화벽에서 개인 네트워크를 허용해, 같은 Wi-Fi의 휴대폰이 QR로 들어와 조이스틱으로 플레이하게 해요.",
+          "minutes": 120,
+          "summary": "클라이언트를 빌드해 Rust 서버가 직접 서빙하게 하고, 서버를 0.0.0.0으로 열어 Windows 방화벽에서 개인 네트워크를 허용한 뒤, 같은 Wi-Fi 휴대폰이 QR로 들어와 조이스틱으로 플레이하게 해요.",
           "keywords": [
             "LAN",
             "같은 Wi-Fi",
@@ -2152,7 +2153,14 @@
             "네트워크 프로필",
             "viewport",
             "user-scalable",
-            "isLocalOnlyAddress"
+            "isLocalOnlyAddress",
+            "npm run build",
+            "rolldownOptions",
+            "tower-http",
+            "ServeDir",
+            "fallback_service",
+            "client/dist",
+            "멀티 페이지 빌드"
           ]
         },
         {
