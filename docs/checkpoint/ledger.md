@@ -266,3 +266,7 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - T10 review dispatched (sonnet, ae424603f9cd1808f), base 342c1ed head b69499d; includes D10/D11 seam check.
 - T9 fix round 1 implementer DONE (12 fixed; some 🧯 items moved to 모음 only to keep 3–6 per Day). Committed a901b47. Re-review dispatched (sonnet).
 - T9 fix round 1 re-review dispatched (sonnet, aa482c65588c474be), FIX_BASE b9b4bda HEAD a901b47.
+- Task 9: fix round 1/5 (12 addressed, 0 open; commits b9b4bda..a901b47)
+- Task 9: minor (deferred): D7 "방법 1" GitHub rename flow not verified against the real GitHub UI.
+- Task 9: complete (commits 342c1ed..a901b47, review clean)
+- T17 (P2 Days 21–30, sonnet) dispatched, NO GIT.
