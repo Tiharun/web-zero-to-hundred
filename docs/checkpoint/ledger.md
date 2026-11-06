@@ -231,3 +231,7 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Task 14: fix round 1/5 dispatched-to-review: re-review (sonnet, a9676e04d2f0b3799), FIX_BASE b0ed08d HEAD d411c91.
 - Wrote content-batch-rules.md (binding rules for all Day batches: outline wins over reference for intermediate Days; file ownership; verification via tests/helpers; NO GIT).
 - T9 (P1 Days 2–10, sonnet, a353aceed4b03090f) and T10 (P1 Days 11–20, sonnet, a57c2d74dd7ef1b4e) dispatched, NO GIT. T11 (Days 21–30) waits for a free slot (max 5 concurrent: P3 fix, SP review, T14 re-review, T9, T10).
+- Task 14: fix round 1/5 (11 addressed + extras verified, 0 open; commits b0ed08d..d411c91)
+- Task 14: minor (deferred): section 2 "taught here" list omits Day 27 Object.keys/values/flat; Day 36 .NET names explained inline, not in a 읽기만 box.
+- Task 14: complete (commits 37f03e1..d411c91, review clean)
+- T11 (P1 Days 21–30, sonnet) dispatched, NO GIT.
