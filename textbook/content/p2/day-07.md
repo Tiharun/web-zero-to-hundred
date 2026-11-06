@@ -777,7 +777,7 @@ app.innerHTML = `
 :::
 
 :::answer 오늘 끝 상태 전체 코드
-오늘 따라하기와 과제를 모두 끝낸 상태예요. 막혔다면 `C:\dev\streamer-hub\client`에 아래 폴더와 파일을 만들고 `client` 폴더에서 `npm install`을 실행한 뒤 Day 8을 시작하세요. `package.json`, `.gitignore`, `package-lock.json`은 `npm create vite@latest client -- --template vanilla-ts`와 `npm install`이 만들어 줘요. `node_modules`와 `dist`는 도구가 만든 것이라 직접 만들지 않아요.
+과제 1·2로 바뀐 `index.html`과 `main.ts`는 10단계 커밋 뒤의 변경이에요. 따로 커밋하지 않아도 Day 8 끝의 `git add -A` 커밋에 함께 들어가요(되돌려도 괜찮아요). 오늘 따라하기와 과제를 모두 끝낸 상태예요. 막혔다면 `C:\dev\streamer-hub\client`에 아래 폴더와 파일을 만들고 `client` 폴더에서 `npm install`을 실행한 뒤 Day 8을 시작하세요. `package.json`, `.gitignore`, `package-lock.json`은 `npm create vite@latest client -- --template vanilla-ts`와 `npm install`이 만들어 줘요. `node_modules`와 `dist`는 도구가 만든 것이라 직접 만들지 않아요.
 
 ```text
 C:\dev\streamer-hub\

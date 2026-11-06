@@ -347,7 +347,7 @@ To https://github.com/<내 아이디>/my-creator-site.git
 5. 화면을 새로 고침(`F5`)하며 기다려요. 최대 10분쯤 걸려요.
 
 :::success
-**Pages** 화면 위쪽에 `Your site is live at https://<내 아이디>.github.io/my-creator-site/`처럼 주소가 나오고 **Visit site** 버튼이 생겨요(문구는 조금 다를 수 있어요). 주소가 바로 안 나오면 몇 분 뒤에 새로 고침해요. 저장소 상단 탭의 **Actions**를 눌러 `pages build and deployment`라는 작업이 진행 중이거나 초록색 체크로 끝났는지 볼 수도 있어요. Pages 화면에 "공개 저장소로 바꾸라"는 안내가 보이거나 **Pages** 메뉴가 없으면 아래 🧯의 "Pages 설정에 공개로 바꾸라고 나와요"를 보세요.
+**Pages** 화면 위쪽에 `Your site is live at https://<내 아이디>.github.io/my-creator-site/`처럼 주소가 나오고 **Visit site** 버튼이 생겨요(문구는 조금 다를 수 있어요). 주소가 바로 안 나오면 몇 분 뒤에 새로 고침해요. 저장소 상단 탭의 **Actions**를 눌러 `pages build and deployment`라는 작업이 진행 중이거나 초록색 체크로 끝났는지 볼 수도 있어요. Pages 화면에 "공개 저장소로 바꾸라"는 안내가 보이거나 **Pages** 메뉴가 없으면 아래 🧯의 "Pages 설정에 공개 저장소로 바꾸라고 나와요"를 보세요.
 :::
 
 ### 8단계 · 내 사이트 주소 열고 점검하기 (8분)
