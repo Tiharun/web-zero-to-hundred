@@ -13,3 +13,15 @@
 | GitHub 새 저장소 화면의 `Add a README file`/`Choose a license` 문구 | 확인 못 함 | **미확인**. 교재에 "문구가 조금 달라도 해당 항목은 그대로 둬요" 추가 |
 | 가입 직후 설문·재로그인 화면 | 확인 못 함 | **미확인**. "설문은 건너뛰어도 돼요, 로그인 화면이 나오면 로그인" 일반 안내만 |
 | 탐색기 하위 폴더에서 새 파일 아이콘 위치 | 확인 못 함 | **미확인**. 오른쪽 클릭 → 새 파일로 통일(기본 컨텍스트 메뉴, Day 15·19가 이미 사용) |
+
+## Days 11–20 구간 (2026-11-07)
+
+| 주장 | 근거 | 상태 |
+|---|---|---|
+| Windows Git은 대소문자만 바뀐 이름 변경을 못 잡을 수 있다(`core.ignorecase=true`). 임시 이름을 거친 두 번 변경이 안전 | 검색: [Atlassian KB](https://support.atlassian.com/bitbucket-data-center/kb/case-only-filename-changes-are-not-reflected-in-bitbucket-data-center/) (1차 리뷰 출처). 이 PC에서 직접 재현하지는 않음 | 검색 확인 |
+| Pages 배포 실패(빨간 ✕) 시 Actions의 **Re-run all jobs**, 계속되면 Pages 껐다 켜기 | 커뮤니티 [discussion 201099](https://github.com/orgs/community/discussions/201099). 공식 문서 미확인 | **부분 확인(커뮤니티)**. 화면 이름은 달라질 수 있다고 표기 |
+| DevTools Network 탭에서 빨간/404 줄로 안 나온 파일을 찾는다 | 일반 지식. 교재 d14·d25가 이미 사용 | 실기 미확인 |
+| 콘솔 경로 오류는 `Failed to load resource: net::ERR_FILE_NOT_FOUND`로 나온다 | 일반 지식, d17:160이 같은 오류를 설명 | 실기 미확인 |
+| `innerHTML`로 넣은 `<script>`는 실행되지 않고 `<img onerror>` 등은 실행될 수 있다 | 리뷰 ② I-1 ([MDN Element.innerHTML](https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML)) | 검색 확인(리뷰) |
+| 오류 줄의 파일 링크는 DevTools Sources 패널 복사본을 연다 | 리뷰 ①의 지식 주장. 이번에 화면으로 확인하지 못함 | **미확인**. 교재는 "줄 번호를 읽고 VS Code에서 고쳐요"로 표현해 어느 쪽이든 안전 |
+| Day 20 `style.css` 전체본 | 측정: Day 14 전체본(`day-14.md`)에 Day 16 `.greeting`, Day 20 `.card-body time`·`.badge`를 지시된 위치에 실제로 삽입해 생성(`../wzh-scratch/t12/day20.css`, 330줄). `reference/p1-my-creator-site/css/style.css`와 줄 비교 시 `.button-outline {`와 주석 1줄만 다름(뒤 Day에서 바뀌는 부분) | 측정 |

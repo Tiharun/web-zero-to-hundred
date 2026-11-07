@@ -52,7 +52,7 @@ html
 - **[[classList]]**(클래스 리스트)는 요소의 클래스 목록을 다루는 속성이에요. `classList.add('today')`로 붙이고, `remove`로 떼고, `contains`로 붙어 있는지 물어요. 클래스를 바꾸면 CSS에 미리 써 둔 모양이 적용돼요. 클래스를 통째로 정할 때는 `className = 'card'`를 써요.
 
 :::warn 사용자 글은 innerHTML이 아니라 textContent로
-요소 안에 글을 넣는 방법으로 `innerHTML`도 있어요. 그런데 `innerHTML`은 글 속의 `<b>`, `<script>` 같은 태그를 **진짜 태그로 해석해서 실행**해요. 남이 쓴 댓글이나 문의 내용에 나쁜 태그가 섞이면 내 사이트에서 실행될 수 있어서 위험해요. `textContent`는 꺾쇠까지 **글자 그대로** 보여 줘서 안전해요. 이 교재는 데이터나 사용자 글을 화면에 넣을 때 항상 `textContent`를 써요.
+요소 안에 글을 넣는 방법으로 `innerHTML`도 있어요. 그런데 `innerHTML`은 글 속의 꺾쇠(`<b>` 같은 것)를 **진짜 태그로 만들어요**. 이 방법으로 넣은 `<script>` 태그 자체는 실행되지 않지만, `<img src="x" onerror="…">`처럼 다른 태그의 속성에 코드를 숨기면 실행될 수 있어요. 남이 쓴 댓글이나 문의 내용에 그런 태그가 섞이면 내 사이트에서 실행될 수 있어서 위험해요. `textContent`는 꺾쇠까지 **글자 그대로** 보여 줘서 안전해요. 이 교재는 데이터나 사용자 글을 화면에 넣을 때 항상 `textContent`를 써요.
 :::
 
 ### 요소를 직접 만들기: createElement
@@ -228,7 +228,7 @@ Elements에 들여쓰기가 된 나무가 보여요. 카드를 클릭하면 Elem
 ```
 
 :::success
-`contents.js`에는 머리 주석, `categoryNames`, `thumbnails`, `allVideos`만 남았어요. 영상 페이지를 새로 고침하면 콘솔이 비어 있어요(어제의 6줄이 사라졌어요).
+`contents.js`에는 머리 주석, `categoryNames`, `thumbnails`, `allVideos`만 남았어요. 영상 페이지를 새로 고침하면 콘솔이 비어 있어요(어제의 8줄이 사라졌어요).
 :::
 
 ### 6단계 · 카드를 넣을 상자 찾기 (5분)
@@ -339,7 +339,7 @@ function createCard(video) {
 
 - **카드와 그림:** `article.card`를 만들고, `img`를 만들어 `src`(썸네일 경로, `thumbnails[video.category]`), `alt`(Day 5의 대체 텍스트), `width`·`height`(자리 미리 잡기), `loading = 'lazy'`(화면 가까이 올 때 불러오기, 뜻은 Day 28)를 넣어요.
 - **글 부분:** `div.card-body`를 만들고 배지(`span.badge`), 제목(`h3` 안의 링크 `a`), 날짜(`time`)를 만들어요.
-- **링크:** `link.href`는 YouTube 영상 주소 `` `https://www.youtube.com/watch?v=${video.youtubeId}` ``예요. `target = '_blank'`는 새 탭으로 열고, `rel = 'noopener noreferrer'`는 새 탭이 우리 페이지를 건드리지 못하게 하는 안전 장치예요.
+- **링크:** `link.href`는 YouTube 영상 주소 `` `https://www.youtube.com/watch?v=${video.youtubeId}` ``예요. `target = '_blank'`는 새 탭으로 열고, `rel = 'noopener noreferrer'`는 새 탭이 우리 페이지를 건드리지 못하게 하고(`noopener`), 어느 페이지에서 왔는지 상대 사이트에 알리지 않는(`noreferrer`) 안전 장치예요.
 - **날짜:** `time`의 `dateTime`은 컴퓨터가 읽는 날짜, `textContent`는 사람이 읽는 날짜예요(둘 다 같은 값을 넣었어요).
 - **붙이기:** `appendChild`로 자식을 붙여요. 붙이는 **순서가 화면 순서**예요(배지 → 제목 → 날짜).
 - 마지막 `return card;`가 완성된 카드를 돌려줘요. 빠뜨리면 아래 🧯의 "Failed to execute 'appendChild' on 'Node'" 오류가 나요.
@@ -465,6 +465,10 @@ To https://github.com/<내 아이디>/my-creator-site.git
 인터넷 주소의 영상 페이지에도 카드 6장이 나와요. 내 컴퓨터에서 본 것과 같아요.
 :::
 
+:::warn 내 컴퓨터에서는 되는데 인터넷 주소에서는 카드가 안 나와요
+먼저 푸시했는지 확인하고, [도움말 7번](#/page/help)의 순서대로 확인해요. 카드가 안 나오면 `js/contents.js`와 썸네일 그림(`images/thumb-*.svg`)의 대소문자를 먼저 의심해요. 인터넷 주소에서 `F12` → **Console**의 빨간 줄이 단서예요.
+:::
+
 ## ✍️ 과제
 
 ### 과제 1 · DOM 나무 그리기 (쉬움 ⭐, 6분)
@@ -539,13 +543,13 @@ article.card
 - `link.textContent = '<b>굵게</b>';`: 카드 제목에 꺾쇠까지 **글자 그대로** `<b>굵게</b>`가 보여요. 태그가 실행되지 않아요.
 - `link.innerHTML = '<b>굵게</b>';`: 꺾쇠가 태그로 해석되어 `굵게`라는 글자가 **굵게** 보이고, Elements에는 `<a><b>굵게</b></a>`가 생겨요.
 
-위험한 이유 한 줄: `innerHTML`은 글자 속에 섞인 태그를 실제로 실행하기 때문에, 남이 쓴 글에 나쁜 태그가 있으면 내 사이트에서 그 코드가 실행될 수 있어요. `textContent`는 항상 글자로만 다뤄서 안전해요.
+위험한 이유 한 줄: `innerHTML`은 글자 속에 섞인 꺾쇠를 진짜 태그로 만들기 때문에, 남이 쓴 글에 `<img onerror="…">` 같은 태그가 있으면 내 사이트에서 그 코드가 실행될 수 있어요(`<script>` 태그는 이 방법으로는 실행되지 않아요). `textContent`는 항상 글자로만 다뤄서 안전해요.
 
 **왜 이렇게 하나요?** 영상 제목은 내가 쓰지만, 나중에 만들 문의 폼 내용이나 검색어처럼 **남이 입력한 글**을 화면에 넣을 때가 와요. 그래서 처음부터 `textContent`를 쓰는 습관을 들여요. 확인이 끝나면 `link.textContent = video.title;`로 되돌려요.
 :::
 
 :::answer 오늘 끝 상태 전체 코드
-막혔다면 아래 파일들로 맞추고 [Day 21](#/day/p1-d21)을 시작하세요. 오늘 바뀐 파일은 `js/contents.js`(전체), `contents.html`(전체), `css/style.css`(블록 하나)예요. 파일 하나를 통째로 바꿀 때는 VS Code에서 그 파일을 열고 `Ctrl + A`로 전체를 선택한 뒤 붙여 넣고 `Ctrl + S`로 저장해요.
+막혔다면 아래 파일들로 맞추고 [Day 21](#/day/p1-d21)을 시작하세요. 파일을 덮어쓰면 내가 바꾼 글(닉네임, 소개 문장, 영상 ID)도 예시 글로 돌아가니 내 글은 먼저 적어 두고, 맞춘 뒤에는 커밋하고 **변경 내용 동기화**를 눌러요. `.git` 폴더는 지우지 마세요. 오늘 바뀐 파일은 `js/contents.js`(전체), `contents.html`(전체), `css/style.css`(블록 하나)예요. 파일 하나를 통째로 바꿀 때는 VS Code에서 그 파일을 열고 `Ctrl + A`로 전체를 선택한 뒤 붙여 넣고 `Ctrl + S`로 저장해요.
 
 ```text
 my-creator-site/
@@ -724,6 +728,343 @@ render();
 ```
 :::
 
+:::answer 오늘 끝 상태 style.css 전체
+Day 14 전체본에 Day 16의 `.greeting`, 오늘의 `.card-body time`, `.badge`를 더한 파일 전체예요. 뒤처졌거나 `style.css`가 엉켰을 때 `Ctrl + A` 후 붙여 넣어 맞추세요. 맞춘 뒤에는 소스 제어에서 커밋하고 **변경 내용 동기화**를 눌러요. 내가 바꾼 색이나 값이 있다면 붙여 넣기 전에 따로 적어 둬요.
+
+📄 C:\dev\my-creator-site\css\style.css
+```css
+/* ==========================================================
+   style.css - 달빛곰 방송국 전체 스타일 (모든 페이지가 함께 써요)
+   순서: 변수 → 기본 → 레이아웃 → 헤더/메뉴 → 공통 부품 → 페이지별 → 반응형
+   모바일 먼저 만들고, 화면이 넓어지면 @media로 덧붙여요 (Day 13)
+   ========================================================== */
+
+/* ---------- 1. CSS 변수: 색은 여기서만 정해요 (Day 14, 22) ---------- */
+:root {
+  --bg: #ffffff;
+  --surface: #f4f2ff;      /* 카드·표 머리글 배경 */
+  --text: #1d1b2e;
+  --muted: #5a5775;        /* 보조 글자 */
+  --accent: #5b4bdb;       /* 포인트 색 (버튼, 링크) */
+  --accent-text: #ffffff;  /* 포인트 색 위의 글자 */
+  --link: #4a3bc7;
+  --border: #d9d6ee;
+  --radius: 12px;
+}
+
+/* ---------- 2. 기본 설정 (Day 9, 10) ---------- */
+* {
+  box-sizing: border-box; /* padding·border를 width 안에 포함해서 계산해요 */
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  line-height: 1.7;
+  word-break: keep-all;     /* 한국어는 단어 중간에서 줄을 바꾸지 않아요 */
+  overflow-wrap: break-word; /* 너무 긴 단어만 강제로 줄을 바꿔요 */
+  transition: background-color 0.2s, color 0.2s; /* 테마가 바뀔 때 부드럽게 (Day 14) */
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: var(--link);
+}
+
+h1, h2, h3 {
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 1.75rem;
+  margin: 1.5rem 0 0.75rem;
+}
+
+h2 {
+  font-size: 1.35rem;
+  margin: 2rem 0 0.75rem;
+}
+
+h3 {
+  font-size: 1.1rem;
+  margin: 0.25rem 0;
+}
+
+/* ---------- 3. 레이아웃 ---------- */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding-left: 1rem; /* 좌우 여백 16px: 휴대폰에서도 글자가 가장자리에 붙지 않아요 */
+  padding-right: 1rem;
+}
+
+main {
+  padding-bottom: 3rem;
+}
+
+/* ---------- 4. 헤더와 내비게이션 (Day 11) ---------- */
+.site-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  display: flex;
+  flex-wrap: wrap;          /* 좁은 화면에서는 메뉴가 아래 줄로 내려가요 */
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.logo img {
+  display: block;
+  border-radius: 8px;
+}
+
+.site-nav {
+  flex-basis: 100%; /* 한 줄을 다 차지해서 아래로 내려가요 */
+}
+
+.menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.menu-list a {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.menu-list a:hover {
+  background: var(--border);
+}
+
+/* 지금 보고 있는 페이지 표시 */
+.menu-list a[aria-current="page"] {
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 700;
+}
+
+/* ---------- 5. 공통 부품 ---------- */
+button,
+.button {
+  display: inline-block;
+  font: inherit;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-text);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s, background-color 0.15s;
+}
+
+button:hover,
+.button:hover {
+  transform: translateY(-2px);
+}
+
+.button-outline {
+  background: transparent;
+  color: var(--text);
+}
+
+/* 카드 그리드 (Day 12): 칸 하나는 최소 240px, 남는 공간은 똑같이 나눠 가져요 */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card img {
+  display: block;
+  width: 100%;
+}
+
+.card-body {
+  padding: 0.75rem 1rem 1rem;
+}
+
+.card-body p {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+}
+
+.card-body time {
+  display: block;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0 0.6rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+
+/* ---------- 6. 페이지별 ---------- */
+
+/* 홈: 소개 영역 */
+.hero {
+  display: grid;
+  gap: 1.5rem;
+  align-items: center;
+  padding-top: 1.5rem;
+  padding-bottom: 1rem;
+}
+
+.hero-image {
+  width: 160px;
+  border-radius: 50%;
+}
+
+.greeting {
+  color: var(--muted);
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* 유튜브 영상: 가로 폭에 맞춰 16:9 비율을 유지해요 */
+.video-frame {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+/* 소개 페이지 */
+.about-intro {
+  display: grid;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.about-image {
+  width: 200px;
+  border-radius: var(--radius);
+}
+
+/* 방송 일정 */
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.schedule-table caption {
+  text-align: left;
+  font-weight: 700;
+  padding-bottom: 0.5rem;
+}
+
+.schedule-table th,
+.schedule-table td {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.schedule-table thead th {
+  background: var(--surface);
+}
+
+/* ---------- 7. 푸터 ---------- */
+.site-footer {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  text-align: center;
+  padding: 1.5rem 0;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+/* ---------- 8. 반응형: 화면이 768px 이상일 때 (Day 13) ---------- */
+@media (min-width: 768px) {
+  h1 {
+    font-size: 2.25rem;
+  }
+
+  /* 메뉴 목록은 가로로 늘어놔요 */
+  .site-nav {
+    flex-basis: auto;
+    margin-left: auto;
+  }
+
+  .menu-list {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .hero {
+    grid-template-columns: 200px 1fr;
+    gap: 2rem;
+  }
+
+  .hero-image {
+    width: 200px;
+  }
+
+  .about-intro {
+    grid-template-columns: 200px 1fr;
+  }
+}
+```
+:::
+
 ## 🧯 자주 막히는 곳
 
 여기에 없는 증상은 [문제 해결 모음](#/page/troubleshooting)에서 찾아보세요.
@@ -741,7 +1082,7 @@ Uncaught TypeError: Cannot set properties of null (setting 'textContent')
 1. `contents.html`에서 `<div id="video-list" class="card-grid"></div>`를 3단계 블록과 비교해요.
 2. `contents.js`의 `document.querySelector('#video-list')`에 `#`이 있는지, 철자가 같은지 봐요.
 3. `<script src="js/contents.js" defer></script>`에 `defer`가 있는지 확인해요.
-4. 저장하고 `Ctrl + F5`로 새로 고침해서 카드가 나오면 해결이에요.
+4. 저장하고 브라우저 탭에서 `Ctrl + F5`로 새로 고침해서 카드가 나오면 해결이에요.
 
 ### Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
 

@@ -323,7 +323,7 @@ console.log('방송 길이 합계:', totalMinutes);
 ```
 
 :::success
-`방송 길이 합계: 270`이 나와요. 60 + 90 + 120이에요. 합계가 0이 나오면 `total = total + minute;` 줄을 확인해요.
+`방송 길이 합계: 270`이 나와요. 60 + 90 + 120이에요. 합계가 0이 나오면 `totalMinutes = totalMinutes + minute;` 줄을 확인해요.
 :::
 
 ### 8단계 · 프로젝트는 그대로인지 확인하기 (2분)
@@ -441,7 +441,7 @@ console.log('가장 늦은 시각:', latest);
 :::
 
 :::answer 오늘 끝 상태 전체 코드
-막혔다면 아래 파일로 맞추고 [Day 18](#/day/p1-d18)을 시작하세요. 오늘 바뀐 파일은 연습 폴더의 `lab.html`과 `lab.js`예요. 프로젝트 폴더 `C:\dev\my-creator-site`는 바뀌지 않았어요. `lab.js`는 과제 코드까지 포함한 전체예요. 파일 하나를 통째로 바꿀 때는 VS Code에서 그 파일을 열고 `Ctrl + A`로 전체를 선택한 뒤 붙여 넣고 `Ctrl + S`로 저장해요.
+막혔다면 아래 파일로 맞추고 [Day 18](#/day/p1-d18)을 시작하세요. 파일을 덮어쓰면 내가 바꾼 글(닉네임, 소개 문장, 영상 ID)도 예시 글로 돌아가니 내 글은 먼저 적어 두고, 맞춘 뒤에는 커밋하고 **변경 내용 동기화**를 눌러요. `.git` 폴더는 지우지 마세요. 오늘 바뀐 파일은 연습 폴더의 `lab.html`과 `lab.js`예요. 프로젝트 폴더 `C:\dev\my-creator-site`는 바뀌지 않았어요. `lab.js`는 과제 코드까지 포함한 전체예요. 파일 하나를 통째로 바꿀 때는 VS Code에서 그 파일을 열고 `Ctrl + A`로 전체를 선택한 뒤 붙여 넣고 `Ctrl + S`로 저장해요.
 
 ```text
 hello/
@@ -616,7 +616,7 @@ Uncaught SyntaxError: Identifier 'i' has already been declared
 
 1. 파일 탐색기에서 `C:\dev\hello`를 열어 `lab.html`과 `lab.js`가 **같은 폴더**에 있는지 확인해요(확장명이 보이게 켜 두었는지도 봐요, Day 1).
 2. `lab.html`의 `<head>`에 `<script src="lab.js" defer></script>`가 있는지 확인해요.
-3. `Ctrl + F5`로 새로 고침해서 콘솔에 출력이 나오면 해결이에요.
+3. 브라우저 탭에서 `Ctrl + F5`로 새로 고침해서 콘솔에 출력이 나오면 해결이에요.
 
 ### 프로젝트 창과 연습장 창을 헷갈렸어요
 

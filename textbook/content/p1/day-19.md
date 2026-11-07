@@ -428,7 +428,7 @@ for (const video of allVideos) { console.log(video.title); }
 :::
 
 :::answer 오늘 끝 상태 전체 코드
-막혔다면 아래 파일들로 맞추고 [Day 20](#/day/p1-d20)을 시작하세요. 오늘 바뀐 파일은 `js/contents.js`(새 파일)와 `contents.html`이에요. 두 파일 모두 전체를 실었어요. 파일 하나를 통째로 바꿀 때는 VS Code에서 그 파일을 열고 `Ctrl + A`로 전체를 선택한 뒤 붙여 넣고 `Ctrl + S`로 저장해요.
+막혔다면 아래 파일들로 맞추고 [Day 20](#/day/p1-d20)을 시작하세요. 파일을 덮어쓰면 내가 바꾼 글(닉네임, 소개 문장, 영상 ID)도 예시 글로 돌아가니 내 글은 먼저 적어 두고, 맞춘 뒤에는 커밋하고 **변경 내용 동기화**를 눌러요. `.git` 폴더는 지우지 마세요. 오늘 바뀐 파일은 `js/contents.js`(새 파일)와 `contents.html`이에요. 두 파일 모두 전체를 실었어요. 파일 하나를 통째로 바꿀 때는 VS Code에서 그 파일을 열고 `Ctrl + A`로 전체를 선택한 뒤 붙여 넣고 `Ctrl + S`로 저장해요.
 
 ```text
 my-creator-site/
@@ -571,7 +571,7 @@ Uncaught SyntaxError: Unexpected token '{'
 
 **해결:**
 
-1. 오류 줄 오른쪽 `contents.js:` 링크를 눌러 줄을 열고, 바로 위 줄 끝에 쉼표가 있는지 봐요.
+1. 오류 줄 오른쪽의 `contents.js:` 뒤 줄 번호를 읽고 VS Code에서 그 줄을 열어, 바로 위 줄 끝에 쉼표가 있는지 봐요(링크를 누르면 개발자 도구 안의 복사본이 열려요).
 2. 객체 6줄이 모두 `},`로 끝나는지 확인해요(마지막 줄은 쉼표가 없어도 있어도 돼요).
 3. 저장하고 새로 고침해서 오류가 사라지면 해결이에요.
 
@@ -622,12 +622,12 @@ Uncaught ReferenceError: titles is not defined
 
 ### 영상 페이지 콘솔에 아무것도 안 나와요
 
-**원인:** `contents.js`가 연결되지 않았거나 파일 이름이 틀렸어요. 또는 콘솔 로그 수준 필터가 꺼져 있어요(Day 15).
+**원인:** `contents.js`가 연결되지 않았거나 파일 이름이 틀렸어요. 또는 콘솔 로그 수준 필터가 꺼져 있어요(Day 15). 경로가 틀리면 콘솔에 빨간 `Failed to load resource` 줄이 나와요.
 
 **해결:**
 
 1. `contents.html`의 `<head>`에 `<script src="js/contents.js" defer></script>`가 있는지, `js` 폴더 안의 파일 이름이 `contents.js`인지 확인해요.
-2. `Ctrl + F5`로 새로 고침해요.
+2. 브라우저 탭에서 `Ctrl + F5`로 새로 고침해요.
 3. 콘솔 위쪽의 로그 수준(기본 수준)에서 **정보**가 켜져 있는지 확인해요. 6줄이 나오면 해결이에요.
 
 ## 📝 오늘의 체크리스트

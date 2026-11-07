@@ -109,7 +109,7 @@ const double = (n) => {
 
 어제 쓴 코드는 지우고 오늘 코드를 새로 써요. 어제 코드는 Day 17 정답에 있으니 지워도 괜찮아요.
 
-**어디서:** VS Code, `C:\dev\hello` 폴더가 열린 창(제목에 `hello`). 창이 닫혀 있으면 메뉴 **파일 → 폴더 열기**에서 `C:\dev\hello`를 열어요.
+**어디서:** VS Code, `C:\dev\hello` 폴더가 열린 창(제목에 `hello`). 창이 없으면 메뉴 **파일 → 새 창**으로 새 창을 먼저 열고, 그 창에서 **파일 → 폴더 열기**로 `C:\dev\hello`를 열어요(프로젝트 창을 바꿔 버리면 8단계에서 `my-creator-site` 창이 없어져요).
 
 **무엇을:**
 
@@ -368,9 +368,16 @@ Uncaught ReferenceError: emoji is not defined
 
 ### 과제 3 · 스코프 퀴즈 (도전 ⭐⭐⭐, 10분)
 
-`if` 블록 안에서 만든 `const message`를 블록 밖에서 출력하면 어떻게 되는지 확인해요.
+`if` 블록 안에서 만든 `const message`를 블록 밖에서 출력하면 어떻게 되는지 확인해요. `lab.js`에 임시로 아래 코드를 쓰고 `Ctrl + S`로 저장한 뒤 콘솔의 오류 문장을 읽어요(`siteName`은 앞에서 만든 변수예요).
 
-- 콘솔 연습을 하려면 `lab.js`에 임시로 아래 코드를 쓰고 오류 문장을 읽어요. 읽었으면 지워요.
+```js
+if (siteName === '달빛곰 방송국') {
+  const message = '맞아요!';
+}
+console.log(message);
+```
+
+- 위 코드로 오류 문장을 읽었으면 그 코드는 지워요.
 - 같은 일을 오류 없이 하려면 어떻게 고쳐야 하는지 써서 `lab.js`에 남겨 둬요.
 - Day 16의 인사말 코드(`main.js`의 `let message;`)를 다시 읽고, 왜 `let message;`를 `if` **바깥**에서 먼저 만들었는지 한 줄로 적어요.
 
@@ -463,7 +470,7 @@ console.log(message);
 :::
 
 :::answer 오늘 끝 상태 전체 코드
-막혔다면 아래 파일로 맞추고 [Day 19](#/day/p1-d19)를 시작하세요. 오늘 바뀐 파일은 연습장의 `lab.js` 하나예요. `lab.html`은 Day 17과 같고 프로젝트 폴더 `C:\dev\my-creator-site`도 바뀌지 않았어요. `lab.js`는 과제 코드까지 포함한 전체예요. VS Code에서 `lab.js`를 열고 `Ctrl + A`로 전체를 선택한 뒤 붙여 넣고 `Ctrl + S`로 저장해요.
+막혔다면 아래 파일로 맞추고 [Day 19](#/day/p1-d19)를 시작하세요. 파일을 덮어쓰면 내가 바꾼 글(닉네임, 소개 문장, 영상 ID)도 예시 글로 돌아가니 내 글은 먼저 적어 두고, 맞춘 뒤에는 커밋하고 **변경 내용 동기화**를 눌러요. `.git` 폴더는 지우지 마세요. 오늘 바뀐 파일은 연습장의 `lab.js` 하나예요. `lab.html`은 Day 17과 같고 프로젝트 폴더 `C:\dev\my-creator-site`도 바뀌지 않았어요. `lab.js`는 과제 코드까지 포함한 전체예요. VS Code에서 `lab.js`를 열고 `Ctrl + A`로 전체를 선택한 뒤 붙여 넣고 `Ctrl + S`로 저장해요.
 
 ```text
 hello/
