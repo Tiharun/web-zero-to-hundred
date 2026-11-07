@@ -175,7 +175,7 @@ dir
 Mode                 LastWriteTime         Length Name
 ----                 -------------         ------ ----
 d-----        2026-11-06   오후 3:11                StreamerHub.Api
--a----        2026-11-06   오후 3:11            122 StreamerHub.slnx
+-a----        2026-11-06   오후 3:11             86 StreamerHub.slnx
 ```
 
 :::success

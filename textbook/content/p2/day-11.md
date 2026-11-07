@@ -684,6 +684,8 @@ Console.WriteLine($"abc → {okAbc}, {nAbc}");
 
 여기에 없는 증상은 [문제 해결 모음](#/page/troubleshooting)에서 찾아보세요.
 
+한국어 Windows에서는 컴파일러의 `error`·`warning` 문장이 한국어로 나와요(예: `warning CS8602: null 가능 참조에 대한 역참조입니다.`). 아래 제목은 영어 원문이에요. 문장 대신 **`CS`로 시작하는 번호**로 찾으세요. 번호는 언어와 관계없이 같아요. 실행 중에 나는 `Unhandled exception.`은 영어로 나와요.
+
 ### `warning CS8602: Dereference of a possibly null reference.`
 
 ```text

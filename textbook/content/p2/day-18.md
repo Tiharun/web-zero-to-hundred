@@ -463,7 +463,7 @@ git push
 ```
 
 :::success
-`git push` 마지막 줄이 `main -> main`이에요. 서버를 켠 터미널은 그대로 두거나 `Ctrl + C`로 꺼도 돼요.
+`git push` 마지막 줄이 `main -> main`이에요. 서버를 켠 터미널은 과제를 하는 동안 그대로 두어도 돼요. 과제를 마치면 서버를 `Ctrl + C`로 꺼요.
 :::
 
 ## ✍️ 과제
@@ -484,6 +484,8 @@ git push
 
 - POST 본문에 `"createdAt": "2000-01-01T00:00:00Z"`을 일부러 넣어 보내요.
 - 응답의 `createdAt`이 2000년이 아니라 지금 시각인지 확인해요. 확인한 뒤 그 줄은 지워요.
+
+**과제 후 커밋:** 과제 1이 `Program.cs`와 `.http`를 바꿨어요. 세 과제를 마친 뒤 서버를 `Ctrl + C`로 끄고, 새 터미널(위치 `C:\dev\streamer-hub`)에서 `git add -A` → `git commit -m "day18: 이름 검색 과제"` → `git push`로 한 번 더 올려요. 그러면 Day 19의 시작 상태(서버 꺼짐, `git status`가 깨끗함)와 같아져요.
 
 ## ✅ 정답
 

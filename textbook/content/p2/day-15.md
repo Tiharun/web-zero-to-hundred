@@ -630,6 +630,8 @@ finally
 
 여기에 없는 증상은 [문제 해결 모음](#/page/troubleshooting)에서 찾아보세요.
 
+컴파일러 `error`·`warning` 문장이 한국어로 나오면 영어 문장 대신 `CS` 번호로 찾으세요([Day 11](#/day/p2-d11)에서 설명했어요).
+
 ### `error CS4033: The 'await' operator can only be used within an async method.`
 
 ```text
