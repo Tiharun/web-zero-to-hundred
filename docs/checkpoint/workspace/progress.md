@@ -334,3 +334,17 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Task 15: fix round 2 implemented by child session (haiku, t15-fix2); commit b0e31da; re-review dispatched as child session (haiku), FIX_BASE 6115e79.
 - Task 15: fix round 2/5 (2 addressed, 0 open — D7 CSS exercise moved after step 6; D7 minutes sum; commits 6115e79..b0e31da).
 - Task 15: complete (commits 3173b9a..b0e31da, review clean)
+- Ruling R61: run T12 reviewer ① in Day ranges (pages + D1-10, then D11-20, D21-30) in one child session, measure usage after each, and start no new work once weekly usage reaches 98% — keeps a reserve for the user's other work until the 2026-11-09 reset — cost if wrong: cross-range issues may need a second look; progress pauses until the reset.
+- T12 reviewer ① (opus, t12-beginner) dispatched on pages + D1-10.
+- T12 reviewer ① D1-10 done (1 Critical, 12 Important, 24 Minor; task-12-review-1.md); usage +~1% weekly (95%). Continued on D11-30 in the same child session.
+- T12 reviewer ① complete (D11-30: 0 Critical, 21 Important, 48 Minor; total 1/33/72; task-12-review-1.md); weekly 95%, 5h 27%. T12 reviewer ② technical (opus, t12-tech) dispatched.
+- T12 reviewer ② complete (0 Critical, 2 Important: D20 innerHTML/script explanation wrong, smoke test withFile counts all projects; 7 Minor; task-12-review-2.md). Both Important verified by controller against the files. Weekly 95%, 5h 29%.
+- Ruling R62: T12 fix implementer fixes every Critical/Important; a Minor only if it could make a learner stop, get confused or lose work; the rest are listed as deferred, and wrong findings rejected with evidence; no downloadable answer archive (single offline file stays); fixes run in ranges (pages+D1-10+smoke, D11-20, D21-30) with usage measured between — cost if wrong: some Minors stay open until T37.
+- T12 fix implementer (sonnet, t12-fix) dispatched on pages + D1-10 + smoke. BASE fb891d6
+- T12 fix range pages+D1-10+smoke done (~35 fixed, 4 deferred, 0 rejected); committed 28da445; weekly 96%. D11-20 sent to t12-fix.
+- T12 fix range D11-20 done (~30 fixed, 4 groups deferred, 0 rejected); committed 89c3a82; weekly 96%. D21-30 sent to t12-fix.
+- T12 fix range D21-30 done (~45 fixed, 4 deferred, 0 rejected); committed 4500fc9; npm test 168, check OK, e2e 26 (controller re-ran). T12 re-review (sonnet, t12-rereview) dispatched, FIX_BASE fb891d6 HEAD 4500fc9.
+- Task 12: fix round 1/5 (all Critical/Important addressed but 1 — d04:128 success box says index.html absent; commits fb891d6..4500fc9). task-12-rereview-1.md. Round 2 sent to t12-fix.
+- Task 12: fix round 2/5 (2 addressed, 0 open — d04:128 success box; d28:241 F5 tab; commits 4500fc9..9d4cea7).
+- Task 12: minor (deferred): see the combined deferred list in task-12-report.md ("## Integration fix: Days 21–30") plus help.md section 7 has no anchor (links land at page top) and d28:241 "더블클릭" fallback unverified on screen; T37 triages them.
+- Task 12: complete (commits da77b87..HEAD at feat(p1) commit, review clean). Phase 1 complete. Preview index.html per R55 (P1 only).
