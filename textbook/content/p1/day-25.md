@@ -113,7 +113,7 @@ try {
 
 ## 🛠️ 따라하기
 
-모두 9단계예요. 먼저 Live Preview로 사이트를 열어 둬요.
+모두 9단계예요. 먼저 Live Preview로 사이트를 열어 둬요. 미리 보기 메뉴가 안 보이면 Day 2의 명령 팔레트 방법(`Live Preview: Show Preview`)을 써요. 미리 보기에 `Not Found`가 나오면 VS Code에 열린 폴더가 `my-creator-site`인지 확인해요.
 
 **어디서:** VS Code 왼쪽 탐색기 → `contents.html` 위에서 오른쪽 클릭 → **미리 보기 표시**(영어: **Show Preview**)
 
@@ -153,7 +153,7 @@ JSON의 규칙을 눈으로 확인해요. 키는 모두 `"id"`, `"title"`처럼 
 
 **무엇을:**
 
-1. `<p id="result-count" class="result-count" aria-live="polite"></p>` 줄 **바로 아래**에 두 줄을 붙여 넣어요.
+1. `id="result-count"`가 있는 `<p>` 줄 **바로 아래**에 두 줄을 붙여 넣어요.
 
 📄 C:\dev\my-creator-site\contents.html (일부)
 ```html
@@ -347,7 +347,7 @@ videos.json을 불러오지 못했어요: SyntaxError: Unexpected token ']', ...
 
 ### 8단계 · main.js: 저장소를 못 써도 멈추지 않게 감싸기 (7분)
 
-Day 22에서 예고한 약속을 지켜요. `localStorage`를 쓸 수 없게 막은 브라우저에서는 `getItem`/`setItem`을 부르는 순간 오류가 나서, `main.js` 전체가 멈추고 메뉴·인사말까지 동작하지 않을 수 있어요.
+Day 22에서 예고한 약속을 지켜요. `localStorage`를 쓸 수 없게 막은 브라우저에서는 `localStorage`라는 이름을 읽는 순간 오류가 나서, `main.js` 전체가 멈추고 메뉴·인사말까지 동작하지 않을 수 있어요.
 
 **어디서:** VS Code → `C:\dev\my-creator-site\js\main.js`
 
@@ -410,7 +410,7 @@ git push
 배포 주소(`https://<내 아이디>.github.io/my-creator-site/contents.html`)에서도 카드 6장이 보이는지 확인해요. 반영까지 최대 10분 걸려요.
 
 :::success
-GitHub 저장소에 `data/videos.json`이 생기고 `Day 25: videos.json과 fetch` 커밋이 맨 위에 보여요. 10분쯤 뒤 배포 주소의 영상 페이지에도 카드 6장이 보여요(안 보이면 `Ctrl + F5`로 새로 고침하고 조금 더 기다려요).
+GitHub 저장소에 `data/videos.json`이 생기고 `Day 25: videos.json과 fetch` 커밋이 맨 위에 보여요. 10분쯤 뒤 배포 주소의 영상 페이지에도 카드 6장이 보여요(안 보이면 `Ctrl + F5`로 새로 고침하고 조금 더 기다려요). 배포 주소에서 "불러오지 못했어요" 오류 상자가 나오면 `F12` → **Network** 탭에서 `videos.json`의 상태가 404인지 보고, 404면 GitHub 저장소에 `data/videos.json`이 있는지와 대소문자를 확인해요([도움말 7번](#/page/help)). 이미 배포 주소에 있다면 오류 상자의 "GitHub Pages 주소로 열어 보세요" 안내는 해당이 없어요.
 :::
 
 ## ✍️ 과제
@@ -445,7 +445,7 @@ GitHub 저장소에 `data/videos.json`이 생기고 `Day 25: videos.json과 fetc
 - `date`는 `2026-11-05` 같은 날짜 글자예요.
 - 확인 방법: 카드가 7장이 되고 `영상 7개`로 바뀌어요. 제목을 눌러 YouTube가 새 탭에서 열려요.
 - 힌트: 앞의 `v006` 줄 끝에 쉼표를 붙이고, 새 줄에는 쉼표를 붙이지 않아요.
-- 마무리: 내 영상을 남겨 두려면 소스 제어 패널에서 `Day 25: 내 영상 추가`로 커밋·푸시해요. 되돌리려면 **변경 내용 취소**를 눌러요(또는 다음 커밋에 포함돼요).
+- 마무리: 내 영상을 남겨 두려면 소스 제어 패널에서 `Day 25: 내 영상 추가`로 커밋·푸시해요. 되돌리려면 소스 제어 패널의 `videos.json` 줄에 마우스를 올리고 ↶(**변경 내용 취소**)를 눌러요. 줄 하나만 되돌려요. 패널 머리글 줄의 ↶는 모든 변경을 되돌리니 누르지 마세요. 그대로 두면 카드가 7장이 되어 이후 Day의 "6장"과 달라져요.
 
 ## ✅ 정답
 
@@ -843,6 +843,490 @@ if (greeting) {
 ```
 :::
 
+:::answer 오늘 끝 상태 style.css 전체
+Day 20 전체본에 Day 21~25의 메뉴 버튼, 다크 모드, 검색·필터, 문의 폼, 오류 상자 규칙을 모두 더한 파일 전체예요. 뒤처졌거나 `style.css`가 엉켰을 때 `Ctrl + A` 후 붙여 넣어 맞춰요. 내가 바꾼 색이 있으면 먼저 적어 두고, 맞춘 뒤에는 소스 제어에서 커밋하고 **변경 내용 동기화**를 눌러요.
+
+📄 C:\dev\my-creator-site\css\style.css
+```css
+/* ==========================================================
+   style.css - 달빛곰 방송국 전체 스타일 (모든 페이지가 함께 써요)
+   순서: 변수 → 기본 → 레이아웃 → 헤더/메뉴 → 공통 부품 → 페이지별 → 반응형
+   모바일 먼저 만들고, 화면이 넓어지면 @media로 덧붙여요 (Day 13)
+   ========================================================== */
+
+/* ---------- 1. CSS 변수: 색은 여기서만 정해요 (Day 14, 22) ---------- */
+:root {
+  --bg: #ffffff;
+  --surface: #f4f2ff;      /* 카드·표 머리글 배경 */
+  --text: #1d1b2e;
+  --muted: #5a5775;        /* 보조 글자 */
+  --accent: #5b4bdb;       /* 포인트 색 (버튼, 링크) */
+  --accent-text: #ffffff;  /* 포인트 색 위의 글자 */
+  --link: #4a3bc7;
+  --border: #d9d6ee;
+  --error: #b3261e;
+  --success: #1b6e3c;
+  --radius: 12px;
+  color-scheme: light;     /* 입력칸·스크롤바도 밝은 모양으로 */
+}
+
+/* 다크 모드: main.js가 <html data-theme="dark">를 붙이면 변수 값만 바뀌어요 */
+:root[data-theme="dark"] {
+  --bg: #14121f;
+  --surface: #1f1c33;
+  --text: #ece9ff;
+  --muted: #b3aed6;
+  --accent: #8f83ff;
+  --accent-text: #14121f;
+  --link: #b0a8ff;
+  --border: #3a3660;
+  --error: #ff8a80;
+  --success: #6fd49a;
+  color-scheme: dark;
+}
+
+/* ---------- 2. 기본 설정 (Day 9, 10) ---------- */
+* {
+  box-sizing: border-box; /* padding·border를 width 안에 포함해서 계산해요 */
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  line-height: 1.7;
+  word-break: keep-all;     /* 한국어는 단어 중간에서 줄을 바꾸지 않아요 */
+  overflow-wrap: break-word; /* 너무 긴 단어만 강제로 줄을 바꿔요 */
+  transition: background-color 0.2s, color 0.2s; /* 테마가 바뀔 때 부드럽게 (Day 14) */
+}
+
+/* hidden 속성이 다른 display 규칙에 지지 않게 해요 */
+[hidden] {
+  display: none !important;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: var(--link);
+}
+
+h1, h2, h3 {
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 1.75rem;
+  margin: 1.5rem 0 0.75rem;
+}
+
+h2 {
+  font-size: 1.35rem;
+  margin: 2rem 0 0.75rem;
+}
+
+h3 {
+  font-size: 1.1rem;
+  margin: 0.25rem 0;
+}
+
+/* ---------- 3. 레이아웃 ---------- */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding-left: 1rem; /* 좌우 여백 16px: 휴대폰에서도 글자가 가장자리에 붙지 않아요 */
+  padding-right: 1rem;
+}
+
+main {
+  padding-bottom: 3rem;
+}
+
+/* ---------- 4. 헤더와 내비게이션 (Day 11) ---------- */
+.site-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  display: flex;
+  flex-wrap: wrap;          /* 좁은 화면에서는 메뉴가 아래 줄로 내려가요 */
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.logo img {
+  display: block;
+  border-radius: 8px;
+}
+
+/* 모바일: 메뉴 버튼은 보이고, 메뉴 목록은 숨겨져 있어요 */
+.menu-toggle {
+  margin-left: auto;
+}
+
+.site-nav {
+  display: none;
+  flex-basis: 100%; /* 한 줄을 다 차지해서 아래로 내려가요 */
+}
+
+.site-nav.open {
+  display: block; /* main.js가 open 클래스를 붙이면 보여요 */
+}
+
+.menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.menu-list a {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.menu-list a:hover {
+  background: var(--border);
+}
+
+/* 지금 보고 있는 페이지 표시 */
+.menu-list a[aria-current="page"] {
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 700;
+}
+
+/* ---------- 5. 공통 부품 ---------- */
+button,
+.button {
+  display: inline-block;
+  font: inherit;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-text);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s, background-color 0.15s;
+}
+
+button:hover,
+.button:hover {
+  transform: translateY(-2px);
+}
+
+.button-outline,
+.menu-toggle,
+.theme-toggle,
+.filters button {
+  background: transparent;
+  color: var(--text);
+}
+
+.theme-toggle[aria-pressed="true"],
+.filters button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+/* 카드 그리드 (Day 12): 칸 하나는 최소 240px, 남는 공간은 똑같이 나눠 가져요 */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card img {
+  display: block;
+  width: 100%;
+}
+
+.card-body {
+  padding: 0.75rem 1rem 1rem;
+}
+
+.card-body p {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+}
+
+.card-body time {
+  display: block;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0 0.6rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* ---------- 6. 페이지별 ---------- */
+
+/* 홈: 소개 영역 */
+.hero {
+  display: grid;
+  gap: 1.5rem;
+  align-items: center;
+  padding-top: 1.5rem;
+  padding-bottom: 1rem;
+}
+
+.hero-image {
+  width: 160px;
+  border-radius: 50%;
+}
+
+.greeting {
+  color: var(--muted);
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* 유튜브 영상: 가로 폭에 맞춰 16:9 비율을 유지해요 */
+.video-frame {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+/* 소개 페이지 */
+.about-intro {
+  display: grid;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.about-image {
+  width: 200px;
+  border-radius: var(--radius);
+}
+
+/* 영상 목록: 필터 + 검색 */
+.toolbar {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.search-box label {
+  display: block;
+  font-weight: 700;
+}
+
+input,
+select,
+textarea {
+  display: block;
+  width: 100%;
+  font: inherit;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent);
+}
+
+.result-count {
+  color: var(--muted);
+  margin: 0 0 0.5rem;
+}
+
+.error-box {
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--error);
+  border-radius: 8px;
+  color: var(--error);
+}
+
+/* 방송 일정 */
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.schedule-table caption {
+  text-align: left;
+  font-weight: 700;
+  padding-bottom: 0.5rem;
+}
+
+.schedule-table th,
+.schedule-table td {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.schedule-table thead th {
+  background: var(--surface);
+}
+
+/* 문의 폼 */
+.contact-form {
+  display: grid;
+  gap: 1rem;
+  max-width: 560px;
+}
+
+.field label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.field input[aria-invalid="true"],
+.field textarea[aria-invalid="true"] {
+  border-color: var(--error);
+}
+
+.field-error {
+  margin: 0.25rem 0 0;
+  color: var(--error);
+  font-size: 0.9rem;
+}
+
+.field-hint {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.field-error:empty {
+  display: none; /* 오류 메시지가 없으면 자리도 차지하지 않아요 */
+}
+
+.form-status {
+  margin: 0;
+  font-weight: 700;
+}
+
+.form-status.is-error {
+  color: var(--error);
+}
+
+.form-status.is-success {
+  color: var(--success);
+}
+
+/* ---------- 7. 푸터 ---------- */
+.site-footer {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  text-align: center;
+  padding: 1.5rem 0;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+/* ---------- 8. 반응형: 화면이 768px 이상일 때 (Day 13) ---------- */
+@media (min-width: 768px) {
+  h1 {
+    font-size: 2.25rem;
+  }
+
+  /* 메뉴 버튼은 숨기고, 메뉴 목록은 가로로 늘어놔요 */
+  .menu-toggle {
+    display: none;
+  }
+
+  .site-nav {
+    display: block;
+    flex-basis: auto;
+    margin-left: auto;
+  }
+
+  .menu-list {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .hero {
+    grid-template-columns: 200px 1fr;
+    gap: 2rem;
+  }
+
+  .hero-image {
+    width: 200px;
+  }
+
+  .about-intro {
+    grid-template-columns: 200px 1fr;
+  }
+
+  .toolbar {
+    grid-template-columns: 1fr minmax(240px, 320px);
+    align-items: end;
+  }
+}
+```
+:::
+
 ## 🧯 자주 막히는 곳
 
 여기에 없는 증상은 [문제 해결 모음](#/page/troubleshooting)에서 찾아보세요.
@@ -883,13 +1367,13 @@ Failed to load resource: the server responded with a status of 404 (Not Found)
 
 **원인:** 파일 이름이나 폴더 위치가 달라요. `data` 폴더가 `my-creator-site` 안이 아닌 다른 곳에 있거나, `Data`처럼 대문자로 만들었거나, `video.json`으로 오타가 났어요. 내 컴퓨터(Windows)는 대소문자를 구분하지 않아도 배포 서버는 구분해서, 배포 주소에서만 404가 나기도 해요.
 
-**해결:** `C:\dev\my-creator-site\data\videos.json`이 정확히 있는지 탐색기에서 확인하고, `fetch('data/videos.json')`의 소문자 철자와 폴더 이름을 똑같이 맞춰요.
+**해결:** `C:\dev\my-creator-site\data\videos.json`이 정확히 있는지 탐색기에서 확인하고, `fetch('data/videos.json')`의 소문자 철자와 폴더 이름을 똑같이 맞춰요. 폴더나 파일 이름의 대소문자만 고칠 때는 Git이 변경을 못 잡을 수 있어서, 임시 이름을 거쳐 두 번 바꿔요(`Data` → `data2` → `data`, 각각 커밋·동기화). 자세한 순서는 [도움말 7번](#/page/help)이에요.
 
 ### 배포 주소에서 예전 데이터가 보여요
 
 **원인:** GitHub Pages는 푸시 후 반영까지 최대 10분이 걸리고, 브라우저가 예전 파일을 기억(캐시)하기도 해요.
 
-**해결:** 5~10분 기다린 뒤 `Ctrl + F5`로 강력 새로 고침해요. 저장소의 `data/videos.json`에 내 수정이 올라와 있는지도 GitHub에서 확인해요.
+**해결:** 5~10분 기다린 뒤 `Ctrl + F5`로 강력 새로 고침해요. 저장소의 `data/videos.json`에 내 수정이 올라와 있는지도 GitHub에서 확인해요. 그래도 안 되면 [도움말 7번](#/page/help)을 순서대로 따라요.
 
 ## 📝 오늘의 체크리스트
 

@@ -340,7 +340,7 @@ function pad(number) {
 }
 ```
 
-- `isValidStart(text)`: `'20:00'`을 `split(':')`으로 잘라 `['20', '00']`을 만들고, `parts.length !== 2`(조각이 2개가 아님)이거나 한쪽이 비었으면 `false`를 돌려줘요. `!==`는 "같지 않다"예요(Day 16). 그다음 `Number()`로 숫자로 바꿔 시 `0~23`, 분 `0~59` 안에 있을 때만 `true`예요.
+- `isValidStart(text)`: `'20:00'`을 `split(':')`으로 잘라 `['20', '00']`을 만들고, `parts.length !== 2`(조각이 2개가 아님)이거나 한쪽이 비었으면 `false`를 돌려줘요. `!==`는 "같지 않다"예요(Day 16). 그다음 `Number()`로 숫자로 바꿔 시 `0~23`, 분 `0~59` 안에 있을 때만 `true`예요. 모양을 완벽히 따지는 검사는 아니에요(예: `20.5:00` 같은 이상한 값도 통과할 수 있어요). 화면이 깨지지는 않아서 연습용으로는 충분해요.
 - `getTargetTime(text)`: 오늘 날짜의 그 시각을 `Date`로 만들어요. Day 26의 `new Date()` + `setHours(시, 분, 0, 0)`이에요.
 - `pad(number)`: Day 26의 두 자리 맞추기와 같은 함수예요.
 
@@ -432,7 +432,7 @@ if (!isValidStart(start)) {
 
 **어디서:** Edge(또는 Chrome)로 연 `countdown.html`의 주소 칸
 
-**무엇을:** 주소 끝의 값을 아래처럼 바꿔 가며 `Enter`를 눌러 보세요. 개발자 도구 Console에서 2단계 줄로 배경을 어둡게 하면 글자가 잘 보여요.
+**무엇을:** 주소 끝의 값을 아래처럼 바꿔 가며 `Enter`를 눌러 보세요. 개발자 도구 Console에서 2단계 줄로 배경을 어둡게 하면 글자가 잘 보여요. 주소를 바꾸면 배경이 흰색으로 돌아가니, 콘솔에서 `↑` 키로 그 줄을 불러와 `Enter`로 다시 실행해요.
 
 | 주소 끝 | 보이는 결과 |
 |---|---|
@@ -774,7 +774,7 @@ if (!isValidStart(start)) {
 
 ### 계속 사용법 문장이 나와요
 
-**원인:** `start` 값이 올바른 `HH:MM`이 아니에요. 흔한 실수 세 가지가 있어요. ① 한글 입력 상태에서 친 전각 콜론 `20：00`. ② `?`를 두 번 쓰거나 `&` 대신 `,`를 썼어요. ③ `start=`를 `star=`로 틀리게 썼어요.
+**원인:** `start` 값이 올바른 `HH:MM`이 아니에요. 흔한 실수 세 가지가 있어요. ① 복사해 온 글에 섞인 전각 콜론 `20：00`이나 `:`·`&` 오타. ② `?`를 두 번 쓰거나 `&` 대신 `,`를 썼어요. ③ `start=`를 `star=`로 틀리게 썼어요.
 
 **해결:** 영어 입력 상태(`한/영` 키)에서 `?title=저녁 방송&start=20:00`을 다시 입력해요. 이름이 `title`, `start`로 정확한지 봐요.
 
@@ -788,7 +788,7 @@ if (!isValidStart(start)) {
 
 **원인:** 푸시를 안 했거나, 반영에 시간이 걸리는 중이거나(최대 10분), 폴더 이름의 대소문자가 달라요(`Overlay`). 배포 서버는 대소문자를 구분해요.
 
-**해결:** 소스 제어 패널의 변경이 0개인지(푸시가 끝났는지) 확인하고, GitHub 저장소에서 `overlay/countdown.html`이 있는지 봐요. 10분 기다린 뒤 `Ctrl + F5`로 다시 열어요.
+**해결:** 소스 제어 패널의 변경이 0개이고 **변경 내용 동기화** 버튼에 숫자가 없는지 확인하고(변경 0개는 커밋이 끝났다는 뜻일 뿐이라 동기화까지 해야 올라가요), GitHub 저장소의 커밋 목록에 오늘 커밋이 있는지, `overlay/countdown.html`이 있는지 봐요. 폴더 이름이 `Overlay`처럼 대문자라면 임시 이름을 거쳐 두 번 바꿔요. 순서는 [도움말 7번](#/page/help)이에요. Actions가 초록인지도 보고, 10분 기다린 뒤 `Ctrl + F5`로 다시 열어요.
 
 ### OBS에서 빈 화면이 나와요
 
@@ -813,6 +813,6 @@ if (!isValidStart(start)) {
 
 - [OBS Studio 공식 사이트](https://obsproject.com/): 설치 파일과 사용 안내를 받을 수 있어요.
 - [MDN — URLSearchParams](https://developer.mozilla.org/ko/docs/Web/API/URLSearchParams): 주소의 파라미터를 읽고 만드는 방법이에요.
-- [MDN — clamp()](https://developer.mozilla.org/ko/docs/Web/CSS/Reference/Values/clamp): 최솟값·기본값·최댓값 함수를 설명해요.
+- [MDN — clamp() (영어 문서)](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/clamp): 최솟값·기본값·최댓값 함수를 설명해요.
 
 ➡️ **다음 Day 예고:** [Day 28 · 품질 높이기](#/day/p1-d28)에서는 키보드만으로 사이트를 돌아다니게 다듬고, 검색에 잘 걸리도록 설명 문장을 달고, 파비콘을 넣고, Lighthouse로 품질 점수를 확인해요.

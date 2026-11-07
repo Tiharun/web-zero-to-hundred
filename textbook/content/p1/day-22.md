@@ -264,7 +264,7 @@ themeButton.addEventListener('click', () => {
 **무엇을:**
 
 1. 메뉴의 **🌙 다크 모드** 버튼을 눌러요.
-2. 메뉴에서 **영상**, **방송 일정**, **문의** 페이지로 차례로 가 봐요.
+2. 메뉴에서 **소개**, **영상**, **방송 일정**, **문의** 페이지로 차례로 가서 모든 페이지에 버튼이 있고 눌러지는지 봐요.
 3. 한 페이지에서 `F5`로 새로 고침해요.
 4. **🌙 다크 모드** 버튼을 한 번 더 눌러서 밝게 돌려요.
 
@@ -276,7 +276,7 @@ themeButton.addEventListener('click', () => {
 
 ### 5단계 · Application 패널에서 저장된 값 보기 (8분)
 
-저장이 정말 됐는지 눈으로 확인해요. 개발자 도구는 브라우저에서 열어야 해요. Live Preview 미리 보기 창에서는 `F12`가 개발자 도구를 열지 않아요. 미리 보기 창 위쪽 주소 칸의 주소(`http://127.0.0.1:3000/index.html`, 숫자는 달라도 돼요)를 복사해서 Edge(또는 Chrome) 주소창에 붙여 열어요. 파일을 더블클릭해서 열었다면 그대로 `F12`를 눌러요.
+저장이 정말 됐는지 눈으로 확인해요. 개발자 도구는 브라우저에서 열어야 해요. Live Preview 미리 보기 창에서는 `F12`가 개발자 도구를 열지 않아요. 미리 보기 창 위쪽 주소 칸의 주소(`http://127.0.0.1:3000/index.html`, 숫자는 달라도 돼요)를 복사해서 Edge(또는 Chrome) 주소창에 붙여 열어요. 파일을 더블클릭해서 열었다면 그대로 `F12`를 눌러요. 새로 연 Edge 창은 저장소가 따로라서 표가 비어 있어요. 그 창에서 **🌙 다크 모드** 버튼을 한 번 눌러야 표에 `theme` 줄이 생겨요(4단계의 미리 보기에서 누른 값은 여기에 없어요).
 
 **어디서:** Edge(또는 Chrome)에서 연 페이지 → `F12` → 개발자 도구 위쪽 탭 줄의 **Application**(애플리케이션) 탭
 
@@ -307,7 +307,7 @@ themeButton.addEventListener('click', () => {
 2번에서 **🌙 다크 모드** 버튼을 누르지 않았는데도 사이트가 어두운 모양이고 버튼은 눌림(보라 채움) 상태예요. 3번에서는 밝은 모양으로 돌아와요. 바꾼 Windows 설정은 원래대로 돌려놔 주세요.
 :::
 
-Windows 설정을 건드리고 싶지 않다면 개발자 도구에서 흉내 낼 수도 있어요. 개발자 도구에서 `Ctrl + Shift + P`(명령 메뉴)를 누르고 `Rendering`을 입력해 **Show Rendering**을 고르면 **Rendering** 패널이 열려요(오른쪽 위 `⋮` → **More tools**(도구 더 보기) → **Rendering**으로도 열려요). 그 안의 **Emulate CSS media feature prefers-color-scheme**(`prefers-color-scheme` 미디어 기능 에뮬레이션) 목록에서 `prefers-color-scheme: dark`를 고른 뒤 `F5`를 눌러요. 패널의 위치와 이름은 버전에 따라 조금 다를 수 있어요.
+Windows 설정을 건드리고 싶지 않다면 개발자 도구에서 흉내 낼 수도 있어요. 개발자 도구에서 `Ctrl + Shift + P`(명령 메뉴)를 누르고 `Rendering`을 입력해 **Show Rendering**을 고르면 **Rendering** 패널이 열려요(오른쪽 위 `⋮` → **More tools**(도구 더 보기) → **Rendering**으로도 열려요). 그 안의 **Emulate CSS media feature prefers-color-scheme**(`prefers-color-scheme` 미디어 기능 에뮬레이션) 목록에서 `prefers-color-scheme: dark`를 고른 뒤 `F5`를 눌러요. 패널의 위치와 이름은 버전에 따라 조금 다를 수 있어요. 브라우저 자체의 테마 설정이 `prefers-color-scheme`에 영향을 줄 수 있으니 결과가 이상하면 이 Rendering 방법을 써요.
 
 ### 7단계 · 커밋·푸시 (5분)
 
@@ -583,6 +583,20 @@ if (greeting) {
 
 **해결:** 정상 동작이에요. 쓰는 브라우저와 주소에서 한 번씩 고르면 돼요.
 
+### Cannot read properties of null (reading 'setAttribute')
+
+```text
+Uncaught TypeError: Cannot read properties of null (reading 'setAttribute')
+```
+
+**원인:** 다섯 페이지 중 한 곳에 다크 모드 버튼(`class="theme-toggle"`)을 안 넣어서, `main.js`가 버튼을 못 찾고(`null`) 그 아래 인사말·메뉴 코드까지 멈췄어요.
+
+**해결:**
+
+1. 오류가 난 페이지의 오른쪽 위 `main.js:줄번호`를 읽어요(그 페이지에서 `F12` → Console).
+2. 그 페이지의 머리글 메뉴 맨 끝에 2단계의 `<li><button class="theme-toggle" …>` 줄이 있는지 확인하고 없으면 붙여 넣어요.
+3. 다섯 페이지 모두 메뉴 끝에 버튼이 보이면 해결된 거예요.
+
 ### 버튼 글자가 안 바뀌어서 고장 난 줄 알았어요
 
 **원인:** 설계예요. 버튼 글자는 항상 `🌙 다크 모드`이고, 켜졌는지는 보라색 채움과 `aria-pressed` 값으로 알려요.
@@ -605,6 +619,6 @@ if (greeting) {
 
 - [MDN — Window.localStorage](https://developer.mozilla.org/ko/docs/Web/API/Window/localStorage): `setItem`, `getItem`, 저장소 규칙을 설명해요.
 - [MDN — prefers-color-scheme](https://developer.mozilla.org/ko/docs/Web/CSS/Reference/At-rules/@media/prefers-color-scheme): 사용자의 밝은·어두운 화면 선호를 CSS와 JavaScript로 읽는 방법이에요.
-- [MDN — color-scheme](https://developer.mozilla.org/ko/docs/Web/CSS/Reference/Properties/color-scheme): 입력칸·스크롤바 같은 브라우저 기본 부품의 색을 맞추는 속성이에요.
+- [MDN — color-scheme (영어 문서)](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/color-scheme): 입력칸·스크롤바 같은 브라우저 기본 부품의 색을 맞추는 속성이에요.
 
 ➡️ **다음 Day 예고:** [Day 23 · 필터와 검색](#/day/p1-d23)에서는 카테고리 버튼으로 영상을 실제로 거르고, 제목 검색창을 달아서 카테고리와 검색을 함께 적용해요.

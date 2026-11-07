@@ -25,3 +25,16 @@
 | `innerHTML`로 넣은 `<script>`는 실행되지 않고 `<img onerror>` 등은 실행될 수 있다 | 리뷰 ② I-1 ([MDN Element.innerHTML](https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML)) | 검색 확인(리뷰) |
 | 오류 줄의 파일 링크는 DevTools Sources 패널 복사본을 연다 | 리뷰 ①의 지식 주장. 이번에 화면으로 확인하지 못함 | **미확인**. 교재는 "줄 번호를 읽고 VS Code에서 고쳐요"로 표현해 어느 쪽이든 안전 |
 | Day 20 `style.css` 전체본 | 측정: Day 14 전체본(`day-14.md`)에 Day 16 `.greeting`, Day 20 `.card-body time`·`.badge`를 지시된 위치에 실제로 삽입해 생성(`../wzh-scratch/t12/day20.css`, 330줄). `reference/p1-my-creator-site/css/style.css`와 줄 비교 시 `.button-outline {`와 주석 1줄만 다름(뒤 Day에서 바뀌는 부분) | 측정 |
+
+## Days 21–30 구간 (2026-11-07)
+
+| 주장 | 근거 | 상태 |
+|---|---|---|
+| Day 30 `style.css` 전체본 | 측정: Day 20 전체본에 Day 21~26, 28의 CSS 블록(정답 쪽 코드)을 지시된 위치에 스크립트로 삽입. 결과가 `reference/p1-my-creator-site/css/style.css`와 **바이트 단위로 같음**(554→553줄 차이는 Day 14 원문의 빈 줄 하나를 정리해 해소). Day 25 전체본은 같은 스크립트의 중간 결과 | 측정 |
+| MDN ko 주소 5곳은 404, en-US는 200 | 리뷰 ② 측정(`curl -L`). 교재는 en-US로 바꾸고 "(영어 문서)" 표기 | 리뷰 측정 인용 |
+| 브라우저 페이지 안을 클릭하면 `Tab` 시작점이 클릭한 위치로 옮겨진다 | 검색: [Chrome — focus start point](https://developer.chrome.com/blog/focus-start-point) (오래된 글, Edge 현재 버전 실기 미확인) | 부분 확인. 새로 고침 후 클릭 없이 `Tab`으로 안내 |
+| `:focus-visible`이 텍스트 입력칸에는 마우스 클릭에도 적용된다 | 리뷰 ② M-2 ([MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:focus-visible)) | 리뷰 인용 |
+| `role="status"` = `aria-live="polite"` + `aria-atomic="true"` | 리뷰 ② M-4 (MDN status role) | 리뷰 인용 |
+| 파일 안 저장소 차단 환경의 오류가 `localStorage` 이름을 읽을 때 난다 | `docs/verification/p1-days-21-30.md` 원문 `Failed to read the 'localStorage' property from 'Window'` | 기록 인용 |
+| `F10`/`F8`이 노트북에서 밝기·볼륨 키일 수 있다 | 일반 지식(검색 안 함) | **추측**. "Fn과 함께, 또는 ▶ 버튼" 대안만 안내 |
+| 외부(YouTube 등) 콘솔 오류는 내 코드와 무관할 수 있다 | 검색 1건(Edge 추적 방지, 1차 리뷰 출처). 콘솔 문구는 확인 못 함 | 부분 확인 |

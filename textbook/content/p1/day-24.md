@@ -114,7 +114,7 @@ if (input.validity.patternMismatch) {
 
 - `aria-describedby="name-error"`: 입력칸을 설명하는 문장의 `id`를 연결해요. 칸에 도착하면 스크린 리더가 칸 이름 다음에 그 문장도 읽어 줘요. 닉네임 칸처럼 `"nickname-hint nickname-error"`로 여러 개를 이을 수 있어요.
 - `aria-invalid="true"`: "이 칸에 문제가 있어요". 문제가 없으면 이 속성을 지워요(`removeAttribute`). 오류 칸에는 빨간 테두리(CSS 속성 선택자)도 붙어요.
-- **[[aria-live]]**: "이 영역의 글자가 바뀌면 읽어 주세요"라고 알리는 속성이에요. `aria-live="polite"`는 하던 말을 마친 뒤에 알려 줘요. `role="status"`는 같은 뜻의 짧은 표현이라서 맨 아래 상태 문장에는 `role="status"`를 써요.
+- **[[aria-live]]**: "이 영역의 글자가 바뀌면 읽어 주세요"라고 알리는 속성이에요. `aria-live="polite"`는 하던 말을 마친 뒤에 알려 줘요. `role="status"`는 거의 같은 뜻의 짧은 표현(`aria-live="polite"`에 "통째로 읽기"까지 더한 것)이라서 맨 아래 상태 문장에는 `role="status"`를 써요.
 
 같은 문장을 반복해서 쓰면 스크린 리더가 같은 말을 또 읽어서 시끄러워요. 그래서 코드는 "문장이 이전과 같으면 다시 쓰지 않아요"로 되어 있어요.
 
@@ -569,7 +569,7 @@ form.addEventListener('input', (event) => {
 - 맨 끝의 `input` 리스너: 폼 하나에만 걸었지만 칸 4개 모두의 입력을 들어요(Day 21의 이벤트 위임이에요). `event.target`이 입력한 칸이고, 이미 오류 상태(`aria-invalid="true"`)인 칸만 다시 검사해요.
 
 :::success
-빈 채로 **보내기**를 누르면 세 칸의 빨간 안내와 맨 아래 `입력 내용을 확인해 주세요. 고칠 곳이 3군데 있어요.`가 빨갛게 나와요. 이름 칸에 글자를 치기 시작하면 이름 안내가 바로 사라지고 문장이 `2군데`로 줄어요. 칸을 모두 고치면 문장이 사라져요.
+빈 채로 **보내기**를 누르면 세 칸의 빨간 안내와 맨 아래 `입력 내용을 확인해 주세요. 고칠 곳이 3군데 있어요.`가 빨갛게 나와요. 이름 칸에 글자를 한 개 쳤을 때는 아직 안내가 남아 있고, 두 글자를 치면 이름 안내가 바로 사라지고 문장이 `2군데`로 줄어요. 칸을 모두 고치면 문장이 사라져요.
 :::
 
 ### 7단계 · 여러 경우를 직접 확인하기 (5분)
@@ -1169,8 +1169,8 @@ Pattern attribute value [A-Za-z0-9가-힣_{2,20} is not a valid regular expressi
 
 ## 📚 더 알아보기
 
-- [MDN — 클라이언트 측 폼 유효성 검사](https://developer.mozilla.org/ko/docs/Learn_web_development/Extensions/Forms/Form_validation): `required`, `pattern`, `validity`, `novalidate`를 처음부터 차근차근 설명해요.
+- [MDN — 클라이언트 측 폼 유효성 검사 (영어 문서)](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Form_validation): `required`, `pattern`, `validity`, `novalidate`를 처음부터 차근차근 설명해요.
 - [MDN — 정규 표현식](https://developer.mozilla.org/ko/docs/Web/JavaScript/Guide/Regular_expressions): 오늘 읽은 `[ ]`, `^`, `$`, `+`, `\s`를 자세히 정리한 안내서예요.
-- [MDN — ARIA live regions](https://developer.mozilla.org/ko/docs/Web/Accessibility/ARIA/Guides/Live_regions): `aria-live`, `role="status"`가 스크린 리더에서 어떻게 읽히는지 알려 줘요.
+- [MDN — ARIA live regions (영어 문서)](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Guides/Live_regions): `aria-live`, `role="status"`가 스크린 리더에서 어떻게 읽히는지 알려 줘요.
 
 ➡️ **다음 Day 예고:** [Day 25 · JSON과 fetch](#/day/p1-d25)에서는 영상 데이터를 코드 안의 배열에서 `data\videos.json` 파일로 옮기고, `fetch`로 불러와서 카드를 그려요. 파일을 불러오다 실패했을 때의 대비(`try…catch`)도 배워요.

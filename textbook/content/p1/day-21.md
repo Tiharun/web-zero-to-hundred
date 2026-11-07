@@ -7,7 +7,7 @@
 - `addEventListener`로 "누르면 이 코드를 실행해요"라고 연결하고, 버튼이 여러 개여도 리스너 하나로 처리하는 **이벤트 위임**을 설명할 수 있어요.
 - `.site-nav.open`과 `.site-nav .open`이 왜 다른지 말할 수 있어요.
 
-**예상 시간: 110분** (개념 이해 25분 · 따라하기 60분 · 과제 20분 · 정리 5분)
+**예상 시간: 115분** (개념 이해 25분 · 따라하기 65분 · 과제 20분 · 정리 5분)
 
 :::path 📂 시작 상태
 어제(Day 20)까지 만든 파일이 이렇게 있어야 해요. 없거나 다르면 [Day 20](#/day/p1-d20)의 "오늘 끝 상태 전체 코드"로 맞춰 주세요.
@@ -70,7 +70,7 @@ document.addEventListener('click', (event) => {
 ```
 
 :::warn 콜백 자리에 괄호를 붙이면 안 돼요
-`button.addEventListener('click', toggleMenu());`처럼 함수 이름 뒤에 `()`를 붙이면 리스너를 걸 때 **바로 실행**돼요. 누를 때가 아니에요. 나중에 불러야 하니 `toggleMenu`(괄호 없이)나 `() => { toggleMenu(); }`처럼 써요. 내일(Day 26)의 `setInterval`에서도 똑같이 나와요.
+`button.addEventListener('click', toggleMenu());`처럼 함수 이름 뒤에 `()`를 붙이면 리스너를 걸 때 **바로 실행**돼요. 누를 때가 아니에요. 나중에 불러야 하니 `toggleMenu`(괄호 없이)나 `() => { toggleMenu(); }`처럼 써요. Day 26의 `setInterval`에서도 똑같이 나와요.
 :::
 
 ### 복합 선택자: 빈칸 하나가 뜻을 바꿔요
@@ -533,7 +533,7 @@ GitHub 저장소 페이지(`https://github.com/<내 아이디>/my-creator-site`)
 
 리스너를 버튼마다 따로 다는 방법을 **콘솔에서** 써 보고, 이벤트 위임과 비교해 보세요. 파일은 고치지 않아요.
 
-- 영상 페이지에서 `F12` → **Console**에 아래 코드를 붙여 넣고 `Enter`를 눌러요.
+- 영상 페이지에서 `F12` → **Console**에 아래 코드를 붙여 넣고 `Enter`를 눌러요. 붙여 넣기를 막는 경고가 나오면 Day 15에서 배운 대로 `allow pasting`을 직접 입력한 뒤 붙여 넣어요.
 - 버튼을 몇 개 눌러 보고, 무엇이 같고 무엇이 다른지 적어요.
 
 ```js
@@ -551,7 +551,7 @@ document.querySelectorAll('#category-filters button').forEach((button) => {
 
 폭 360px에서 마우스를 쓰지 않고 `Tab`으로 **☰ 메뉴** 버튼까지 가서 `Enter`와 `Space`로 메뉴를 열고 닫아 보세요. 그리고 `<button>`을 `<div>`로 바꾸면 왜 안 되는지 적어 보세요(바꾼 뒤에는 꼭 되돌려요).
 
-- 확인 방법: 버튼에 보라색 포커스 테두리가 생기고, 두 키 모두 메뉴가 열리고 닫혀요.
+- 확인 방법: 버튼에 포커스 테두리가 생기고, 두 키 모두 메뉴가 열리고 닫혀요.
 - 힌트: 키보드의 `Tab`은 어떤 요소에만 멈출까요?
 
 ## ✅ 정답
@@ -954,30 +954,30 @@ my-creator-site/
     <p>협업 제안, 영상 요청, 궁금한 점을 남겨 주세요. 이 사이트는 연습용이라 실제로 전송되지는 않아요.</p>
 
     <form>
-      <p>
-        <label for="name">이름</label><br>
-        <input id="name" name="name" type="text">
-      </p>
-      <p>
-        <label for="email">이메일</label><br>
-        <input id="email" name="email" type="email">
-      </p>
-      <p>
-        <label for="nickname">채팅 닉네임 (선택)</label><br>
-        <input id="nickname" name="nickname" type="text">
-      </p>
-      <p>
-        <label for="topic">문의 종류</label><br>
+      <div>
+        <label for="name">이름</label>
+        <input id="name" name="name" type="text" autocomplete="name">
+      </div>
+      <div>
+        <label for="email">이메일</label>
+        <input id="email" name="email" type="email" autocomplete="email">
+      </div>
+      <div>
+        <label for="nickname">채팅 닉네임 (선택)</label>
+        <input id="nickname" name="nickname" type="text" autocomplete="nickname">
+      </div>
+      <div>
+        <label for="topic">문의 종류</label>
         <select id="topic" name="topic">
           <option value="general">일반 문의</option>
           <option value="collab">협업 제안</option>
           <option value="request">영상 요청</option>
         </select>
-      </p>
-      <p>
-        <label for="message">내용</label><br>
+      </div>
+      <div>
+        <label for="message">내용</label>
         <textarea id="message" name="message" rows="6"></textarea>
-      </p>
+      </div>
       <button type="submit">보내기</button>
     </form>
   </main>

@@ -74,11 +74,11 @@ Day 14에서 GitHub Pages를 켰어요. 푸시하면 GitHub가 자동으로 사�
 
 **어디서:** VS Code의 Live Preview 주소를 연 Edge(또는 Chrome) + `F12` 개발자 도구. 오버레이와 카운트다운은 Live Preview 또는 배포 주소로만 확인돼요.
 
-**무엇을:** 아래 표를 위에서 아래로 하나씩 확인해요. "안 되면" 칸의 Day로 돌아가서 그날의 🧯와 "오늘 끝 상태 전체 코드"를 보세요.
+**무엇을:** 아래 표를 위에서 아래로 하나씩 확인해요. "안 되면" 칸의 Day로 돌아가서 그날의 🧯와 설명을 보세요. 단, 그 Day의 "오늘 끝 상태 전체 코드"는 **그날의 옛 모습**이라서 지금 파일에 덮어쓰면 뒤에서 만든 기능이 사라져요. 파일을 맞출 때는 2단계 표의 **최신 전체본**만 써요.
 
 | 점검 항목 | 확인 방법 | 안 되면 |
 |---|---|---|
-| 다섯 페이지와 오버레이가 열려요 | 메뉴로 홈·소개·영상·방송 일정·문의를 차례로 열어요 | [Day 4](#/day/p1-d04) |
+| 다섯 페이지가 열려요 | 메뉴로 홈·소개·영상·방송 일정·문의를 차례로 열어요 | [Day 4](#/day/p1-d04) |
 | 메뉴와 링크가 맞아요 | 현재 페이지 메뉴만 보라색, 링크가 맞는 곳으로 가요 | [Day 11](#/day/p1-d11) |
 | 그림 5개와 파비콘이 보여요 | 로고·프로필·썸네일 3개, 탭에 초승달 | [Day 28](#/day/p1-d28) |
 | 콘솔 오류가 0이에요 | 각 페이지 `F12` → Console에 빨간 줄 없음 | [Day 29](#/day/p1-d29) |
@@ -101,7 +101,21 @@ Day 14에서 GitHub Pages를 켰어요. 푸시하면 GitHub가 자동으로 사�
 
 **어디서:** VS Code
 
-**무엇을:** 1단계에서 찾은 문제를 해당 Day의 "오늘 끝 상태 전체 코드"를 보며 고쳐요. 문제가 하나도 없었다면 이 단계는 건너뛰어도 돼요.
+**무엇을:** 1단계에서 찾은 문제를 고쳐요. 문제가 하나도 없었다면 이 단계는 건너뛰어도 돼요. 파일 하나가 엉켰을 때는 아래 표에서 그 파일의 **최신 전체본**이 있는 Day를 열어 코드 상자를 복사하고, VS Code에서 그 파일을 열어 `Ctrl + A` → 붙여 넣기 → `Ctrl + S`로 맞춰요. 옛 Day의 코드는 비교만 하고 덮어쓰지 마세요.
+
+| 파일 | 최신 전체본 |
+|---|---|
+| `index.html`, `about.html`, `contents.html`, `schedule.html`, `contact.html`, `favicon.svg`, `overlay/countdown.html` | [Day 28](#/day/p1-d28) 정답 |
+| `css/style.css` | 이 Day(Day 30) 정답 맨 아래 |
+| `js/main.js`, `js/contents.js`, `data/videos.json` | [Day 25](#/day/p1-d25) 정답 |
+| `js/contact.js` | [Day 24](#/day/p1-d24) 정답 |
+| `js/schedule.js`, `data/schedule.json` | [Day 26](#/day/p1-d26) 정답 |
+| `overlay/countdown.js`, `overlay/countdown.css` | [Day 27](#/day/p1-d27) 정답 |
+| `images/profile.svg`, `images/logo.svg`, `images/thumb-*.svg` | [Day 5](#/day/p1-d05), [Day 6](#/day/p1-d06), [Day 12](#/day/p1-d12) 정답 |
+
+:::warn 내 글이 사라질 수 있어요
+전체를 덮어쓰면 내가 바꾼 닉네임, 소개 문장, 방송 일정, 영상 ID, 색, 제목·설명이 예시 글로 돌아가요. 덮어쓰기 전에 내 글을 따로 적어 두고 붙여 넣은 뒤 다시 바꿔요. 다 맞췄으면 3단계처럼 소스 제어에서 커밋하고 **변경 내용 동기화**를 눌러야 배포 주소에 반영돼요.
+:::
 
 :::success
 고친 곳이 있다면 1단계 표에서 그 항목을 다시 확인했고 통과했어요.
@@ -123,7 +137,7 @@ https://github.com/<내 아이디>/my-creator-site
 2. 앞의 표시가 초록 체크(✓)가 될 때까지 기다려요. 최대 10분 걸려요.
 
 :::success
-맨 위 실행의 표시가 초록 체크예요. 빨간 ✕이면 그 줄을 클릭해 오류 내용을 읽고, 위쪽 **Re-run jobs**(다시 실행) 계열 버튼을 눌러 다시 실행해 봐요(버튼 이름은 버전에 따라 달라요). 아래 🧯의 첫 항목도 보세요.
+맨 위 실행의 표시가 초록 체크예요. 빨간 ✕이면 그 줄을 클릭해 오류 내용을 읽고, 위쪽 **Re-run jobs**(다시 실행) 계열 버튼을 눌러 다시 실행해 봐요(버튼 이름은 버전에 따라 달라요). 아래 🧯의 첫 항목도 보세요. 푸시했는데도 배포 주소가 그대로면 [도움말 7번](#/page/help)의 순서대로 확인해요.
 :::
 
 ### 4단계 · 배포 주소에서 점검표 한 번 더 (10분)
@@ -133,7 +147,7 @@ https://github.com/<내 아이디>/my-creator-site
 **무엇을:**
 
 1. `Ctrl + F5`로 강력 새로 고침해서 예전 모습이 남지 않게 해요.
-2. 1단계 표를 배포 주소에서 다시 확인해요. 특히 영상 목록(`fetch`), 일정 카운트다운, 오버레이 주소를 봐요. 오버레이는 `https://<내 아이디>.github.io/my-creator-site/overlay/countdown.html?title=저녁%20방송&start=20:00`이에요.
+2. 1단계 표를 배포 주소에서 다시 확인해요. 내 컴퓨터에서는 되는데 여기서만 안 되면 [도움말 7번](#/page/help)을 순서대로 따라요. 특히 영상 목록(`fetch`), 일정 카운트다운, 오버레이 주소를 봐요. 오버레이는 `https://<내 아이디>.github.io/my-creator-site/overlay/countdown.html?title=저녁%20방송&start=20:00`이에요.
 3. 휴대폰이 있다면 휴대폰 브라우저에서 같은 주소를 직접 입력해 열어요. 사이트와 오버레이 주소 모두 열어 봐요.
 
 :::success
@@ -211,7 +225,7 @@ GitHub 저장소 첫 화면 아래 README에 `회고` 절이 보이고, 가장 �
 
 **무엇을:**
 
-1. 이 Day 맨 아래의 **Day 완료** 버튼을 눌러요. 앞 Day를 모두 완료해야 눌려요.
+1. 이 Day 맨 아래의 **Day 완료** 버튼을 눌러요. 앞 Day를 모두 완료해야 눌려요. 앞 Day의 버튼을 한 번도 안 눌렀다면 왼쪽 목차에서 ✅가 없는 Day를 하나씩 열어 맨 아래 **Day 완료**를 먼저 눌러요(차례대로 눌러야 해요).
 2. 오른쪽 위 **설정**(⚙)을 눌러 **진도 백업**의 **진도 내보내기**를 눌러요. 파일이 내려받아져요. 안전한 곳에 보관하세요. 브라우저 기록을 지우면 진도가 사라질 수 있어서예요.
 
 :::success
@@ -222,7 +236,7 @@ Day 30에 ✅ 완료 표시가 보이고, 교재 홈에서 P2 스트리머 허�
 
 ### 과제 1 · 점검표 완주 (쉬움 ⭐, 8분)
 
-1단계의 점검표 14개를 **배포 주소에서도** 모두 확인해 보세요. 하나라도 안 되면 어느 항목이 왜 안 됐는지 한 줄씩 적어요.
+4단계에서 배포 주소로 확인한 점검표 14개의 결과를 적어 보세요. 안 된 항목이 있으면 어느 항목이 왜 안 됐는지 한 줄씩 적고, 모두 통과했으면 "14개 모두 통과"라고 적어요.
 
 - 확인 방법: 14개 모두 통과하거나, 안 된 항목과 돌아갈 Day가 적혀 있어요.
 - 힌트: 배포 주소에서만 안 되는 것은 대소문자, 경로, 캐시가 원인인 경우가 많아요.
@@ -247,7 +261,7 @@ Day 30에 ✅ 완료 표시가 보이고, 교재 홈에서 P2 스트리머 허�
 ```text
 항목별 확인 방법과 안 될 때 돌아갈 Day는 1단계 표에 있어요.
 배포 주소에서만 안 되는 대표 원인:
-- 파일·폴더 이름 대소문자 (Data/data) → 소문자로 통일
+- 파일·폴더 이름 대소문자 (Data/data) → 이름을 바꿀 때는 임시 이름을 거쳐 두 번 바꿔요 ([도움말 7번](#/page/help))
 - 반영 대기 → 10분 기다린 뒤 Ctrl + F5
 - 경로 (/ 로 시작하는 절대 경로) → 상대 경로
 ```
@@ -280,7 +294,7 @@ git push
 :::
 
 :::answer 오늘 끝 상태 전체 코드
-막혔다면 아래 코드로 내 파일을 맞추세요. 오늘 바뀌는 파일은 `README.md`(맨 끝에 `## 회고` 절 추가)뿐이고, 나머지는 Day 29의 끝 상태와 같아요. 이 상태가 완성본(`reference`)과 글 내용만 다르게 같은 P1의 최종 모습이에요.
+막혔다면 아래 코드로 내 파일을 맞추세요. 오늘 바뀌는 파일은 `README.md`(맨 끝에 `## 회고` 절 추가)뿐이고, 나머지는 Day 29의 끝 상태와 같아요. 이 상태가 P1의 최종 모습이에요(글 내용만 사람마다 달라요).
 
 ```text
 my-creator-site/
@@ -424,25 +438,585 @@ overlay/countdown.html?title=저녁 방송&start=20:00
 ````
 :::
 
+:::answer 오늘 끝 상태 style.css 전체
+P1 최종 `style.css` 전체예요(Day 25 전체본에 Day 26의 일정 강조와 Day 28의 키보드·움직임 규칙을 더한 것). `css/style.css`가 엉켰을 때 `Ctrl + A` 후 붙여 넣어 맞춰요. 내가 바꾼 색이 있으면 먼저 적어 두고, 맞춘 뒤에는 소스 제어에서 커밋하고 **변경 내용 동기화**를 눌러요.
+
+📄 C:\dev\my-creator-site\css\style.css
+```css
+/* ==========================================================
+   style.css - 달빛곰 방송국 전체 스타일 (모든 페이지가 함께 써요)
+   순서: 변수 → 기본 → 레이아웃 → 헤더/메뉴 → 공통 부품 → 페이지별 → 반응형
+   모바일 먼저 만들고, 화면이 넓어지면 @media로 덧붙여요 (Day 13)
+   ========================================================== */
+
+/* ---------- 1. CSS 변수: 색은 여기서만 정해요 (Day 14, 22) ---------- */
+:root {
+  --bg: #ffffff;
+  --surface: #f4f2ff;      /* 카드·표 머리글 배경 */
+  --text: #1d1b2e;
+  --muted: #5a5775;        /* 보조 글자 */
+  --accent: #5b4bdb;       /* 포인트 색 (버튼, 링크) */
+  --accent-text: #ffffff;  /* 포인트 색 위의 글자 */
+  --link: #4a3bc7;
+  --border: #d9d6ee;
+  --error: #b3261e;
+  --success: #1b6e3c;
+  --highlight: #fff3c4;    /* 오늘 요일 강조 */
+  --radius: 12px;
+  color-scheme: light;     /* 입력칸·스크롤바도 밝은 모양으로 */
+}
+
+/* 다크 모드: main.js가 <html data-theme="dark">를 붙이면 변수 값만 바뀌어요 */
+:root[data-theme="dark"] {
+  --bg: #14121f;
+  --surface: #1f1c33;
+  --text: #ece9ff;
+  --muted: #b3aed6;
+  --accent: #8f83ff;
+  --accent-text: #14121f;
+  --link: #b0a8ff;
+  --border: #3a3660;
+  --error: #ff8a80;
+  --success: #6fd49a;
+  --highlight: #4a3f12;
+  color-scheme: dark;
+}
+
+/* ---------- 2. 기본 설정 (Day 9, 10) ---------- */
+* {
+  box-sizing: border-box; /* padding·border를 width 안에 포함해서 계산해요 */
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  line-height: 1.7;
+  word-break: keep-all;     /* 한국어는 단어 중간에서 줄을 바꾸지 않아요 */
+  overflow-wrap: break-word; /* 너무 긴 단어만 강제로 줄을 바꿔요 */
+  transition: background-color 0.2s, color 0.2s; /* 테마가 바뀔 때 부드럽게 (Day 14) */
+}
+
+/* hidden 속성이 다른 display 규칙에 지지 않게 해요 */
+[hidden] {
+  display: none !important;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: var(--link);
+}
+
+h1, h2, h3 {
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 1.75rem;
+  margin: 1.5rem 0 0.75rem;
+}
+
+h2 {
+  font-size: 1.35rem;
+  margin: 2rem 0 0.75rem;
+}
+
+h3 {
+  font-size: 1.1rem;
+  margin: 0.25rem 0;
+}
+
+/* 키보드로 이동할 때 현재 위치가 보이게 해요 (접근성, Day 28) */
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* 화면에서는 숨기고 스크린 리더에게만 읽히는 글자 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* "본문 바로가기": 키보드로 Tab을 처음 누르면 나타나요 */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  background: var(--accent);
+  color: var(--accent-text);
+  padding: 0.5rem 1rem;
+  border-radius: 0 0 var(--radius) var(--radius);
+  z-index: 10;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* ---------- 3. 레이아웃 ---------- */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding-left: 1rem; /* 좌우 여백 16px: 휴대폰에서도 글자가 가장자리에 붙지 않아요 */
+  padding-right: 1rem;
+}
+
+main {
+  padding-bottom: 3rem;
+}
+
+/* ---------- 4. 헤더와 내비게이션 (Day 11) ---------- */
+.site-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  display: flex;
+  flex-wrap: wrap;          /* 좁은 화면에서는 메뉴가 아래 줄로 내려가요 */
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.logo img {
+  display: block;
+  border-radius: 8px;
+}
+
+/* 모바일: 메뉴 버튼은 보이고, 메뉴 목록은 숨겨져 있어요 */
+.menu-toggle {
+  margin-left: auto;
+}
+
+.site-nav {
+  display: none;
+  flex-basis: 100%; /* 한 줄을 다 차지해서 아래로 내려가요 */
+}
+
+.site-nav.open {
+  display: block; /* main.js가 open 클래스를 붙이면 보여요 */
+}
+
+.menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.menu-list a {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.menu-list a:hover {
+  background: var(--border);
+}
+
+/* 지금 보고 있는 페이지 표시 */
+.menu-list a[aria-current="page"] {
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 700;
+}
+
+/* ---------- 5. 공통 부품 ---------- */
+button,
+.button {
+  display: inline-block;
+  font: inherit;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-text);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s, background-color 0.15s;
+}
+
+button:hover,
+.button:hover {
+  transform: translateY(-2px);
+}
+
+.button-outline,
+.menu-toggle,
+.theme-toggle,
+.filters button {
+  background: transparent;
+  color: var(--text);
+}
+
+.theme-toggle[aria-pressed="true"],
+.filters button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+/* 카드 그리드 (Day 12): 칸 하나는 최소 240px, 남는 공간은 똑같이 나눠 가져요 */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card img {
+  display: block;
+  width: 100%;
+}
+
+.card-body {
+  padding: 0.75rem 1rem 1rem;
+}
+
+.card-body p {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+}
+
+.card-body time {
+  display: block;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0 0.6rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* ---------- 6. 페이지별 ---------- */
+
+/* 홈: 소개 영역 */
+.hero {
+  display: grid;
+  gap: 1.5rem;
+  align-items: center;
+  padding-top: 1.5rem;
+  padding-bottom: 1rem;
+}
+
+.hero-image {
+  width: 160px;
+  border-radius: 50%;
+}
+
+.greeting {
+  color: var(--muted);
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* 유튜브 영상: 가로 폭에 맞춰 16:9 비율을 유지해요 */
+.video-frame {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+/* 소개 페이지 */
+.about-intro {
+  display: grid;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.about-image {
+  width: 200px;
+  border-radius: var(--radius);
+}
+
+/* 영상 목록: 필터 + 검색 */
+.toolbar {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.search-box label {
+  display: block;
+  font-weight: 700;
+}
+
+input,
+select,
+textarea {
+  display: block;
+  width: 100%;
+  font: inherit;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent);
+}
+
+.result-count {
+  color: var(--muted);
+  margin: 0 0 0.5rem;
+}
+
+.error-box {
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--error);
+  border-radius: 8px;
+  color: var(--error);
+}
+
+/* 방송 일정 */
+.next-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin: 1.5rem 0;
+}
+
+.next-box h2 {
+  margin-top: 0;
+}
+
+.next-box p {
+  margin: 0;
+}
+
+#next-remaining {
+  display: block;
+  font-size: 1.75rem;
+  font-variant-numeric: tabular-nums; /* 숫자 폭을 같게 해서 흔들리지 않아요 */
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.schedule-table caption {
+  text-align: left;
+  font-weight: 700;
+  padding-bottom: 0.5rem;
+}
+
+.schedule-table th,
+.schedule-table td {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.schedule-table thead th {
+  background: var(--surface);
+}
+
+/* 오늘 요일 행 강조: schedule.js가 today 클래스를 붙여요 */
+.schedule-table tr.today {
+  background: var(--highlight);
+  font-weight: 700;
+}
+
+.schedule-table tr.today th::after {
+  content: " (오늘)"; /* 색만으로 구분하지 않도록 글자도 함께 보여요 */
+}
+
+/* 문의 폼 */
+.contact-form {
+  display: grid;
+  gap: 1rem;
+  max-width: 560px;
+}
+
+.field label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.field input[aria-invalid="true"],
+.field textarea[aria-invalid="true"] {
+  border-color: var(--error);
+}
+
+.field-error {
+  margin: 0.25rem 0 0;
+  color: var(--error);
+  font-size: 0.9rem;
+}
+
+.field-hint {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.field-error:empty {
+  display: none; /* 오류 메시지가 없으면 자리도 차지하지 않아요 */
+}
+
+.form-status {
+  margin: 0;
+  font-weight: 700;
+}
+
+.form-status.is-error {
+  color: var(--error);
+}
+
+.form-status.is-success {
+  color: var(--success);
+}
+
+/* ---------- 7. 푸터 ---------- */
+.site-footer {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  text-align: center;
+  padding: 1.5rem 0;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+/* ---------- 8. 반응형: 화면이 768px 이상일 때 (Day 13) ---------- */
+@media (min-width: 768px) {
+  h1 {
+    font-size: 2.25rem;
+  }
+
+  /* 메뉴 버튼은 숨기고, 메뉴 목록은 가로로 늘어놔요 */
+  .menu-toggle {
+    display: none;
+  }
+
+  .site-nav {
+    display: block;
+    flex-basis: auto;
+    margin-left: auto;
+  }
+
+  .menu-list {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .hero {
+    grid-template-columns: 200px 1fr;
+    gap: 2rem;
+  }
+
+  .hero-image {
+    width: 200px;
+  }
+
+  .about-intro {
+    grid-template-columns: 200px 1fr;
+  }
+
+  .toolbar {
+    grid-template-columns: 1fr minmax(240px, 320px);
+    align-items: end;
+  }
+}
+
+/* 움직임을 줄여 달라고 설정한 사용자를 배려해요 (Day 28) */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+```
+:::
+
 ## 🧯 자주 막히는 곳
 
 여기에 없는 증상은 [문제 해결 모음](#/page/troubleshooting)에서 찾아보세요.
 
 ### Actions에 빨간 ✕가 떠요
 
-**원인:** 배포 작업이 실패했어요. 일시적인 GitHub 문제일 때도 있고, 파일 이름에 특수 문자가 있을 때도 있어요.
+**원인:** 배포 작업이 실패했어요. 대부분 일시적인 GitHub 문제라서 다시 실행하면 돼요.
 
 **해결:**
 
 1. 저장소 **Actions** → 실패한 실행을 클릭해 오류 내용을 읽어요.
-2. 위쪽의 다시 실행 버튼(**Re-run jobs** 등, 이름은 버전에 따라 달라요)을 눌러 한 번 더 시도해요.
-3. 계속 실패하면 파일 이름에 한글, 공백, 특수 문자가 있는지 확인하고 바꿔서 푸시해요.
+2. 위쪽의 다시 실행 버튼(**Re-run all jobs** 등, 이름은 버전에 따라 달라요)을 눌러 한 번 더 시도해요.
+3. 계속 실패하면 잠시 뒤 다시 하거나, 저장소 **Settings → Pages**에서 배포를 껐다 켜 봐요. 파일 이름의 한글·공백·특수 문자가 원인일 수도 있지만 확인된 근거는 없으니 마지막에 의심해요.
 
-### 배포 주소가 예전 모습이에요
+### 내 컴퓨터에서는 되는데 배포 주소에서만 안 돼요 (404, 카드 없음, 메뉴 하나만 404, 예전 모습)
 
-**원인:** 반영에 최대 10분이 걸리고, 브라우저가 예전 파일을 기억해요(캐시).
+**원인:** 푸시를 안 했거나, 파일·폴더 이름의 대소문자가 다르거나, 반영이 늦거나, 브라우저 캐시예요. 내 컴퓨터는 대소문자를 구분하지 않지만 GitHub 서버는 구분해요.
 
-**해결:** Actions가 초록인지 확인하고, `Ctrl + F5`로 강력 새로 고침해요.
+**해결:** [도움말 7번](#/page/help)의 순서(올라갔는지 → 저장소 파일·대소문자 → 임시 이름으로 두 번 바꾸기 → Network 404 → Actions → `Ctrl + F5`)대로 확인해요.
 
 ### 휴대폰에서만 가로 스크롤이 생겨요
 
