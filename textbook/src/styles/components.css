@@ -149,3 +149,22 @@
     padding: 22px 18px;
   }
 }
+
+/* ───────── 아이콘 (DESIGN.md Icons) ───────── */
+
+.icon {
+  flex: none;
+  vertical-align: -0.125em;
+}
+.px {
+  flex: none;
+}
+.px .p1 {
+  fill: var(--px-1, currentColor);
+}
+.px .p2 {
+  fill: var(--px-2, transparent);
+}
+.px .p3 {
+  fill: var(--px-3, var(--px-2, transparent));
+}

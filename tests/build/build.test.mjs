@@ -359,6 +359,16 @@ test('unknown flags exit 1 with usage', () => {
   assert.match(r.output, /--only/);
 });
 
+/** 파비콘이 읽는 색 토큰 세 개 (없으면 E_CSS_TOKEN) */
+const FAVICON_TOKENS = ':root{--color-ink:#312E81;--color-accent:#DB2777;--color-accent-hover:#BE185D}';
+
+test('tokens without the favicon colours stop the build with E_CSS_TOKEN', async () => {
+  const r = await buildWithSrc({ 'styles/tokens.css': ':root{--x:#f00}', 'app/main.js': 'window.__wzh = 1;' });
+  assert.equal(r.ok, false);
+  assert.deepEqual(r.errors.map((e) => e.code), ['E_CSS_TOKEN']);
+  assert.match(r.errors[0].file, /tokens\.css$/);
+});
+
 /** src 폴더 복사본(template.html 은 실제 파일, 나머지는 테스트용)으로 in-process 빌드한다 */
 async function buildWithSrc(files) {
   return withTmp(async (tmp) => {
@@ -375,7 +385,7 @@ async function buildWithSrc(files) {
 
 test('src/app is bundled into one inline script and styles/ is inlined in order', async () => {
   const r = await buildWithSrc({
-    'styles/tokens.css': ':root{--x:#f00}',
+    'styles/tokens.css': `${FAVICON_TOKENS}:root{--x:#f00}`,
     'styles/base.css': 'body{color:var(--x)}',
     'styles/day.css': '.x::after{content:"$&"}',
     'app/util.js': 'export const greet = (n) => `안녕 ${n} </script> $&`;',

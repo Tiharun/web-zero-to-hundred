@@ -8,7 +8,7 @@ import { build as esbuild } from 'esbuild';
 import { loadCurriculum } from './lib/curriculum.mjs';
 import { parseGlossary, parseTroubleshooting, renderGlossaryPage, renderTroubleshootingPage } from './lib/glossary.mjs';
 import { assemble } from './lib/assemble.mjs';
-import { headTags, listRoutes } from './lib/site.mjs';
+import { faviconDataUri, headTags, listRoutes } from './lib/site.mjs';
 import { readStyles, lintStyles } from './lib/styles.mjs';
 import { collectGlyphs, embedFonts } from './lib/fonts.mjs';
 import { renderMarkdown } from './lib/markdown.mjs';
@@ -204,7 +204,14 @@ export async function build({
   const css = `${fonts.css}\n${styles.css}`;
 
   const site = { title: curriculum.title, url: curriculum.url, description: curriculum.description };
-  const head = headTags(site, 'data:,'); // 파비콘은 Task 4 에서 채운다
+  const tokens = styles.files.find((f) => f.name === 'tokens');
+  let favicon;
+  try {
+    favicon = faviconDataUri(tokens.src);
+  } catch (e) {
+    return { ok: false, errors: [issue('E_CSS_TOKEN', e.message, { file: tokens.file })], warnings };
+  }
+  const head = headTags(site, favicon);
   const html = assemble({ templateHtml, css, js: bundle.js, data, templates, head, title: site.title });
   const bytes = Buffer.byteLength(html);
   if (bytes >= SIZE_LIMIT) {

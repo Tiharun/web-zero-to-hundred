@@ -1,6 +1,17 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { headTags, listRoutes } from '../../textbook/lib/site.mjs';
+import { faviconDataUri, headTags, listRoutes } from '../../textbook/lib/site.mjs';
+
+test('faviconDataUri draws the pawn with the three token colours', () => {
+  const uri = faviconDataUri(':root{--color-ink:#111111;--color-accent:#222222;--color-accent-hover:#333333}\n:root[data-theme="dark"]{--color-ink:#999999}');
+  assert.ok(uri.startsWith('data:image/svg+xml,'), uri);
+  const svg = decodeURIComponent(uri.slice('data:image/svg+xml,'.length));
+  for (const c of ['#111111', '#222222', '#333333']) assert.ok(svg.includes(c), c);
+  assert.equal(svg.includes('#999999'), false, '첫 :root(라이트) 값만 쓴다');
+  assert.match(svg, /width="32" height="32"/);
+  assert.match(svg, /shape-rendering="crispEdges"/);
+  assert.throws(() => faviconDataUri(':root{--color-ink:#111}'), /color-accent/);
+});
 
 test('headTags escapes values and carries the one configured url', () => {
   const html = headTags({ title: 'A & "B"', url: 'https://example.test/book/', description: '<설명>' }, 'data:image/svg+xml,x');
