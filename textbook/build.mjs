@@ -10,6 +10,7 @@ import { parseGlossary, parseTroubleshooting, renderGlossaryPage, renderTroubles
 import { assemble } from './lib/assemble.mjs';
 import { headTags, listRoutes } from './lib/site.mjs';
 import { readStyles, lintStyles } from './lib/styles.mjs';
+import { collectGlyphs, embedFonts } from './lib/fonts.mjs';
 import { renderMarkdown } from './lib/markdown.mjs';
 import { validateDaySource } from './lib/validate.mjs';
 
@@ -70,7 +71,14 @@ async function bundleJs(entry) {
  * @returns {Promise<{ ok: boolean, errors: object[], warnings: object[], html?: string, stats?: { days: number, rendered: number, pages: number, bytes: number } }>}
  *   오류·경고는 { code, message, file, line } 이고 file 은 절대 경로(없으면 null)
  */
-export async function build({ contentDir, srcDir = path.join(HERE, 'src'), only = null, allowMissing = false }) {
+export async function build({
+  contentDir,
+  srcDir = path.join(HERE, 'src'),
+  only = null,
+  allowMissing = false,
+  fontsDir = path.join(HERE, 'fonts'),
+  cacheDir = path.join(HERE, '.cache', 'fonts'),
+}) {
   const errors = [];
   const warnings = [];
 
@@ -187,8 +195,13 @@ export async function build({ contentDir, srcDir = path.join(HERE, 'src'), only 
   if (styles.errors.length) return { ok: false, errors: styles.errors, warnings };
   const lint = lintStyles(styles.files);
   if (lint.length) return { ok: false, errors: lint, warnings };
-  const { css } = styles;
   const templateHtml = await readFile(path.join(srcDir, 'template.html'), 'utf8');
+
+  // 글꼴: 화면에 나올 수 있는 글자(틀·본문·스크립트 문구·데이터)만 서브셋해 스타일 맨 앞에 넣는다
+  const glyphs = collectGlyphs({ html: [templateHtml, ...templates.map((t) => t.html), bundle.js].join('\n'), css: styles.css, dataJson: JSON.stringify(data) });
+  const fonts = await embedFonts({ ...glyphs, fontsDir, cacheDir });
+  if (fonts.errors.length) return { ok: false, errors: fonts.errors, warnings };
+  const css = `${fonts.css}\n${styles.css}`;
 
   const site = { title: curriculum.title, url: curriculum.url, description: curriculum.description };
   const head = headTags(site, 'data:,'); // 파비콘은 Task 4 에서 채운다
@@ -197,7 +210,7 @@ export async function build({ contentDir, srcDir = path.join(HERE, 'src'), only 
   if (bytes >= SIZE_LIMIT) {
     return { ok: false, errors: [issue('E_SIZE_LIMIT', `결과 파일이 너무 커요: ${mb(bytes)} (16 MB 미만이어야 해요)`)], warnings };
   }
-  return { ok: true, errors, warnings, html, stats: { days: days.length, rendered: renderedCount, pages: curriculum.pages.length, bytes } };
+  return { ok: true, errors, warnings, html, stats: { days: days.length, rendered: renderedCount, pages: curriculum.pages.length, bytes, fonts: fonts.bytes } };
 }
 
 // ───────────────────────── CLI ─────────────────────────
@@ -265,7 +278,8 @@ async function main(argv) {
     return 1;
   }
 
-  const { days, rendered, pages, bytes } = result.stats;
+  const { days, rendered, pages, bytes, fonts } = result.stats;
+  for (const [family, size] of Object.entries(fonts)) console.log(`글꼴 ${family}: ${Math.round(size / 1024)} KB`);
   const scope = only ? ` (--only: ${rendered}개 Day만 렌더)` : '';
   if (values.check) {
     console.log(`검사 통과: Day ${days}개, 페이지 ${pages}개, 결과 크기 ${mb(bytes)}${scope}`);

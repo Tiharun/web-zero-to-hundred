@@ -425,6 +425,23 @@ test('a raw colour outside tokens and legacy stops the build with file and line'
   assert.match(r.errors[0].file, /shell\.css$/);
 });
 
+test('the build embeds three subset fonts and loads nothing over the network', async () => {
+  const r = await build({ contentDir: FIXTURE });
+  assert.equal(r.ok, true, JSON.stringify(r.errors));
+  const css = /<style>([\s\S]*?)<\/style>/.exec(r.html)[1];
+  assert.equal((css.match(/@font-face/g) ?? []).length, 3);
+  assert.equal((r.html.match(/url\(\s*["']?https?:/g) ?? []).length, 0);
+  assert.deepEqual(Object.keys(r.stats.fonts), ['WZH Wanted Sans', 'WZH Galmuri11', 'WZH Code']);
+});
+
+test('a missing font source stops the build with E_FONT_SOURCE', async () => {
+  await withTmp(async (tmp) => {
+    const r = await build({ contentDir: FIXTURE, fontsDir: tmp, cacheDir: path.join(tmp, 'cache') });
+    assert.equal(r.ok, false);
+    assert.equal(r.errors[0].code, 'E_FONT_SOURCE');
+  });
+});
+
 test('the real styles pass the token lint', async () => {
   const { files } = await readStyles(path.join(ROOT, 'textbook/src'));
   assert.deepEqual(lintStyles(files), []);
