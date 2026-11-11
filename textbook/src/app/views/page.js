@@ -1,6 +1,6 @@
 // 부록 페이지(시작하기, 용어 사전, 문제 해결 …). 앞 단계가 끝나야 열리는 페이지는 잠금 화면.
 import { isUnlocked } from '../progress.js';
-import { breadcrumb, getPage, h, lockScreen, notFoundScreen } from './common.js';
+import { breadcrumb, getPage, h, lockScreen } from './common.js';
 
 /**
  * #/page/<id>/<anchor> 의 anchor 가 가리키는, 페이지 본문 안의 요소. 본문 밖의 id(#main, #sidebar …)나 없는 id 면 null.
@@ -17,8 +17,7 @@ export function renderPage(ctx, id, anchor, root) {
   const page = getPage(cur, id);
   const template = page && document.getElementById(`t-page-${id}`);
   if (!page || !(template instanceof HTMLTemplateElement)) {
-    root.append(notFoundScreen());
-    return '찾을 수 없어요';
+    return ctx.notFound(root);
   }
   if (!isUnlocked(cur, ctx.prog, page.requires)) {
     root.append(lockScreen(ctx, page.title, page.requires));

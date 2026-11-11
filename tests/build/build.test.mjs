@@ -502,3 +502,19 @@ test('site name and address come from curriculum.json only', async () => {
     assert.equal(src.includes(realCur.url), false, f);
   }
 });
+
+test('notFound build marks <html data-notfound>, the normal build does not', async () => {
+  const normal = await build({ contentDir: FIXTURE });
+  const nf = await build({ contentDir: FIXTURE, notFound: true });
+  assert.equal(normal.ok && nf.ok, true, JSON.stringify([...(normal.errors ?? []), ...(nf.errors ?? [])]));
+  assert.match(normal.html, /<html lang="ko">/);
+  assert.match(nf.html, /<html lang="ko" data-notfound>/);
+});
+
+test('CLI --notfound writes the 404 build to --out', async () => {
+  await withContentCopy(async ({ content, out }) => {
+    const r = runBuild(['--content', content, '--out', out, '--notfound']);
+    assert.equal(r.status, 0, r.output);
+    assert.match(await readFile(out, 'utf8'), /<html lang="ko" data-notfound>/);
+  });
+});

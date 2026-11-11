@@ -2,7 +2,7 @@
 // 값은 DESIGN.md(Components·Elevation)와 같아야 한다. 실행: cd textbook && npm run test:e2e
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -36,6 +36,11 @@ before(async () => {
   const long = await build({ contentDir: longDir });
   assert.equal(long.ok, true, JSON.stringify(long.errors));
   await writeFile(path.join(tmp, 'long.html'), long.html);
+
+  // GitHub Pages 의 404.html 로 쓰는 빌드
+  const nf = await build({ contentDir: FIXTURE, notFound: true });
+  assert.equal(nf.ok, true, JSON.stringify(nf.errors));
+  await writeFile(path.join(tmp, '404.html'), nf.html);
 
   server = await startStaticServer(tmp);
   browser = await launch();
@@ -267,6 +272,68 @@ test('search page carries its own input that searches as you type', TIMEOUT, asy
   assert.equal(await page.evaluate(() => document.activeElement?.dataset.testid), 'search-input', '치는 동안 포커스가 남는다');
   assert.equal(await page.evaluate(() => history.length), before, '검색어는 기록을 늘리지 않는다(replace)');
   assert.ok((await page.getByTestId('search-result').count()) > 0);
+});
+
+// ───────── 404 와 전 페이지 점검 ─────────
+
+test('unknown ids and unknown paths show the 404 screen with a way home', TIMEOUT, async () => {
+  for (const hash of ['#/nope', '#/day/zz-d99', '#/project/zz', '#/page/zz', '#/day/fa-d01/extra']) {
+    const page = await open(hash, { width: 375 });
+    assert.equal(await page.getByTestId('notfound').count(), 1, hash);
+    assert.equal(await page.locator('main .btn-primary').count(), 1, hash);
+    assert.equal(await page.locator('main .btn-primary').getAttribute('href'), '#/', hash);
+    assert.equal(await page.locator('main .notfound svg.px-wrench').count(), 1, hash);
+    assert.match(await page.title(), /^찾을 수 없어요 · /, hash);
+    assert.equal(await noHorizontalScroll(page), 0, hash);
+  }
+});
+
+test('the notfound build shows 404 at an empty hash and links home by the configured url', TIMEOUT, async () => {
+  const page = await open('', { width: 375, file: '404.html' });
+  assert.equal(await page.getByTestId('notfound').count(), 1);
+  assert.equal(await page.locator('main .btn-primary').getAttribute('href'), 'https://example.test/fixture/');
+  assert.equal(await page.locator('.wordmark').getAttribute('href'), 'https://example.test/fixture/#/');
+  const footerHrefs = await page.locator('.footer-links a').evaluateAll((els) => els.map((a) => a.getAttribute('href')));
+  assert.ok(footerHrefs.length > 0 && footerHrefs.every((href) => href.startsWith('https://example.test/fixture/#/')), footerHrefs.join(' '));
+  const sideHrefs = await page.locator('#sidebar a').evaluateAll((els) => els.map((a) => a.getAttribute('href')));
+  assert.ok(sideHrefs.length > 0 && sideHrefs.every((href) => href.startsWith('https://example.test/fixture/#/')), sideHrefs.join(' '));
+  assert.match(await page.title(), /^찾을 수 없어요 · /);
+});
+
+test('the normal build has no notfound flag', TIMEOUT, async () => {
+  const page = await open('', { width: 375 });
+  assert.equal(await page.locator('html').getAttribute('data-notfound'), null);
+  assert.equal(await page.getByTestId('notfound').count(), 0, '빈 해시는 홈');
+});
+
+test('checkSite visits every route plus two 404s and reports no problems on the fixture', TIMEOUT, async () => {
+  const { checkSite } = await import('../helpers/site-check.mjs');
+  const { loadCurriculum } = await import('../../textbook/lib/curriculum.mjs');
+  const { listRoutes } = await import('../../textbook/lib/site.mjs');
+  const { curriculum } = await loadCurriculum(FIXTURE);
+  const result = await checkSite({ baseUrl: server.url, cur: curriculum, launch });
+  assert.deepEqual(result.problems, []);
+  assert.equal(result.visited, listRoutes(curriculum).length + 2);
+});
+
+test('checkSite reports a page that never renders, scrolls sideways and logs errors', TIMEOUT, async () => {
+  const { checkSite } = await import('../helpers/site-check.mjs');
+  const dir = path.join(tmp, 'broken');
+  await mkdir(dir, { recursive: true });
+  await writeFile(
+    path.join(dir, 'index.html'),
+    '<!doctype html><html><body><div style="width:3000px">넓다</div><script>console.error("깨짐")</script></body></html>',
+  );
+  const broken = await startStaticServer(dir);
+  try {
+    const cur = { projects: [{ id: 'fa', days: [{ id: 'fa-d01' }] }], pages: [] };
+    const result = await checkSite({ baseUrl: broken.url, cur, launch, timeout: 500 });
+    assert.equal(result.visited, 7); // 홈·설정·검색·프로젝트·Day 5개 + 404 두 개. 실패해도 끝까지 돈다
+    const all = result.problems.join('\n');
+    for (const want of ['화면이 그려지지 않았어요', '가로 스크롤', '콘솔 오류']) assert.ok(all.includes(want), `${want}\n${all}`);
+  } finally {
+    await broken.close();
+  }
 });
 
 test('no console errors on the opened screens', TIMEOUT, () => {

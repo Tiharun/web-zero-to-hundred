@@ -316,3 +316,8 @@ kbd {
   --px-1: var(--color-ink);
   --px-2: var(--color-coin);
 }
+
+/* 없는 화면 (404) */
+.notfound-icon {
+  margin-bottom: var(--space-md);
+}

@@ -25,7 +25,8 @@ const USAGE = `사용법: node build.mjs [옵션]
   --only id1,id2     지정한 Day만 렌더·검증해요 (예: p1-d02,p1-d03). 용어·링크는 전체 기준이에요
   --allow-missing    Day 파일이 없으면 경고만 하고 "준비 중" 화면으로 대신해요
   --content <dir>    content 폴더 (기본값: textbook/content)
-  --out <file>       결과 파일 (기본값: 저장소 루트의 index.html)`;
+  --out <file>       결과 파일 (기본값: 저장소 루트의 index.html)
+  --notfound         GitHub Pages 의 404.html 로 쓸 빌드를 만들어요 (빈 주소에서 404 화면)`;
 
 const issue = (code, message, extra = {}) => ({ code, line: null, message, file: null, ...extra });
 const byLine = (a, b) => (a.line ?? Infinity) - (b.line ?? Infinity);
@@ -78,6 +79,7 @@ export async function build({
   allowMissing = false,
   fontsDir = path.join(HERE, 'fonts'),
   cacheDir = path.join(HERE, '.cache', 'fonts'),
+  notFound = false,
 }) {
   const errors = [];
   const warnings = [];
@@ -198,7 +200,8 @@ export async function build({
   const templateFile = path.join(srcDir, 'template.html');
   const filled = fillIcons(await readFile(templateFile, 'utf8'), templateFile);
   if (filled.errors.length) return { ok: false, errors: filled.errors, warnings };
-  const templateHtml = filled.html;
+  // 404 빌드: 앱이 빈 주소를 404 로 보도록 <html> 에 표시를 단다
+  const templateHtml = notFound ? filled.html.replace('<html lang="ko">', '<html lang="ko" data-notfound>') : filled.html;
 
   // 글꼴: 화면에 나올 수 있는 글자(틀·본문·스크립트 문구·데이터)만 서브셋해 스타일 맨 앞에 넣는다
   const glyphs = collectGlyphs({ html: [templateHtml, ...templates.map((t) => t.html), bundle.js].join('\n'), css: styles.css, dataJson: JSON.stringify(data) });
@@ -263,6 +266,7 @@ async function main(argv) {
         content: { type: 'string' },
         out: { type: 'string' },
         'allow-missing': { type: 'boolean' },
+        notfound: { type: 'boolean' },
         help: { type: 'boolean', short: 'h' },
       },
     }));
@@ -279,7 +283,7 @@ async function main(argv) {
   const outFile = values.out ? path.resolve(cwd, values.out) : path.join(HERE, '..', 'index.html');
   const only = values.only ? values.only.split(',').map((s) => s.trim()).filter(Boolean) : null;
 
-  const result = await build({ contentDir, only, allowMissing: Boolean(values['allow-missing']) });
+  const result = await build({ contentDir, only, allowMissing: Boolean(values['allow-missing']), notFound: Boolean(values.notfound) });
   for (const line of summarizeWarnings(result.warnings, cwd)) console.log(line);
 
   if (!result.ok) {

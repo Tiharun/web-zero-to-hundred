@@ -2,7 +2,7 @@
 import { continueTarget, normalizeProgress } from './progress.js';
 import { parseHash } from './router.js';
 import { createStore } from './storage.js';
-import { h, notFoundScreen } from './views/common.js';
+import { h, helpHref, notFoundScreen } from './views/common.js';
 import { renderDay } from './views/day.js';
 import { renderHome } from './views/home.js';
 import { anchorTarget, renderPage } from './views/page.js';
@@ -19,10 +19,7 @@ const VIEWS = {
   page: (ctx, route, root) => renderPage(ctx, route.id, route.anchor, root),
   settings: (ctx, route, root) => renderSettings(ctx, root),
   search: (ctx, route, root) => renderSearch(ctx, route.q, root),
-  notfound: (ctx, route, root) => {
-    root.append(notFoundScreen());
-    return '찾을 수 없어요';
-  },
+  notfound: (ctx, route, root) => ctx.notFound(root),
 };
 
 function readData() {
@@ -39,9 +36,20 @@ function start() {
   let keepFocusNext = false; // 다음 hashchange 에서 포커스를 본문으로 옮기지 않는다 (검색창에서 칠 때)
   let changeListeners = []; // 지금 화면이 진도·테마 변화를 따라가려고 건 것들. 화면을 새로 그릴 때마다 비운다
 
+  // 404 빌드(GitHub Pages 의 404.html): 빈 주소는 404 화면이고, 틀의 링크는 사이트 주소(cur.url)로 간다
+  const notFoundBuild = document.documentElement.hasAttribute('data-notfound');
+  const siteBase = notFoundBuild ? cur.url : '';
+
   const ctx = {
     cur,
     store,
+    /** 404 빌드에서 틀의 링크 앞에 붙일 사이트 주소. 보통 빌드에서는 '' */
+    siteBase,
+    /** 없는 화면을 그리고 창 제목을 돌려준다 */
+    notFound(root) {
+      root.append(notFoundScreen({ homeHref: siteBase || '#/', helpHref: helpHref(cur, siteBase) }));
+      return '찾을 수 없어요';
+    },
     get prog() {
       return prog;
     },
@@ -95,7 +103,8 @@ function start() {
   };
 
   function render({ focus, scroll }) {
-    const route = parseHash(location.hash);
+    const emptyHash = location.hash === '' || location.hash === '#';
+    const route = notFoundBuild && emptyHash ? { name: 'notfound' } : parseHash(location.hash);
     changeListeners = [];
     main.replaceChildren();
     let title;

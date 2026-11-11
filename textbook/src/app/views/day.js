@@ -1,6 +1,6 @@
 // Day 화면: 본문 템플릿을 붙이고, 체크박스·정답 게이트·코드 복사·완료 버튼을 연결한다.
 import { canComplete, canUncomplete, completeDay, dayState, isProjectComplete, newlyUnlocked, toggleCheck, uncompleteDay } from '../progress.js';
-import { breadcrumb, findDay, getPage, getProject, h, isDone, lockScreen, minutesText, notFoundScreen } from './common.js';
+import { breadcrumb, findDay, getPage, getProject, h, isDone, lockScreen, minutesText } from './common.js';
 
 const COPY_RESET_MS = 2000;
 
@@ -184,8 +184,7 @@ export function renderDay(ctx, dayId, root) {
   const found = findDay(cur, dayId);
   const template = found && document.getElementById(`t-day-${dayId}`);
   if (!found || !(template instanceof HTMLTemplateElement)) {
-    root.append(notFoundScreen());
-    return '찾을 수 없어요';
+    return ctx.notFound(root);
   }
   const { project, day, index } = found;
   if (dayState(cur, ctx.prog, dayId) === 'locked') {

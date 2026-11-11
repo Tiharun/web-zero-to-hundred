@@ -1,7 +1,7 @@
 // 여러 화면이 같이 쓰는 도우미: DOM 만들기, 데이터 찾기, 잠금 화면, 없는 화면.
 // 화면에 들어가는 글자는 모두 textContent(createTextNode)로 넣는다. innerHTML 을 쓰지 않는다.
 import { isProjectComplete, projectState } from '../progress.js';
-import { icon } from './icons.js';
+import { icon, px } from './icons.js';
 
 /**
  * 작은 DOM 도우미. h('a', { href: '#/', class: 'btn' }, '글자', 자식…)
@@ -138,13 +138,17 @@ export function lockScreen(ctx, what, requires) {
   );
 }
 
-/** 없는 주소 */
-export function notFoundScreen() {
+/** 부록 "막혔을 때"(help) 주소. 그 페이지가 없으면 null. base 는 404 빌드에서 붙이는 사이트 주소 */
+export const helpHref = (cur, base = '') => (getPage(cur, 'help') ? `${base}#/page/help` : null);
+
+/** 없는 주소: 렌치 도트 아이콘, 제목, 설명, 주 버튼 "홈으로 가기", (있으면) 글자 링크 "막혔을 때" */
+export function notFoundScreen({ homeHref = '#/', helpHref = null } = {}) {
   return h(
     'section',
-    { class: 'notfound' },
-    h('h1', null, '찾을 수 없는 화면이에요'),
+    { class: 'notfound', 'data-testid': 'notfound', 'aria-labelledby': 'notfound-title' },
+    px('wrench', { cls: 'notfound-icon', scale: 3 }),
+    h('h1', { id: 'notfound-title' }, '찾을 수 없는 화면이에요'),
     h('p', { class: 'lead' }, '주소가 잘못됐거나 없어진 화면이에요. 홈에서 다시 시작해 볼까요?'),
-    h('div', { class: 'lock-actions' }, linkButton('#/', '홈으로 가기', { primary: true })),
+    h('div', { class: 'lock-actions' }, primaryButton(homeHref, '홈으로 가기'), helpHref && textLink(helpHref, '막혔을 때')),
   );
 }

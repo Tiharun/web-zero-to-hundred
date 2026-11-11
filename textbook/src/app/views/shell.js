@@ -285,6 +285,12 @@ export function createShell(ctx) {
   });
 
   buildSidebar();
+  // 404 빌드는 아무 주소에서나 열리므로, 틀의 교재 링크는 사이트 주소로 보낸다
+  if (ctx.siteBase) {
+    for (const a of document.querySelectorAll('.topbar a[href^="#/"], .site-footer a[href^="#/"], #sidebar a[href^="#/"]')) {
+      a.setAttribute('href', ctx.siteBase + a.getAttribute('href'));
+    }
+  }
   refreshSidebar();
   applyTheme();
   updateBanner();

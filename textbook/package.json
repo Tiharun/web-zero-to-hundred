@@ -9,7 +9,8 @@
     "build": "node build.mjs",
     "check": "node build.mjs --check",
     "test": "node --test \"../tests/unit/**/*.test.mjs\" \"../tests/build/**/*.test.mjs\"",
-    "test:e2e": "node --test \"../tests/e2e/**/*.test.mjs\""
+    "test:e2e": "node --test \"../tests/e2e/**/*.test.mjs\"",
+    "check:site": "node ../tests/helpers/site-check.mjs"
   },
   "devDependencies": {
     "esbuild": "0.28.2",

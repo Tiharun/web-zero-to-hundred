@@ -1,6 +1,6 @@
 // 프로젝트 화면: 소개, 진도, Day 목록. 잠긴 프로젝트는 잠금 화면.
 import { dayState, projectState } from '../progress.js';
-import { breadcrumb, chips, doneCount, getProject, h, lockScreen, meter, minutesText, notFoundScreen } from './common.js';
+import { breadcrumb, chips, doneCount, getProject, h, lockScreen, meter, minutesText } from './common.js';
 
 const DAY_ICON = { locked: '🔒', done: '✅', next: '▶', open: '○' };
 const DAY_TEXT = { locked: '잠김', done: '완료', next: '다음 할 Day', open: '' };
@@ -9,8 +9,7 @@ export function renderProject(ctx, pid, root) {
   const { cur, prog } = ctx;
   const project = getProject(cur, pid);
   if (!project) {
-    root.append(notFoundScreen());
-    return '찾을 수 없어요';
+    return ctx.notFound(root);
   }
   if (projectState(cur, prog, pid) === 'locked') {
     root.append(lockScreen(ctx, project.title, project.requires));
