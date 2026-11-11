@@ -1,13 +1,16 @@
 # 체크포인트 — 로컬 세션에서 여기서부터 이어서 하세요
 
-- 작성일: 2026-11-06 (클라우드 세션 → **로컬 세션 인계본**)
-- 상태: **중지됨**. 실행 중인 에이전트가 없습니다. 클라우드 쪽 에이전트 대화 기록은 로컬로 넘어오지 않습니다. 따라서 진행 중이던 작업은 모두 **새 에이전트로 다시 실행**합니다(7장).
+- 작성일: 2026-11-12 (M0 완료 시점)
+- 상태: **M0 완료, 다음은 M1**. 마일스톤 목록과 순서는 `docs/superpowers/specs/2026-11-12-unified-roadmap-design.md` 11장입니다.
+- 공개 주소: https://tiharun.github.io/web-zero-to-hundred/ (push하면 GitHub Actions가 테스트 → 빌드 → Pages 배포. 공개 범위는 `textbook/content/published.json`)
 - 저장소: `tiharun/web-zero-to-hundred` / 브랜치 **`claude/gifted-goldberg-u1f9c6`**. 이 브랜치에서만 작업하고 push합니다. PR은 아직 만들지 않았고, 사용자가 요청할 때만 만듭니다.
-- 인계 시점 기준선(이 커밋에서 직접 실행한 결과)
-  - `npm test`: 168/168 통과
-  - `npm run check -- --allow-missing`: "검사 통과: Day 155개"
-  - `npm run test:e2e`: 26/26 통과
-- 이 문서는 새 세션이 **다른 파일보다 먼저** 읽는 문서입니다. 이전 판(2026-11-05)은 `docs/checkpoint/CHECKPOINT-2026-11-05.md`에 보관했습니다. 내용이 다르면 이 문서가 우선합니다.
+- 기준선(M0 완료 시점에 직접 실행한 결과, `textbook/`에서)
+  - `npm test`: 201/201 통과
+  - `npm run check -- --allow-missing`: "검사 통과: Day 155개, 페이지 4개"
+  - `npm run test:e2e`: 45/45 통과
+  - `npm run test:visual`: 26/26 통과(기준 이미지 24장 + 비교 함수 2개)
+  - `npm run check:site -- https://tiharun.github.io/web-zero-to-hundred/`: "방문 168개, 문제 0개"
+- 이 문서는 새 세션이 **다른 파일보다 먼저** 읽는 문서입니다. 이전 판은 `docs/checkpoint/CHECKPOINT-2026-11-06.md`(Subagent 방식 시절 재개 절차 포함)와 `CHECKPOINT-2026-11-05.md`에 보관했습니다. 내용이 다르면 이 문서가 우선합니다.
 
 ---
 
@@ -25,9 +28,10 @@
    - 완성 코드 4개: T7 P1, T13 P2, T20 P3, T28 SP
    - 개요 4개: T8, T14, T21, T29. 모두 `curriculum.json`에 병합했습니다.
    - **P1 본문 30 Day 전체**: T6 Day 1, T9, T10, T11
-   - **T12 1단계**: 스모크 테스트, Day 1 보류 수정, 미리보기 빌드
-4. **멈춘 것**: T15 재리뷰, T12 리뷰어 2명, T16–T18 P2 본문.
-5. **로컬에서 처음 할 일**: 1장 → 5장(환경) → 6장(작업 폴더 복구) → 7장(재개 절차) 순서로 하면 됩니다.
+   - **T12 P1 통합**, **T15 P2 Day 1–10**
+   - **M0 골격**(통합 로드맵): 새 토큰·글꼴·아이콘·공용 부품, 헤더·테마 메뉴·푸터, 404, 전 페이지 점검, 시각 테스트, Pages 자동 배포
+4. **남은 것**: 통합 로드맵 11장 M1부터(기능 M1–M14, 콘텐츠 E1·C1–C35, 품질 Q1–Q5).
+5. **처음 할 일**: 1장 → 5장(환경) → 7장(재개 절차) 순서로 하면 됩니다.
 
 ---
 
@@ -47,14 +51,14 @@
    ```
 4. 기준선을 확인합니다. 결과가 위 숫자와 같아야 합니다.
    ```bash
-   cd textbook && npm test && npm run check -- --allow-missing && npm run test:e2e
+   cd textbook && npm test && npm run check -- --allow-missing && npm run test:e2e && npm run test:visual
    ```
 5. 작업 폴더(진행 기록·지시문·보고서)를 복구합니다(6장).
    ```bash
    bash docs/checkpoint/restore-workspace.sh
    ```
-6. superpowers 플러그인이 있으면 `subagent-driven-development` 스킬을 켭니다. 없어도 진행할 수 있습니다(6.3).
-7. 7장의 재개 절차를 순서대로 실행합니다.
+6. superpowers 플러그인의 `writing-plans`·`executing-plans` 스킬로 진행합니다(Native, 7장).
+7. 7장의 재개 절차를 따릅니다.
 
 ---
 
@@ -94,10 +98,10 @@
   - P2를 마치면 언제든 해금됩니다.
 - **해금 순서**: P1 → P2 → (P3 → 졸업 로드맵) / (SP 언제든).
 - P3 다음에 **졸업 로드맵**을 반드시 둡니다. 4차 프로젝트를 나중에 붙일 수 있도록 **HANDOFF.md**(T36)를 반드시 씁니다.
-- **실행 방식은 Subagent 방식**입니다(사용자 선택).
-  - 작업마다 새 구현 에이전트를 씁니다.
-  - 작업마다 리뷰 → 수정 → 재리뷰를 거칩니다.
-  - 마지막에 전체 리뷰를 합니다.
+- **실행 방식은 Native**입니다(사용자 선택, 2026-11-12. 이전의 Subagent 방식을 대체).
+  - `executing-plans`로 한 세션이 한 마일스톤을 끝까지 합니다. 작업 에이전트·자식 세션을 나누지 않습니다.
+  - 마일스톤 끝에 새 리뷰어 하나가 브랜치 전체를 리뷰합니다.
+  - 본문은 묶음마다 작성(W) 세션과 리뷰·수정(R) 세션을 나눕니다.
 - **응답 선호**
   - 한국어로 답합니다.
   - 정확성과 실무 표준을 지킵니다.
@@ -106,7 +110,7 @@
 
 ---
 
-## 4. 진행 현황표 (인계 시점)
+## 4. 진행 현황표 (옛 계획서 Task 기준. 이후 순서는 통합 로드맵 11장)
 
 범례: ✅ 리뷰 통과·완료 / 🟡 진행 중(멈춤) / ⬜ 시작 전
 
@@ -124,8 +128,9 @@
 | T9 | P1 Day 2–10 | ✅ | `342c1ed..a901b47` |
 | T10 | P1 Day 11–20 | ✅ | `342c1ed..30a8cca` |
 | T11 | P1 Day 21–30 | ✅ | `342c1ed..5302192` |
-| **T12** | P1 통합 | 🟡 1단계 완료(`6166d21`). 리뷰어 ①②, 반영, 미리보기 전달 남음 | |
-| **T15** | P2 Day 1–10 | 🟡 1차 수정 완료(`6115e79`). **재리뷰 남음** | |
+| T12 | P1 통합 | ✅ | `da77b87..1521443` (workspace/progress.md 350행) |
+| T15 | P2 Day 1–10 | ✅ | `3173b9a..b0e31da` (workspace/progress.md 336행) |
+| M0 | 통합 로드맵 골격 | ✅ | `f898950..` (이 문서를 고친 커밋까지) |
 | **T16** | P2 Day 11–20 | 🟡 `day-11~20.md`는 있음(WIP). 문제 해결 모음·검증 기록·보고서 없음 | |
 | **T17** | P2 Day 21–30 | ⬜ 저장소에 파일 없음. 처음부터 | |
 | **T18** | P2 Day 31–40 | ⬜ 저장소에 파일 없음. 처음부터 | |
@@ -266,117 +271,23 @@ WS=.superpowers/sdd/2026-11-01-web-zero-to-hundred; { head -4 docs/checkpoint/wo
 
 ---
 
-## 7. 재개 절차 (순서대로, 정확히)
+## 7. 재개 절차
 
-공통으로 지킬 것은 세 가지입니다.
-- **동시 실행 최대 5개**입니다(R57). 사용량 한도에 두 번 걸렸습니다.
-- 병렬 작업 에이전트는 **NO GIT**이고, 커밋은 오케스트레이터가 Task 경로만 골라서 합니다.
-- 지시문은 `dispatch-templates.md`의 틀을 씁니다.
+통합 로드맵 설계서 `docs/superpowers/specs/2026-11-12-unified-roadmap-design.md` **10장(작업 방식)과 11장(마일스톤)**을 따릅니다.
 
-### 7.1 T15 (P2 Day 1–10) — 재리뷰부터
-- 수정은 끝났고 `6115e79`에 커밋되어 있습니다. 재리뷰만 남았습니다.
-- **템플릿 D**로 재리뷰합니다. sonnet, 범위 `3173b9a..6115e79`.
-  - 경로: `textbook/content/p2/day-0[1-9].md day-10.md`, `textbook/content/troubleshooting/p2-days-01-10.md`, `docs/verification/p2-days-01-10.md`
-  - 확인할 지적 19개는 `progress.md`의 "T15 review" 줄과 "Task 15: fix round 1/5 dispatched" 줄, 그리고 `task-15-report.md`의 "## Fix round 1" 절에 있습니다.
-  - **Day 8 무결성도 꼭 확인합니다.** 수정 중 잘못 편집해서 중복된 뒤 다시 만든 파일입니다. 중복 문단, 제목 순서, 코드 블록 개수, 수정 전 대비 빠진 내용을 봅니다.
-- 통과하면 `Task 15: fix round 1/5 (…)`와 `Task 15: complete (commits 3173b9a..6115e79, review clean)`를 기록합니다.
-  - 실패하면 **새** 구현 에이전트로 수정 회차를 이어 갑니다(템플릿 C의 "원래 에이전트가 없을 때"). 보고서 파일이 기억 역할을 합니다.
+1. `CLAUDE.md` → 이 문서 → 설계서 11장에서 다음 마일스톤(지금은 **M1**)을 고릅니다.
+2. `writing-plans`로 그 마일스톤의 계획서를 `docs/superpowers/plans/`에 쓰고 사용자 승인을 받습니다.
+3. `executing-plans`로 같은 세션이 실행합니다. 마일스톤 끝에 완료 기준을 증거(테스트 출력, 스크린샷, 공개 주소)와 함께 보고합니다.
+4. `docs/checkpoint/workspace/progress.md`에 `Mn: complete` 줄을 남기고 이 문서 맨 위 상태를 고칩니다.
+5. 리뷰(R) 세션이 끝난 Day 묶음은 `textbook/content/published.json`에 범위를 더해 배포본에 공개합니다.
 
-### 7.2 T12 (P1 통합) — 리뷰어 2명 → 반영 → 미리보기 전달
-1. **템플릿 E1**(초보자 시뮬레이션)과 **E2**(기술 정확성)를 opus로 **동시에** 보냅니다.
-   - E2는 `tests/e2e/smoke.test.mjs`도 리뷰합니다.
-   - T12에 넘길 보류 항목은 `task-12-notes.md`에 있습니다. Day 1 보류 6개는 이미 고쳤고 나머지는 참고용입니다.
-2. 두 리뷰의 지적을 **한 명의** 수정 에이전트(sonnet)에게 몰아 줍니다. 이 에이전트는 P1 Day 전체와 용어·모음을 고칠 수 있습니다.
-3. 재리뷰(템플릿 D)를 합니다.
-4. `cd textbook && npm test && npm run check -- --allow-missing && npm run test:e2e`가 통과해야 합니다.
-5. **미리보기를 다시 빌드합니다(R55).** 리뷰가 끝난 Day만 넣고, P2·P3·SP의 Day 파일은 뺍니다.
-   ```bash
-   S=../wzh-scratch/preview && rm -rf $S && mkdir -p $S && cp -r textbook/content $S/content && find $S/content/p2 $S/content/p3 $S/content/sp -name 'day-*.md' -delete && node textbook/build.mjs --allow-missing --content $S/content --out index.html
-   ```
-   - 이때 이미 리뷰를 통과한 P2 Day(예: T15)는 넣어도 됩니다. 넣으면 사용자에게 어떤 Day를 넣었는지 알립니다.
-6. 커밋(`feat(p1): 30-day creator homepage course`) → push → **사용자에게 `index.html`을 전달**하고 피드백을 받습니다.
-7. 진행 기록에 `Task 12: complete …`를 남기고 Phase 1 완료로 표시합니다.
-
-### 7.3 T16 (P2 Day 11–20) — 마무리 작업으로 새로 실행
-- 저장소에 `textbook/content/p2/day-11.md`~`day-20.md`가 있습니다. 이전 에이전트가 Day 20 검증 중에 멈췄습니다.
-- **없는 파일**: `textbook/content/troubleshooting/p2-days-11-20.md`, `docs/verification/p2-days-11-20.md`, 작업 폴더의 `task-16-report.md`.
-- **템플릿 A**(sonnet)에 아래를 덧붙여 새로 실행합니다.
-  > "이 배치의 Day 파일 10개는 이전 작업자가 썼고 리뷰 전입니다. 처음부터 다시 쓰지 말고, 개요·규칙과 대조해 고칠 곳을 고친 뒤 코드 검증(Day 11–20 전체, 특히 Day 20)을 수행하고, 문제 해결 모음·검증 기록·보고서를 작성하세요."
-- 이 배치가 조사 문서에 추가한 sqlite3·EF Core 사실 두 줄은 이미 커밋되어 있습니다(R56).
-- 끝나면 **템플릿 B**로 리뷰 → 수정(C) → 재리뷰(D)를 진행합니다.
-
-### 7.4 T17 (P2 Day 21–30), T18 (P2 Day 31–40) — 처음부터
-- **템플릿 A**로 새로 실행합니다(sonnet).
-- T17에 특히 넣을 사실(`task-14-notes.md`에도 있음)
-  - Day 26 `/api/me` 204와 관리자 시드 시나리오의 순서
-  - Day 26 user-secrets
-  - Day 27 CORS 실험
-  - Day 29 `UtcDateTimeConverter` + `Intl.DateTimeFormat`, `change` 이벤트
-- T18에 특히 넣을 사실
-  - Day 31 가입 흐름 재시도
-  - Day 34 HTTPS·CSRF 실험과 `dotnet dev-certs https --trust`
-  - Day 36 통합 테스트 15개(8 + 15 = 23)
-  - Mvc.Testing·xunit runner·Prettier 버전과 Prettier CRLF 동작은 **직접 확인해 검증 기록에 남길 것**(조사 문서에 없음)
-  - Day 39 `UseForwardedHeaders`를 `UseRateLimiter`보다 앞에 둘 것
-- 끝나면 각각 리뷰(B) → 수정(C) → 재리뷰(D)를 진행합니다.
-
-### 7.5 그다음 순서
-1. **T19 P2 통합**: T12와 같은 방식(E1·E2)입니다. 기술 리뷰어는 Microsoft Learn과 대조합니다. 끝나면 사용자에게 P2까지 들어간 미리보기를 전달합니다.
-2. **T22–T26 P3 본문**: 배치 5개(9 Day씩)이고 템플릿 A를 씁니다.
-   - 지시문은 `task-22-brief.md`, 메모는 `task-21-notes.md`입니다.
-   - P3 개요에 §4 "중간 코드 모양 표"(R42)가 있으니 반드시 따르게 합니다.
-   - Day 45에는 로드맵 링크를 넣지 않습니다(R39).
-3. **T27 P3 통합**: The Rust Book·Axum·Tokio와 대조합니다.
-4. **T30–T33 SP 본문**: 배치 4개이고 템플릿 A를 씁니다.
-   - 지시문은 `task-30-brief.md`, 메모는 `task-29-notes.md`입니다.
-   - SP 개요 §9 "중간 파일 뼈대"(R42)를 따르게 합니다.
-   - Docker·PostgreSQL은 SP 안에서 처음부터 가르칩니다(R38).
-5. **T34 SP 통합**: 치지직 문서·Microsoft Learn·React와 대조합니다.
-6. **T35 부록**: install·shortcuts·roadmap 페이지(roadmap은 `requires:["p3"]`)를 씁니다. **P3 Day 45에 로드맵 링크도 추가**합니다(R39). 끝나면 `merge-meta`로 pages를 갱신합니다.
-7. **T36 README + HANDOFF**: 계획서 T36의 모든 항목을 씁니다. P3 개요의 설계서 대비 변경 7가지(`task-21-report.md` "Fix round 1")를 HANDOFF에 옮깁니다.
-8. **T37 최종 검증 + 전체 브랜치 리뷰**: 가장 유능한 모델로 합니다.
-   - 범위: 저장소 첫 커밋부터 HEAD까지. 원격에는 `main`이 없고 이 브랜치만 있습니다(인계 시점 확인). 첫 커밋 `105a5eb`는 설계서만 담고 있으므로, 리뷰 범위는 `105a5eb..HEAD`입니다.
-     ```bash
-     git rev-list --max-parents=0 HEAD
-     ```
-   - 보류 Minor 목록(`progress.md`의 `minor (deferred)` 줄)도 함께 넘깁니다.
-9. superpowers `finishing-a-development-branch`로 마무리합니다. 사용자에게 `rulings.md` 전체를 "제가 내린 결정"으로 보고합니다.
-
-### 7.6 curriculum 병합 (개요의 `_meta.json`이 바뀔 때마다)
-```bash
-cd textbook && node ../.superpowers/sdd/2026-11-01-web-zero-to-hundred/merge-meta.mjs content && npm run check -- --allow-missing
-```
-- 프로젝트 순서는 p1, p2, p3, sp입니다. 페이지 순서는 start, help, glossary, troubleshooting이고 그 밖의 페이지는 뒤에 붙습니다.
-- T35에서 페이지를 추가할 때는 `curriculum.json`의 pages를 직접 수정해도 됩니다.
+옛 Subagent 방식의 재개 절차(T15·T12·T16… 지시문 틀)는 `docs/checkpoint/CHECKPOINT-2026-11-06.md` 7장에 보관했습니다.
 
 ---
 
-## 8. 작업 방식 규칙 (지금까지 실제로 쓴 것)
+## 8. 작업 방식 규칙
 
-- **Task 루프**
-  - 구현 → 리뷰(스펙 + 품질) → Critical·Important가 있으면 수정(1~3회차는 같은 에이전트, 4~5회차는 더 강한 모델의 새 에이전트) → **회차마다 범위를 좁힌 재리뷰** → 통과하면 `Task N: complete`.
-  - 최대 5회차입니다. 넘으면 판정(Ruling)으로 정리하고 진행합니다.
-- **Minor 처리**
-  - 가르치는 데나 막힘에 영향을 주는 Minor는 수정 대상으로 올리고, 판정으로 기록합니다(R40·R41·R48·R51·R52·R53·R58).
-  - 나머지는 `Task N: minor (deferred): …`로 남겨 최종 리뷰에 넘깁니다.
-- **모델**
-  - opus: 설계·판단(개요, 완성 코드, 통합 리뷰, 최종 리뷰)
-  - sonnet: Day 배치 작성과 배치 리뷰, 중간 크기 재리뷰
-  - haiku: 아주 작은 재리뷰
-  - 모델은 항상 명시합니다(R50).
-- **병렬**
-  - 파일이 겹치지 않는 Task만 병렬로 돌리고, 동시에 최대 5개입니다.
-  - Day 배치마다 쓰는 파일은 `day-NN.md`, `troubleshooting/<batch>.md`, `docs/verification/<batch>.md`뿐입니다.
-- **공유 문서 수정 금지(R56)**
-  - 대상: 작업 에이전트는 `external-facts.md`, `CONTENT-GUIDE.md`, 개요, 기존 용어집을 고치지 않습니다.
-  - 새로 확인한 사실은 자기 검증 기록에 적고, 오케스트레이터가 옮깁니다.
-- **커밋**
-  - Task 경로만 골라서 커밋합니다.
-  - 메시지 끝에는 세션이 지정하는 attribution 줄을 붙입니다.
-  - 저장소 파일에 모델 식별자를 쓰지 않습니다.
-- **기타**
-  - 리뷰어에게 "이건 지적하지 마라" 같은 선입견을 주지 않습니다.
-  - 오케스트레이터는 직접 고치지 않습니다. 수정은 항상 에이전트가 하고 리뷰를 거칩니다.
+설계서 10장과 `CLAUDE.md` 규칙을 따릅니다. 옛 규칙(에이전트 계약, 파일 소유권 등)은 `docs/checkpoint/CHECKPOINT-2026-11-06.md` 8장에 보관했습니다. 그중 지금도 쓰는 것은 `CLAUDE.md` 규칙 5에 옮겨 두었습니다.
 
 ---
 

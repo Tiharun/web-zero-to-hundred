@@ -348,3 +348,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - Task 12: fix round 2/5 (2 addressed, 0 open — d04:128 success box; d28:241 F5 tab; commits 4500fc9..9d4cea7).
 - Task 12: minor (deferred): see the combined deferred list in task-12-report.md ("## Integration fix: Days 21–30") plus help.md section 7 has no anchor (links land at page top) and d28:241 "더블클릭" fallback unverified on screen; T37 triages them.
 - Task 12: complete (commits da77b87..HEAD at feat(p1) commit, review clean). Phase 1 complete. Preview index.html per R55 (P1 only).
+- M0: complete (commits f898950..이 줄을 넣은 커밋; 배포 https://tiharun.github.io/web-zero-to-hundred/; 단위·빌드 201, e2e 45, 시각 24(+비교 함수 2), 전 페이지 168; 계획서 docs/superpowers/plans/2026-11-12-m0-skeleton-deploy.md)
