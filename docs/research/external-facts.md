@@ -464,6 +464,22 @@
 **교재 반영 결정**
 - 빌드 스크립트는 위 세 패키지를 `devDependencies`에 정확한 버전으로 고정하고(`^` 없이), 빌드 결과물 `index.html`에는 런타임 외부 요청이 없도록 CSS·폰트·스크립트를 모두 인라인한다.
 
+### 14.1 교재 사이트 빌드·배포 (확인일 2026-11-12)
+
+| 항목 | 값 | 근거 |
+|---|---|---|
+| `actions/checkout` | `v7.0.1` | `[측정]` `gh api repos/actions/checkout/releases/latest --jq .tag_name` |
+| `actions/setup-node` | `v7.1.0` | `[측정]` 같은 명령 |
+| `actions/setup-python` | `v7.1.0` | `[측정]` 같은 명령 |
+| `actions/configure-pages` | `v6.0.0` | `[측정]` 같은 명령 |
+| `actions/upload-pages-artifact` | `v5.0.0` | `[측정]` 같은 명령 |
+| `actions/deploy-pages` | `v5.0.1` | `[측정]` 같은 명령 |
+| `pixelmatch` | `8.0.0`, ESM(`type: module`) | `[레지스트리]` `npm view pixelmatch version type` |
+| `pngjs` | `7.0.0`, Node ≥ 14.19.0 | `[레지스트리]` `npm view pngjs version engines.node` |
+| 글꼴 서브셋 도구 | Python 3.12.4, fontTools 4.66.1, brotli | `[측정]` 이 PC |
+| Pages 배포 job 권한 | `pages: write`, `id-token: write`, 환경 `github-pages` | `[문서]` https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages |
+| 프로젝트 사이트 주소 | `https://<소유자>.github.io/<저장소>/` (호스트는 소문자로 쓴다) | `[측정]` `gh api repos/{owner}/{repo} --jq .owner.login,.name` |
+
 ---
 
 ## 부록 A. 미확인 항목과 대안 요약

@@ -225,3 +225,26 @@ test('projects are returned in order', async () => {
     ['fa', 'fb'],
   );
 });
+
+/** 픽스처 사본에 patch 를 덮어쓴 뒤 로드한다(값이 undefined 인 키는 지운다) */
+const loadWith = (patch) => loadModified((dir, cur) => {
+  for (const [k, v] of Object.entries(patch)) {
+    if (v === undefined) delete cur[k];
+    else cur[k] = v;
+  }
+  return cur;
+});
+
+test('url must be https and end with a slash; description must be text', async () => {
+  for (const [patch, where] of [
+    [{ url: 'http://example.test/book/' }, 'url'],
+    [{ url: 'https://example.test/book' }, 'url'],
+    [{ url: 'https://exa mple.test/book/' }, 'url'],
+    [{ url: undefined }, 'url'],
+    [{ description: '' }, 'description'],
+    [{ description: undefined }, 'description'],
+  ]) {
+    const { errors } = await loadWith(patch);
+    assert.ok(errors.some((e) => e.code === 'E_CUR_SCHEMA' && e.message.startsWith(where)), `${where} ${JSON.stringify(patch)}`);
+  }
+});

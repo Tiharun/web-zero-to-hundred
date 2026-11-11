@@ -8,6 +8,7 @@ import { build as esbuild } from 'esbuild';
 import { loadCurriculum } from './lib/curriculum.mjs';
 import { parseGlossary, parseTroubleshooting, renderGlossaryPage, renderTroubleshootingPage } from './lib/glossary.mjs';
 import { assemble } from './lib/assemble.mjs';
+import { headTags, listRoutes } from './lib/site.mjs';
 import { renderMarkdown } from './lib/markdown.mjs';
 import { validateDaySource } from './lib/validate.mjs';
 
@@ -101,12 +102,7 @@ export async function build({ contentDir, srcDir = path.join(HERE, 'src'), only 
   const terms = new Map(glossary.entries.map((e) => [e.term, e.slug]));
 
   // 3. 링크로 갈 수 있는 화면 (항상 전체 커리큘럼 기준)
-  const routes = new Set(['#/', '#/settings']);
-  curriculum.projects.forEach((p) => {
-    routes.add(`#/project/${p.id}`);
-    p.days.forEach((d) => routes.add(`#/day/${d.id}`));
-  });
-  curriculum.pages.forEach((pg) => routes.add(`#/page/${pg.id}`));
+  const routes = new Set(listRoutes(curriculum));
   terms.forEach((slug) => routes.add(`#/page/glossary/term-${slug}`));
 
   // 4. Day 렌더·검증
@@ -152,6 +148,8 @@ export async function build({ contentDir, srcDir = path.join(HERE, 'src'), only 
   ];
   const data = {
     title: curriculum.title,
+    url: curriculum.url,
+    description: curriculum.description,
     writtenAt: curriculum.writtenAt,
     builtAt: new Date().toISOString().slice(0, 10), // 날짜만: 같은 날 다시 빌드해도 index.html 이 바뀌지 않는다
     projects: curriculum.projects.map((p) => ({
@@ -194,7 +192,9 @@ export async function build({ contentDir, srcDir = path.join(HERE, 'src'), only 
   }
   const templateHtml = await readFile(path.join(srcDir, 'template.html'), 'utf8');
 
-  const html = assemble({ templateHtml, css, js: bundle.js, data, templates });
+  const site = { title: curriculum.title, url: curriculum.url, description: curriculum.description };
+  const head = headTags(site, 'data:,'); // 파비콘은 Task 4 에서 채운다
+  const html = assemble({ templateHtml, css, js: bundle.js, data, templates, head, title: site.title });
   const bytes = Buffer.byteLength(html);
   if (bytes >= SIZE_LIMIT) {
     return { ok: false, errors: [issue('E_SIZE_LIMIT', `결과 파일이 너무 커요: ${mb(bytes)} (16 MB 미만이어야 해요)`)], warnings };

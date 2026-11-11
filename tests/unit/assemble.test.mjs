@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { assemble } from '../../textbook/lib/assemble.mjs';
 
 const TEMPLATE = `<!doctype html>
-<html lang="ko"><head><title>t</title>
+<html lang="ko"><head>
+<!--WZH:HEAD-->
 <!--WZH:CSS-->
 </head><body>
 <!--WZH:DATA-->
@@ -17,6 +18,8 @@ const base = () => ({
   js: '(()=>{})();',
   data: { title: '교재', projects: [] },
   templates: [{ id: 't-day-fa-d01', html: '<p>안녕</p>' }],
+  head: '<title>t</title>',
+  title: '교재',
 });
 
 /** 결과에서 데이터 스크립트의 JSON만 꺼내 파싱한다 */
@@ -94,4 +97,16 @@ test('template ids must be t-day-* or t-page-* and unique', () => {
 test('placeholders must each appear exactly once', () => {
   assert.throws(() => assemble({ ...base(), templateHtml: TEMPLATE.replace('<!--WZH:JS-->', '') }), /WZH:JS/);
   assert.throws(() => assemble({ ...base(), templateHtml: TEMPLATE + '<!--WZH:CSS-->' }), /WZH:CSS/);
+});
+
+test('head is filled and {{WZH_TITLE}} is replaced everywhere, escaped', () => {
+  const templateHtml = TEMPLATE.replace('</head>', '<a class="brand">{{WZH_TITLE}}</a></head>').replace('</body>', '<p>{{WZH_TITLE}}</p></body>');
+  const out = assemble({ ...base(), templateHtml, title: 'A & B' });
+  assert.match(out, /<title>t<\/title>/);
+  assert.equal((out.match(/A &amp; B/g) ?? []).length, 2);
+  assert.doesNotMatch(out, /\{\{WZH_TITLE\}\}/);
+});
+
+test('a template without the HEAD placeholder throws', () => {
+  assert.throws(() => assemble({ ...base(), templateHtml: TEMPLATE.replace('<!--WZH:HEAD-->', '') }), /WZH:HEAD/);
 });

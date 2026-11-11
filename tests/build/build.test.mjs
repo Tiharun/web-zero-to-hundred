@@ -61,14 +61,15 @@ test('fixture builds to single file', async () => {
     assert.match(html, /<script id="wzh-data" type="application\/json">/);
     assert.ok(!html.includes('<script src='), 'external script');
     assert.doesNotMatch(html, /<link rel="stylesheet" href=/);
-    assert.doesNotMatch(html, /<link[^>]+href=["']https?:/i);
+    // canonical 은 주소 표기일 뿐 불러오는 자원이 아니다
+    assert.doesNotMatch(html, /<link(?![^>]*rel="canonical")[^>]+href=["']https?:/i);
     assert.ok((await stat(out)).size < 16 * 1024 * 1024);
     assert.doesNotMatch(html, /<!--WZH:/);
 
     // 쉘
     assert.match(html, /^<!doctype html>/i);
     assert.match(html, /<html lang="ko">/);
-    assert.match(html, /<title>웹 제로 투 헌드레드<\/title>/);
+    assert.match(html, /<title>픽스처 교재<\/title>/);
     assert.match(html, /<meta name="viewport"/);
     for (const re of [
       /<a class="skip-link" href="#main"/,
@@ -409,4 +410,41 @@ test('the real src builds the fixture without warnings and without churn on rebu
   assert.deepEqual(first.warnings, []);
   const second = await build({ contentDir: FIXTURE });
   assert.equal(second.html, first.html, 'two builds on the same day are byte-identical');
+});
+
+/** 폴더(또는 파일) 아래의 .js·.mjs·.html·.css 파일 경로 전부 */
+async function sourceFiles(...entries) {
+  const out = [];
+  for (const entry of entries) {
+    const abs = path.join(ROOT, entry);
+    if ((await stat(abs)).isFile()) { out.push(abs); continue; }
+    for (const name of await readdir(abs, { recursive: true })) {
+      if (/\.(m?js|html|css)$/.test(name)) out.push(path.join(abs, name));
+    }
+  }
+  return out;
+}
+
+test('site name and address come from curriculum.json only', async () => {
+  const realCur = JSON.parse(await readFile(path.join(ROOT, 'textbook', 'content', 'curriculum.json'), 'utf8'));
+  await withContentCopy(async ({ content }) => {
+    const file = path.join(content, 'curriculum.json');
+    const cur = JSON.parse(await readFile(file, 'utf8'));
+    await writeFile(file, JSON.stringify({ ...cur, title: '바꾼 이름', url: 'https://example.test/x/' }, null, 2));
+    const r = await build({ contentDir: content });
+    assert.equal(r.ok, true, JSON.stringify(r.errors));
+    assert.match(r.html, /<title>바꾼 이름<\/title>/);
+    assert.match(r.html, /<a class="brand[^"]*" href="#\/">[\s\S]*?바꾼 이름<\/a>/);
+    // Day 본문·데이터를 뺀 틀(헤더·<head>)에 옛 이름이 남지 않는다
+    const frame = r.html.replace(/<template[\s\S]*?<\/template>/g, '').replace(/<script id="wzh-data"[\s\S]*?<\/script>/, '');
+    assert.equal(frame.includes('픽스처 교재'), false);
+    assert.equal(embeddedData(r.html).url, 'https://example.test/x/');
+    assert.equal(embeddedData(r.html).description, '픽스처 설명');
+  });
+  // 저장소 소스에 이름·주소가 직접 적혀 있지 않다
+  for (const f of await sourceFiles('textbook/src', 'textbook/lib', 'textbook/build.mjs')) {
+    const src = await readFile(f, 'utf8');
+    assert.equal(src.includes(realCur.title), false, f);
+    assert.equal(src.includes(realCur.url), false, f);
+  }
 });

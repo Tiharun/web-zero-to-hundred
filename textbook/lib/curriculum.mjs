@@ -19,6 +19,7 @@ export const dayFileName = (num) => `day-${String(num).padStart(2, '0')}.md`;
 
 const buildError = (code, file, message, extra = {}) => ({ code, line: null, message, file, ...extra });
 
+const SITE_URL = /^https:\/\/[^\s]+\/$/;
 const isText = (v) => typeof v === 'string' && v.trim() !== '';
 const isTextList = (v) => Array.isArray(v) && v.every((x) => typeof x === 'string' && x.trim() !== '');
 const isObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
@@ -34,6 +35,8 @@ function checkSchema(cur, file) {
 
   if (cur.version !== 1) bad('version', `1이어야 해요 (현재 ${JSON.stringify(cur.version)})`);
   if (!isText(cur.title)) bad('title', '비어 있지 않은 글자여야 해요.');
+  if (typeof cur.url !== 'string' || !SITE_URL.test(cur.url)) bad('url', '"https://"로 시작하고 "/"로 끝나는 주소여야 해요 (예: "https://example.github.io/book/").');
+  if (!isText(cur.description)) bad('description', '비어 있지 않은 글자여야 해요.');
   if (!isText(cur.writtenAt)) bad('writtenAt', '"2026-11" 같은 글자여야 해요.');
   const min = cur.validation?.minDayChars;
   if (!Number.isInteger(min) || min < 0) bad('validation.minDayChars', '0 이상의 정수여야 해요.');

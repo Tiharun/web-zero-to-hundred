@@ -1,6 +1,8 @@
 {
   "version": 1,
   "title": "웹 제로 투 헌드레드",
+  "url": "https://tiharun.github.io/web-zero-to-hundred/",
+  "description": "프로그래밍이 처음인 사람이 Day 1부터 혼자 따라가는 웹 개발 교재",
   "writtenAt": "2026-11",
   "validation": {
     "minDayChars": 4000

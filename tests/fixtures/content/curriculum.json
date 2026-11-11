@@ -1,6 +1,8 @@
 {
   "version": 1,
   "title": "픽스처 교재",
+  "url": "https://example.test/fixture/",
+  "description": "픽스처 설명",
   "writtenAt": "2026-11",
   "validation": { "minDayChars": 200 },
   "projects": [

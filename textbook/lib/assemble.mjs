@@ -1,7 +1,10 @@
-// template.html 의 자리표시자 네 개에 CSS·데이터·템플릿·JS 를 채워 파일 하나로 만든다.
+// template.html 의 자리표시자 다섯 개에 HEAD·CSS·데이터·템플릿·JS 를 채워 파일 하나로 만든다.
+// {{WZH_TITLE}} 는 몇 번이든 이스케이프한 사이트 이름으로 바꾼다.
 // 각 자리는 들어가는 문맥(style / script / JSON / template)에 맞게 안전하게 만든다.
 
-const PLACEHOLDERS = ['CSS', 'DATA', 'TEMPLATES', 'JS'];
+import { escapeHtml } from './site.mjs';
+
+const PLACEHOLDERS = ['HEAD', 'CSS', 'DATA', 'TEMPLATES', 'JS'];
 const TEMPLATE_ID = /^t-(?:day|page)-[a-z0-9][a-z0-9-]*$/;
 
 /** <script type="application/json"> 안에 넣어도 태그가 닫히거나 주석이 열리지 않는 JSON */
@@ -38,22 +41,25 @@ function templateBlocks(templates) {
 }
 
 /**
- * @param {{ templateHtml: string, css: string, js: string, data: object, templates: {id: string, html: string}[] }} parts
+ * @param {{ templateHtml: string, css: string, js: string, data: object, templates: {id: string, html: string}[], head: string, title: string }} parts
  * @returns {string} 완성된 index.html
  */
-export function assemble({ templateHtml, css, js, data, templates }) {
+export function assemble({ templateHtml, css, js, data, templates, head, title }) {
   for (const name of PLACEHOLDERS) {
     const marker = `<!--WZH:${name}-->`;
     const count = templateHtml.split(marker).length - 1;
     if (count !== 1) throw new Error(`template.html 에 ${marker} 가 정확히 하나 있어야 해요 (현재 ${count}개)`);
   }
 
+  // 이름은 채워 넣기 전의 틀에서만 바꾼다: 본문·데이터 안의 같은 글자는 건드리지 않는다
+  const frame = templateHtml.split('{{WZH_TITLE}}').join(escapeHtml(title));
   const fill = {
+    HEAD: head,
     CSS: styleBlock(css),
     DATA: `<script id="wzh-data" type="application/json">${jsonForScript(data)}</script>`,
     TEMPLATES: templateBlocks(templates),
     JS: scriptBlock(js),
   };
   // 한 번에 바꾼다: 채워 넣은 내용 안의 글자는 다시 해석하지 않는다. 함수를 써서 $& 같은 패턴도 글자 그대로 넣는다
-  return templateHtml.replace(/<!--WZH:(CSS|DATA|TEMPLATES|JS)-->/g, (_, name) => fill[name]);
+  return frame.replace(/<!--WZH:(HEAD|CSS|DATA|TEMPLATES|JS)-->/g, (_, name) => fill[name]);
 }
