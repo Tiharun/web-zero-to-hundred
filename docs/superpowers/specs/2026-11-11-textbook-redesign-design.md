@@ -3,7 +3,7 @@
 - 작성일: 2026-11-11 · 상태: 사용자 검토 전
 - 기준 문서: `PRODUCT.md`(제품 원칙), 루트 `DESIGN.md`(색·글꼴·크기·모서리 값의 기준), `design-system/web-zero-to-hundred/pages/home.md`(홈 브리프), `docs/superpowers/specs/2026-11-01-web-zero-to-hundred-design.md`(원 설계서 4·5장)
 - 이 문서에서 정하는 것: 화면 뼈대, 부품, 모션, 강좌용 그림(2D·3D), 가독성 규칙, 검증, 구현 순서. 색·글꼴 값은 `DESIGN.md`를 따르고 여기서 다시 정하지 않는다.
-- 이 설계서가 승인되면 `pages/home.md`도 확정된 것으로 본다(지금은 '초안' 표시).
+- 이 설계서가 승인되면 `pages/home.md`도 확정된 것으로 본다(home.md는 2026-11-11 확정 표시, 시각 값은 DESIGN.md 기준).
 - 근거 표시: **[측정]** 이 저장소에서 직접 확인함 / **[검색]** 출처 링크가 있음(맨 끝 참고) / **[선택]** 이 설계서에서 정한 값. 구현할 때 실측해서 바꿀 수 있다.
 
 ---
@@ -45,7 +45,7 @@
 ### 3.2 홈
 `home.md`의 구성·우선순위·상태를 그대로 따른다. 이 설계에서 더하는 것:
 - 첫 행: 퀘스트 카드(2/3)와 레벨 패널(1/3). 초점은 퀘스트 카드의 큰 Day 번호다(DESIGN.md "One Big Number").
-- 월드맵: 월드 노드를 잇는 경로선이 SVG다(Path Drawing). 360px에서는 세로로 놓고, 다른 월드 카드는 가로 Scroll Snap 캐러셀로 보여 준다.
+- 월드맵: 월드 노드를 잇는 경로선이 SVG다(Path Drawing). Day 칸 배치는 DESIGN.md Layout의 "월드맵 배치"를 따르고(좁은 화면도 뱀 배치), 다른 월드 카드는 가로 Scroll Snap 캐러셀로 보여 준다.
 - 막혔을 때: 부록 4개 바로가기. 늘 같은 자리에 둔다.
 
 ### 3.3 Day 페이지 (위에서 아래로)
@@ -72,13 +72,13 @@
 |---|---|---|
 | Focal Point | 화면당 하나: 퀘스트 카드의 Day 번호 | Day 제목. 내려가면 지금 섹션 제목 |
 | Readability | 숫자는 `tnum`, 라벨은 12px 이상 | 본문 17px, 줄간격은 열린 결정(1.65 vs 1.75), 글 열 최대 720px, `word-break: keep-all` 유지, 본문 가로 스크롤 금지 |
-| Visual Weight | 분홍은 주 버튼 하나("이어서 하기")에만(DESIGN.md "One Pink") | 분홍은 "Day 완료" 버튼에만. 알림 상자는 분홍보다 약하게 |
+| Visual Weight | 분홍 면은 DESIGN.md "The One Pink Rule"을 따른다 | 분홍 면은 DESIGN.md "The One Pink Rule"을 따른다(주 버튼은 "Day 완료"). 알림 상자는 분홍보다 약하게 |
 | Balance | 2/3 + 1/3 비대칭 균형 | 본문 열 가운데, 퀘스트 로그는 오른쪽 가벼운 열 |
 | Grouping | 카드 하나에 한 주제. 그룹 안 간격은 그룹 사이 간격보다 작게 | 섹션 → 단계 → 단락 순서로 간격을 줄인다 |
 | Density | 중간 | 본문은 여유 있게, 사이드바는 촘촘하게(행 높이 36px. 터치 화면에서는 44px) |
 | Visual Hierarchy | 크기 단계: 80(큰 번호) / 38(제목) / 26(h2) / 20(h3) / 17(본문) / 12(라벨)[h2·h3 값은 선택] | 같음 |
 | Alignment | 4px 격자. 카드 안 글자의 시작선을 맞춘다 | 본문 왼쪽 정렬. 코드 블록과 알림 상자는 본문과 같은 왼쪽 선 |
-| Whitespace | 간격 단계 4/8/12/16/24/32/48/64[선택] | 섹션 위 64, 단계 위 32, 단락 사이 16 |
+| Whitespace | DESIGN.md Layout의 간격 토큰을 따른다 | 섹션 위 64, 단계 위 32, 단락 사이 16 |
 | Cognitive Load | 한 화면에 할 일 하나. 격려 문구는 한 줄 | 정답과 "자주 막히는 곳"은 접어 두고 필요할 때 연다. 움직이는 그룹은 동시에 하나만. 아이콘에는 늘 글자를 같이 붙인다 |
 
 ## 5. 부품
@@ -108,7 +108,7 @@
 | 부품 | 내용 |
 |---|---|
 | 퀘스트 카드 | 큰 Day 번호, 제목, 시간, 결과물, 작업 폴더, 주 버튼 |
-| 레벨 패널 | `LV n`, XP 막대(DESIGN.md `xp-bar`), `n / 155 Day`. 라벨만 Galmuri11 |
+| 레벨 패널 | `LV n`, XP 막대, `n / 155 Day`. 모양은 DESIGN.md Components의 HUD, 글꼴은 "The Label-Only Pixel Rule"을 따른다 |
 | 월드맵 | 노드(완료·다음·남음·잠김), 배포 Day 깃발, 경로선 |
 | 업적 토스트 | 화면 아래 가운데. 4초 뒤 사라진다. `role="status"`. 마우스를 올리거나 포커스가 있으면 멈춘다 |
 | 레벨업 Modal | 레벨이 오를 때 한 번. 새 레벨과 다음 목표. 닫기 버튼에 포커스 |
@@ -119,8 +119,8 @@
 
 ### 6.1 원칙
 1. 움직임에는 뜻이 있어야 한다: 피드백, 관계(어디서 왔나), 진행. 장식으로만 반복되는 움직임은 넣지 않는다.
-2. `transform`과 `opacity`만 움직인다. `width`·`height`·`top` 같은 레이아웃 속성은 움직이지 않는다.
-3. 한 번에 움직이는 그룹은 하나뿐이다. 본문을 읽고 있을 때는 아무것도 저절로 움직이지 않는다.
+2. 움직이는 속성은 DESIGN.md Components의 Motion "움직이는 속성"을 따른다. `width`·`height`·`top` 같은 레이아웃 속성은 움직이지 않는다.
+3. 어떤 모션이 함께 움직일 수 있는지는 DESIGN.md Components의 Motion 표를 따른다(홈의 말 점프 반복, Wiggle, 축하 조각, Tilt, Magnetic 포함). 본문을 읽고 있을 때는 아무것도 저절로 움직이지 않는다.
 4. `prefers-reduced-motion: reduce`이면 모든 모션이 최종 상태로 바로 간다. 정보는 그대로 다 보인다.
 5. 마우스 전용 효과(Tilt, Magnetic)는 `(hover: hover) and (pointer: fine)`일 때만 켠다.
 6. JS가 실패해도 내용은 보인다. 숨긴 채 시작하는 상태(Reveal 전)는 JS가 붙인 클래스로만 만든다.
@@ -135,9 +135,10 @@
 | `--dur-celebrate` | 600ms | XP 막대 채움, 레벨업 |
 | `--ease-out` | `cubic-bezier(0.2, 0.8, 0.2, 1)` | 들어옴 |
 | `--ease-in` | `cubic-bezier(0.4, 0, 1, 1)` | 나감 |
+| `--ease-bounce` | DESIGN.md Motion 참고 | 떠오름·턱, 문장 흔들림 |
 | stagger 간격 | 40ms, 최대 8개 | 9번째부터는 지연 없이 바로 |
 
-이 토큰은 CSS `:root`에 둔다. DESIGN.md frontmatter는 모션 키를 받지 않으므로 본문의 "Motion" 메모로 기록한다(구현 후 `/impeccable document`).
+이 토큰은 CSS `:root`에 둔다. 값과 쓰는 곳은 DESIGN.md Components의 Motion 토큰 표가 기준이며, 이 표와 다르면 DESIGN.md를 따른다.
 
 ### 6.3 기법 배치표
 
@@ -155,11 +156,11 @@
 | Accordion | 사이드바 월드, 자주 막히는 곳 | 점진적 공개 | 5.4 |
 | Tilt Effect | 홈 퀘스트 카드, 월드 카드 | 손에 잡히는 느낌 | 최대 4도. 마우스 전용. 마우스가 나가면 원래대로 |
 | Magnetic Button | "이어서 하기" 주 버튼 하나 | 주 행동 강조 | 최대 6px 끌림. 마우스 전용 |
-| Path Drawing | 월드맵 경로선, SVG 개념 그림의 선 | 흐름·연결 | 처음 볼 때 1회. Day 완료 뒤 다음 구간만 그린다 |
+| Path Drawing | 월드맵 경로선, SVG 개념 그림의 선 | 흐름·연결 | 처음 볼 때 1회. 월드맵은 DESIGN.md Motion의 Path Drawing과 "한 번만" 규칙을 따른다(세션 첫 표시에 완료 구간 전체) |
 | Shared Element Transition | 퀘스트 카드 Day 번호 → Day 헤더 번호, 월드 카드 → 월드 페이지 머리 | 같은 것이 이어진다 | `document.startViewTransition`과 `view-transition-name`. 지원하지 않으면 바로 바꾼다[검색] |
-| Hover Lift | 카드, 사이드바 항목, 부록 바로가기 | 누를 수 있음 | 카드는 `translateY(-2px)`와 그림자 한 단계, 200ms |
-| Shake | 잠긴 Day·월드 클릭, 조건이 안 된 "Day 완료" 클릭, 복원 파일 검증 실패 | 안 된다는 신호 | 좌우 4px, 3회, 300ms. 반드시 이유 문장을 같이 보여 준다(`role="status"`) |
-| XP 채움 | 홈 레벨 패널(Day 완료 뒤 처음 올 때) | 진행 보상 | `--dur-celebrate`. 1회 |
+| Hover Lift | 주 버튼, 보드게임 칸 | 누를 수 있음 | DESIGN.md Elevation "바닥 턱 목록"의 hover 값을 따른다. 카드·사이드바 항목·막혔을 때 칸은 뜨지 않고, 흐림 그림자는 쓰지 않는다 |
+| Shake | 잠긴 Day·월드 클릭, 조건이 안 된 "Day 완료" 클릭, 복원 파일 검증 실패 | 안 된다는 신호 | DESIGN.md Motion의 Shake 값을 따른다. 반드시 이유 문장을 같이 보여 준다(`role="status"`) |
+| XP 채움 | 홈 레벨 패널(세션에서 처음 볼 때) | 진행 보상 | DESIGN.md Motion의 XP 채움 값. 1회 |
 
 ### 6.4 브라우저 지원과 대체 방식 [검색]
 - 같은 문서 View Transitions: Chrome·Edge 111, Safari 18, Firefox 144부터 지원한다. 지원하지 않으면 애니메이션 없이 바꾼다.
@@ -217,10 +218,10 @@
 
 ## 8. 게임 UI 테마 규칙
 - 게임 어휘는 라벨에만 쓴다: 오늘의 퀘스트, 월드, LV, XP, 클리어, 퀘스트 로그. 본문과 Day 제목은 바꾸지 않는다.
-- 픽셀 글꼴(Galmuri11)은 라벨과 숫자 표시에만 쓴다(DESIGN.md "Label-Only Pixel").
+- 픽셀 글꼴(Galmuri11)은 DESIGN.md "The Label-Only Pixel Rule"을 따른다(큰 숫자는 Galmuri가 아니다).
 - 진행 숫자는 실제로 완료한 것만 센다. 연속 학습일, 순위, 학습자 수는 넣지 않는다.
 - 보상 순간(Day 완료, 레벨업, 월드 클리어)에만 축하 모션을 한 번 보여 준다. 소리는 넣지 않는다.
-- XP 공식(완료 Day의 예상 분, 300 XP마다 1레벨)은 임시다(13장).
+- XP 공식은 DESIGN.md HUD의 "XP 공식(규칙)"으로 확정했다.
 
 ## 9. 접근성과 예외 상황
 - 포커스 링: 2px 실선과 2px 간격. 라이트·다크 모두 3:1 이상(WCAG 1.4.11[검색]). 키보드 포커스에만 보인다(`:focus-visible`).
@@ -232,7 +233,7 @@
 ## 10. 성능 예산 [선택]
 | 항목 | 기준 |
 |---|---|
-| 애니메이션 속성 | `transform`, `opacity`만(SVG 선은 `stroke-dashoffset`) |
+| 애니메이션 속성 | DESIGN.md Components의 Motion "움직이는 속성"만 |
 | 스크롤 중 Long Task | 50ms 초과 0건 |
 | 레이아웃 이동(CLS) | 0.05 이하 |
 | 3D 활성 개수 | 1 |
@@ -260,8 +261,8 @@
 
 ## 13. 열린 결정 (사용자 결정 필요)
 1. Day 본문 줄간격: 1.65(DESIGN.md) 또는 1.75(현재).
-2. XP 공식 확정.
-3. 테두리, 알림 상자, 코드 구문 강조, 위험(danger) 색(DESIGN.md 미정 색).
+2. XP 공식: 확정됨(DESIGN.md HUD "XP 공식(규칙)").
+3. 알림 상자, 코드 구문 강조, 위험(danger) 색(DESIGN.md "아직 정하지 않은 것"). 테두리 색은 `rule`·`line`·`edge`로 확정됨(DESIGN.md Colors).
 4. 모든 Day 전용 그림으로 넓힐지(7.5).
 5. North Star 이름("공부 퀘스트 보드", 제안).
 
