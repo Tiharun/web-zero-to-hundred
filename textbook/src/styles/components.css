@@ -21,14 +21,98 @@
 .btn:hover {
   background: var(--surface-2);
 }
+/* 주 버튼 (DESIGN.md Buttons): 분홍 면 + 4px 턱. 누르면 턱 안으로 들어간다. 한 화면에 하나 */
 .btn-primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--on-accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 var(--space-lg);
+  border: 0;
+  border-radius: var(--radius-btn);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  font-size: var(--text-body);
+  font-weight: 800;
+  line-height: 1.3;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 var(--ledge) 0 var(--color-accent-deep);
+  margin-bottom: var(--ledge);
+  transition:
+    background-color var(--dur-micro) var(--ease-out),
+    transform var(--dur-short) var(--ease-bounce),
+    box-shadow var(--dur-short) var(--ease-bounce);
 }
 .btn-primary:hover {
-  background: var(--accent);
-  filter: brightness(1.08);
+  background: var(--color-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 calc(var(--ledge) + 2px) 0 var(--color-accent-deep);
+}
+.btn-primary:active {
+  transform: translateY(calc(var(--ledge) - 1px));
+  box-shadow: 0 1px 0 var(--color-accent-deep);
+  transition-duration: 60ms;
+}
+.btn-primary:disabled,
+.btn-primary[aria-disabled="true"] {
+  transform: none;
+  box-shadow: none;
+}
+
+/* 아이콘 버튼 · 도구 버튼: 최소 40×40, 투명 바탕 */
+.icon-btn,
+.tool-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  min-width: 40px;
+  height: 40px;
+  padding: 0 var(--space-sm);
+  border: 1px solid transparent;
+  border-radius: var(--radius-btn);
+  background: transparent;
+  color: var(--color-ink);
+  font: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-micro) var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out);
+}
+.icon-btn {
+  padding: 0;
+}
+.icon-btn:hover,
+.tool-btn:hover,
+.tool-btn[aria-expanded="true"] {
+  background: var(--color-track);
+}
+.icon-btn:active,
+.tool-btn:active {
+  background: var(--color-rule);
+}
+.icon-btn:disabled,
+.icon-btn[aria-disabled="true"],
+.tool-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: transparent;
+}
+
+/* 글자 링크 */
+.text-link {
+  color: var(--color-ink);
+  font-weight: 400;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  transition: color var(--dur-micro) var(--ease-out);
+}
+.text-link:hover {
+  color: var(--color-accent-text);
 }
 .btn-danger {
   border-color: var(--danger);
@@ -51,27 +135,58 @@
   cursor: not-allowed;
 }
 .file-btn:focus-within {
-  outline: 3px solid var(--focus);
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
 
+/* 기술 칩 (DESIGN.md Chips): 최대 4개, 넘으면 "외 n개" */
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-2xs);
   margin: 0;
   padding: 0;
+  list-style: none;
 }
-.chip {
-  display: inline-block;
-  padding: 0 0.7em;
-  border-radius: 999px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 0.82rem;
-  font-weight: 600;
-  line-height: 1.8;
+.chips li {
+  padding: var(--space-3xs) var(--space-xs);
+  border-radius: var(--radius-btn);
+  background: var(--color-track);
+  color: var(--color-ink);
+  font-size: var(--text-ui);
+  line-height: 1.5;
+}
+.chips .chip-more {
+  background: none;
+  color: var(--color-ink-2);
+  padding-inline: var(--space-2xs);
+}
+
+/* 카드 (DESIGN.md Cards): 그림자 대신 4px 턱 */
+.card {
+  background: var(--color-card);
+  color: var(--color-ink);
+  border: 2px solid var(--color-rule);
+  border-radius: var(--radius-card);
+  box-shadow: 0 var(--ledge) 0 var(--color-rule);
+}
+
+/* 라벨 글씨 (Galmuri11 12px) */
+.label {
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-ink-2);
+}
+
+kbd {
+  font-family: var(--font-code);
+  font-size: var(--text-label);
+  padding: 0 var(--space-2xs);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--space-2xs);
+  color: var(--color-ink-2);
 }
 
 .meter {
@@ -104,12 +219,25 @@
   margin: 0 8px;
 }
 
+/* 안내 한 줄 (DESIGN.md Notice): 1px ink-2 테두리, 선 경고 아이콘 */
 .notice {
-  margin: 0 0 20px;
-  padding: 12px 16px;
-  background: var(--accent-soft);
-  border-left: 6px solid var(--accent);
-  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  margin: 0 0 var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-ink-2);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+  color: var(--color-ink);
+  font-size: var(--text-ui);
+  line-height: 1.5;
+}
+.notice .icon {
+  margin-top: var(--space-2xs);
+}
+.notice a {
+  font-weight: 800;
 }
 
 /* ───────── 잠금 · 없는 화면 ───────── */

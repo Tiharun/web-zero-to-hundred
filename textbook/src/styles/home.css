@@ -13,11 +13,6 @@
   gap: 10px 16px;
   margin: 20px 0 8px;
 }
-.continue .btn-primary {
-  min-height: 52px;
-  padding: 0.6em 1.8em;
-  font-size: 1.1rem;
-}
 .continue-hint {
   color: var(--muted);
 }

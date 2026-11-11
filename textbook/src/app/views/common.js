@@ -1,6 +1,7 @@
 // 여러 화면이 같이 쓰는 도우미: DOM 만들기, 데이터 찾기, 잠금 화면, 없는 화면.
 // 화면에 들어가는 글자는 모두 textContent(createTextNode)로 넣는다. innerHTML 을 쓰지 않는다.
 import { isProjectComplete, projectState } from '../progress.js';
+import { icon } from './icons.js';
 
 /**
  * 작은 DOM 도우미. h('a', { href: '#/', class: 'btn' }, '글자', 자식…)
@@ -66,9 +67,42 @@ export function breadcrumb(...items) {
   );
 }
 
-/** 이어서 하기 링크 모양의 버튼 */
+/** 링크 모양의 버튼. primary 는 primaryButton 과 같은 모양이다(한 화면에 하나) */
 export function linkButton(href, text, { primary = false, testid = null } = {}) {
-  return h('a', { class: primary ? 'btn btn-primary' : 'btn', href, 'data-testid': testid }, text);
+  return primary ? primaryButton(href, text, { testid }) : h('a', { class: 'btn', href, 'data-testid': testid }, text);
+}
+
+// ───────── 공용 부품 (DESIGN.md Components) ─────────
+
+/** 카드: card 바탕, 2px rule 테두리, 4px 턱. props.class 는 card 뒤에 붙는다 */
+export function card(props, ...children) {
+  const { class: cls, ...rest } = props ?? {};
+  return h('section', { ...rest, class: cls ? `card ${cls}` : 'card' }, ...children);
+}
+
+/** 주 버튼(분홍 면 + 턱). 한 화면에 하나만 쓴다 */
+export function primaryButton(href, text, { testid = null } = {}) {
+  return h('a', { class: 'btn-primary', href, 'data-testid': testid }, text);
+}
+
+/** 밑줄 글자 링크 */
+export function textLink(href, text) {
+  return h('a', { class: 'text-link', href }, text);
+}
+
+/** 기술 칩 하나 */
+export const chip = (text) => h('li', null, text);
+
+/** 기술 칩 목록. max 를 넘으면 마지막에 "외 n개" */
+export function chips(items, max = 4) {
+  const shown = items.slice(0, max);
+  const rest = items.length - shown.length;
+  return h('ul', { class: 'chips' }, shown.map(chip), rest > 0 && h('li', { class: 'chip-more' }, `외 ${rest}개`));
+}
+
+/** 안내 한 줄: 선 경고 아이콘 + 글자. 화면 낭독기에 알린다 */
+export function notice(text, { testid = null } = {}) {
+  return h('p', { class: 'notice', role: 'status', 'data-testid': testid }, icon('alert'), h('span', null, text));
 }
 
 // ───────── 잠금 화면 · 없는 화면 ─────────

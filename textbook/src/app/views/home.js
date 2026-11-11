@@ -1,6 +1,6 @@
 // 홈: 전체 진도, 이어서 하기, 학습 경로 지도, 부록 바로가기.
 import { continueTarget, isUnlocked, percent, projectState } from '../progress.js';
-import { doneCount, getProject, h, isDone, linkButton, meter } from './common.js';
+import { chips, doneCount, getProject, h, isDone, linkButton, meter, notice as noticeLine } from './common.js';
 
 const PROJECT_LABEL = { locked: '🔒 잠김', active: '▶ 진행 중', complete: '✅ 완료' };
 
@@ -52,7 +52,7 @@ function projectCard(ctx, project) {
       h('span', { class: 'path-state' }, PROJECT_LABEL[state]),
       h('strong', { class: 'path-title' }, project.title),
       h('span', { class: 'path-subtitle' }, project.subtitle),
-      h('span', { class: 'chips' }, (project.stack ?? []).map((tech) => h('span', { class: 'chip' }, tech))),
+      chips(project.stack ?? []),
       state !== 'locked' && meter(Math.floor((done * 100) / Math.max(total, 1)), `${project.title} 진도`),
       h('span', { class: 'path-note' }, `${done} / ${total} Day · ${note}`),
     ),
@@ -93,7 +93,7 @@ export function renderHome(ctx, root) {
     h(
       'div',
       { class: 'home' },
-      notice && h('p', { class: 'notice', role: 'status' }, notice),
+      notice && noticeLine(notice),
       h('section', { class: 'hero' }, h('h1', null, cur.title), h('p', { class: 'lead' }, '처음이어도 괜찮아요. 하루에 한 Day씩, 내 속도로 따라와 보세요.'), continueArea(ctx)),
       h('section', { class: 'progress-grid', 'aria-label': '전체 진도' }, trackCard(ctx, 'main', '메인 과정', 'progress-main'), hasSpecial && trackCard(ctx, 'special', '특별 과정', 'progress-special')),
       h(
