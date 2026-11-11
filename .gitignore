@@ -1,10 +1,72 @@
+# 공개 저장소다. 올라가면 안 되는 것(비밀값·개인정보)과 올려도 의미 없는 것(생성물·캐시·로컬 도구 상태)을 막는다.
+# 규칙은 CLAUDE.md "보안" 항목을 따른다. 새 도구가 로컬 파일을 만들면 여기에 먼저 추가한다.
+
+# --- 비밀값: 환경 변수·키·인증서·자격 증명 ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+*.crt
+*.cer
+*.jks
+*.keystore
+id_rsa*
+id_ed25519*
+secrets.json
+appsettings.*.local.json
+*.secret
+*.secrets
+.npmrc
+.netrc
+credentials*.json
+
+# --- 브라우저 상태: 쿠키·세션 토큰·녹화 ---
+.playwright-mcp/
+playwright/.auth/
+*storage-state*.json
+*.har
+cookies*.json
+test-results/
+playwright-report/
+
+# --- 로컬 데이터베이스 ---
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+pgdata/
+
+# --- 생성물·의존성·캐시 ---
 node_modules/
-*.log
-.DS_Store
 bin/
 obj/
 target/
 dist/
+_site/
 textbook/.cache/
 tests/visual/.out/
-_site/
+coverage/
+*.tsbuildinfo
+__pycache__/
+*.pyc
+
+# --- 로컬 도구·에디터·작업 공간 ---
+.claude/settings.local.json
+.superpowers/
+textbook/.impeccable/
+design-system/web-zero-to-hundred/playground/
+design-system/web-zero-to-hundred/prototype/
+.vs/
+.idea/
+*.user
+*.suo
+*.swp
+
+# --- 운영체제·로그 ---
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -150,3 +150,20 @@ node design-system/web-zero-to-hundred/prototype/build-home.mjs
 - 커밋과 push는 요청이 있을 때만 한다. 커밋할 때는 Task에 해당하는 경로만 고른다.
 - 저장소 파일에 모델 식별자나 개인정보를 쓰지 않는다.
 - 게임 어휘(퀘스트, 월드, 레벨, XP)는 라벨에만 쓴다. 지어낸 수치(연속 학습일, 순위, 후기)는 넣지 않는다.
+
+### 6. 보안: 공개 저장소에 올리지 않는 것
+
+이 저장소는 GitHub에 공개된다. 한 번 push한 것은 지워도 이력·복제본에 남는다고 본다.
+
+- 비밀값(비밀번호, API 키, 토큰, 연결 문자열, 인증서·개인 키)은 커밋하지 않는다. `.env`·`appsettings.*.local.json`·user-secrets에 두고, 저장소에는 자리표시 값만 든 `.env.example`만 둔다.
+- 개인정보(실명, 이메일, 전화번호, 로컬 사용자 경로 `C:\Users\…`, 계정 화면이 찍힌 스크린샷)를 파일·커밋 메시지에 넣지 않는다. 검증 스크린샷은 교재 화면만 찍는다.
+- 쿠키·세션 상태(Playwright `storage-state`, `.har`), 로컬 DB(`*.db`, `*.sqlite`), 생성물·캐시, 로컬 도구 작업 공간(`.superpowers/`, `.claude/settings.local.json`, `design-system/…/prototype/`)은 `.gitignore`로 막는다.
+- 새 도구나 기능이 로컬 파일을 만들면, 그 파일을 만들기 전에 루트 `.gitignore`에 규칙을 먼저 추가한다. `.git/info/exclude`는 이 PC에만 적용되므로 공유해야 할 규칙은 거기에 두지 않는다.
+- 커밋 전에 `git status --short`와 `git diff --cached --stat`으로 올라갈 파일을 확인하고, 아래 검사가 아무것도 출력하지 않아야 커밋한다.
+
+```bash
+git diff --cached -U0 | grep -nE '(AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{36}|github_pat_|sk-[A-Za-z0-9_-]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY|xox[baprs]-|AIza[0-9A-Za-z_-]{35})'
+```
+
+- 테스트용 비밀번호는 테스트 코드 안에서 매번 만들거나(`newPassword()`) 누가 봐도 가짜인 값(`change-me-…`)만 쓴다.
+- 비밀값을 이미 push했다면 지우는 것만으로 끝나지 않는다. 먼저 그 키를 폐기·재발급하고, 이력 정리는 사용자 승인 뒤에 한다.
