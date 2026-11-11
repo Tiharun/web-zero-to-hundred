@@ -1,0 +1,577 @@
+/* ───────── 글 (Day · 부록 본문) ───────── */
+
+.lesson,
+.page-article {
+  max-width: calc(var(--measure) + 2rem);
+  line-height: 1.75; /* 긴 본문 줄간격: 미정 값(M8에서 정한다) */
+}
+.lesson-meta {
+  margin: 0 0 24px;
+  color: var(--muted);
+}
+
+.day-outline {
+  margin: 0 0 40px;
+  padding: 12px 18px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.outline-title {
+  margin: 0 0 4px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.day-outline ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.day-outline button {
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--link);
+  font: inherit;
+  font-size: 0.95rem;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+.lesson-body,
+.page-body {
+  max-width: var(--measure);
+}
+.lesson-body > :first-child,
+.page-body > :first-child {
+  margin-top: 0;
+}
+.lesson-body h2,
+.page-body h2 {
+  margin: 2.5em 0 0.8em;
+  padding-top: 1em;
+  border-top: 1px solid var(--border);
+  font-size: 1.45rem;
+  line-height: 1.4;
+}
+.lesson-body h2:first-child,
+.page-body h2:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.lesson-body h3,
+.page-body h3 {
+  margin: 2em 0 0.6em;
+  font-size: 1.2rem;
+  line-height: 1.45;
+}
+.lesson-body h4,
+.page-body h4 {
+  margin: 1.6em 0 0.5em;
+  font-size: 1.05rem;
+}
+
+.lesson-body p,
+.page-body p {
+  margin: 0 0 1.15em;
+}
+.lesson-body ul,
+.lesson-body ol,
+.page-body ul,
+.page-body ol {
+  margin: 0 0 1.3em;
+  padding-left: 1.5em;
+}
+.lesson-body li + li,
+.page-body li + li {
+  margin-top: 0.45em;
+}
+.lesson-body li::marker,
+.page-body li::marker {
+  color: var(--accent);
+  font-weight: 700;
+}
+.lesson-body li > ul,
+.lesson-body li > ol,
+.page-body li > ul,
+.page-body li > ol {
+  margin-top: 0.45em;
+  margin-bottom: 0;
+}
+.lesson-body strong,
+.page-body strong {
+  font-weight: 800;
+}
+.lesson-body hr,
+.page-body hr {
+  margin: 2em 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+.lesson-body blockquote,
+.page-body blockquote {
+  margin: 0 0 1.2em;
+  padding: 0.2em 1.1em;
+  border-left: 4px solid var(--border-strong);
+  color: var(--muted);
+}
+
+.lesson-body :not(pre) > code,
+.page-body :not(pre) > code,
+.lock-needs code,
+.facts code {
+  padding: 0.12em 0.4em;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.88em;
+  overflow-wrap: anywhere;
+}
+
+.lesson-body td code,
+.lesson-body th code,
+.page-body td code,
+.page-body th code {
+  overflow-wrap: normal;
+  white-space: nowrap; /* 표 안의 코드는 줄을 바꾸지 않고 표 안에서 스크롤한다 */
+}
+
+.lesson-body table,
+.page-body table {
+  display: block; /* 좁은 화면에서는 표 안에서만 가로로 스크롤한다 */
+  max-width: 100%;
+  margin: 0 0 1.3em;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.lesson-body th,
+.lesson-body td,
+.page-body th,
+.page-body td {
+  overflow-wrap: break-word; /* anywhere 는 열을 글자 하나 폭까지 줄여 버린다 */
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+.lesson-body th,
+.page-body th {
+  background: var(--surface-2);
+}
+
+.is-target {
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 8px var(--accent-soft);
+  animation: target-fade 2.4s ease-out 0.6s forwards;
+}
+@keyframes target-fade {
+  to {
+    background: transparent;
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+
+/* ───────── 코드 블록 ───────── */
+
+figure.code {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: minmax(38px, auto) auto;
+  margin: 0 0 1.4em;
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+figure.code::before,
+figure.code figcaption,
+figure.code .copy {
+  background: var(--code-head);
+  border-bottom: 1px solid var(--code-border);
+}
+figure.code::before {
+  content: ""; /* 파일 이름이 없는 코드 블록도 윗줄 막대를 갖게 한다 */
+  grid-column: 1;
+  grid-row: 1;
+}
+figure.code figcaption {
+  grid-column: 1;
+  grid-row: 1;
+  padding: 8px 14px;
+  font: 600 0.85rem/1.5 var(--font-mono);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+figure.code .copy {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: stretch;
+  min-width: 72px;
+  padding: 0 14px;
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 1px solid var(--code-border);
+  border-left: 1px solid var(--code-border);
+  color: var(--text);
+  font: 700 0.85rem/1 var(--font-sans);
+  cursor: pointer;
+}
+figure.code .copy:hover {
+  background: var(--surface-2);
+}
+figure.code .copy[data-copied="yes"] {
+  color: var(--ok);
+}
+figure.code .copy[data-copied="no"] {
+  color: var(--danger);
+}
+figure.code pre {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  min-width: 0;
+  margin: 0;
+  padding: 16px 18px;
+  overflow-x: auto; /* 긴 줄은 코드 블록 안에서만 가로로 스크롤한다 */
+  background: var(--code-bg);
+  color: var(--code-fg);
+  font-size: 0.9rem;
+  line-height: 1.65;
+  tab-size: 2;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+figure.code pre code {
+  display: block;
+  padding: 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  white-space: pre;
+}
+pre {
+  overflow-x: auto;
+}
+
+.copy-buffer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-doctag,
+.hljs-template-tag {
+  color: var(--tok-keyword);
+}
+.hljs-string,
+.hljs-regexp,
+.hljs-link {
+  color: var(--tok-string);
+}
+.hljs-number,
+.hljs-literal,
+.hljs-symbol,
+.hljs-bullet {
+  color: var(--tok-number);
+}
+.hljs-comment,
+.hljs-quote {
+  color: var(--tok-comment);
+  font-style: italic;
+}
+.hljs-title,
+.hljs-section,
+.hljs-selector-id,
+.hljs-selector-class {
+  color: var(--tok-title);
+}
+.hljs-attr,
+.hljs-attribute,
+.hljs-property,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+  color: var(--tok-attr);
+}
+.hljs-variable,
+.hljs-built_in,
+.hljs-type,
+.hljs-template-variable {
+  color: var(--tok-variable);
+}
+.hljs-meta {
+  color: var(--tok-meta);
+}
+.hljs-tag {
+  color: var(--tok-tag);
+}
+.hljs-name {
+  color: var(--tok-name);
+}
+.hljs-deletion {
+  color: var(--tok-deletion);
+}
+.hljs-addition {
+  color: var(--tok-addition);
+}
+.hljs-emphasis {
+  font-style: italic;
+}
+.hljs-strong {
+  font-weight: 700;
+}
+
+/* ───────── 알림 상자 ───────── */
+
+.callout {
+  margin: 1.5em 0;
+  padding: 14px 20px 6px;
+  background: var(--callout-bg);
+  border: 1px solid var(--callout-line);
+  border-left-width: 6px;
+  border-radius: var(--radius);
+}
+.callout::before {
+  display: block;
+  margin-bottom: 0.3em;
+  color: var(--callout-ink);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+.lesson-body .callout-title,
+.page-body .callout-title {
+  margin: 0 0 0.4em;
+  font-weight: 800;
+}
+.callout-body > :last-child {
+  margin-bottom: 0.6em;
+}
+.callout a {
+  color: var(--link);
+}
+.callout-tip {
+  --callout-bg: var(--tip-bg);
+  --callout-line: var(--tip-line);
+  --callout-ink: var(--tip-ink);
+}
+.callout-tip::before {
+  content: "💡 꿀팁";
+}
+.callout-warn {
+  --callout-bg: var(--warn-bg);
+  --callout-line: var(--warn-line);
+  --callout-ink: var(--warn-ink);
+}
+.callout-warn::before {
+  content: "⚠️ 주의";
+}
+.callout-info {
+  --callout-bg: var(--info-bg);
+  --callout-line: var(--info-line);
+  --callout-ink: var(--info-ink);
+}
+.callout-info::before {
+  content: "ℹ️ 알아두기";
+}
+.callout-path {
+  --callout-bg: var(--path-bg);
+  --callout-line: var(--path-line);
+  --callout-ink: var(--path-ink);
+}
+.callout-path::before {
+  content: "📍 경로";
+}
+.callout-success {
+  --callout-bg: var(--success-bg);
+  --callout-line: var(--success-line);
+  --callout-ink: var(--success-ink);
+}
+.callout-success::before {
+  content: "✅ 이렇게 보이면 성공";
+}
+
+/* ───────── 정답 · 체크리스트 ───────── */
+
+details.answer {
+  margin: 1.2em 0;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+}
+details.answer > summary {
+  padding: 12px 18px;
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+}
+details.answer > summary::-webkit-details-marker {
+  display: none;
+}
+details.answer > summary::before {
+  content: "▸ ";
+  display: inline-block;
+  color: var(--accent);
+  transition: transform 0.15s;
+}
+details.answer[open] > summary::before {
+  transform: rotate(90deg);
+}
+.answer-body {
+  padding: 8px 20px 6px;
+  border-top: 1px dashed var(--border-strong);
+}
+
+.answer-gate {
+  margin: 1.2em 0 0;
+  padding: 16px 20px;
+  background: var(--tip-bg);
+  border: 1px solid var(--tip-line);
+  border-left-width: 6px;
+  border-radius: var(--radius);
+}
+.answer-gate p {
+  margin: 0 0 12px;
+}
+.gate-actions,
+.completion-actions,
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+li.task {
+  list-style: none;
+  margin-left: -1.5em;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+li.task:hover {
+  background: var(--surface-2);
+}
+li.task.is-checked {
+  color: var(--muted);
+}
+li.task input[type="checkbox"] {
+  width: 1.2em;
+  height: 1.2em;
+  margin: 0 0.5em 0 0;
+  vertical-align: -0.2em;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* ───────── Day 아래쪽 ───────── */
+
+.lesson-foot {
+  display: grid;
+  gap: 20px;
+  max-width: var(--measure);
+  margin-top: 56px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+.completion {
+  padding: 20px 22px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+}
+.completion.is-done {
+  background: var(--ok-soft);
+  border-color: var(--ok);
+}
+.completion-status {
+  margin: 0 0 12px;
+  font-weight: 700;
+}
+.completion .reason,
+.celebrate {
+  margin: 12px 0 0;
+  font-size: 0.93rem;
+  color: var(--muted);
+}
+.celebrate {
+  color: var(--ok);
+  font-weight: 700;
+}
+.unlock-banner {
+  padding: 16px 22px;
+  background: var(--ok-soft);
+  border: 1px solid var(--ok);
+  border-left-width: 6px;
+  border-radius: var(--radius);
+}
+.unlock-banner p {
+  margin: 0 0 6px;
+}
+.unlock-banner ul {
+  margin: 0;
+  padding-left: 1.3em;
+}
+.day-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.nav-card {
+  display: grid;
+  gap: 2px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  color: var(--text);
+  text-decoration: none;
+}
+.nav-card:hover {
+  border-color: var(--accent);
+}
+.nav-next {
+  text-align: right;
+}
+.nav-label {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.coming-soon {
+  margin: 0 0 1.2em;
+  padding: 28px 24px;
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--muted);
+  text-align: center;
+  font-weight: 700;
+}
+
+/* 좁은 화면 (옛 styles.css 의 600px 블록에서 옮김) */
+@media (max-width: 600px) {
+  .day-nav {
+    grid-template-columns: 1fr;
+  }
+  .nav-next {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-target {
+    animation: none; /* 움직임 없이 표시만 남긴다 */
+  }
+}

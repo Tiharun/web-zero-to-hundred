@@ -1,0 +1,123 @@
+/* DESIGN.md "부록: 토큰 원문 (CSS)" 그대로. 값을 바꾸려면 DESIGN.md 를 먼저 고친다 (테스트가 둘이 같은지 본다). */
+:root {
+  color-scheme: light;
+  --color-paper: #EEF2FF;
+  --color-card: #FFFFFF;
+  --color-ink: #312E81;
+  --color-ink-2: #475569;
+  --color-accent: #DB2777;
+  --color-accent-hover: #BE185D;
+  --color-accent-ink: #FFFFFF;
+  --color-accent-text: #BE185D;
+  --color-focus: #DB2777;
+  --color-progress: #16A34A;
+  --color-progress-ink: #FFFFFF;
+  --color-track: #F1F5F9;
+  --color-rule: #D8DDF4;
+  --color-line: #7A83BC;
+  --color-scrim: rgb(49 46 129 / 0.34);
+  --shadow-lift: 0 4px 12px rgb(49 46 129 / 0.10);
+  /* bolder 회차: 보드게임 칸·버튼의 바닥 턱, 보상(코인·별) 색. 규칙 변경 제안은 REPORT.md */
+  --color-edge: #312E81;
+  --color-accent-deep: #9D174D;
+  --color-progress-deep: #15803D;
+  --color-cell: #D8DDF4;
+  --color-xp: #15803D;
+  --color-coin: #F59E0B;
+  --color-coin-deep: #B45309;
+  --color-coin-hi: #FEF3C7;
+  --color-star: #B45309;
+  --ledge: 4px;
+
+  --font-body: "WZH Wanted Sans", "Malgun Gothic", system-ui, sans-serif;
+  --font-label: "WZH Galmuri11", "WZH Wanted Sans", "Malgun Gothic", sans-serif;
+  --font-code: "WZH Code", Consolas, monospace;
+
+  --text-display: 80px;
+  --text-headline: 38px;
+  --text-h2: 26px;
+  --text-h3: 20px;
+  --text-body: 17px;
+  --text-ui: 15px;
+  --text-code: 14px;
+  --text-label: 12px;
+
+  --space-3xs: 2px; --space-2xs: 4px; --space-xs: 8px; --space-sm: 12px; --space-md: 16px;
+  --space-lg: 24px; --space-xl: 32px; --space-2xl: 48px; --space-3xl: 64px;
+
+  --radius-btn: 6px;
+  --radius-card: 12px;
+  --radius-pill: 999px;
+
+  --topbar-h: 56px;
+  --sidebar-w: 280px;
+  --content-max: 1120px;
+
+  --dur-micro: 120ms;
+  --dur-short: 200ms;
+  --dur-enter: 280ms;
+  --dur-exit: 180ms;
+  --dur-celebrate: 600ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --z-raised: 10; --z-dropdown: 100; --z-sticky: 200; --z-sticky-nav: 300; --z-modal: 400; --z-tooltip: 600;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-paper: #0D0F1F;
+    --color-card: #151833;
+    --color-ink: #EEF2FF;
+    --color-ink-2: #A3A9C9;
+    --color-accent: #F472B6;
+    --color-accent-hover: #F9A8D4;
+    --color-accent-ink: #0D0F1F;
+    --color-accent-text: #F472B6;
+    --color-focus: #F472B6;
+    --color-progress: #4ADE80;
+    --color-progress-ink: #0D0F1F;
+    --color-track: #2A2F55;
+    --color-rule: #2A2F55;
+    --color-line: #5A62A0;
+    --color-scrim: rgb(5 6 15 / 0.62);
+    --shadow-lift: 0 4px 12px rgb(0 0 0 / 0.35);
+    --color-edge: #5A62A0;
+    --color-accent-deep: #BE185D;
+    --color-progress-deep: #15803D;
+    --color-cell: #2A2F55; --color-xp: #4ADE80;
+    --color-coin: #FBBF24;
+    --color-coin-deep: #FDE68A;
+    --color-coin-hi: #FFFBEB;
+    --color-star: #FBBF24;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-paper: #0D0F1F;
+  --color-card: #151833;
+  --color-ink: #EEF2FF;
+  --color-ink-2: #A3A9C9;
+  --color-accent: #F472B6;
+  --color-accent-hover: #F9A8D4;
+  --color-accent-ink: #0D0F1F;
+  --color-accent-text: #F472B6;
+  --color-focus: #F472B6;
+  --color-progress: #4ADE80;
+  --color-progress-ink: #0D0F1F;
+  --color-track: #2A2F55;
+  --color-rule: #2A2F55;
+  --color-line: #5A62A0;
+  --color-scrim: rgb(5 6 15 / 0.62);
+  --shadow-lift: 0 4px 12px rgb(0 0 0 / 0.35);
+  --color-edge: #5A62A0;
+  --color-accent-deep: #BE185D;
+  --color-progress-deep: #15803D;
+  --color-cell: #2A2F55; --color-xp: #4ADE80;
+  --color-coin: #FBBF24;
+  --color-coin-deep: #FDE68A;
+  --color-coin-hi: #FFFBEB;
+  --color-star: #FBBF24;
+}

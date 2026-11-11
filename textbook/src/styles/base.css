@@ -1,0 +1,110 @@
+/* ───────── 바탕 ───────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--topbar-h) + var(--space-lg)); /* 앵커로 옮겨도 상단 바에 가리지 않게 */
+}
+
+html,
+body {
+  overflow-x: clip; /* 가로 넘침 금지 (DESIGN.md Layout) */
+}
+
+body {
+  margin: 0;
+  padding-top: var(--topbar-h);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: 1.65;
+  word-break: keep-all; /* 한국어는 낱말 중간에서 줄을 바꾸지 않는다 */
+  overflow-wrap: break-word; /* 넘치는 긴 글자(경로·주소)만 줄을 바꾼다 */
+  font-synthesis: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+a {
+  color: var(--link);
+  text-underline-offset: 0.2em;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+main:focus,
+main:focus-visible,
+[tabindex="-1"]:focus:not(:focus-visible) {
+  outline: none; /* 화면을 옮길 때 프로그램이 포커스를 주는 곳에는 테두리를 그리지 않는다 */
+}
+
+code,
+kbd,
+pre,
+textarea {
+  font-family: var(--font-mono);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.lead {
+  font-size: 1.1rem;
+  color: var(--muted);
+}
+
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -64px;
+  z-index: 200;
+  padding: 10px 16px;
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+}
+.skip-link:focus {
+  top: 8px;
+}
+
+/* ───────── 움직임을 줄여 달라는 설정 ───────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+}

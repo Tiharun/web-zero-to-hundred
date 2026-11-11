@@ -9,6 +9,7 @@ import { loadCurriculum } from './lib/curriculum.mjs';
 import { parseGlossary, parseTroubleshooting, renderGlossaryPage, renderTroubleshootingPage } from './lib/glossary.mjs';
 import { assemble } from './lib/assemble.mjs';
 import { headTags, listRoutes } from './lib/site.mjs';
+import { readStyles, lintStyles } from './lib/styles.mjs';
 import { renderMarkdown } from './lib/markdown.mjs';
 import { validateDaySource } from './lib/validate.mjs';
 
@@ -182,14 +183,11 @@ export async function build({ contentDir, srcDir = path.join(HERE, 'src'), only 
   const bundle = await bundleJs(path.join(srcDir, 'app', 'main.js'));
   if (bundle.errors.length) return { ok: false, errors: bundle.errors, warnings };
 
-  let css;
-  try {
-    css = await readFile(path.join(srcDir, 'styles.css'), 'utf8');
-  } catch (e) {
-    if (e.code !== 'ENOENT') throw e;
-    // 스타일 없는 교재는 읽을 수 없으므로 조용히 만들지 않고 멈춘다
-    return { ok: false, errors: [issue('E_NO_CSS', 'styles.css 가 없어요. 스타일 없이는 교재를 만들 수 없어요.', { file: path.join(srcDir, 'styles.css') })], warnings };
-  }
+  const styles = await readStyles(srcDir);
+  if (styles.errors.length) return { ok: false, errors: styles.errors, warnings };
+  const lint = lintStyles(styles.files);
+  if (lint.length) return { ok: false, errors: lint, warnings };
+  const { css } = styles;
   const templateHtml = await readFile(path.join(srcDir, 'template.html'), 'utf8');
 
   const site = { title: curriculum.title, url: curriculum.url, description: curriculum.description };

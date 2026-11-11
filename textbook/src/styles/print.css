@@ -1,0 +1,9 @@
+/* 인쇄: 화면 틀(상단 바, 사이드바, 푸터, 대화상자)은 숨기고 본문만 */
+@media print {
+  .topbar,
+  #sidebar,
+  .site-footer,
+  dialog {
+    display: none;
+  }
+}

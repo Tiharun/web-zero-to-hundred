@@ -1,0 +1,247 @@
+/* ───────── 홈 ───────── */
+
+.hero h1 {
+  margin: 0 0 8px;
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+.continue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin: 20px 0 8px;
+}
+.continue .btn-primary {
+  min-height: 52px;
+  padding: 0.6em 1.8em;
+  font-size: 1.1rem;
+}
+.continue-hint {
+  color: var(--muted);
+}
+.done-note {
+  margin: 0;
+  font-weight: 700;
+}
+
+.progress-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+  margin: 28px 0 8px;
+}
+.progress-card {
+  padding: 20px 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.progress-card h3 {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  color: var(--muted);
+}
+.pc-figure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  margin: 0 0 10px;
+}
+.pc-percent {
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.pc-count {
+  color: var(--muted);
+}
+.pc-note {
+  margin: 12px 0 0;
+  font-size: 0.95rem;
+}
+
+.path h2,
+.appendix h2 {
+  margin: 40px 0 4px;
+  font-size: 1.5rem;
+}
+.path-sub {
+  margin: 32px 0 12px;
+  font-size: 1.15rem;
+}
+.path-list {
+  display: grid;
+  gap: 30px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.path-item {
+  position: relative;
+}
+.path-item:not(:last-child)::after {
+  content: "↓";
+  position: absolute;
+  left: 28px;
+  bottom: -28px;
+  color: var(--muted);
+  font-size: 1.2rem;
+  line-height: 1;
+}
+.path-card {
+  display: grid;
+  gap: 6px;
+  padding: 18px 22px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  text-decoration: none;
+}
+.path-card:hover {
+  border-color: var(--accent);
+}
+.path-item[data-state="active"] .path-card {
+  border-color: var(--accent);
+  border-width: 2px;
+}
+.path-item[data-state="complete"] .path-card {
+  border-color: var(--ok);
+}
+.path-item[data-state="locked"] .path-card {
+  background: var(--surface-2);
+  border-style: dashed;
+  box-shadow: none;
+  color: var(--muted);
+}
+.path-state {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.path-title {
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
+.path-subtitle,
+.path-note {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.link-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.link-grid a {
+  display: inline-block;
+  padding: 6px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--text);
+  text-decoration: none;
+}
+.link-grid a:hover {
+  background: var(--surface-2);
+}
+
+/* ───────── 프로젝트 ───────── */
+
+.project-head h1,
+.lesson-head h1,
+.page-article > h1,
+.search-view h1,
+.settings h1,
+.lock-screen h1,
+.notfound h1 {
+  margin: 0 0 8px;
+  font-size: clamp(1.6rem, 3.4vw, 2.1rem);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+.project-head .lead {
+  margin: 0 0 10px;
+}
+.facts {
+  display: grid;
+  gap: 12px;
+  margin: 24px 0;
+}
+.facts > div {
+  padding: 12px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.facts dt {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.facts dd {
+  margin: 0;
+}
+.project h2 {
+  margin: 36px 0 12px;
+  font-size: 1.4rem;
+}
+.project-progress p {
+  margin: 0 0 8px;
+}
+
+.day-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.day-row {
+  display: grid;
+  grid-template-columns: 2em minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 8px 12px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  text-decoration: none;
+}
+.day-row:hover {
+  border-color: var(--accent);
+}
+.day-row[data-state="next"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.day-row[data-state="locked"] {
+  color: var(--muted);
+}
+.day-row-body {
+  display: grid;
+}
+.day-row-meta {
+  color: var(--muted);
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+
+/* 좁은 화면 (옛 styles.css 의 600px 블록에서 옮김) */
+@media (max-width: 600px) {
+  .day-row {
+    grid-template-columns: 2em minmax(0, 1fr);
+  }
+  .day-row-meta {
+    grid-column: 2;
+  }
+}

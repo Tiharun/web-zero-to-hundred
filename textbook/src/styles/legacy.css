@@ -1,0 +1,147 @@
+/* 옛 변수 이름 → DESIGN.md 토큰.
+   아직 개편하지 않은 화면(홈 본문, Day 본문, 검색, 설정)이 새 팔레트로 보이게 잇는 다리다.
+   뒤 마일스톤이 화면을 개편할 때마다 여기서 이름을 지운다. 새 이름은 더하지 않는다(빌드가 막는다).
+   알림·코드·강조·위험 색은 DESIGN.md 에 아직 없어(M8에서 정한다) 옛 값을 그대로 둔다.
+   다크 값은 두 곳(시스템 설정 / 수동 선택)에 똑같이 있어야 한다 (e2e 가 확인한다). */
+
+:root {
+  --bg: var(--color-paper);
+  --surface: var(--color-card);
+  --surface-2: var(--color-track);
+  --accent-soft: var(--color-track);
+  --ok-soft: var(--color-track);
+  --text: var(--color-ink);
+  --link: var(--color-ink);
+  --muted: var(--color-ink-2);
+  --border: var(--color-rule);
+  --border-strong: var(--color-line);
+  /* One Pink Rule: 옛 화면에서 분홍 면이 퍼지지 않게 남색으로 둔다 */
+  --accent: var(--color-ink);
+  --on-accent: var(--color-card);
+  --focus: var(--color-focus);
+  --ok: var(--color-xp);
+  --ok-bar: var(--color-progress);
+  --overlay: var(--color-scrim);
+  --shadow: none;
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-code);
+  --radius: var(--radius-card);
+  --radius-sm: var(--radius-btn);
+  --measure: 72ch;
+
+  --danger: #a4262c;
+  --on-danger: #ffffff;
+
+  --code-bg: #f4f2ed;
+  --code-fg: #24292f;
+  --code-head: #e9e6df;
+  --code-border: #d6d1c6;
+
+  --tip-bg: #fff7d6;
+  --tip-line: #c28a00;
+  --tip-ink: #7a4e00;
+  --warn-bg: #fdecea;
+  --warn-line: #c0392b;
+  --warn-ink: #9b2315;
+  --info-bg: #e7f0fb;
+  --info-line: #2b6cb0;
+  --info-ink: #1d4f87;
+  --path-bg: #f0eafa;
+  --path-line: #7048b6;
+  --path-ink: #5a3596;
+  --success-bg: #e5f4ea;
+  --success-line: #2f855a;
+  --success-ink: #1b6b42;
+
+  --tok-keyword: #a3216c;
+  --tok-string: #1a6b2f;
+  --tok-number: #a8480f;
+  --tok-comment: #5a6270;
+  --tok-title: #1a4fb0;
+  --tok-attr: #0b6a70;
+  --tok-variable: #7a3fb0;
+  --tok-meta: #6b5200;
+  --tok-tag: #5a6270;
+  --tok-name: #1d5aa3;
+  --tok-deletion: #a4262c;
+  --tok-addition: #1a6b2f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --danger: #ff9d92;
+    --on-danger: #1b0b09;
+
+    --code-bg: #101317;
+    --code-fg: #dfe3e8;
+    --code-head: #1d2127;
+    --code-border: #343a43;
+
+    --tip-bg: #2b2616;
+    --tip-line: #c9a227;
+    --tip-ink: #f0c868;
+    --warn-bg: #2e1a19;
+    --warn-line: #d8584a;
+    --warn-ink: #ff9d92;
+    --info-bg: #172433;
+    --info-line: #4a90d9;
+    --info-ink: #8fc0f5;
+    --path-bg: #241d33;
+    --path-line: #9a74e0;
+    --path-ink: #c3a6f5;
+    --success-bg: #16281d;
+    --success-line: #3f9c68;
+    --success-ink: #7fd59f;
+
+    --tok-keyword: #ff9ac6;
+    --tok-string: #a5e075;
+    --tok-number: #ffb26b;
+    --tok-comment: #8f9bab;
+    --tok-title: #82aaff;
+    --tok-attr: #7fdbca;
+    --tok-variable: #d4a8ff;
+    --tok-meta: #e6cf7a;
+    --tok-tag: #9fb0c3;
+    --tok-name: #ff8f8f;
+    --tok-deletion: #ff8a8a;
+    --tok-addition: #a5e075;
+  }
+}
+:root[data-theme="dark"] {
+  --danger: #ff9d92;
+  --on-danger: #1b0b09;
+
+  --code-bg: #101317;
+  --code-fg: #dfe3e8;
+  --code-head: #1d2127;
+  --code-border: #343a43;
+
+  --tip-bg: #2b2616;
+  --tip-line: #c9a227;
+  --tip-ink: #f0c868;
+  --warn-bg: #2e1a19;
+  --warn-line: #d8584a;
+  --warn-ink: #ff9d92;
+  --info-bg: #172433;
+  --info-line: #4a90d9;
+  --info-ink: #8fc0f5;
+  --path-bg: #241d33;
+  --path-line: #9a74e0;
+  --path-ink: #c3a6f5;
+  --success-bg: #16281d;
+  --success-line: #3f9c68;
+  --success-ink: #7fd59f;
+
+  --tok-keyword: #ff9ac6;
+  --tok-string: #a5e075;
+  --tok-number: #ffb26b;
+  --tok-comment: #8f9bab;
+  --tok-title: #82aaff;
+  --tok-attr: #7fdbca;
+  --tok-variable: #d4a8ff;
+  --tok-meta: #e6cf7a;
+  --tok-tag: #9fb0c3;
+  --tok-name: #ff8f8f;
+  --tok-deletion: #ff8a8a;
+  --tok-addition: #a5e075;
+}

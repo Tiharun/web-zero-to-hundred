@@ -7,6 +7,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build } from '../../textbook/build.mjs';
+import { readStyles, lintStyles } from '../../textbook/lib/styles.mjs';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 const FIXTURE = path.join(ROOT, 'tests', 'fixtures', 'content');
@@ -364,20 +365,27 @@ async function buildWithSrc(files) {
     const srcDir = path.join(tmp, 'src');
     await mkdir(path.join(srcDir, 'app'), { recursive: true });
     await cp(path.join(ROOT, 'textbook', 'src', 'template.html'), path.join(srcDir, 'template.html'));
-    for (const [name, text] of Object.entries(files)) await writeFile(path.join(srcDir, name), text);
+    for (const [name, text] of Object.entries(files)) {
+      await mkdir(path.dirname(path.join(srcDir, name)), { recursive: true });
+      await writeFile(path.join(srcDir, name), text);
+    }
     return build({ contentDir: FIXTURE, srcDir });
   });
 }
 
-test('src/app is bundled into one inline script and styles.css is inlined', async () => {
+test('src/app is bundled into one inline script and styles/ is inlined in order', async () => {
   const r = await buildWithSrc({
-    'styles.css': 'body{color:red}.x::after{content:"$&"}',
+    'styles/tokens.css': ':root{--x:#f00}',
+    'styles/base.css': 'body{color:var(--x)}',
+    'styles/day.css': '.x::after{content:"$&"}',
     'app/util.js': 'export const greet = (n) => `안녕 ${n} </script> $&`;',
     'app/main.js': 'import { greet } from "./util.js"; window.__wzh = greet("교재");',
   });
   assert.equal(r.ok, true, JSON.stringify(r.errors));
   assert.deepEqual(r.warnings, []);
-  assert.ok(r.html.includes('<style>body{color:red}.x::after{content:"$&"}</style>'));
+  const css = /<style>([\s\S]*?)<\/style>/.exec(r.html)[1];
+  const at = (s) => css.indexOf(s);
+  assert.ok(at(':root{--x:#f00}') >= 0 && at(':root{--x:#f00}') < at('body{color:var(--x)}') && at('body{color:var(--x)}') < at('.x::after{content:"$&"}'), css);
   assert.doesNotMatch(r.html, /\bimport\b.*from/);
   assert.equal((r.html.match(/<script>/g) ?? []).length, 1);
   // 번들 안의 </script> 는 닫는 태그가 되지 않고, 실행하면 원래 값이 나온다
@@ -395,13 +403,31 @@ test('a broken script is reported as E_JS_BUNDLE with file and line', async () =
   assert.equal(r.errors[0].line, 2);
 });
 
-test('a missing styles.css is an error (E_NO_CSS), not a silent unstyled build', async () => {
-  const r = await buildWithSrc({ 'app/main.js': 'window.__wzh = 1;' });
+test('a missing styles/tokens.css is an error (E_NO_CSS), not a silent unstyled build', async () => {
+  for (const files of [{}, { 'styles/base.css': 'body{margin:0}' }]) {
+    const r = await buildWithSrc({ ...files, 'app/main.js': 'window.__wzh = 1;' });
+    assert.equal(r.ok, false);
+    assert.deepEqual(r.errors.map((e) => e.code), ['E_NO_CSS']);
+    assert.match(r.errors[0].file, /tokens\.css$/);
+    assert.match(r.errors[0].message, /tokens\.css/);
+    assert.equal(r.html, undefined);
+  }
+});
+
+test('a raw colour outside tokens and legacy stops the build with file and line', async () => {
+  const r = await buildWithSrc({
+    'styles/tokens.css': ':root{--x:#f00}',
+    'styles/shell.css': 'a{color:var(--x)}\nb{color:#00ff00}',
+    'app/main.js': 'window.__wzh = 1;',
+  });
   assert.equal(r.ok, false);
-  assert.deepEqual(r.errors.map((e) => e.code), ['E_NO_CSS']);
-  assert.match(r.errors[0].file, /styles\.css$/);
-  assert.match(r.errors[0].message, /styles\.css/);
-  assert.equal(r.html, undefined);
+  assert.deepEqual(r.errors.map((e) => [e.code, e.line]), [['E_CSS_RAW_COLOR', 2]]);
+  assert.match(r.errors[0].file, /shell\.css$/);
+});
+
+test('the real styles pass the token lint', async () => {
+  const { files } = await readStyles(path.join(ROOT, 'textbook/src'));
+  assert.deepEqual(lintStyles(files), []);
 });
 
 test('the real src builds the fixture without warnings and without churn on rebuild', async () => {
