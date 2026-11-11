@@ -109,6 +109,12 @@ async function withPage(fn, { init, initArg, viewport = { width: 1280, height: 8
   }
 }
 
+/** 윗줄 테마 메뉴를 열어 하나를 고른다 ('system' | 'light' | 'dark') */
+async function pickTheme(page, value) {
+  await page.getByTestId('theme-toggle').click();
+  await page.locator(`#theme-menu [data-theme-value="${value}"]`).click();
+}
+
 // 주소의 한글은 브라우저가 %XX 로 바꿔 두므로, 둘 다 풀어서 견준다
 const waitRoute = (page, hash) =>
   page.waitForFunction(
@@ -351,6 +357,8 @@ test('answer gate', TIMEOUT, async () => {
 test('search hides locked snippet', TIMEOUT, async () => {
   await withPage(async (page, app) => {
     await visit(page, app, '#/');
+    await page.locator('#search-open').click(); // 검색칸은 검색 화면에 있다
+    await waitRoute(page, '#/search');
     const input = page.getByTestId('search-input');
 
     await input.fill(SECRET);
@@ -389,6 +397,8 @@ test('search hides locked snippet', TIMEOUT, async () => {
     await completeDay(page, 'fa-d01');
     await visit(page, app, '#/day/fa-d02');
     await completeDay(page, 'fa-d02');
+    await page.locator('#search-open').click();
+    await waitRoute(page, '#/search');
     await input.fill(SECRET);
     await waitRoute(page, `#/search?q=${encodeURIComponent(SECRET)}`);
     const unlocked = page.locator('[data-testid="search-result"][data-id="fb-d01"]');
@@ -406,7 +416,7 @@ test('theme persists after reload', TIMEOUT, async () => {
     const lightBg = await bg();
     assert.equal(await root.getAttribute('data-theme'), null, '처음에는 시스템 설정을 따라요');
 
-    await page.getByTestId('theme-toggle').click();
+    await pickTheme(page, 'dark');
     assert.equal(await root.getAttribute('data-theme'), 'dark');
     const darkBg = await bg();
     assert.notEqual(darkBg, lightBg);
@@ -416,7 +426,7 @@ test('theme persists after reload', TIMEOUT, async () => {
     assert.equal(await root.getAttribute('data-theme'), 'dark');
     assert.equal(await bg(), darkBg);
 
-    await page.getByTestId('theme-toggle').click();
+    await pickTheme(page, 'light');
     assert.equal(await root.getAttribute('data-theme'), 'light');
     await page.reload();
     await waitRoute(page, '#/');
@@ -862,30 +872,32 @@ test('sidebar shows the current link without moving the Tab start', TIMEOUT, asy
   );
 });
 
-test('settings theme radios follow the top-bar toggle', TIMEOUT, async () => {
+test('settings theme radios follow the top-bar theme menu', TIMEOUT, async () => {
   await withPage(async (page, app) => {
     await visit(page, app, '#/settings');
     const checked = () => page.evaluate(() => document.querySelector('input[name="theme"]:checked')?.value ?? null);
     const theme = () => page.locator('html').getAttribute('data-theme');
     assert.equal(await checked(), 'system');
 
-    await page.getByTestId('theme-toggle').click();
+    await pickTheme(page, 'dark');
     assert.equal(await theme(), 'dark');
-    assert.equal(await checked(), 'dark', '윗줄 버튼으로 바꾸면 설정의 선택도 따라가요');
-    await page.getByTestId('theme-toggle').click();
+    assert.equal(await checked(), 'dark', '윗줄 메뉴로 바꾸면 설정의 선택도 따라가요');
+    await pickTheme(page, 'light');
     assert.equal(await theme(), 'light');
     assert.equal(await checked(), 'light');
 
-    // 설정에서 직접 고르면 반대로 윗줄 버튼 쪽이 따라간다
+    // 설정에서 직접 고르면 반대로 윗줄 메뉴 쪽이 따라간다
     await page.getByLabel('어둡게').check();
     assert.equal(await theme(), 'dark');
-    assert.match((await page.getByTestId('theme-toggle').getAttribute('aria-label')) ?? '', /라이트/);
+    assert.equal(await page.getByTestId('theme-toggle').getAttribute('aria-label'), '테마: 다크');
+    assert.equal(await page.locator('#theme-menu [data-theme-value="dark"]').getAttribute('aria-checked'), 'true');
     await page.getByLabel('기기 설정 따르기').check();
     assert.equal(await theme(), null);
     assert.equal(await checked(), 'system');
+    assert.equal(await page.getByTestId('theme-toggle').getAttribute('aria-label'), '테마: 시스템');
 
     // 설정 화면을 떠났다 돌아와도 현재 값으로 그려진다
-    await page.getByTestId('theme-toggle').click();
+    await pickTheme(page, 'dark');
     await visit(page, app, '#/');
     await visit(page, app, '#/settings');
     assert.equal(await checked(), await theme());

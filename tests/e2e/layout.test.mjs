@@ -2,7 +2,7 @@
 // 값은 DESIGN.md(Components·Elevation)와 같아야 한다. 실행: cd textbook && npm run test:e2e
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -25,6 +25,18 @@ before(async () => {
   const r = await build({ contentDir: FIXTURE });
   assert.equal(r.ok, true, JSON.stringify(r.errors));
   await writeFile(path.join(tmp, 'index.html'), r.html);
+
+  // 아주 긴 사이트 이름(60자)으로 바꾼 픽스처 사본
+  const longDir = path.join(tmp, 'long-content');
+  await cp(FIXTURE, longDir, { recursive: true });
+  const curFile = path.join(longDir, 'curriculum.json');
+  const cur = JSON.parse(await readFile(curFile, 'utf8'));
+  cur.title = '아주아주긴교재이름'.repeat(7).slice(0, 60);
+  await writeFile(curFile, JSON.stringify(cur, null, 2));
+  const long = await build({ contentDir: longDir });
+  assert.equal(long.ok, true, JSON.stringify(long.errors));
+  await writeFile(path.join(tmp, 'long.html'), long.html);
+
   server = await startStaticServer(tmp);
   browser = await launch();
 });
@@ -37,14 +49,23 @@ after(async () => {
 });
 
 /** 새 컨텍스트(깨끗한 저장소)로 화면 하나를 연다. theme 은 시스템 색 모드로 흉내 낸다 */
-async function open(hash, { width = 1280, theme = 'light' } = {}) {
-  const context = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: theme });
+async function open(hash, { width = 1280, height = 900, theme = 'light', file = 'index.html', init = null } = {}) {
+  const context = await browser.newContext({ viewport: { width, height }, colorScheme: theme });
+  if (init) await context.addInitScript(init);
   const page = await context.newPage();
   const errors = collectConsoleErrors(page);
   opened.push({ context, errors });
-  await page.goto(`${server.url}index.html${hash}`);
+  await page.goto(`${server.url}${file}${hash}`);
   await page.locator('main h1').first().waitFor();
   return page;
+}
+
+const noHorizontalScroll = (page) => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+
+/** 테마 메뉴를 열어 하나를 고른다 */
+async function pickTheme(page, value) {
+  await page.getByTestId('theme-toggle').click();
+  await page.locator(`#theme-menu [data-theme-value="${value}"]`).click();
 }
 
 test('the primary button presses into its ledge and meets the size floor', TIMEOUT, async () => {
@@ -95,6 +116,157 @@ test('technology chips use the track chip from DESIGN.md', TIMEOUT, async () => 
     return [s.backgroundColor, s.borderRadius, s.paddingTop, s.paddingLeft, s.fontSize];
   });
   assert.deepEqual(chipStyle, ['rgb(241, 245, 249)', '6px', '2px', '8px', '15px']);
+});
+
+// ───────── 공통 레이아웃: 헤더, 테마 메뉴, 본문 틀, 푸터 ─────────
+
+test('header: wordmark, search link, theme menu — same on every kind of page', TIMEOUT, async () => {
+  for (const hash of ['#/', '#/project/fa', '#/day/fa-d01', '#/page/start', '#/settings', '#/search', '#/nope']) {
+    const page = await open(hash, { width: 1280 });
+    const bar = await page.locator('.topbar').boundingBox();
+    assert.equal(bar.height, 56, hash);
+    assert.equal(await page.locator('.wordmark svg.px').count(), 1, hash);
+    assert.equal(await page.locator('.wordmark').evaluate((el) => getComputedStyle(el).fontWeight), '800', hash);
+    assert.equal(await page.locator('#menu-toggle').isVisible(), false, hash);
+    assert.equal(await page.locator('#search-open').isVisible(), true, hash);
+    assert.equal(await page.locator('.site-footer').count(), 1, hash);
+    assert.equal(await page.locator('#sidebar').isVisible(), true, hash);
+  }
+});
+
+test('header matches the prototype: pawn is pink-filled, search button has a rule border', TIMEOUT, async () => {
+  const page = await open('#/', { width: 1280 });
+  const fills = await page.locator('.wordmark svg.px').evaluate((svg) => ['p1', 'p2', 'p3'].map((c) => getComputedStyle(svg.querySelector(`.${c}`)).fill));
+  assert.deepEqual(fills, ['rgb(49, 46, 129)', 'rgb(219, 39, 119)', 'rgb(190, 24, 93)']);
+  const border = await page.locator('#search-open').evaluate((el) => getComputedStyle(el).borderTopColor);
+  assert.equal(border, 'rgb(216, 221, 244)');
+  const narrow = await open('#/', { width: 375 });
+  assert.equal(await narrow.locator('#search-open').evaluate((el) => getComputedStyle(el).borderTopColor), 'rgba(0, 0, 0, 0)', '좁은 화면에서는 테두리 없이 아이콘만');
+});
+
+test('theme menu: arrows move, Enter applies, focus returns, choice survives reload', TIMEOUT, async () => {
+  const page = await open('#/', { width: 1280 });
+  const btn = page.getByTestId('theme-toggle');
+  const menu = page.locator('#theme-menu');
+  const theme = () => page.locator('html').getAttribute('data-theme');
+
+  await btn.focus();
+  await page.keyboard.press('ArrowDown');
+  assert.equal(await menu.isVisible(), true);
+  assert.equal(await btn.getAttribute('aria-expanded'), 'true');
+  assert.equal(await page.evaluate(() => document.activeElement.dataset.themeValue), 'system', '↓ 는 첫 항목');
+  await page.keyboard.press('ArrowUp');
+  assert.equal(await page.evaluate(() => document.activeElement.dataset.themeValue), 'dark', '↑ 는 끝으로 돈다');
+  await page.keyboard.press('Home');
+  assert.equal(await page.evaluate(() => document.activeElement.dataset.themeValue), 'system');
+  await page.keyboard.press('End');
+  await page.keyboard.press('Enter'); // 다크
+  assert.equal(await theme(), 'dark');
+  assert.equal(await menu.isHidden(), true);
+  assert.equal(await btn.getAttribute('aria-expanded'), 'false');
+  assert.equal(await page.evaluate(() => document.activeElement.id), 'theme-btn');
+  assert.equal(await btn.getAttribute('aria-label'), '테마: 다크');
+  assert.equal(await page.locator('#theme-menu [data-theme-value="dark"]').getAttribute('aria-checked'), 'true');
+
+  await page.reload();
+  await page.locator('main h1').first().waitFor();
+  assert.equal(await theme(), 'dark');
+  assert.equal(await btn.getAttribute('aria-label'), '테마: 다크');
+
+  // Esc 로 닫히고 포커스는 버튼으로
+  await btn.click();
+  assert.equal(await menu.isVisible(), true);
+  await page.keyboard.press('Escape');
+  assert.equal(await menu.isHidden(), true);
+  assert.equal(await page.evaluate(() => document.activeElement.id), 'theme-btn');
+  // 바깥 클릭으로 닫힌다
+  await btn.click();
+  await page.mouse.click(640, 600);
+  assert.equal(await menu.isHidden(), true);
+  // Tab 으로 메뉴를 벗어나면 닫힌다
+  await btn.click();
+  await page.keyboard.press('Tab');
+  assert.equal(await menu.isHidden(), true);
+  // 시스템을 고르면 data-theme 가 없어진다
+  await pickTheme(page, 'system');
+  assert.equal(await theme(), null);
+  assert.equal(await btn.getAttribute('aria-label'), '테마: 시스템');
+});
+
+test('stored dark theme paints before the app script runs', TIMEOUT, async () => {
+  const page = await open('#/', {
+    init: () => {
+      try {
+        localStorage.setItem('wzh:v1:progress', JSON.stringify({ version: 1, completed: {}, checks: {}, theme: 'dark' }));
+      } catch {}
+      new MutationObserver(() => {
+        const root = document.documentElement;
+        if (!window.__themeEarly && root?.hasAttribute('data-theme')) {
+          window.__themeEarly = { value: root.getAttribute('data-theme'), topbar: Boolean(document.querySelector('.topbar')) };
+        }
+      }).observe(document, { subtree: true, attributes: true, attributeFilter: ['data-theme'] });
+    },
+  });
+  const early = await page.evaluate(() => window.__themeEarly);
+  assert.deepEqual(early, { value: 'dark', topbar: false }, '헤더가 그려지기 전에 다크가 붙는다');
+});
+
+test('375px: menu button shows, wordmark stays on one line, no horizontal scroll', TIMEOUT, async () => {
+  for (const theme of ['light', 'dark']) {
+    const page = await open('#/', { width: 375, theme });
+    assert.equal(await page.locator('#menu-toggle').isVisible(), true);
+    assert.equal(await page.locator('.search-word').isVisible(), false);
+    assert.equal(await page.locator('#sidebar').isVisible(), false, '좁은 화면에서 목차는 서랍');
+    const mark = await page.locator('.wordmark').boundingBox();
+    assert.ok(mark.height <= 44, '워드마크 한 줄');
+    assert.equal(await noHorizontalScroll(page), 0);
+  }
+});
+
+test('a very long site title does not break the header at 375px', TIMEOUT, async () => {
+  const page = await open('#/', { width: 375, file: 'long.html' });
+  assert.equal(await noHorizontalScroll(page), 0);
+  assert.equal((await page.locator('.topbar').boundingBox()).height, 56);
+  for (const sel of ['#menu-toggle', '#search-open', '#theme-btn']) {
+    const box = await page.locator(sel).boundingBox();
+    assert.ok(box.x >= 0 && box.x + box.width <= 375, `${sel} 가 화면 안에 있다`);
+  }
+});
+
+test('footer: links work, sits at the bottom on a short page, shows no personal data', TIMEOUT, async () => {
+  const page = await open('#/settings', { width: 1280 });
+  const foot = await page.locator('.site-footer').boundingBox();
+  const vh = page.viewportSize().height;
+  assert.ok(foot.y + foot.height >= vh - 1, `짧은 화면에서도 바닥에 붙는다 (${foot.y + foot.height} / ${vh})`);
+  assert.equal(await page.locator('.footer-brand').innerText(), '픽스처 교재');
+  // 사용자 결정(2026-11-12): 작성·빌드 날짜는 푸터에 두지 않는다. Label 은 글꼴 라이선스 한 줄
+  assert.deepEqual(await page.locator('.site-footer .footer-meta').allInnerTexts(), ['글꼴: Wanted Sans · Galmuri11 · D2Coding (SIL Open Font License 1.1)']);
+  assert.doesNotMatch(await page.locator('.site-footer').innerText(), /작성 기준|빌드 \d/);
+  // 부록 링크는 그 페이지가 있을 때만 보인다(픽스처에는 start 만 있다)
+  assert.equal(await page.locator('.footer-links a[href="#/page/start"]').isVisible(), true);
+  assert.equal(await page.locator('.footer-links a[href="#/page/help"]').count(), 0);
+  const text = await page.locator('.site-footer').innerText();
+  assert.doesNotMatch(text, /@|만든 사람|명이|후기/);
+
+  await page.locator('.footer-links a[href="#/page/start"]').click();
+  await page.waitForFunction(() => document.getElementById('main').dataset.hash === '#/page/start');
+  await page.locator('#settings-link').scrollIntoViewIfNeeded();
+  await page.locator('#settings-link').click();
+  await page.waitForFunction(() => document.getElementById('main').dataset.hash === '#/settings');
+});
+
+test('search page carries its own input that searches as you type', TIMEOUT, async () => {
+  const page = await open('#/', { width: 1280 });
+  await page.locator('#search-open').click();
+  await page.waitForFunction(() => document.getElementById('main').dataset.hash === '#/search');
+  const input = page.getByTestId('search-input');
+  assert.equal(await input.getAttribute('aria-label'), '교재 검색');
+  const before = await page.evaluate(() => history.length);
+  await input.fill('픽스처');
+  await page.waitForFunction(() => location.hash.startsWith('#/search?q='));
+  assert.equal(await page.evaluate(() => document.activeElement?.dataset.testid), 'search-input', '치는 동안 포커스가 남는다');
+  assert.equal(await page.evaluate(() => history.length), before, '검색어는 기록을 늘리지 않는다(replace)');
+  assert.ok((await page.getByTestId('search-result').count()) > 0);
 });
 
 test('no console errors on the opened screens', TIMEOUT, () => {

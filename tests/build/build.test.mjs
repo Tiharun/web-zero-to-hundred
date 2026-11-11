@@ -487,7 +487,8 @@ test('site name and address come from curriculum.json only', async () => {
     const r = await build({ contentDir: content });
     assert.equal(r.ok, true, JSON.stringify(r.errors));
     assert.match(r.html, /<title>바꾼 이름<\/title>/);
-    assert.match(r.html, /<a class="brand[^"]*" href="#\/">[\s\S]*?바꾼 이름<\/a>/);
+    assert.match(r.html, /<a class="brand[^"]*" href="#\/">[\s\S]*?바꾼 이름<\/span><\/a>/);
+    assert.match(r.html, /<p class="footer-brand">[\s\S]*?<span>바꾼 이름<\/span><\/p>/);
     // Day 본문·데이터를 뺀 틀(헤더·<head>)에 옛 이름이 남지 않는다
     const frame = r.html.replace(/<template[\s\S]*?<\/template>/g, '').replace(/<script id="wzh-data"[\s\S]*?<\/script>/, '');
     assert.equal(frame.includes('픽스처 교재'), false);

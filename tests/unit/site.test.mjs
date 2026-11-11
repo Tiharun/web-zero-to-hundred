@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { faviconDataUri, headTags, listRoutes } from '../../textbook/lib/site.mjs';
+import { faviconDataUri, fillIcons, headTags, listRoutes } from '../../textbook/lib/site.mjs';
 
 test('faviconDataUri draws the pawn with the three token colours', () => {
   const uri = faviconDataUri(':root{--color-ink:#111111;--color-accent:#222222;--color-accent-hover:#333333}\n:root[data-theme="dark"]{--color-ink:#999999}');
@@ -11,6 +11,19 @@ test('faviconDataUri draws the pawn with the three token colours', () => {
   assert.match(svg, /width="32" height="32"/);
   assert.match(svg, /shape-rendering="crispEdges"/);
   assert.throws(() => faviconDataUri(':root{--color-ink:#111}'), /color-accent/);
+});
+
+test('fillIcons swaps icon placeholders for inline svg and reports unknown names', () => {
+  const ok = fillIcons('<a>{{PX:pawn}}이름</a><b>{{ICON:menu}}</b><i>{{ICON:check:tick}}</i>');
+  assert.deepEqual(ok.errors, []);
+  assert.match(ok.html, /<a><svg class="px px-pawn" [^>]*crispEdges[^>]*>.*<\/svg>이름<\/a>/);
+  assert.match(ok.html, /<b><svg class="icon" [^>]*>.*<\/svg><\/b>/);
+  assert.match(ok.html, /<i><svg class="icon tick" /);
+  assert.doesNotMatch(ok.html, /\{\{/);
+
+  const bad = fillIcons('{{ICON:nope}} {{PX:nada}}');
+  assert.deepEqual(bad.errors.map((e) => e.code), ['E_TEMPLATE_ICON', 'E_TEMPLATE_ICON']);
+  assert.match(bad.errors[0].message, /nope/);
 });
 
 test('headTags escapes values and carries the one configured url', () => {

@@ -1,6 +1,25 @@
 // 사이트 단위 정보: <head> 태그, 화면 경로 목록.
 // 이름·주소·설명은 curriculum.json 에서만 받는다. 이 파일에 직접 쓰지 않는다.
-import { PIXELS, pixelPath } from '../src/app/views/icons.js';
+import { PIXELS, iconSvg, pixelPath, pxSvg } from '../src/app/views/icons.js';
+
+/**
+ * template.html 의 아이콘 자리표 {{ICON:이름}} · {{ICON:이름:클래스}} · {{PX:이름}} 을 SVG 로 바꾼다.
+ * 모르는 이름은 E_TEMPLATE_ICON 으로 알린다.
+ * @param {string} html
+ * @param {string} [file]
+ */
+export function fillIcons(html, file = 'template.html') {
+  const errors = [];
+  const out = html.replace(/\{\{(ICON|PX):([a-z]+)(?::([a-z-]+))?\}\}/g, (all, kind, name, cls = '') => {
+    try {
+      return kind === 'ICON' ? iconSvg(name, cls) : pxSvg(name, { cls });
+    } catch (e) {
+      errors.push({ code: 'E_TEMPLATE_ICON', message: `${all}: ${e.message}`, file, line: html.slice(0, html.indexOf(all)).split('\n').length });
+      return '';
+    }
+  });
+  return { html: out, errors };
+}
 
 /** HTML 글자·속성 값 이스케이프 */
 export function escapeHtml(value) {

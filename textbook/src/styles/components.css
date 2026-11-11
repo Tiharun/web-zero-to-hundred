@@ -296,3 +296,23 @@ kbd {
 .px .p3 {
   fill: var(--px-3, var(--px-2, transparent));
 }
+/* 도트 색 배정 (DESIGN.md Icons 표) */
+.px-coin,
+.px-trophy,
+.px-quest {
+  --px-1: var(--color-coin-deep);
+  --px-2: var(--color-coin);
+  --px-3: var(--color-coin-hi);
+}
+.px-star {
+  --px-1: var(--color-star);
+}
+.px-pawn {
+  --px-1: var(--color-ink);
+  --px-2: var(--color-accent);
+  --px-3: var(--color-accent-hover);
+}
+.px-flag {
+  --px-1: var(--color-ink);
+  --px-2: var(--color-coin);
+}

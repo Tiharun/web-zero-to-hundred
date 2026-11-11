@@ -1,84 +1,172 @@
-/* ───────── 윗줄 ───────── */
+/* ───────── 윗줄 (DESIGN.md Navigation "상단 바") ───────── */
 
 .topbar {
-  position: fixed;
-  inset: 0 0 auto 0;
-  z-index: 100;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky-nav);
   height: var(--topbar-h);
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 16px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  gap: var(--space-xs);
+  padding: 0 var(--space-md);
+  background: var(--color-card);
+  color: var(--color-ink);
+  border-bottom: 1px solid var(--color-rule);
 }
 
-.brand {
-  margin-right: auto;
-  color: var(--text);
-  font-weight: 800;
-  text-decoration: none;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
+.menu-btn {
+  flex: none;
+  margin-left: calc(var(--space-xs) * -1);
 }
 
-.topbar-search {
-  flex: 0 1 280px;
-  min-width: 0;
-  height: 40px;
-  padding: 0 14px;
-  border: 1px solid var(--border-strong);
-  border-radius: 999px;
-  background: var(--bg);
-  color: var(--text);
-  font: inherit;
-  font-size: 0.95rem;
-}
-.topbar-search::placeholder {
-  color: var(--muted);
-}
-
-.topbar-btn {
+.wordmark {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  flex: none;
-  height: 40px;
-  min-width: 40px;
-  padding: 0 12px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--text);
-  font: inherit;
-  font-size: 0.92rem;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 var(--space-xs);
+  border-radius: var(--radius-btn);
+  color: var(--color-ink);
+  font-size: var(--text-body);
+  font-weight: 800;
+  letter-spacing: -0.02em;
   text-decoration: none;
-  cursor: pointer;
+  white-space: nowrap;
 }
-.topbar-btn:hover {
-  background: var(--surface-2);
+.wordmark .px {
+  width: 16px;
+  height: 16px;
+  margin-right: var(--space-xs);
+}
+.wordmark-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-#menu-toggle {
-  display: none;
+.topbar-tools {
+  flex: none;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+.topbar .search-btn {
+  border-color: var(--color-rule);
+  color: var(--color-ink-2);
+  font-size: var(--text-ui);
+  text-decoration: none;
+}
+.topbar .search-btn:hover,
+.topbar .search-btn[aria-current="page"] {
+  color: var(--color-ink);
+}
+
+/* 테마 메뉴 (DESIGN.md Navigation "테마 Dropdown") */
+.theme {
+  position: relative;
+}
+.menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--space-2xs));
+  z-index: var(--z-dropdown);
+  min-width: 160px;
+  padding: var(--space-2xs);
+  background: var(--color-card);
+  color: var(--color-ink);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-card);
+  transform-origin: top right;
+}
+.menu:not([hidden]) {
+  animation: pop-in var(--dur-short) var(--ease-out);
+}
+.menu [role="menuitemradio"] {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  min-height: 40px;
+  padding: 0 var(--space-sm);
+  border: 0;
+  border-radius: var(--radius-btn);
+  background: none;
+  color: var(--color-ink);
+  font: inherit;
+  font-size: var(--text-ui);
+  text-align: left;
+  cursor: pointer;
+}
+.menu [role="menuitemradio"]:hover,
+.menu [role="menuitemradio"]:focus-visible {
+  background: var(--color-track);
+}
+.menu [role="menuitemradio"]:focus-visible {
+  outline-offset: -2px;
+}
+.menu [role="menuitemradio"]:active {
+  background: var(--color-rule);
+}
+.menu .tick {
+  margin-left: auto;
+  visibility: hidden;
+  color: var(--color-accent-text);
+}
+.menu [aria-checked="true"] {
+  font-weight: 800;
+}
+.menu [aria-checked="true"] .tick {
+  visibility: visible;
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+
+@media (max-width: 40rem) {
+  .topbar .search-btn .search-word {
+    display: none;
+  }
+  .topbar .search-btn {
+    padding: 0;
+    border-color: transparent;
+  }
+}
+@media (max-width: 22.5rem) {
+  .wordmark {
+    font-size: var(--text-ui);
+    padding: 0 var(--space-2xs);
+  }
+}
+
+/* ───────── 틀: 사이드바 + 본문·푸터 (DESIGN.md Layout "셸") ───────── */
+
+.shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+.shell-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: calc(100dvh - var(--topbar-h));
 }
 
 /* ───────── 사이드바 ───────── */
 
 #sidebar {
-  position: fixed;
+  position: sticky;
   top: var(--topbar-h);
-  bottom: 0;
-  left: 0;
-  z-index: 90;
-  width: var(--sidebar-w);
+  align-self: start;
+  height: calc(100dvh - var(--topbar-h));
   padding: 12px 10px 32px;
   overflow-y: auto;
-  background: var(--surface);
-  border-right: 1px solid var(--border);
+  overscroll-behavior: contain;
+  background: var(--color-card);
+  border-right: 1px solid var(--color-rule);
   font-size: 0.93rem;
   line-height: 1.45;
 }
@@ -203,15 +291,55 @@
   display: none;
 }
 
+
 /* ───────── 본문 틀 ───────── */
 
-main {
+.main {
+  flex: 1; /* 짧은 화면에서도 푸터가 바닥에 붙는다 */
   min-width: 0;
-  margin-left: var(--sidebar-w);
-  padding: 36px clamp(16px, 5vw, 64px) 120px;
+  container-type: inline-size;
+  padding: var(--space-xl) var(--space-lg) var(--space-3xl);
 }
-main > * {
+.main > * {
   max-width: 62rem;
+}
+
+/* ───────── 푸터 ───────── */
+
+.site-footer {
+  display: grid;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+  background: var(--color-card);
+  color: var(--color-ink-2);
+  border-top: 1px solid var(--color-rule);
+  font-size: var(--text-ui);
+  line-height: 1.5;
+}
+.site-footer p {
+  margin: 0;
+}
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-width: 0;
+  color: var(--color-ink);
+  font-weight: 800;
+}
+.footer-brand .px {
+  width: 16px;
+  height: 16px;
+}
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-lg);
+}
+.footer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs) var(--space-md);
 }
 
 #storage-banner {
@@ -239,64 +367,53 @@ main > * {
   gap: 8px;
 }
 
-/* ───────── 좁은 화면: 사이드바는 서랍 ───────── */
+/* ───────── 넓은 화면: 사이드바 + 본문 두 열 ───────── */
 
-@media (max-width: 959px) {
-  #menu-toggle {
-    display: inline-flex;
+@media (min-width: 64rem) {
+  .shell {
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
   }
+  .topbar .menu-btn {
+    display: none; /* components.css 의 .icon-btn 보다 뒤에 와도 이기도록 한 단계 더 구체적으로 */
+  }
+}
+
+/* ───────── 좁은 화면: 사이드바는 서랍 (shell.js MOBILE 과 같은 기준) ───────── */
+
+@media (max-width: 63.99rem) {
   #sidebar {
-    z-index: 120;
-    width: min(88vw, 340px);
+    position: fixed;
+    top: var(--topbar-h);
+    bottom: 0;
+    left: 0;
+    z-index: var(--z-modal);
+    width: min(var(--sidebar-w), calc(100% - var(--space-2xl)));
+    height: auto;
     transform: translateX(-105%);
     visibility: hidden; /* 닫혀 있을 때는 Tab 도 닿지 않는다 */
-    transition: transform 0.2s ease, visibility 0s linear 0.2s;
-    box-shadow: var(--shadow);
+    transition: transform var(--dur-short) var(--ease-out), visibility 0s linear var(--dur-short);
   }
   body.nav-open #sidebar {
     transform: none;
     visibility: visible;
-    transition: transform 0.2s ease;
+    transition: transform var(--dur-short) var(--ease-out);
   }
   .nav-backdrop {
     position: fixed;
     inset: var(--topbar-h) 0 0 0;
-    z-index: 110;
-    background: var(--overlay);
+    z-index: calc(var(--z-modal) - 1);
+    background: var(--color-scrim);
   }
   body.nav-open .nav-backdrop {
     display: block;
   }
-  main {
-    margin-left: 0;
-    padding-top: 24px;
-  }
 }
 
-@media (max-width: 720px) {
-  .topbar {
-    gap: 6px;
-    padding: 0 8px;
+@media (max-width: 40rem) {
+  .main {
+    padding: var(--space-md) var(--space-md) var(--space-2xl);
   }
-  .topbar-btn {
-    padding: 0 10px;
-  }
-  .topbar-btn .label {
-    display: none;
-  }
-  .topbar-search {
-    flex: 1 1 auto;
-  }
-  .brand {
-    display: none;
-  }
-  #menu-toggle {
-    margin-right: 0;
-  }
-}
-
-@media (max-width: 600px) {
-  body {
-    font-size: 16px;
+  .site-footer {
+    padding: var(--space-md);
   }
 }

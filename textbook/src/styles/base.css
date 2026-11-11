@@ -19,7 +19,6 @@ body {
 
 body {
   margin: 0;
-  padding-top: var(--topbar-h);
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-body);

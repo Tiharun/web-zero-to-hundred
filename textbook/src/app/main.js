@@ -74,6 +74,12 @@ function start() {
       notice = null;
       return text;
     },
+    /** 화면을 다시 그리지 않고 주소(기록을 늘리지 않음)와 창 제목만 바꾼다. 검색칸에서 칠 때 쓴다 */
+    replaceRoute(hash, title) {
+      history.replaceState(null, '', hash);
+      main.dataset.hash = hash;
+      document.title = `${title} · ${cur.title}`;
+    },
     /** 화면을 옮긴다. replace: 기록을 늘리지 않고 바꾼다(스크롤도 그대로), keepFocus: 포커스를 본문으로 옮기지 않는다 */
     go(hash, { replace = false, keepFocus = false } = {}) {
       if (replace) {

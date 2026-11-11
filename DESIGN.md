@@ -623,6 +623,7 @@ components:
 - **서랍(Drawer):** `<dialog>`를 `showModal()`로 연다. 왼쪽에 붙고 높이 100dvh, 폭 `min(var(--sidebar-w), calc(100% - var(--space-2xl)))`, 오른쪽 1px `rule`, 백드롭 `scrim`. 머리 56px(제목 17px 800 + 닫기). 열면 오늘 Day로 포커스·스크롤하고 월드 요약 줄이 stagger로 나타난다. 닫힘: ESC, 백드롭 클릭(`closedby="any"`, 미지원 브라우저는 백드롭 클릭 좌표 감지로 대신), 닫기 버튼, 안의 링크 클릭, 창이 1024px 이상이 될 때. 닫히면 연 버튼으로 포커스가 돌아간다.
 - **테마 Dropdown:** 메뉴 버튼 패턴(`menuitemradio` 3개: 시스템·라이트·다크). 메뉴는 최소 160px, 안쪽 4px, `card` 바탕, 1px `rule`, 모서리 12px, 그림자 없음. 항목 40px, 15px, 모서리 6px, hover·포커스 `track`, 고른 항목은 800과 선 체크(`accent-text`). ↓·↑로 열기, 화살표 순환, Home·End, ESC·Tab·바깥 클릭으로 닫기, Enter 적용 뒤 버튼으로 포커스 복귀. 고른 테마는 저장한다.
 - **검색 Modal:** `<dialog>`, `margin: 10dvh auto auto`, 폭 `min(40rem, calc(100% - var(--space-xl)))`, 최대 높이 76dvh, 1px `rule`, 모서리 12px, 그림자 없음. 입력 줄: 선 검색 아이콘, 40px 높이 17px 입력칸(외곽선 없음), 포커스는 입력 줄 밑의 `box-shadow: inset 0 -2px 0 var(--color-focus)`. 결과 행: 최소 48px, 모서리 6px, 위치(Label) | 제목(15px 800) + 이유(15px `ink-2`, 한 줄 말줄임) | 태그(Label). 고른 행은 `track` 바탕과 `box-shadow: inset 2px 0 0 var(--color-accent)`. 일치 글자는 바탕 없이 분홍 2px 밑줄. 아래에 `kbd` 안내(↑ ↓ 고르기, Enter 열기, Esc 닫기). Ctrl+K로 열고, 빈 검색어에는 바로 가기(오늘의 퀘스트 + 부록), ESC 한 번에 닫힌다. combobox + listbox, `aria-activedescendant`.
+- **푸터:** 본문 아래 전체 폭. 위 1px `rule`, 바탕 `card`, 안쪽 24px(640px 이하 16px), 턱 없음. 말 도트 아이콘 + 사이트 이름(15px 800 `ink`), 글자 링크 줄(시작하기, 막혔을 때, 설정 · 진도 백업), Label 한 줄(글꼴 라이선스). 작성·빌드 날짜는 두지 않는다. 짧은 화면에서도 화면 바닥에 붙는다. 인쇄에서는 숨긴다.
 
 ### Tooltip
 - 지도 칸에만 있고 `(hover: hover) and (pointer: fine)`에서만 보인다. 터치에서는 없다(칸의 `aria-label`이 같은 내용을 갖고, 툴팁은 `aria-hidden`).

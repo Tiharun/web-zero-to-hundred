@@ -8,7 +8,7 @@ import { build as esbuild } from 'esbuild';
 import { loadCurriculum } from './lib/curriculum.mjs';
 import { parseGlossary, parseTroubleshooting, renderGlossaryPage, renderTroubleshootingPage } from './lib/glossary.mjs';
 import { assemble } from './lib/assemble.mjs';
-import { faviconDataUri, headTags, listRoutes } from './lib/site.mjs';
+import { faviconDataUri, fillIcons, headTags, listRoutes } from './lib/site.mjs';
 import { readStyles, lintStyles } from './lib/styles.mjs';
 import { collectGlyphs, embedFonts } from './lib/fonts.mjs';
 import { renderMarkdown } from './lib/markdown.mjs';
@@ -195,7 +195,10 @@ export async function build({
   if (styles.errors.length) return { ok: false, errors: styles.errors, warnings };
   const lint = lintStyles(styles.files);
   if (lint.length) return { ok: false, errors: lint, warnings };
-  const templateHtml = await readFile(path.join(srcDir, 'template.html'), 'utf8');
+  const templateFile = path.join(srcDir, 'template.html');
+  const filled = fillIcons(await readFile(templateFile, 'utf8'), templateFile);
+  if (filled.errors.length) return { ok: false, errors: filled.errors, warnings };
+  const templateHtml = filled.html;
 
   // 글꼴: 화면에 나올 수 있는 글자(틀·본문·스크립트 문구·데이터)만 서브셋해 스타일 맨 앞에 넣는다
   const glyphs = collectGlyphs({ html: [templateHtml, ...templates.map((t) => t.html), bundle.js].join('\n'), css: styles.css, dataJson: JSON.stringify(data) });

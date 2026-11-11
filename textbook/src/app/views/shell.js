@@ -1,12 +1,14 @@
-// 화면 틀: 사이드바(목차), 윗줄(메뉴·검색·테마), 저장 안내 배너, 스크린 리더용 안내 영역.
+// 화면 틀: 윗줄(메뉴·워드마크·검색·테마 메뉴), 사이드바(목차), 푸터, 저장 안내 배너, 스크린 리더용 안내 영역.
 // 틀은 한 번만 만들고, 진도나 주소가 바뀌면 refresh()/onRoute() 로 속성만 고친다 (포커스·스크롤 위치를 지키려고).
 import { dayState, isUnlocked, projectState } from '../progress.js';
 import { doneCount, h } from './common.js';
+import { icon } from './icons.js';
 
 const STATE_ICON = { locked: '🔒', done: '✅', next: '▶', open: '○' };
 const STATE_TEXT = { locked: '잠김', done: '완료', next: '다음 할 Day', open: '' };
-const SEARCH_DELAY = 180; // 글자를 치다 멈춘 뒤 이만큼(ms) 지나면 검색한다
-const MOBILE = '(max-width: 959px)';
+const MOBILE = '(max-width: 63.99rem)'; // 이 폭 이하에서는 사이드바가 서랍이 된다 (shell.css 와 같은 값)
+const THEME_NAME = { system: '시스템', light: '라이트', dark: '다크' };
+const THEME_ICON = { system: 'monitor', light: 'sun', dark: 'moon' };
 
 export function createShell(ctx) {
   const { cur } = ctx;
@@ -14,11 +16,18 @@ export function createShell(ctx) {
   const sidebar = $('sidebar');
   const main = $('main');
   const menuToggle = $('menu-toggle');
-  const themeToggle = $('theme-toggle');
-  const searchInput = $('search-input');
+  const themeBtn = $('theme-btn');
+  const themeMenu = $('theme-menu');
+  const themeItems = [...themeMenu.querySelectorAll('[role="menuitemradio"]')];
   const banner = $('storage-banner');
   const live = $('live');
-  const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+  /** 스크린 리더가 읽어 주는 짧은 안내 */
+  function announce(text) {
+    live.textContent = '';
+    // 같은 글이 다시 와도 읽히도록 한 박자 늦춰 넣는다
+    setTimeout(() => { live.textContent = text; }, 30);
+  }
   const backdrop = h('div', { class: 'nav-backdrop', onclick: () => setNav(false) });
   document.body.append(backdrop);
 
@@ -28,9 +37,18 @@ export function createShell(ctx) {
   let currentRoute = { name: 'home' };
   let currentProjectId = null; // 지금 보는 화면이 속한 프로젝트 (사이드바에서 펼쳐 둔다)
   let bannerDismissed = false;
-  let searchTimer = null;
+  let shownTheme = null; // 버튼 아이콘에 그려 둔 테마 (같으면 다시 그리지 않는다)
 
-  document.querySelector('.brand').textContent = cur.title;
+  // 이름은 curriculum.json 의 title 하나에서 온다. 템플릿의 글자는 스크립트가 돌기 전 대체값이다
+  document.querySelector('.wordmark-text').textContent = cur.title;
+  document.querySelector('.footer-brand span').textContent = cur.title;
+
+  // ───────── 푸터 (날짜는 두지 않는다: 사용자 결정) ─────────
+
+  // 부록 바로 가기는 그 페이지가 교재에 있을 때만 둔다
+  for (const link of document.querySelectorAll('.footer-links [data-page-link]')) {
+    if (!cur.pages.some((p) => p.id === link.dataset.pageLink)) link.remove();
+  }
 
   // ───────── 사이드바 ─────────
 
@@ -167,22 +185,76 @@ export function createShell(ctx) {
     if (!event.matches && navOpen()) setNav(false, { restoreFocus: false });
   });
 
-  // ───────── 테마 ─────────
-
-  const effectiveTheme = () => (ctx.prog.theme === 'system' ? (darkQuery.matches ? 'dark' : 'light') : ctx.prog.theme);
+  // ───────── 테마 메뉴 (DESIGN.md Navigation "테마 Dropdown", 메뉴 버튼 패턴) ─────────
 
   function applyTheme() {
+    const value = ctx.prog.theme;
     const root = document.documentElement;
-    if (ctx.prog.theme === 'system') root.removeAttribute('data-theme');
-    else root.setAttribute('data-theme', ctx.prog.theme);
-    const dark = effectiveTheme() === 'dark';
-    themeToggle.querySelector('.icon').textContent = dark ? '☀️' : '🌙';
-    themeToggle.querySelector('.label').textContent = dark ? '라이트' : '다크';
-    themeToggle.setAttribute('aria-label', dark ? '라이트 모드로 바꾸기' : '다크 모드로 바꾸기');
+    if (value === 'system') root.removeAttribute('data-theme');
+    else root.setAttribute('data-theme', value);
+    for (const item of themeItems) item.setAttribute('aria-checked', String(item.dataset.themeValue === value));
+    themeBtn.setAttribute('aria-label', `테마: ${THEME_NAME[value]}`);
+    if (shownTheme !== value) {
+      themeBtn.replaceChildren(icon(THEME_ICON[value]));
+      shownTheme = value;
+    }
   }
 
-  themeToggle.addEventListener('click', () => ctx.setTheme(effectiveTheme() === 'dark' ? 'light' : 'dark'));
-  darkQuery.addEventListener('change', applyTheme);
+  const menuOpen = () => !themeMenu.hidden;
+
+  function openMenu(index) {
+    themeMenu.hidden = false;
+    themeBtn.setAttribute('aria-expanded', 'true');
+    const checked = themeItems.findIndex((item) => item.getAttribute('aria-checked') === 'true');
+    themeItems[index ?? Math.max(checked, 0)].focus();
+  }
+
+  function closeMenu(returnFocus = true) {
+    if (!menuOpen()) return;
+    themeMenu.hidden = true;
+    themeBtn.setAttribute('aria-expanded', 'false');
+    if (returnFocus) themeBtn.focus();
+  }
+
+  function choose(item) {
+    const value = item.dataset.themeValue;
+    closeMenu();
+    if (value !== ctx.prog.theme) ctx.setTheme(value);
+    announce(`${THEME_NAME[value]} 테마로 바꿨어요.`);
+  }
+
+  themeBtn.addEventListener('click', () => (menuOpen() ? closeMenu() : openMenu()));
+  themeBtn.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      openMenu(event.key === 'ArrowDown' ? 0 : themeItems.length - 1);
+    }
+  });
+  themeMenu.addEventListener('keydown', (event) => {
+    const i = themeItems.indexOf(document.activeElement);
+    const n = themeItems.length;
+    const move = (j) => {
+      event.preventDefault();
+      themeItems[(j + n) % n].focus();
+    };
+    if (event.key === 'ArrowDown') move(i + 1);
+    else if (event.key === 'ArrowUp') move(i - 1);
+    else if (event.key === 'Home') move(0);
+    else if (event.key === 'End') move(n - 1);
+    else if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      closeMenu();
+    } else if (event.key === 'Tab') closeMenu(false);
+  });
+  // 버튼 요소라서 Enter·Space 도 click 으로 온다
+  themeMenu.addEventListener('click', (event) => {
+    const item = event.target.closest('[role="menuitemradio"]');
+    if (item) choose(item);
+  });
+  document.addEventListener('pointerdown', (event) => {
+    if (menuOpen() && !event.target.closest('.theme')) closeMenu(false);
+  });
 
   // ───────── 저장 안내 배너 ─────────
 
@@ -199,31 +271,6 @@ export function createShell(ctx) {
   function updateBanner() {
     banner.hidden = ctx.store.available || bannerDismissed; // available 은 getter 라서 매번 읽는다
   }
-
-  // ───────── 검색창 ─────────
-
-  function searchHash(query) {
-    return query.trim() === '' ? '#/search' : `#/search?q=${encodeURIComponent(query)}`;
-  }
-
-  function goSearch(immediate = false) {
-    clearTimeout(searchTimer);
-    const run = () => {
-      const onSearch = currentRoute.name === 'search';
-      if (!onSearch && searchInput.value.trim() === '') return; // 빈 칸이면 화면을 옮기지 않는다
-      ctx.go(searchHash(searchInput.value), { replace: onSearch, keepFocus: true });
-    };
-    if (immediate) run();
-    else searchTimer = setTimeout(run, SEARCH_DELAY);
-  }
-
-  searchInput.addEventListener('input', () => goSearch());
-  searchInput.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      goSearch(true);
-    }
-  });
 
   // ───────── 그 밖의 연결 ─────────
 
@@ -255,18 +302,11 @@ export function createShell(ctx) {
       currentRoute = route;
       const link = markCurrent(route, { open: true });
       if (navOpen()) setNav(false, { restoreFocus: false });
+      closeMenu(false);
       revealInSidebar(link);
-      if (route.name === 'search') {
-        if (document.activeElement !== searchInput) searchInput.value = route.q;
-      } else if (searchInput.value !== '') {
-        searchInput.value = '';
-      }
+      if (route.name === 'search') $('search-open').setAttribute('aria-current', 'page');
+      else $('search-open').removeAttribute('aria-current');
     },
-    /** 스크린 리더가 읽어 주는 짧은 안내 */
-    announce(text) {
-      live.textContent = '';
-      // 같은 글이 다시 와도 읽히도록 한 박자 늦춰 넣는다
-      setTimeout(() => { live.textContent = text; }, 30);
-    },
+    announce,
   };
 }

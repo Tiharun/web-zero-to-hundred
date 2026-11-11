@@ -11,16 +11,37 @@
 <body>
 <a class="skip-link" href="#main">본문으로 건너뛰기</a>
 <header class="topbar">
-  <button id="menu-toggle" class="topbar-btn" type="button" aria-controls="sidebar" aria-expanded="false"><span class="icon" aria-hidden="true">☰</span><span class="label">메뉴</span></button>
-  <a class="brand" href="#/">{{WZH_TITLE}}</a>
-  <input id="search-input" data-testid="search-input" class="topbar-search" type="search" placeholder="검색" aria-label="교재 검색" autocomplete="off" enterkeyhint="search">
-  <button id="theme-toggle" data-testid="theme-toggle" class="topbar-btn" type="button"><span class="icon" aria-hidden="true">🌙</span><span class="label">테마</span></button>
-  <a id="settings-link" class="topbar-btn" href="#/settings"><span class="icon" aria-hidden="true">⚙</span><span class="label">설정</span></a>
+  <button id="menu-toggle" class="icon-btn menu-btn" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Day 목록 열기">{{ICON:menu}}</button>
+  <a class="brand wordmark" href="#/">{{PX:pawn}}<span class="wordmark-text">{{WZH_TITLE}}</span></a>
+  <div class="topbar-tools">
+    <a id="search-open" class="tool-btn search-btn" href="#/search">{{ICON:search}}<span class="search-word">검색</span></a>
+    <div class="theme">
+      <button id="theme-btn" data-testid="theme-toggle" class="icon-btn theme-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="theme-menu" aria-label="테마: 시스템">{{ICON:monitor}}</button>
+      <div id="theme-menu" class="menu" role="menu" aria-labelledby="theme-btn" hidden>
+        <button type="button" role="menuitemradio" aria-checked="true" data-theme-value="system" tabindex="-1">{{ICON:monitor}}시스템{{ICON:check:tick}}</button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-theme-value="light" tabindex="-1">{{ICON:sun}}라이트{{ICON:check:tick}}</button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-theme-value="dark" tabindex="-1">{{ICON:moon}}다크{{ICON:check:tick}}</button>
+      </div>
+    </div>
+  </div>
 </header>
-<nav id="sidebar" aria-label="교재 목차"></nav>
-<main id="main" tabindex="-1">
-  <noscript>이 교재는 JavaScript가 켜져 있어야 볼 수 있어요.</noscript>
-</main>
+<div class="shell">
+  <nav id="sidebar" class="sidebar" aria-label="교재 목차"></nav>
+  <div class="shell-main">
+    <main id="main" class="main" tabindex="-1">
+      <noscript>이 교재는 JavaScript가 켜져 있어야 볼 수 있어요.</noscript>
+    </main>
+    <footer class="site-footer">
+      <p class="footer-brand">{{PX:pawn}}<span>{{WZH_TITLE}}</span></p>
+      <nav class="footer-links" aria-label="바로 가기">
+        <a class="text-link" href="#/page/start" data-page-link="start">시작하기</a>
+        <a class="text-link" href="#/page/help" data-page-link="help">막혔을 때</a>
+        <a id="settings-link" class="text-link" href="#/settings">설정 · 진도 백업</a>
+      </nav>
+      <p class="footer-meta label">글꼴: Wanted Sans · Galmuri11 · D2Coding (SIL Open Font License 1.1)</p>
+    </footer>
+  </div>
+</div>
 <div id="storage-banner" data-testid="storage-banner" role="status" hidden></div>
 <div id="live" class="sr-only" role="status" aria-live="polite"></div>
 <!--WZH:DATA-->

@@ -20,7 +20,13 @@ function highlight(text, terms) {
   return text.split(pattern).map((part, i) => (i % 2 === 1 ? h('mark', null, part) : part));
 }
 
-export function renderSearch(ctx, query, root) {
+const SEARCH_DELAY = 180; // 글자를 치다 멈춘 뒤 이만큼(ms) 지나면 검색한다
+
+const searchHash = (query) => (query.trim() === '' ? '#/search' : `#/search?q=${encodeURIComponent(query)}`);
+const titleFor = (q) => (q ? `검색: ${q}` : '검색');
+
+/** 결과 목록과 요약 (검색어가 바뀔 때마다 이 부분만 다시 그린다) */
+function resultNodes(ctx, query) {
   const { cur } = ctx;
   const q = query.trim();
   const terms = q.split(/\s+/).filter(Boolean);
@@ -41,15 +47,44 @@ export function renderSearch(ctx, query, root) {
     );
   });
 
-  const summary = !q ? '위쪽 검색창에 찾고 싶은 낱말을 입력해 보세요.' : results.length === 0 ? `‘${q}’에 맞는 내용이 없어요. 다른 낱말로 찾아볼까요?` : `‘${q}’ 검색 결과 ${results.length}개`;
-  root.append(
-    h(
-      'section',
-      { class: 'search-view' },
-      h('h1', null, '검색'),
-      h('p', { class: 'lead', role: 'status', 'data-testid': 'search-summary' }, summary),
-      items.length > 0 && h('ul', { class: 'results' }, items),
-    ),
-  );
-  return q ? `검색: ${q}` : '검색';
+  const summary = !q ? '검색칸에 찾고 싶은 낱말을 입력해 보세요.' : results.length === 0 ? `‘${q}’에 맞는 내용이 없어요. 다른 낱말로 찾아볼까요?` : `‘${q}’ 검색 결과 ${results.length}개`;
+  return [h('p', { class: 'lead', role: 'status', 'data-testid': 'search-summary' }, summary), items.length > 0 && h('ul', { class: 'results' }, items)];
+}
+
+/**
+ * 검색 화면: 맨 위 입력칸 + 결과. 치는 동안에는 화면 전체를 다시 그리지 않고 주소(replace)와 결과만 바꾼다.
+ * 입력칸을 그대로 두어야 포커스와 한글 조합이 끊기지 않는다.
+ */
+export function renderSearch(ctx, query, root) {
+  const area = h('div', { class: 'search-results' }, resultNodes(ctx, query));
+  let timer = null;
+  const input = h('input', {
+    class: 'search-input',
+    type: 'search',
+    'data-testid': 'search-input',
+    'aria-label': '교재 검색',
+    placeholder: '낱말을 입력하세요',
+    autocomplete: 'off',
+    enterkeyhint: 'search',
+    value: query,
+  });
+  const run = () => {
+    clearTimeout(timer);
+    const q = input.value.trim();
+    ctx.replaceRoute(searchHash(input.value), titleFor(q));
+    area.replaceChildren(...resultNodes(ctx, input.value).filter(Boolean));
+  };
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(run, SEARCH_DELAY);
+  });
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && !event.isComposing) {
+      event.preventDefault();
+      run();
+    }
+  });
+
+  root.append(h('section', { class: 'search-view' }, h('h1', null, '검색'), input, area));
+  return titleFor(query.trim());
 }
