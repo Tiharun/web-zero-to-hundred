@@ -37,6 +37,18 @@ before(async () => {
   assert.equal(long.ok, true, JSON.stringify(long.errors));
   await writeFile(path.join(tmp, 'long.html'), long.html);
 
+  // 부록 "막혔을 때"(help)가 있는 픽스처 사본: 404 화면의 도움말 링크를 본다
+  const helpDir = path.join(tmp, 'help-content');
+  await cp(FIXTURE, helpDir, { recursive: true });
+  const helpCurFile = path.join(helpDir, 'curriculum.json');
+  const helpCur = JSON.parse(await readFile(helpCurFile, 'utf8'));
+  helpCur.pages.push({ id: 'help', title: '막혔을 때', file: 'help.md' });
+  await writeFile(helpCurFile, JSON.stringify(helpCur, null, 2));
+  await writeFile(path.join(helpDir, 'pages', 'help.md'), '# 막혔을 때\n\n픽스처 도움말이에요.\n');
+  const withHelp = await build({ contentDir: helpDir });
+  assert.equal(withHelp.ok, true, JSON.stringify(withHelp.errors));
+  await writeFile(path.join(tmp, 'help.html'), withHelp.html);
+
   // GitHub Pages 의 404.html 로 쓰는 빌드
   const nf = await build({ contentDir: FIXTURE, notFound: true });
   assert.equal(nf.ok, true, JSON.stringify(nf.errors));
@@ -285,6 +297,23 @@ test('unknown ids and unknown paths show the 404 screen with a way home', TIMEOU
     assert.equal(await page.locator('main .notfound svg.px-wrench').count(), 1, hash);
     assert.match(await page.title(), /^찾을 수 없어요 · /, hash);
     assert.equal(await noHorizontalScroll(page), 0, hash);
+  }
+});
+
+test('404 actions: the help link sits on the same middle line as the home button', TIMEOUT, async () => {
+  for (const width of [375, 1280]) {
+    const page = await open('#/nope', { width, file: 'help.html' });
+    // 상자가 줄 높이만큼 늘어날 수 있으므로 글자(텍스트 노드)가 그려진 자리를 잰다
+    const textBox = (sel) =>
+      page.locator(`main .notfound ${sel}`).evaluate((el) => {
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        const r = range.getBoundingClientRect();
+        return { y: r.y, height: r.height };
+      });
+    const [btn, link] = [await textBox('.btn-primary'), await textBox('.text-link')];
+    const mid = (b) => b.y + b.height / 2;
+    assert.ok(Math.abs(mid(btn) - mid(link)) <= 3, `${width}px: 버튼 가운데 ${mid(btn)}, 링크 가운데 ${mid(link)}`);
   }
 });
 

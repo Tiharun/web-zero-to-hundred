@@ -10,11 +10,15 @@
     "check": "node build.mjs --check",
     "test": "node --test \"../tests/unit/**/*.test.mjs\" \"../tests/build/**/*.test.mjs\"",
     "test:e2e": "node --test \"../tests/e2e/**/*.test.mjs\"",
+    "test:visual": "node --test \"../tests/visual/**/*.test.mjs\"",
+    "test:visual:update": "node ../tests/visual/run.mjs --update",
     "check:site": "node ../tests/helpers/site-check.mjs"
   },
   "devDependencies": {
     "esbuild": "0.28.2",
     "highlight.js": "11.12.0",
-    "marked": "18.1.2"
+    "marked": "18.1.2",
+    "pixelmatch": "8.0.0",
+    "pngjs": "7.0.0"
   }
 }
