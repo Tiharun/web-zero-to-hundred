@@ -70,6 +70,8 @@ export function renderSearch(ctx, query, root) {
   });
   const run = () => {
     clearTimeout(timer);
+    // 대기 중에 다른 화면으로 갔으면 그 화면의 주소를 덮어쓰지 않는다
+    if (!input.isConnected) return;
     const q = input.value.trim();
     ctx.replaceRoute(searchHash(input.value), titleFor(q));
     area.replaceChildren(...resultNodes(ctx, input.value).filter(Boolean));

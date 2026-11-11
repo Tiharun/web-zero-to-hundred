@@ -286,6 +286,17 @@ test('search page carries its own input that searches as you type', TIMEOUT, asy
   assert.ok((await page.getByTestId('search-result').count()) > 0);
 });
 
+test('leaving the search page right after typing keeps the new address', TIMEOUT, async () => {
+  const page = await open('#/search', { width: 1280 });
+  await page.getByTestId('search-input').fill('픽스처');
+  // 검색 대기(180ms)가 끝나기 전에 다른 화면으로 간다
+  await page.evaluate(() => { location.hash = '#/settings'; });
+  await page.waitForFunction(() => document.getElementById('main').dataset.hash === '#/settings');
+  await page.waitForTimeout(400);
+  assert.equal(await page.evaluate(() => location.hash), '#/settings');
+  assert.doesNotMatch(await page.title(), /^검색/);
+});
+
 // ───────── 404 와 전 페이지 점검 ─────────
 
 test('unknown ids and unknown paths show the 404 screen with a way home', TIMEOUT, async () => {
