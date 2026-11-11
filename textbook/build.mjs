@@ -1,5 +1,5 @@
 // content/ → index.html. 검증하고, 렌더하고, 단일 HTML 파일 하나로 조립한다.
-//   node build.mjs [--check] [--only id1,id2] [--allow-missing] [--content <dir>] [--out <file>]
+//   node build.mjs [--check] [--only id1,id2] [--allow-missing] [--notfound] [--published] [--content <dir>] [--out <file>]
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { parseArgs } from 'node:util';
 import path from 'node:path';
@@ -26,9 +26,43 @@ const USAGE = `사용법: node build.mjs [옵션]
   --allow-missing    Day 파일이 없으면 경고만 하고 "준비 중" 화면으로 대신해요
   --content <dir>    content 폴더 (기본값: textbook/content)
   --out <file>       결과 파일 (기본값: 저장소 루트의 index.html)
-  --notfound         GitHub Pages 의 404.html 로 쓸 빌드를 만들어요 (빈 주소에서 404 화면)`;
+  --notfound         GitHub Pages 의 404.html 로 쓸 빌드를 만들어요 (빈 주소에서 404 화면)
+  --published        content/published.json 의 공개 범위 밖 Day 는 "준비 중" 화면으로 만들어요`;
 
 const issue = (code, message, extra = {}) => ({ code, line: null, message, file: null, ...extra });
+
+/**
+ * content/published.json 을 읽어 공개할 Day id 집합을 만든다.
+ * 형식: { "<프로젝트 id>": [처음 Day, 끝 Day] }. 목록에 없는 프로젝트는 0개 공개.
+ * @returns {Promise<{ ids: Set<string> | null, errors: object[] }>}
+ */
+async function loadPublished(contentDir, curriculum) {
+  const file = path.join(contentDir, 'published.json');
+  const fail = (message) => ({ ids: null, errors: [issue('E_PUBLISHED_SCHEMA', message, { file })] });
+  let data;
+  try {
+    data = JSON.parse(await readFile(file, 'utf8'));
+  } catch (e) {
+    return fail(`공개 목록(published.json)을 읽을 수 없어요: ${e.message}`);
+  }
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return fail('공개 목록은 { "프로젝트 id": [처음, 끝] } 모양이어야 해요');
+  const projects = new Map(curriculum.projects.map((p) => [p.id, p]));
+  const ids = new Set();
+  const errors = [];
+  for (const [pid, range] of Object.entries(data)) {
+    if (!projects.has(pid)) return fail(`공개 목록에 없는 프로젝트 id 가 있어요: ${pid}`);
+    const ok = Array.isArray(range) && range.length === 2 && range.every(Number.isInteger) && range[0] >= 1 && range[0] <= range[1];
+    if (!ok) return fail(`${pid} 의 범위는 [처음, 끝] 정수(1 이상, 처음 ≤ 끝)여야 해요: ${JSON.stringify(range)}`);
+    const days = projects.get(pid).days;
+    for (let num = range[0]; num <= range[1]; num++) {
+      const day = days[num - 1];
+      const id = `${pid}-d${String(num).padStart(2, '0')}`;
+      if (!day || day.missing) errors.push(issue('E_PUBLISHED_MISSING', `공개 목록에 있는 Day 의 파일이 없어요: ${id}`, { dayId: id, file: day?.file ?? null }));
+      else ids.add(day.id);
+    }
+  }
+  return { ids, errors };
+}
 const byLine = (a, b) => (a.line ?? Infinity) - (b.line ?? Infinity);
 const mb = (bytes) => `${(bytes / 1024 / 1024).toFixed(2)} MB`;
 
@@ -80,6 +114,7 @@ export async function build({
   fontsDir = path.join(HERE, 'fonts'),
   cacheDir = path.join(HERE, '.cache', 'fonts'),
   notFound = false,
+  publishedOnly = false,
 }) {
   const errors = [];
   const warnings = [];
@@ -106,6 +141,14 @@ export async function build({
     if (errors.length) return { ok: false, errors, warnings };
   }
 
+  // 1-1. 공개 목록: 목록 밖의 Day 는 파일이 있어도 "준비 중"으로 만든다
+  let published = null;
+  if (publishedOnly) {
+    const r = await loadPublished(contentDir, curriculum);
+    if (r.errors.length) return { ok: false, errors: [...errors, ...r.errors], warnings };
+    published = r.ids;
+  }
+
   // 2. 용어 사전·문제 해결 조각
   const glossary = parseGlossary(await readMarkdownDir(path.join(contentDir, 'glossary')));
   const trouble = parseTroubleshooting(await readMarkdownDir(path.join(contentDir, 'troubleshooting')));
@@ -121,7 +164,7 @@ export async function build({
   const rendered = new Map(); // dayId → { html, text, checkCount }
   let renderedCount = 0;
   for (const day of days) {
-    if ((onlySet && !onlySet.has(day.id)) || day.missing) {
+    if ((onlySet && !onlySet.has(day.id)) || day.missing || (published && !published.has(day.id))) {
       rendered.set(day.id, { html: PLACEHOLDER_HTML, text: '', checkCount: 0 });
       continue;
     }
@@ -267,6 +310,7 @@ async function main(argv) {
         out: { type: 'string' },
         'allow-missing': { type: 'boolean' },
         notfound: { type: 'boolean' },
+        published: { type: 'boolean' },
         help: { type: 'boolean', short: 'h' },
       },
     }));
@@ -283,7 +327,7 @@ async function main(argv) {
   const outFile = values.out ? path.resolve(cwd, values.out) : path.join(HERE, '..', 'index.html');
   const only = values.only ? values.only.split(',').map((s) => s.trim()).filter(Boolean) : null;
 
-  const result = await build({ contentDir, only, allowMissing: Boolean(values['allow-missing']), notFound: Boolean(values.notfound) });
+  const result = await build({ contentDir, only, allowMissing: Boolean(values['allow-missing']), notFound: Boolean(values.notfound), publishedOnly: Boolean(values.published) });
   for (const line of summarizeWarnings(result.warnings, cwd)) console.log(line);
 
   if (!result.ok) {

@@ -7,3 +7,4 @@ target/
 dist/
 textbook/.cache/
 tests/visual/.out/
+_site/

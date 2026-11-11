@@ -479,6 +479,8 @@
 | 글꼴 서브셋 도구 | Python 3.12.4, fontTools 4.66.1, brotli | `[측정]` 이 PC |
 | Pages 배포 job 권한 | `pages: write`, `id-token: write`, 환경 `github-pages` | `[문서]` https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages |
 | 프로젝트 사이트 주소 | `https://<소유자>.github.io/<저장소>/` (호스트는 소문자로 쓴다) | `[측정]` `gh api repos/{owner}/{repo} --jq .owner.login,.name` |
+| 액션 입력(2026-11-12 README·action.yml) | `setup-node`: `node-version`, `cache`, `cache-dependency-path` / `setup-python`: `python-version` / `configure-pages`: `token`, `enablement`(기본 false, 켜려면 `GITHUB_TOKEN`이 아닌 토큰 필요) / `upload-pages-artifact`: `path`, `name`, `retention-days`, `include-hidden-files` / `deploy-pages`: `token`, `timeout`, `artifact_name` 등. 모두 `node24` 또는 composite | `[원문]` `gh api repos/actions/<이름>/contents/action.yml`, `…/readme` |
+| 배포 job 최소 권한 | `pages: write`, `id-token: write` (deploy-pages README "must at minimum have") | `[원문]` https://github.com/actions/deploy-pages |
 
 ---
 

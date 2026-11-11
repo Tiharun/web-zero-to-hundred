@@ -518,3 +518,55 @@ test('CLI --notfound writes the 404 build to --out', async () => {
     assert.match(await readFile(out, 'utf8'), /<html lang="ko" data-notfound>/);
   });
 });
+
+const writePublished = (content, value) => writeFile(path.join(content, 'published.json'), JSON.stringify(value));
+
+test('published build hides days outside the reviewed ranges', async () => {
+  await withContentCopy(async ({ content }) => {
+    await writePublished(content, { fa: [1, 1] }); // fa 는 Day 2개, fb 는 목록에 없다
+    const r = await build({ contentDir: content, publishedOnly: true });
+    assert.equal(r.ok, true, JSON.stringify(r.errors));
+    assert.match(template(r.html, 't-day-fa-d02'), /coming-soon/);
+    assert.match(template(r.html, 't-day-fb-d01'), /coming-soon/);
+    assert.doesNotMatch(template(r.html, 't-day-fa-d01'), /coming-soon/);
+    const search = embeddedData(r.html).search;
+    assert.equal(search.find((s) => s.id === 'fa-d02').text, '');
+    assert.notEqual(search.find((s) => s.id === 'fa-d01').text, '');
+    // 목록이 없는 보통 빌드는 그대로 모두 보인다
+    const all = await build({ contentDir: content });
+    assert.doesNotMatch(template(all.html, 't-day-fa-d02'), /coming-soon/);
+  });
+});
+
+test('a published day without a file is E_PUBLISHED_MISSING, even with allowMissing', async () => {
+  await withContentCopy(async ({ content }) => {
+    await writePublished(content, { fa: [1, 3] });
+    const r = await build({ contentDir: content, publishedOnly: true, allowMissing: true });
+    assert.equal(r.ok, false);
+    assert.deepEqual(r.errors.map((e) => e.code), ['E_PUBLISHED_MISSING']);
+    assert.match(r.errors[0].message, /fa-d03/);
+  });
+});
+
+test('a missing or malformed published.json is E_PUBLISHED_SCHEMA', async () => {
+  await withContentCopy(async ({ content }) => {
+    const none = await build({ contentDir: content, publishedOnly: true });
+    assert.equal(none.ok, false);
+    assert.equal(none.errors[0].code, 'E_PUBLISHED_SCHEMA');
+    for (const bad of [{ zz: [1, 1] }, { fa: [2, 1] }, { fa: [0, 1] }, { fa: '1-2' }, [1, 2]]) {
+      await writePublished(content, bad);
+      const r = await build({ contentDir: content, publishedOnly: true });
+      assert.equal(r.ok, false, JSON.stringify(bad));
+      assert.equal(r.errors[0].code, 'E_PUBLISHED_SCHEMA', JSON.stringify(bad));
+    }
+  });
+});
+
+test('CLI --published builds only the reviewed days', async () => {
+  await withContentCopy(async ({ content, out }) => {
+    await writePublished(content, { fa: [1, 1] });
+    const r = runBuild(['--content', content, '--out', out, '--published']);
+    assert.equal(r.status, 0, r.output);
+    assert.match(template(await readFile(out, 'utf8'), 't-day-fa-d02'), /coming-soon/);
+  });
+});
