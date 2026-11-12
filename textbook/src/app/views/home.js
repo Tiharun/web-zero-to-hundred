@@ -1,7 +1,8 @@
 // 홈: 전체 진도, 이어서 하기, 학습 경로 지도, 부록 바로가기.
-import { onceInSession, stagger } from '../motion.js';
+import { onceInSession, shake, stagger } from '../motion.js';
 import { continueTarget, isUnlocked, percent, projectState } from '../progress.js';
 import { chips, doneCount, getProject, h, isDone, linkButton, meter, notice as noticeLine } from './common.js';
+import { showToast } from './toast.js';
 
 const PROJECT_LABEL = { locked: '🔒 잠김', active: '▶ 진행 중', complete: '✅ 완료' };
 
@@ -44,12 +45,19 @@ function projectCard(ctx, project) {
           ? '아직 시작하지 않았어요.'
           : `${done}개 Day를 마쳤어요.`;
 
+  // 잠긴 카드: 누르면 이동하지 않고 흔들리며 이유를 알린다. href 는 남겨 새 탭·JS 없음에서는 잠금 화면으로 간다
+  const onLockedClick = (event) => {
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    shake(event.currentTarget);
+    showToast(note);
+  };
   return h(
     'li',
     { class: 'path-item', dataset: { project: project.id, state } },
     h(
       'a',
-      { class: 'path-card', href: `#/project/${project.id}` },
+      { class: 'path-card', href: `#/project/${project.id}`, 'aria-disabled': state === 'locked' ? 'true' : null, onclick: state === 'locked' ? onLockedClick : null },
       h('span', { class: 'path-state' }, PROJECT_LABEL[state]),
       h('strong', { class: 'path-title' }, project.title),
       h('span', { class: 'path-subtitle' }, project.subtitle),

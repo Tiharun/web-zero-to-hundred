@@ -338,6 +338,43 @@ kbd {
   transform: translateY(8px);
 }
 
+/* 토스트(임시 모양: 기존 카드 토큰만. M8 에서 확정) — 화면 아래 가운데 */
+.toast-region {
+  position: fixed;
+  left: 50%;
+  bottom: var(--space-lg);
+  translate: -50% 0;
+  z-index: var(--z-modal);
+  display: grid;
+  gap: var(--space-xs);
+  justify-items: center;
+  width: max-content;
+  max-width: calc(100% - var(--space-xl));
+  pointer-events: none;
+}
+.toast-region:empty {
+  display: none;
+}
+.toast {
+  pointer-events: auto;
+  margin: 0;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-card);
+  color: var(--color-ink);
+  border: 2px solid var(--color-rule);
+  border-radius: var(--radius-card);
+  box-shadow: 0 var(--ledge) 0 var(--color-rule);
+  font-size: var(--text-ui);
+  text-wrap: pretty;
+  animation: toast-in var(--dur-enter) var(--ease-out);
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
 /* 동작 줄이기: 주 버튼의 끌림과 hover 떠오름을 없앤다(누름은 그대로). DESIGN.md Motion */
 @media (prefers-reduced-motion: reduce) {
   .btn-primary {

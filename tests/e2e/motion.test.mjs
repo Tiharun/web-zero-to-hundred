@@ -195,3 +195,102 @@ test('print shows headings that have not been revealed yet', TIMEOUT, async () =
     { viewport: { width: 1280, height: 400 } },
   );
 });
+
+// ───────── 토스트 · 잠긴 프로젝트 카드 Shake ─────────
+// 픽스처에서 fb 는 fa 를 끝내야 열리므로 잠겨 있다.
+
+const LOCKED = '.path-item[data-project="fb"] .path-card';
+// hover 전환(CSS transition)도 getAnimations 에 잡히므로 흔들림만 센다
+const shakes = (locator) => locator.evaluate((el) => el.getAnimations().filter((a) => a.id === 'shake').length);
+const toasts = (page) => page.getByTestId('toast');
+/** 잠긴 카드는 aria-disabled 라 Playwright 의 locator.click 이 "enabled 아님"으로 기다린다. 사람처럼 좌표로 누른다 */
+async function clickAt(page, locator) {
+  await locator.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  const box = await locator.boundingBox();
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+}
+
+test('locked card shakes and explains instead of opening', TIMEOUT, async () => {
+  await withPage('#/', async (page) => {
+    const card = page.locator(LOCKED);
+    assert.equal(await card.getAttribute('aria-disabled'), 'true');
+    await clickAt(page, card);
+    assert.equal(await page.evaluate(() => location.hash), '#/');
+    assert.equal(await shakes(card), 1, '흔들린다');
+    await toasts(page).first().waitFor();
+    assert.equal(await toasts(page).count(), 1);
+    assert.match(await toasts(page).first().textContent(), /끝내면 열려요/);
+    assert.equal(await page.getByTestId('toast-region').getAttribute('role'), 'status');
+  });
+});
+
+test('reduced motion: locked card does not shake but still explains', TIMEOUT, async () => {
+  await withPage(
+    '#/',
+    async (page) => {
+      const card = page.locator(LOCKED);
+      await clickAt(page, card);
+      assert.equal(await shakes(card), 0);
+      await toasts(page).first().waitFor();
+      assert.match(await toasts(page).first().textContent(), /끝내면 열려요/);
+    },
+    { reducedMotion: 'reduce' },
+  );
+});
+
+test('locked card responds to Enter', TIMEOUT, async () => {
+  await withPage('#/', async (page) => {
+    await page.locator(LOCKED).focus();
+    await page.keyboard.press('Enter');
+    await toasts(page).first().waitFor();
+    assert.equal(await page.evaluate(() => location.hash), '#/');
+  });
+});
+
+test('locked card: rapid clicks keep at most three toasts', TIMEOUT, async () => {
+  await withPage('#/', async (page) => {
+    const card = page.locator(LOCKED);
+    for (let i = 0; i < 5; i++) await clickAt(page, card);
+    await toasts(page).first().waitFor();
+    const n = await toasts(page).count();
+    assert.ok(n >= 1 && n <= 3, `토스트 ${n}개`);
+    assert.equal(await page.evaluate(() => location.hash), '#/');
+  });
+});
+
+test('toast hides after four seconds and pauses on hover', TIMEOUT, async () => {
+  await withPage(
+    '#/',
+    async (page) => {
+      await clickAt(page, page.locator(LOCKED));
+      const toast = toasts(page).first();
+      await toast.waitFor();
+      await page.clock.runFor(3000);
+      assert.equal(await toasts(page).count(), 1, '3초에는 보인다');
+      await toast.hover();
+      await page.clock.runFor(5000);
+      assert.equal(await toasts(page).count(), 1, '마우스를 올리면 멈춘다');
+      await page.mouse.move(5, 5);
+      await page.clock.runFor(4000);
+      await eventually(async () => assert.equal(await toasts(page).count(), 0));
+    },
+    { clock: true },
+  );
+});
+
+test('unlocked card still opens its project', TIMEOUT, async () => {
+  await withPage('#/', async (page) => {
+    await page.locator('.path-item[data-project="fa"] .path-card').click();
+    await page.locator('main[data-hash="#/project/fa"]').waitFor();
+  });
+});
+
+test('toast survives moving to another screen', TIMEOUT, async () => {
+  await withPage('#/', async (page) => {
+    await clickAt(page, page.locator(LOCKED));
+    await toasts(page).first().waitFor();
+    await go(page, '#/settings');
+    assert.equal(await toasts(page).count(), 1);
+    assert.equal(await page.locator('main [data-testid="toast-region"]').count(), 0, '영역은 main 밖에 있다');
+  });
+});

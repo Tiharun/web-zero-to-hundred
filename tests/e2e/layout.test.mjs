@@ -74,6 +74,8 @@ async function open(hash, { width = 1280, height = 900, theme = 'light', file = 
   opened.push({ context, errors });
   await page.goto(`${server.url}${file}${hash}`);
   await page.locator('main h1').first().waitFor();
+  // 홈 첫 표시의 Stagger 가 도는 동안에는 상자 값이 소수점만큼 흔들린다. 끝난 모습을 잰다
+  await page.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished.catch(() => {}))));
   return page;
 }
 
