@@ -681,6 +681,8 @@ test('mobile drawer opens as a dialog and closes by Escape, backdrop, button and
       await page.locator('#drawer-close').click();
       await closed();
       await openIt();
+      await page.waitForTimeout(400); // 앞선 닫기의 대체 타이머(260ms)가 다시 연 서랍을 닫지 않는다
+      assert.equal(await isOpen(), true, '곧바로 다시 연 서랍은 열려 있다');
       await page.locator('#drawer [data-day="fa-d01"]').click();
       await waitRoute(page, '#/day/fa-d01');
       await closed();

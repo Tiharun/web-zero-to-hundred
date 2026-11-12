@@ -71,17 +71,19 @@ export function closeDialog(dlg, { restoreFocus = true, immediate = false, env =
   }
   if (dlg.classList.contains('is-closing')) return;
   dlg.classList.add('is-closing');
-  const done = () => dlg.open && dlg.close();
+  // 애니메이션 끝과 대체 타이머 중 먼저 온 쪽이 닫고 다른 쪽을 지운다.
+  // 남은 타이머가 그사이 다시 연 대화상자를 닫으면 안 된다
+  let timer = 0;
   const onEnd = (event) => {
-    if (event.target !== dlg) return;
-    dlg.removeEventListener('animationend', onEnd);
-    done();
+    if (event.target === dlg) done();
   };
-  dlg.addEventListener('animationend', onEnd);
-  setTimeout(() => {
+  function done() {
+    clearTimeout(timer);
     dlg.removeEventListener('animationend', onEnd);
-    done();
-  }, DIALOG_CLOSE_FALLBACK_MS);
+    if (dlg.open) dlg.close();
+  }
+  dlg.addEventListener('animationend', onEnd);
+  timer = setTimeout(done, DIALOG_CLOSE_FALLBACK_MS);
 }
 
 // ───────── 메뉴 버튼 (WAI-ARIA menu button) ─────────
