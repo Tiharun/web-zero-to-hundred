@@ -101,19 +101,17 @@ export function createShell(ctx) {
   }
 
   setupDialog(drawer);
-  // 닫히는 순간(open 속성이 빠질 때) 목록을 사이드바로 돌려놓고 버튼 상태를 맞춘다.
-  // close 이벤트는 다음 태스크에 오므로 기다리지 않는다
+  // 닫히는 순간(open 속성이 빠질 때) 목록을 사이드바로 돌려놓고 버튼 상태와 포커스를 맞춘다.
+  // close 이벤트는 다음 태스크에 오므로 기다리지 않는다. 브라우저가 close() 안에서 연 버튼으로 포커스를
+  // 돌려놓은 직후(같은 태스크의 마이크로태스크)라서, 다른 곳으로 보낼 포커스도 여기서 옮긴다
   new MutationObserver(() => {
     if (drawer.open) return;
     sidebar.append(side.nav);
     menuToggle.setAttribute('aria-expanded', 'false');
-  }).observe(drawer, { attributes: true, attributeFilter: ['open'] });
-  // 포커스는 브라우저가 연 버튼으로 돌려놓은 뒤(close 이벤트)에 옮겨야 한다
-  drawer.addEventListener('close', () => {
     const target = focusAfterClose;
     focusAfterClose = undefined;
     if (target?.isConnected) target.focus({ preventScroll: true });
-  });
+  }).observe(drawer, { attributes: true, attributeFilter: ['open'] });
   menuToggle.addEventListener('click', openDrawer);
   $('drawer-close').addEventListener('click', () => closeDrawer());
   // 서랍 안의 링크를 누르면 닫고 본문으로 간다 (지금 화면 링크여도 닫는다). 잠긴 월드 메뉴처럼 막힌 링크는 그대로 둔다
