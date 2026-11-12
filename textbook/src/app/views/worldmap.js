@@ -112,10 +112,10 @@ export function worldMap(ctx) {
       h(
         'div',
         { class: 'trail-wrap' },
+        svgs, // 경로 그림은 목록(ol) 밖, 칸보다 먼저 둔다(칸이 위에 그려진다)
         h(
           'ol',
           { class: 'trail', style: heights, 'aria-label': `${world.title} Day ${n}개` },
-          svgs,
           world.days.map((d, i) => tile(d, i, states[i], geo)),
         ),
         h('div', { class: 'trail-dirs', 'aria-hidden': 'true' }, dirs),

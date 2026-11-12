@@ -70,3 +70,22 @@ test('tipSide: left half start, right half end', () => {
     ['start', 'start', 'start', 'end', 'end'],
   );
 });
+
+test('geometry: a short last row runs backward from the right edge (6 and 11 days at 5 columns)', () => {
+  const six = geometry(6, 5);
+  assert.equal(six.rows, 2);
+  assert.deepEqual(six.pts.slice(4).map((p) => [p.r, p.c]), [[0, 4], [1, 4]]);
+  assert.deepEqual(rowArrows(six, -1).length, 1, '한 칸뿐인 둘째 줄에는 화살표가 없다');
+  const eleven = geometry(11, 5);
+  assert.equal(eleven.rows, 3);
+  assert.deepEqual(eleven.pts.slice(9).map((p) => [p.r, p.c]), [[1, 0], [2, 0]]);
+  assert.match(pathD(eleven.pts, 10), /C8 150 8 250 50 250$/, '왼쪽 끝 꺾임은 왼쪽으로 돈다');
+});
+
+test('layout l uses one column for one or two days', () => {
+  assert.equal(LAYOUTS.l.cols(1), 1);
+  assert.equal(LAYOUTS.l.cols(2), 1);
+  const g = layouts(2).l;
+  assert.deepEqual(g.pts.map((p) => [p.r, p.c, p.x]), [[0, 0, 50], [1, 0, 50]]);
+  assert.equal(rowArrows(g, 1).length, 0);
+});

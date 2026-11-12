@@ -11,6 +11,7 @@ import {
   motionEnv,
   onceInSession,
   pawnHop,
+  seenInSession,
   reveal,
   shake,
   stagger,
@@ -102,8 +103,8 @@ test('onceInSession treats a throwing storage as first time', () => {
     getItem() { throw new Error('denied'); },
     setItem() { throw new Error('denied'); },
   };
-  assert.equal(onceInSession('home', storage), true);
-  assert.equal(onceInSession('home', undefined), true);
+  assert.equal(onceInSession('blocked-a', storage), true);
+  assert.equal(onceInSession('blocked-a', storage), false, '저장소가 막히면 이 페이지 메모리로 센다');
 });
 
 test('stagger animates the first eight with the DESIGN.md values', () => {
@@ -299,4 +300,44 @@ test('onceInSession: a storage getter that throws counts as first time', () => {
     if (desc) Object.defineProperty(globalThis, 'sessionStorage', desc);
     else delete globalThis.sessionStorage;
   }
+});
+
+test('drawPath hides the paths until they draw, records the draw, and clears on dispose', () => {
+  const paths = [fakeEl()];
+  const watch = fakeEl();
+  let cb = null;
+  const IO = class {
+    constructor(fn) {
+      cb = fn;
+      this.observe = () => {};
+      this.disconnect = () => {};
+    }
+  };
+  let drawn = 0;
+  drawPath(paths, watch, { reduce: false, fine: true }, IO, () => drawn++);
+  assert.equal(paths[0].style.strokeDasharray, '1 1', '보이기 전에도 숨겨 둔다(번쩍임 방지)');
+  assert.equal(paths[0].style.strokeDashoffset, '1');
+  assert.equal(drawn, 0, '보이기 전에는 기록하지 않는다');
+  cb([{ isIntersecting: true, target: watch }]);
+  assert.equal(drawn, 1);
+  assert.equal(paths[0].style.strokeDashoffset, '', '애니메이션이 맡는다');
+
+  const left = [fakeEl()];
+  drawPath(left, watch, { reduce: false, fine: true }, IO, () => drawn++)();
+  assert.equal(left[0].style.strokeDasharray, '', '그리기 전에 떠나면 원래대로');
+  assert.equal(left[0].style.strokeDashoffset, '');
+  assert.equal(drawn, 1);
+});
+
+test('seenInSession reads without recording, also from page memory', () => {
+  const store = new Map();
+  const storage = { getItem: (k) => store.get(k) ?? null, setItem: (k, v) => store.set(k, v) };
+  assert.equal(seenInSession('seen-a', storage), false);
+  assert.equal(seenInSession('seen-a', storage), false);
+  onceInSession('seen-a', storage);
+  assert.equal(seenInSession('seen-a', storage), true);
+  const blocked = { getItem() { throw new Error('denied'); }, setItem() { throw new Error('denied'); } };
+  assert.equal(seenInSession('seen-b', blocked), false);
+  onceInSession('seen-b', blocked);
+  assert.equal(seenInSession('seen-b', blocked), true);
 });

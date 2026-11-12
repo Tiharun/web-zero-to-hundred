@@ -10,6 +10,11 @@
   .carousel-btns {
     display: none !important;
   }
+  /* 다른 월드 캐러셀: 화면 밖 카드도 종이에 나오게 줄을 바꿔 모두 편다 */
+  .worlds {
+    overflow: visible;
+    flex-wrap: wrap;
+  }
   /* 스크롤하지 않은 섹션 제목도 인쇄에 나온다 */
   .reveal-pending {
     opacity: 1 !important;

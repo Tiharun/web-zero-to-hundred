@@ -562,6 +562,10 @@ test('blocked session storage still renders the home', TIMEOUT, async () => {
     '#/',
     async (page) => {
       for (const id of ['world-map', 'other-worlds', 'help-row']) assert.equal(await page.getByTestId(id).isVisible(), true, id);
+      assert.equal(await motionCount(page, '.pawn'), 1);
+      await go(page, '#/settings');
+      await go(page, '#/');
+      assert.equal(await motionCount(page, '.pawn'), 0, '저장소가 막혀도 이 페이지 안에서는 한 번만');
     },
     {
       init: () =>
@@ -572,5 +576,22 @@ test('blocked session storage still renders the home', TIMEOUT, async () => {
           },
         }),
     },
+  );
+});
+
+test('phone: the done trail stays hidden below the fold and draws when scrolled to, even after leaving first', TIMEOUT, async () => {
+  await withPage(
+    '#/',
+    async (page) => {
+      const trail = page.locator('[data-testid="world-map"] .trail');
+      assert.ok((await trail.evaluate((el) => el.getBoundingClientRect().top)) > 812, '전제: 지도가 첫 화면 아래');
+      const hidden = () => page.locator('[data-draw]').evaluateAll((els) => els.map((el) => el.style.strokeDasharray));
+      assert.ok((await hidden()).every((v) => /^1,? 1$/.test(v)), '보이기 전에는 숨겨 둔다');
+      await go(page, '#/settings');
+      await go(page, '#/');
+      await trail.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+      await eventually(async () => assert.ok((await motionCount(page, '[data-draw]')) >= 1, '보지 않고 떠났으면 다음에 그린다'));
+    },
+    { viewport: { width: 375, height: 812 }, hasTouch: true, progress: CLEARED },
   );
 });

@@ -58,18 +58,37 @@ export function tiltAngles({ px, py }, maxDeg) {
   return { rx: round2(-py * 2 * maxDeg), ry: round2(px * 2 * maxDeg) };
 }
 
-/** 이 세션에서 처음이면 true 를 돌려주고 기록한다. 저장소를 쓸 수 없으면 늘 처음으로 본다 */
+// 세션 저장소를 쓸 수 없을 때(차단·사생활 보호 모드) 이 페이지가 살아 있는 동안만 기억한다
+const pageMemory = new Set();
+
+/** 이 세션에서 이미 기록했는지 읽기만 한다. 저장소를 쓸 수 없으면 페이지 메모리를 본다 */
+export function seenInSession(name, storage) {
+  const key = SESSION_PREFIX + name;
+  try {
+    storage ??= globalThis.sessionStorage;
+    if (storage && storage.getItem(key) !== null) return true;
+  } catch {
+    // 아래 페이지 메모리로
+  }
+  return pageMemory.has(key);
+}
+
+/** 이 세션에서 처음이면 true 를 돌려주고 기록한다. 저장소를 쓸 수 없으면 페이지 메모리에 기록한다 */
 export function onceInSession(name, storage) {
   const key = SESSION_PREFIX + name;
   try {
     // 저장소를 읽는 것 자체가 예외일 수 있다(쿠키 차단 등). 그래서 기본값도 try 안에서 읽는다
     storage ??= globalThis.sessionStorage;
-    if (!storage) return true;
-    if (storage.getItem(key) !== null) return false;
-    storage.setItem(key, '1');
+    if (storage) {
+      if (storage.getItem(key) !== null) return false;
+      storage.setItem(key, '1');
+      return true;
+    }
   } catch {
-    // 사생활 보호 모드 등: 기록하지 못해도 동작은 같다
+    // 아래 페이지 메모리로
   }
+  if (pageMemory.has(key)) return false;
+  pageMemory.add(key);
   return true;
 }
 
@@ -224,17 +243,31 @@ export function xpFill(el, env = motionEnv()) {
   });
 }
 
-/** 완료 경로: watch 가 40% 보이면 한 번 그린다(pathLength=1 기준 dashoffset 1 → 0) */
-export function drawPath(paths, watch, env = motionEnv(), IO = globalThis.IntersectionObserver) {
+/**
+ * 완료 경로: watch 가 40% 보이면 한 번 그린다(pathLength=1 기준 dashoffset 1 → 0).
+ * 묶는 순간부터 숨겨 두어 다 그려진 선이 먼저 보였다가 다시 그려지지 않게 한다. 그리기 시작하면 onDraw 를 부른다
+ */
+export function drawPath(paths, watch, env = motionEnv(), IO = globalThis.IntersectionObserver, onDraw = noop) {
   if (env.reduce || typeof IO !== 'function' || !watch) return noop;
   const list = [...paths].filter(canAnimate);
   if (list.length === 0) return noop;
+  let started = false;
+  const restore = (path) => {
+    path.style.strokeDasharray = '';
+    path.style.strokeDashoffset = '';
+  };
+  for (const path of list) {
+    path.style.strokeDasharray = '1 1';
+    path.style.strokeDashoffset = '1';
+  }
   const observer = new IO(
     (entries) => {
       if (!entries.some((entry) => entry.isIntersecting)) return;
       observer.disconnect();
+      started = true;
+      onDraw();
       for (const path of list) {
-        path.style.strokeDasharray = '1 1';
+        path.style.strokeDashoffset = ''; // 지연 동안은 fill: backwards 가 1 을 지킨다
         const anim = path.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], {
           duration: PATH_DRAW_MS,
           delay: PATH_DRAW_DELAY,
@@ -242,15 +275,18 @@ export function drawPath(paths, watch, env = motionEnv(), IO = globalThis.Inters
           fill: 'backwards',
         });
         anim.finished?.then(
-          () => (path.style.strokeDasharray = ''),
-          () => (path.style.strokeDasharray = ''),
+          () => restore(path),
+          () => restore(path),
         );
       }
     },
     { threshold: PATH_THRESHOLD },
   );
   observer.observe(watch);
-  return () => observer.disconnect();
+  return () => {
+    observer.disconnect();
+    if (!started) list.forEach(restore);
+  };
 }
 
 /** 말이 오늘 칸 위에서 세 번 8px 뛴다 */

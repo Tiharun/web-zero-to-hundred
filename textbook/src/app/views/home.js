@@ -1,6 +1,6 @@
 // 홈: 1행(퀘스트 카드 + 레벨 패널), 월드맵, 다른 월드, 막혔을 때.
 import { levelOf, totalXp } from '../level.js';
-import { confetti, drawPath, linkHover, onceInSession, pawnHop, stagger, tilt, xpFill } from '../motion.js';
+import { confetti, drawPath, linkHover, onceInSession, pawnHop, seenInSession, stagger, tilt, xpFill } from '../motion.js';
 import { questState } from '../progress.js';
 import { h, notice as noticeLine } from './common.js';
 import { helpRow } from './helprow.js';
@@ -46,7 +46,10 @@ function homeMotion(ctx, quest, map) {
   const pawn = map?.querySelector('.pawn');
   if (pawn && onceInSession('pawn')) pawnHop(pawn);
   const done = map?.querySelectorAll('[data-draw]') ?? [];
-  if (done.length > 0 && onceInSession('trail')) ctx.onCleanup(drawPath(done, map.querySelector('.trail')));
+  // 실제로 그렸을 때만 기록한다: 지도까지 내려오지 않고 떠났으면 다음 방문에 그린다
+  if (done.length > 0 && !seenInSession('trail')) {
+    ctx.onCleanup(drawPath(done, map.querySelector('.trail'), undefined, undefined, () => onceInSession('trail')));
+  }
   const state = questState(ctx.cur, ctx.prog);
   if ((state.kind === 'clear' || state.kind === 'done') && onceInSession(`celebrate:${state.clearedId ?? 'all'}`)) {
     confetti(quest, quest.querySelector('.bignum-value'));

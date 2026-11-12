@@ -79,6 +79,9 @@ function worldCard(ctx, world) {
   return card;
 }
 
+const LIST_LABEL = '다른 월드 목록';
+const LIST_LABEL_SCROLL = '다른 월드 목록, 좌우 화살표로 넘겨요';
+
 /**
  * 캐러셀: 한 장 = 첫 카드 폭 + column-gap. 목록 자신에 포커스가 있을 때만 ←→로 넘긴다.
  * 끝에서는 버튼이 aria-disabled. 넓어서 격자가 되면 스크롤이 없으니 두 버튼 모두 끝 상태다.
@@ -91,6 +94,11 @@ export function bindCarousel(list, prev, next, env = motionEnv()) {
     const max = list.scrollWidth - list.clientWidth - EDGE;
     prev.setAttribute('aria-disabled', String(list.scrollLeft <= EDGE));
     next.setAttribute('aria-disabled', String(list.scrollLeft >= max));
+    // 넘길 것이 없으면(넓은 격자) 탭 멈춤과 화살표 안내를 뺀다
+    const scrolls = max > 0;
+    if (scrolls) list.setAttribute('tabindex', '0');
+    else list.removeAttribute('tabindex');
+    list.setAttribute('aria-label', scrolls ? LIST_LABEL_SCROLL : LIST_LABEL);
   };
   const step = (dir) => {
     const card = list.firstElementChild;
@@ -105,6 +113,7 @@ export function bindCarousel(list, prev, next, env = motionEnv()) {
   // 카드 안 버튼에 포커스가 있을 때 ←→의 기본 동작(가까운 스크롤 상자 밀기)은 포커스한 카드를 화면 밖으로 밀어낸다. 막기만 한다
   const onKey = (event) => {
     if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return; // 뒤로 가기 등 브라우저·보조 기술의 조합 키
     event.preventDefault();
     if (event.target === list) step(event.key === 'ArrowRight' ? 1 : -1);
   };
@@ -137,7 +146,7 @@ export function otherWorlds(ctx) {
 
   const prev = h('button', { type: 'button', class: 'icon-btn', 'data-carousel': '-1', 'aria-label': '이전 월드' }, icon('left'));
   const next = h('button', { type: 'button', class: 'icon-btn', 'data-carousel': '1', 'aria-label': '다음 월드' }, icon('right'));
-  const list = h('ul', { class: 'worlds', tabindex: '0', 'aria-label': '다른 월드 목록, 좌우 화살표로 넘겨요' }, cards);
+  const list = h('ul', { class: 'worlds', tabindex: '0', 'aria-label': LIST_LABEL_SCROLL }, cards);
 
   const el = h(
     'section',

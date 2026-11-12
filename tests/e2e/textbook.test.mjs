@@ -1511,13 +1511,25 @@ test('other worlds: carousel moves by keys and buttons, and is a grid when wide'
     assert.equal(await prev.getAttribute('aria-disabled'), 'false');
     await prev.click();
     await until(async () => (await list.evaluate((el) => el.scrollLeft)) === 0);
+    await list.focus();
+    await page.keyboard.press('Alt+ArrowRight'); // 보조 키 조합은 브라우저·보조 기술 몫이다
+    await sleep(400);
+    assert.equal(await list.evaluate((el) => el.scrollLeft), 0);
     await next.click();
     await until(async () => (await list.evaluate((el) => el.scrollLeft)) > 0);
+    assert.equal(await list.getAttribute('tabindex'), '0');
+    assert.match(await list.getAttribute('aria-label'), /화살표/);
   }, { viewport: { width: 375, height: 800 } });
   await withPage(async (page, app) => {
     await visit(page, app, '#/');
     assert.equal(await page.locator('.carousel-btns').evaluate((el) => getComputedStyle(el).display), 'none');
-    assert.equal(await page.locator('.worlds').evaluate((el) => getComputedStyle(el).display), 'grid');
+    const list = page.locator('.worlds');
+    assert.equal(await list.evaluate((el) => getComputedStyle(el).display), 'grid');
+    // 격자에서는 넘길 것이 없으니 탭 멈춤과 화살표 안내를 뺀다
+    await until(async () => (await list.getAttribute('tabindex')) === null);
+    assert.doesNotMatch(await list.getAttribute('aria-label'), /화살표/);
+    await page.setViewportSize({ width: 375, height: 800 });
+    await until(async () => (await list.getAttribute('tabindex')) === '0');
   }, { viewport: { width: 1280, height: 800 } });
 });
 
@@ -1586,4 +1598,24 @@ test('home done: the last world is all green and graduation is open', TIMEOUT, a
     assert.deepEqual(states, [['fb-d01', true]]);
     assert.match(await page.locator('.world-card[data-world="grad"]').getAttribute('class'), /is-open/);
   }, seed(['fa-d01', 'fa-d02', 'fb-d01'], { lastDay: 'fb-d01' }));
+});
+
+test('world map: path drawings sit beside the list, not inside the ol', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    const map = page.getByTestId('world-map');
+    assert.equal(await map.locator('ol.trail > :not(li)').count(), 0);
+    assert.equal(await map.locator('.trail-wrap > svg.trail-svg').count(), 3);
+  }, seed(['fa-d01']));
+});
+
+test('other worlds: print shows every card without the carousel', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    await page.emulateMedia({ media: 'print' });
+    const list = page.locator('.worlds');
+    assert.equal(await list.evaluate((el) => getComputedStyle(el).overflowX), 'visible');
+    assert.equal(await list.evaluate((el) => getComputedStyle(el).flexWrap), 'wrap');
+    assert.equal(await list.evaluate((el) => el.scrollWidth <= el.clientWidth + 1), true);
+  }, { viewport: { width: 375, height: 800 } });
 });
