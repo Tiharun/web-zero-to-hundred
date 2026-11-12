@@ -5,9 +5,9 @@
 - 공개 주소: https://tiharun.github.io/web-zero-to-hundred/ (push하면 GitHub Actions가 테스트 → 빌드 → Pages 배포. 공개 범위는 `textbook/content/published.json`)
 - 저장소: `tiharun/web-zero-to-hundred` / 브랜치 **`claude/gifted-goldberg-u1f9c6`**. 이 브랜치에서만 작업하고 push합니다. PR은 아직 만들지 않았고, 사용자가 요청할 때만 만듭니다.
 - 기준선(M1 완료 시점에 직접 실행한 결과, `textbook/`에서)
-  - `npm test`: 215/215 통과
+  - `npm test`: 216/216 통과
   - `npm run check -- --allow-missing`: "검사 통과: Day 155개, 페이지 4개"
-  - `npm run test:e2e`: 64/64 통과
+  - `npm run test:e2e`: 65/65 통과
   - `npm run test:visual`: 26/26 통과(기준 이미지 24장 + 비교 함수 2개)
   - `npm run check:site -- https://tiharun.github.io/web-zero-to-hundred/`: 320·375·768·1280px 각각 "방문 168개, 문제 0개"
 - 이 문서는 새 세션이 **다른 파일보다 먼저** 읽는 문서입니다. 이전 판은 `docs/checkpoint/CHECKPOINT-2026-11-06.md`(Subagent 방식 시절 재개 절차 포함)와 `CHECKPOINT-2026-11-05.md`에 보관했습니다. 내용이 다르면 이 문서가 우선합니다.
