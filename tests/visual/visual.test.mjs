@@ -2,6 +2,7 @@
 // 실행: cd textbook && npm run test:visual   (기준 이미지 갱신: npm run test:visual:update, 사용자 승인 뒤에만)
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -24,19 +25,29 @@ const TIMEOUT = { timeout: 60_000 };
 const P1_FIRST_THREE = { completed: ['p1-d01', 'p1-d02', 'p1-d03'], lastDay: 'p1-d03' };
 /** P1 30 Day 를 모두 마친 직후: 홈 퀘스트 카드가 "월드 클리어" 상태다 */
 const P1_CLEAR = { completed: Array.from({ length: 30 }, (_, i) => `p1-d${String(i + 1).padStart(2, '0')}`), lastDay: 'p1-d30' };
+/** 실제 교재의 모든 Day 를 마친 상태: 퀘스트 카드 "모든 월드 클리어", lastDay 는 마지막 프로젝트의 마지막 Day */
+const ALL_DONE = (() => {
+  const cur = JSON.parse(readFileSync(path.join(ROOT, 'textbook', 'content', 'curriculum.json'), 'utf8'));
+  const ids = [...cur.projects]
+    .sort((a, b) => a.order - b.order)
+    .flatMap((p) => p.days.map((_, i) => `${p.id}-d${String(i + 1).padStart(2, '0')}`));
+  return { completed: ids, lastDay: ids.at(-1) };
+})();
 
 /**
  * 찍을 장면. 장면을 늘릴 때는 여기에 한 줄을 더한다.
- * widths: 이 폭에서만 찍는다(없으면 WIDTHS), open: 찍기 전에 누를 선택자(누른 뒤 서랍이 열리기를 기다린다)
+ * widths: 이 폭에서만 찍는다(없으면 WIDTHS), open: 찍기 전에 누를 선택자(누른 뒤 서랍이 열리기를 기다린다),
+ * fullPage: 화면 아래까지 전체를 찍는다(없으면 첫 화면만)
  */
 export const SCENES = [
-  { id: 'home', hash: '#/', progress: P1_FIRST_THREE },
+  { id: 'home', hash: '#/', progress: P1_FIRST_THREE, fullPage: true },
   { id: 'day', hash: '#/day/p1-d01', progress: P1_FIRST_THREE },
   { id: 'settings', hash: '#/settings', progress: null },
   { id: 'notfound', hash: '#/nope', progress: null },
   { id: 'drawer', hash: '#/', progress: P1_FIRST_THREE, widths: [375, 768], open: '#menu-toggle' },
-  { id: 'home-first', hash: '#/', progress: null, widths: [375, 1280] },
-  { id: 'home-clear', hash: '#/', progress: P1_CLEAR, widths: [375, 1280] },
+  { id: 'home-first', hash: '#/', progress: null, widths: [375, 1280], fullPage: true },
+  { id: 'home-clear', hash: '#/', progress: P1_CLEAR, widths: [375, 1280], fullPage: true },
+  { id: 'home-done', hash: '#/', progress: ALL_DONE, widths: [375, 1280], fullPage: true },
 ];
 const WIDTHS = [375, 768, 1280];
 const THEMES = ['light', 'dark'];
@@ -92,7 +103,7 @@ async function shoot(scene, width, theme) {
     await page.evaluate(() => document.fonts.ready.then(() => true));
     // 설정 화면의 빌드 날짜는 빌드할 때마다 바뀌므로 가린다
     const mask = [page.locator('main p', { hasText: /빌드 \d{4}/ })];
-    return await page.screenshot({ fullPage: false, mask, animations: 'disabled', caret: 'hide' });
+    return await page.screenshot({ fullPage: scene.fullPage ?? false, mask, animations: 'disabled', caret: 'hide' });
   } finally {
     await context.close();
   }

@@ -1549,3 +1549,41 @@ test('help row: fixed order, real counts, and it opens the page', TIMEOUT, async
     await waitRoute(page, '#/page/start');
   });
 });
+
+// ───────────────────────── 홈 상태 (M4) ─────────────────────────
+
+test('home order: notice, top row, world map, other worlds, help', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    page.on('dialog', (dialog) => dialog.accept());
+    await visit(page, app, '#/settings');
+    await page.getByTestId('reset-button').click(); // 초기화 안내가 홈 맨 위 .notice 로 한 번 뜬다
+    await waitRoute(page, '#/');
+    await page.getByTestId('help-row').waitFor();
+    const order = await page.locator('main .home > :not(h1)').evaluateAll((els) =>
+      els.map((el) => el.dataset.testid ?? el.className.split(' ')[0]),
+    );
+    assert.deepEqual(order, ['notice', 'top-row', 'world-map', 'other-worlds', 'help-row']);
+  });
+});
+
+test('home pending: the unwritten next day is today on the map', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    assert.equal(await quest(page).getAttribute('data-kind'), 'pending');
+    const map = page.getByTestId('world-map');
+    assert.match(await map.locator('.map-name').innerText(), /특별 프로젝트/);
+    assert.match(await map.locator('.node[data-day="fs-d01"]').getAttribute('class'), /is-done/);
+    assert.match(await map.locator('.node[data-day="fs-d02"]').getAttribute('class'), /is-today/);
+    assert.equal(await map.locator('.node[data-day="fs-d02"] .pawn').count(), 1);
+  }, { url: VARIANT_URL, ...seed(['fa-d01', 'fa-d02', 'fb-d01', 'fs-d01']) });
+});
+
+test('home done: the last world is all green and graduation is open', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    assert.equal(await quest(page).getAttribute('data-kind'), 'done');
+    const states = await page.getByTestId('world-map').locator('.node').evaluateAll((els) => els.map((el) => [el.dataset.day, /is-done/.test(el.className)]));
+    assert.deepEqual(states, [['fb-d01', true]]);
+    assert.match(await page.locator('.world-card[data-world="grad"]').getAttribute('class'), /is-open/);
+  }, seed(['fa-d01', 'fa-d02', 'fb-d01'], { lastDay: 'fb-d01' }));
+});
