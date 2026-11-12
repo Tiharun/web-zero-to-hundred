@@ -1,11 +1,12 @@
 // 화면 틀: 윗줄(메뉴·워드마크·검색·테마 메뉴), 사이드바(목차), 푸터, 저장 안내 배너, 스크린 리더용 안내 영역.
 // 틀은 한 번만 만들고, 진도나 주소가 바뀌면 refresh()/onRoute() 로 속성만 고친다 (포커스·스크롤 위치를 지키려고).
+import { stagger } from '../motion.js';
 import { h } from './common.js';
 import { icon } from './icons.js';
-import { menuButton } from './overlay.js';
+import { closeDialog, menuButton, openDialog, setupDialog } from './overlay.js';
 import { createSidebar } from './sidebar.js';
 
-const MOBILE = '(max-width: 63.99rem)'; // 이 폭 이하에서는 사이드바가 서랍이 된다 (shell.css 와 같은 값)
+const WIDE = '(min-width: 64rem)'; // 이 폭부터 사이드바가 보이고 서랍은 쓰지 않는다 (shell.css 와 같은 값)
 const THEME_NAME = { system: '시스템', light: '라이트', dark: '다크' };
 const THEME_ICON = { system: 'monitor', light: 'sun', dark: 'moon' };
 
@@ -15,6 +16,8 @@ export function createShell(ctx) {
   const sidebar = $('sidebar');
   const main = $('main');
   const menuToggle = $('menu-toggle');
+  const drawer = $('drawer');
+  const drawerBody = drawer.querySelector('.drawer-body');
   const themeBtn = $('theme-btn');
   const themeMenu = $('theme-menu');
   const themeItems = [...themeMenu.querySelectorAll('[role="menuitemradio"]')];
@@ -27,9 +30,6 @@ export function createShell(ctx) {
     // 같은 글이 다시 와도 읽히도록 한 박자 늦춰 넣는다
     setTimeout(() => { live.textContent = text; }, 30);
   }
-  const backdrop = h('div', { class: 'nav-backdrop', onclick: () => setNav(false) });
-  document.body.append(backdrop);
-
   let currentRoute = { name: 'home' };
   let bannerDismissed = false;
   let shownTheme = null; // 버튼 아이콘에 그려 둔 테마 (같으면 다시 그리지 않는다)
@@ -64,35 +64,68 @@ export function createShell(ctx) {
     else if (rect.bottom > box.bottom) sidebar.scrollTop += rect.bottom - box.bottom + margin;
   }
 
-  // ───────── 모바일 서랍 ─────────
+  // ───────── 서랍 (DESIGN.md Navigation "Drawer": 1024px 아래, <dialog> showModal) ─────────
 
-  function navOpen() {
-    return document.body.classList.contains('nav-open');
+  /** 서랍 목록 안에서 el 이 가운데 오도록 그 칸만 스크롤한다 (뒤 문서는 건드리지 않는다) */
+  function centerInDrawer(el) {
+    const box = drawerBody.getBoundingClientRect();
+    const rect = el.getBoundingClientRect();
+    drawerBody.scrollTop += rect.top - box.top - (box.height - rect.height) / 2;
   }
 
-  function setNav(open, { restoreFocus = true } = {}) {
-    document.body.classList.toggle('nav-open', open);
-    menuToggle.setAttribute('aria-expanded', String(open));
-    main.inert = open; // 서랍이 열려 있는 동안 뒤쪽 본문으로는 Tab 이 가지 않는다
-    if (open) {
-      const current = sidebar.querySelector('[aria-current]');
-      revealInSidebar(current);
-      (current ?? sidebar.querySelector('a'))?.focus({ preventScroll: true });
-    } else if (restoreFocus && document.activeElement && sidebar.contains(document.activeElement)) {
-      menuToggle.focus({ preventScroll: true });
+  // 닫힌 뒤 포커스할 곳. undefined: 연 버튼으로 돌아간다, null: 그대로 둔다, 요소: 그 요소
+  let focusAfterClose;
+
+  function openDrawer() {
+    drawerBody.append(side.nav); // 목록 한 벌을 서랍으로 옮긴다
+    openDialog(drawer, menuToggle);
+    menuToggle.setAttribute('aria-expanded', 'true');
+    const target = side.focusTarget();
+    if (target) {
+      const world = target.closest('details.world');
+      if (world && !world.open) world.open = true; // 접혀 있으면 포커스할 수 없다
+      centerInDrawer(target);
+      target.focus({ preventScroll: true });
     }
+    stagger(side.summaries());
   }
 
-  menuToggle.addEventListener('click', () => setNav(!navOpen()));
+  /**
+   * 서랍을 닫는다. focus: 생략하면 연 버튼으로, null 이면 그대로, 요소면 그 요소로.
+   * 모달이 닫힐 때 브라우저가 연 버튼으로 포커스를 돌려놓으므로 다른 곳은 close 뒤에 옮긴다.
+   */
+  function closeDrawer({ focus, immediate = false } = {}) {
+    if (!drawer.open) return;
+    focusAfterClose = focus;
+    closeDialog(drawer, { restoreFocus: focus === undefined, immediate });
+  }
+
+  setupDialog(drawer);
+  drawer.addEventListener('close', () => {
+    sidebar.append(side.nav); // 목록을 사이드바로 돌려놓는다
+    menuToggle.setAttribute('aria-expanded', 'false');
+    const target = focusAfterClose;
+    focusAfterClose = undefined;
+    if (target?.isConnected) target.focus({ preventScroll: true });
+  });
+  menuToggle.addEventListener('click', openDrawer);
+  $('drawer-close').addEventListener('click', () => closeDrawer());
+  // 서랍 안의 링크를 누르면 닫고 본문으로 간다 (지금 화면 링크여도 닫는다). 잠긴 월드 메뉴처럼 막힌 링크는 그대로 둔다
+  drawer.addEventListener('click', (event) => {
+    if (!event.defaultPrevented && event.target.closest('a[href]')) closeDrawer({ focus: main });
+  });
+  // 창이 넓어지면 서랍 대신 사이드바가 보인다: 바로 닫고, 보고 있던 행에 포커스를 둔다
+  window.matchMedia(WIDE).addEventListener('change', (event) => {
+    if (!event.matches || !drawer.open) return;
+    const active = document.activeElement;
+    closeDrawer({ focus: side.nav.contains(active) ? active : null, immediate: true });
+  });
+
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && navOpen()) {
-      event.preventDefault();
-      setNav(false);
-    }
     // Ctrl+K(맥은 ⌘K): 검색 화면으로 가서 입력칸에 포커스. M5 에서 검색 Modal 로 바뀐다
     if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === 'k' && !event.isComposing) {
       event.preventDefault();
-      if (navOpen()) setNav(false, { restoreFocus: false });
+      closeDrawer({ focus: null, immediate: true });
       const focusInput = () => document.querySelector('[data-testid="search-input"]')?.focus();
       if (location.hash.startsWith('#/search')) focusInput();
       else {
@@ -100,9 +133,6 @@ export function createShell(ctx) {
         location.hash = '#/search';
       }
     }
-  });
-  window.matchMedia(MOBILE).addEventListener('change', (event) => {
-    if (!event.matches && navOpen()) setNav(false, { restoreFocus: false });
   });
 
   // ───────── 테마 메뉴 (DESIGN.md Navigation "테마 Dropdown", 메뉴 버튼 패턴) ─────────
@@ -161,14 +191,9 @@ export function createShell(ctx) {
     event.preventDefault();
     main.focus();
   });
-  // 서랍 안에서 화면을 옮기면 서랍을 닫는다
-  sidebar.addEventListener('click', (event) => {
-    if (event.target.closest('a') && navOpen()) setNav(false, { restoreFocus: false });
-  });
-
   // 404 빌드는 아무 주소에서나 열리므로, 틀의 교재 링크는 사이트 주소로 보낸다
   if (ctx.siteBase) {
-    for (const a of document.querySelectorAll('.topbar a[href^="#/"], .site-footer a[href^="#/"], #sidebar a[href^="#/"]')) {
+    for (const a of document.querySelectorAll('.topbar a[href^="#/"], .site-footer a[href^="#/"]')) {
       a.setAttribute('href', ctx.siteBase + a.getAttribute('href'));
     }
   }
@@ -188,7 +213,7 @@ export function createShell(ctx) {
     onRoute(route) {
       currentRoute = route;
       const link = side.markCurrent(route, { open: true });
-      if (navOpen()) setNav(false, { restoreFocus: false });
+      closeDrawer({ focus: main }); // 뒤로 가기 등으로 화면이 바뀌어도 닫는다. 닫힌 뒤 본문으로
       themeMenuCtl.close(false);
       revealInSidebar(link);
       if (route.name === 'search') $('search-open').setAttribute('aria-current', 'page');

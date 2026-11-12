@@ -340,3 +340,31 @@ test('locked sidebar row shakes', TIMEOUT, async () => {
     assert.equal(await row.evaluate((el) => el.getAnimations().some((a) => a.id === 'shake')), true);
   });
 });
+
+// ───────── 서랍 ─────────
+
+test('drawer staggers world summaries', TIMEOUT, async () => {
+  await withPage(
+    '#/',
+    async (page) => {
+      await page.locator('#menu-toggle').click();
+      const first = page.locator('#drawer .world > summary').first();
+      assert.ok((await first.evaluate((el) => el.getAnimations().length)) > 0, '열 때마다 월드 요약이 차례로 올라온다');
+    },
+    { viewport: { width: 375, height: 740 } },
+  );
+});
+
+test('reduced motion: drawer closes at once without stagger', TIMEOUT, async () => {
+  await withPage(
+    '#/',
+    async (page) => {
+      await page.locator('#menu-toggle').click();
+      const first = page.locator('#drawer .world > summary').first();
+      assert.equal(await first.evaluate((el) => el.getAnimations().length), 0);
+      await page.keyboard.press('Escape');
+      assert.equal(await page.locator('#drawer').evaluate((d) => d.open), false, '애니메이션을 기다리지 않고 바로 닫힌다');
+    },
+    { viewport: { width: 375, height: 740 }, reducedMotion: 'reduce' },
+  );
+});

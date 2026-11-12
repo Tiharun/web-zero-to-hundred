@@ -11,7 +11,7 @@
 <body>
 <a class="skip-link" href="#main">본문으로 건너뛰기</a>
 <header class="topbar">
-  <button id="menu-toggle" class="icon-btn menu-btn" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Day 목록 열기">{{ICON:menu}}</button>
+  <button id="menu-toggle" class="icon-btn menu-btn" type="button" aria-haspopup="dialog" aria-controls="drawer" aria-expanded="false" aria-label="Day 목록 열기">{{ICON:menu}}</button>
   <a class="brand wordmark" href="#/">{{PX:pawn}}<span class="wordmark-text">{{WZH_TITLE}}</span></a>
   <div class="topbar-tools">
     <a id="search-open" class="tool-btn search-btn" href="#/search" aria-keyshortcuts="Control+K">{{ICON:search}}<span class="search-word">검색</span><kbd>Ctrl&nbsp;K</kbd></a>
@@ -42,6 +42,13 @@
     </footer>
   </div>
 </div>
+<dialog id="drawer" class="drawer" aria-labelledby="drawer-title">
+  <div class="drawer-head">
+    <span id="drawer-title" class="drawer-title">Day 목록</span>
+    <button id="drawer-close" class="icon-btn" type="button" aria-label="Day 목록 닫기">{{ICON:close}}</button>
+  </div>
+  <div class="drawer-body"></div>
+</dialog>
 <div id="storage-banner" data-testid="storage-banner" role="status" hidden></div>
 <div id="live" class="sr-only" role="status" aria-live="polite"></div>
 <!--WZH:DATA-->

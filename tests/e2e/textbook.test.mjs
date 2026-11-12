@@ -652,30 +652,113 @@ test('valid backup imports only after confirmation and reports skipped days', TI
   });
 });
 
-test('mobile menu opens as a drawer and closes again', TIMEOUT, async () => {
+test('mobile drawer opens as a dialog and closes by Escape, backdrop, button and link', TIMEOUT, async () => {
   await withPage(
     async (page, app) => {
       await visit(page, app, '#/');
-      const sidebar = page.locator('#sidebar');
       const toggle = page.locator('#menu-toggle');
-      assert.equal(await toggle.isVisible(), true);
-      assert.equal(await sidebar.isVisible(), false, '좁은 화면에서 사이드바는 닫혀 있어요');
+      const isOpen = () => page.locator('#drawer').evaluate((d) => d.open);
+      const openIt = async () => {
+        await toggle.click();
+        await until(isOpen);
+      };
+      // close 이벤트(목록 되돌리기·aria-expanded)는 open 이 꺼진 다음 태스크에 온다. 둘 다 끝나야 닫힌 것이다
+      const closed = () => until(async () => !(await isOpen()) && (await toggle.getAttribute('aria-expanded')) === 'false');
 
-      await toggle.click();
-      await sidebar.waitFor({ state: 'visible' });
+      await openIt();
       assert.equal(await toggle.getAttribute('aria-expanded'), 'true');
+      assert.equal(await page.evaluate(() => document.activeElement.classList.contains('is-today')), true, '오늘 Day 로 포커스');
+      assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).overflow), 'hidden', '문서 스크롤 잠금');
       await page.keyboard.press('Escape');
-      await sidebar.waitFor({ state: 'hidden' });
+      await closed();
+      assert.equal(await page.evaluate(() => document.activeElement.id), 'menu-toggle', '연 버튼으로 복귀');
       assert.equal(await toggle.getAttribute('aria-expanded'), 'false');
 
-      await toggle.click();
-      await sidebar.waitFor({ state: 'visible' });
-      await page.locator('#sidebar a[data-day="fa-d01"]').click();
+      await openIt();
+      await page.mouse.click(360, 400); // 서랍 폭 280px 바깥
+      await closed();
+      await openIt();
+      await page.locator('#drawer-close').click();
+      await closed();
+      await openIt();
+      await page.locator('#drawer [data-day="fa-d01"]').click();
       await waitRoute(page, '#/day/fa-d01');
-      await sidebar.waitFor({ state: 'hidden' });
+      await closed();
+      assert.equal(await page.evaluate(() => document.activeElement.id), 'main', '화면을 옮기면 본문으로 포커스');
+      assert.equal(await page.locator('#sidebar [data-day="fa-d01"]').count(), 1, '닫히면 목록이 사이드바로 돌아온다');
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
     },
-    { viewport: { width: 360, height: 740 } },
+    { viewport: { width: 375, height: 740 } },
+  );
+});
+
+test('drawer backdrop fallback closes without closedBy', TIMEOUT, async () => {
+  await withPage(
+    async (page, app) => {
+      await visit(page, app, '#/');
+      assert.equal(await page.locator('#drawer').getAttribute('closedby'), null);
+      await page.locator('#menu-toggle').click();
+      await until(() => page.locator('#drawer').evaluate((d) => d.open));
+      await page.mouse.click(360, 400);
+      await until(async () => !(await page.locator('#drawer').evaluate((d) => d.open)));
+    },
+    {
+      viewport: { width: 375, height: 740 },
+      init: () => {
+        delete HTMLDialogElement.prototype.closedBy;
+      },
+    },
+  );
+});
+
+test('drawer closes and returns the nav when the window grows', TIMEOUT, async () => {
+  await withPage(
+    async (page, app) => {
+      await visit(page, app, '#/');
+      await page.locator('#menu-toggle').click();
+      await until(() => page.locator('#drawer').evaluate((d) => d.open));
+      await page.setViewportSize({ width: 1280, height: 800 });
+      await until(async () => !(await page.locator('#drawer').evaluate((d) => d.open)));
+      assert.equal(await page.locator('#sidebar nav.side').count(), 1);
+      assert.notEqual(await page.evaluate(() => document.activeElement.id), 'menu-toggle');
+    },
+    { viewport: { width: 375, height: 740 } },
+  );
+});
+
+test('drawer closes on a link to the current screen and keeps Tab inside', TIMEOUT, async () => {
+  await withPage(
+    async (page, app) => {
+      await visit(page, app, '#/');
+      await page.locator('#menu-toggle').click();
+      await until(() => page.locator('#drawer').evaluate((d) => d.open));
+      for (let i = 0; i < 25; i++) {
+        await page.keyboard.press('Tab');
+        // 모달 바깥(상단 바·본문·푸터)으로는 가지 않는다. 브라우저 UI 로 잠깐 나가 body 가 되는 것은 허용
+        const outside = await page.evaluate(() => {
+          const a = document.activeElement;
+          return a !== document.body && !document.getElementById('drawer').contains(a);
+        });
+        assert.equal(outside, false);
+      }
+      await page.locator('#drawer a.side-home').click(); // 지금 화면(홈)
+      await until(async () => !(await page.locator('#drawer').evaluate((d) => d.open)));
+    },
+    { viewport: { width: 375, height: 740 } },
+  );
+});
+
+test('Ctrl+K from the open drawer goes to search', TIMEOUT, async () => {
+  await withPage(
+    async (page, app) => {
+      await visit(page, app, '#/');
+      await page.locator('#menu-toggle').click();
+      await until(() => page.locator('#drawer').evaluate((d) => d.open));
+      await page.keyboard.press('Control+k');
+      await waitRoute(page, '#/search');
+      assert.equal(await page.locator('#drawer').evaluate((d) => d.open), false);
+    },
+    { viewport: { width: 375, height: 740 } },
   );
 });
 
