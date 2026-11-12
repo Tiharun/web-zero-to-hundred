@@ -180,6 +180,17 @@ export function createShell(ctx) {
       event.preventDefault();
       setNav(false);
     }
+    // Ctrl+K(맥은 ⌘K): 검색 화면으로 가서 입력칸에 포커스. M5 에서 검색 Modal 로 바뀐다
+    if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === 'k' && !event.isComposing) {
+      event.preventDefault();
+      if (navOpen()) setNav(false, { restoreFocus: false });
+      const focusInput = () => document.querySelector('[data-testid="search-input"]')?.focus();
+      if (location.hash.startsWith('#/search')) focusInput();
+      else {
+        window.addEventListener('hashchange', () => queueMicrotask(focusInput), { once: true }); // 화면이 다 그려지고 본문 포커스를 옮긴 뒤
+        location.hash = '#/search';
+      }
+    }
   });
   window.matchMedia(MOBILE).addEventListener('change', (event) => {
     if (!event.matches && navOpen()) setNav(false, { restoreFocus: false });

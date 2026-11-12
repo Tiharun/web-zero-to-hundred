@@ -358,6 +358,17 @@ test('checkSite visits every route plus two 404s and reports no problems on the 
   assert.equal(result.visited, listRoutes(curriculum).length + 2);
 });
 
+test('checkSiteWidths covers every responsive width: 320 reflow, 375, 768, 1280', TIMEOUT, async () => {
+  const { checkSiteWidths, SITE_WIDTHS } = await import('../helpers/site-check.mjs');
+  const { loadCurriculum } = await import('../../textbook/lib/curriculum.mjs');
+  const { listRoutes } = await import('../../textbook/lib/site.mjs');
+  assert.deepEqual(SITE_WIDTHS, [320, 375, 768, 1280]);
+  const { curriculum } = await loadCurriculum(FIXTURE);
+  const result = await checkSiteWidths({ baseUrl: server.url, cur: curriculum, launch });
+  assert.deepEqual(result.problems, []);
+  assert.deepEqual(result.byWidth.map((r) => [r.width, r.visited]), SITE_WIDTHS.map((w) => [w, listRoutes(curriculum).length + 2]));
+});
+
 test('checkSite reports a page that never renders, scrolls sideways and logs errors', TIMEOUT, async () => {
   const { checkSite } = await import('../helpers/site-check.mjs');
   const dir = path.join(tmp, 'broken');
@@ -380,4 +391,25 @@ test('checkSite reports a page that never renders, scrolls sideways and logs err
 
 test('no console errors on the opened screens', TIMEOUT, () => {
   for (const { errors } of opened) assert.deepEqual(errors, []);
+});
+
+test('search button shows the Ctrl K hint on wide screens only', TIMEOUT, async () => {
+  const wide = await open('#/', { width: 1280 });
+  const btn = wide.locator('#search-open');
+  assert.equal(await btn.getAttribute('aria-keyshortcuts'), 'Control+K');
+  assert.equal((await btn.locator('kbd').innerText()).replace(/\s+/g, ' '), 'Ctrl K');
+  const narrow = await open('#/', { width: 375 });
+  assert.equal(await narrow.locator('#search-open kbd').isVisible(), false);
+  assert.equal(await noHorizontalScroll(narrow), 0);
+});
+
+test('Ctrl+K opens search from any screen and focuses the input', TIMEOUT, async () => {
+  const page = await open('#/settings', { width: 1280 });
+  await page.keyboard.press('Control+k');
+  await page.locator('main[data-hash="#/search"]').waitFor();
+  assert.equal(await page.evaluate(() => document.activeElement?.dataset.testid), 'search-input');
+  // 검색 화면에서 다시 눌러도 입력칸으로 돌아온다
+  await page.locator('main h1').focus();
+  await page.keyboard.press('Control+k');
+  assert.equal(await page.evaluate(() => document.activeElement?.dataset.testid), 'search-input');
 });

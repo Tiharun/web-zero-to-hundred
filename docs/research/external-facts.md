@@ -147,6 +147,8 @@
 - 설정 변경 권한은 저장소 admin 또는 maintainer | 위와 같은 문서 | 확인일 2026-11-01 `[원문]`
 - 사용 한도: 발행 사이트 1 GB 이하, 소스 저장소 권장 1 GB, 배포 10분 초과 시 시간 초과, **월 100 GB 소프트 대역폭**, 시간당 10 빌드 소프트 한도(커스텀 Actions 워크플로로 발행하면 빌드 한도 비적용). 상용 거래·SaaS 용도의 무료 호스팅으로는 허용되지 않음 | https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits | 확인일 2026-11-01 `[원문]`
 
+- 러너 이미지(교재 배포 워크플로용): `ubuntu-latest` 레이블은 2026-10-19~2026-11-19 사이 Ubuntu 24.04 → 26.04로 차례로 옮겨 가고, Ubuntu 26.04 이미지는 정식 지원(GA). `runs-on: ubuntu-26.04`로 고정할 수 있다 | https://github.blog/changelog/2026-09-17-ubuntu-26-generally-available-and-latest-migration | 확인일 2026-11-12 `[원문]`. 이 저장소의 배포 실행 43104398962(2026-11-11)는 이미 `Image: ubuntu-26.04`, `Version: 20261101.186.1`에서 초록 `[측정]`.
+
 **교재 반영 결정**
 - P1 Day 마지막 배포 Day는 "공개 저장소 + Deploy from a branch(`main`, `/ (root)`)"를 쓴다. 비공개 저장소 Pages는 유료이므로 안내하지 않고, `index.html`이 저장소 최상위에 있어야 한다고 못 박는다.
 - 발행 후 "최대 10분 기다린 뒤 새로고침"을 `:::tip`에 넣는다. SP 같은 서버 앱은 Pages로 배포할 수 없음을 13절 표에서 분리한다.

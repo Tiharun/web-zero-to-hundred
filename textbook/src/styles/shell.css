@@ -127,7 +127,8 @@
 }
 
 @media (max-width: 40rem) {
-  .topbar .search-btn .search-word {
+  .topbar .search-btn .search-word,
+  .topbar .search-btn kbd {
     display: none;
   }
   .topbar .search-btn {

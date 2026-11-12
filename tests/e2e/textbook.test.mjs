@@ -322,6 +322,7 @@ test('answer gate', TIMEOUT, async () => {
     assert.match(await gate.innerText(), /먼저 직접 풀어/);
     assert.equal(await details.evaluate((el) => el.open), false, '확인하기 전에는 열리지 않아요');
     assert.equal(await body.isVisible(), false);
+    assert.equal(await page.locator('main .btn-primary').count(), 1, '게이트가 떠도 주 버튼은 Day 완료 하나 (One Pink)');
 
     // 다시 눌러도 게이트가 늘어나지 않고 그대로다
     await details.locator('summary').click();

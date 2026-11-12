@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04 # 레이블이 몰래 바뀌지 않게 고정 (external-facts.md 4장)
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-node@v7.1.0
@@ -42,7 +42,7 @@ jobs:
           path: _site
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04 # 레이블이 몰래 바뀌지 않게 고정 (external-facts.md 4장)
     permissions:
       pages: write
       id-token: write

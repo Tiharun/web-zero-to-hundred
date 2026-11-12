@@ -6,7 +6,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "node build.mjs",
+    "build": "node build.mjs --published --allow-missing",
     "build:site": "node build.mjs --published --allow-missing --out ../_site/index.html && node build.mjs --published --allow-missing --notfound --out ../_site/404.html",
     "check": "node build.mjs --check",
     "test": "node --test \"../tests/unit/**/*.test.mjs\" \"../tests/build/**/*.test.mjs\"",

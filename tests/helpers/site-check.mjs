@@ -1,5 +1,6 @@
 // 전 페이지 점검: 사이트맵(listRoutes)의 모든 화면과 404 두 개를 차례로 열어 기본 품질을 본다.
 // 라이브러리: checkSite({ baseUrl, cur, width, launch }) → { visited, problems }
+//           checkSiteWidths({ baseUrl, cur, launch, widths = SITE_WIDTHS }) → { problems, byWidth }  (반응형: 폭마다 전 페이지)
 // 명령: npm run check:site -- <baseUrl>   (textbook 폴더에서. 실제 curriculum.json 을 쓴다)
 //   예) npm run check:site -- https://tiharun.github.io/web-zero-to-hundred/
 import path from 'node:path';
@@ -9,6 +10,8 @@ import { listRoutes } from '../../textbook/lib/site.mjs';
 import { STORAGE_KEY } from '../../textbook/src/app/progress.js';
 
 const NOT_FOUND_ROUTES = ['#/day/zz-d99', '#/nope'];
+/** 전 페이지 점검 폭: 320 = WCAG 1.4.10 Reflow(1280px 를 400% 확대), 375·768·1280 = 시각 테스트 폭 (DESIGN.md Layout "The Fluid Rule") */
+export const SITE_WIDTHS = [320, 375, 768, 1280];
 const TOPBAR_H = 56;
 
 const decode = (s) => {
@@ -100,6 +103,18 @@ export async function checkSite({ baseUrl, cur, width = 375, launch, timeout = 1
   return { visited, problems };
 }
 
+/** 폭마다 checkSite 를 돌린다. 문제 앞에 폭을 붙인다 */
+export async function checkSiteWidths({ widths = SITE_WIDTHS, ...options }) {
+  const byWidth = [];
+  const problems = [];
+  for (const width of widths) {
+    const result = await checkSite({ ...options, width });
+    byWidth.push({ width, ...result });
+    problems.push(...result.problems.map((p) => `[${width}px] ${p}`));
+  }
+  return { problems, byWidth };
+}
+
 // ───────── 명령으로 실행 ─────────
 
 async function main(argv) {
@@ -112,9 +127,10 @@ async function main(argv) {
   const { launch } = await import('./browser.mjs');
   const contentDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'textbook', 'content');
   const { curriculum } = await loadCurriculum(contentDir);
-  const { visited, problems } = await checkSite({ baseUrl, cur: curriculum, launch });
+  const { problems, byWidth } = await checkSiteWidths({ baseUrl, cur: curriculum, launch });
   for (const p of problems) console.log(`문제 ${p}`);
-  console.log(`방문 ${visited}개, 문제 ${problems.length}개`);
+  for (const r of byWidth) console.log(`${r.width}px: 방문 ${r.visited}개, 문제 ${r.problems.length}개`);
+  console.log(`합계: 방문 ${byWidth.reduce((n, r) => n + r.visited, 0)}개, 문제 ${problems.length}개`);
   return problems.length ? 1 : 0;
 }
 

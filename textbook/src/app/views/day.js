@@ -95,7 +95,7 @@ function bindAnswerGate(body) {
         h(
           'button',
           {
-            class: 'btn btn-primary',
+            class: 'btn', // 주 버튼(분홍)은 Day 완료 하나. 정답 보기는 권하는 행동이 아니다
             type: 'button',
             'data-testid': 'answer-gate-confirm',
             onclick: () => {
