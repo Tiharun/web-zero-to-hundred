@@ -1,4 +1,5 @@
 // Day 화면: 본문 템플릿을 붙이고, 체크박스·정답 게이트·코드 복사·완료 버튼을 연결한다.
+import { reveal } from '../motion.js';
 import { canComplete, canUncomplete, completeDay, dayState, isProjectComplete, newlyUnlocked, toggleCheck, uncompleteDay } from '../progress.js';
 import { breadcrumb, findDay, getPage, getProject, h, isDone, lockScreen, minutesText } from './common.js';
 
@@ -304,6 +305,7 @@ export function renderDay(ctx, dayId, root) {
       footer,
     ),
   );
+  ctx.onCleanup(reveal(body.querySelectorAll('h2[id]'))); // 개편 설계서 6.3: Day 섹션 제목은 보일 때 올라온다
   return `Day ${day.num} · ${day.title}`;
 }
 

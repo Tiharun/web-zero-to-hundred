@@ -40,6 +40,15 @@
   cursor: pointer;
   box-shadow: 0 var(--ledge) 0 var(--color-accent-deep);
   margin-bottom: var(--ledge);
+  translate: var(--mx, 0px) var(--my, 0px); /* Magnetic: motion.js 가 --mx·--my 를 준다 */
+  transition:
+    background-color var(--dur-micro) var(--ease-out),
+    transform var(--dur-short) var(--ease-bounce),
+    box-shadow var(--dur-short) var(--ease-bounce),
+    translate var(--dur-short) var(--ease-out);
+}
+/* 끄는 동안에는 translate 가 포인터를 바로 따라간다(전환 없음) */
+.btn-primary.is-pulling {
   transition:
     background-color var(--dur-micro) var(--ease-out),
     transform var(--dur-short) var(--ease-bounce),
@@ -321,4 +330,25 @@ kbd {
 /* 없는 화면 (404) */
 .notfound-icon {
   margin-bottom: var(--space-md);
+}
+
+/* Reveal 전: motion.js 가 관찰을 시작할 때만 붙인다(JS 가 실패하면 내용은 그대로 보인다) */
+.reveal-pending {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+/* 동작 줄이기: 주 버튼의 끌림과 hover 떠오름을 없앤다(누름은 그대로). DESIGN.md Motion */
+@media (prefers-reduced-motion: reduce) {
+  .btn-primary {
+    translate: none;
+  }
+  .btn-primary:hover {
+    transform: none;
+    box-shadow: 0 var(--ledge) 0 var(--color-accent-deep);
+  }
+  .reveal-pending {
+    opacity: 1;
+    transform: none;
+  }
 }

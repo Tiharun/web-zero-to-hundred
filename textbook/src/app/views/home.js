@@ -1,4 +1,5 @@
 // 홈: 전체 진도, 이어서 하기, 학습 경로 지도, 부록 바로가기.
+import { onceInSession, stagger } from '../motion.js';
 import { continueTarget, isUnlocked, percent, projectState } from '../progress.js';
 import { chips, doneCount, getProject, h, isDone, linkButton, meter, notice as noticeLine } from './common.js';
 
@@ -89,16 +90,18 @@ export function renderHome(ctx, root) {
   const special = ordered.filter((p) => p.track === 'special');
 
   const notice = ctx.takeNotice();
+  const noticeEl = notice && noticeLine(notice);
+  noticeEl?.setAttribute('data-reveal', '');
   root.append(
     h(
       'div',
       { class: 'home' },
-      notice && noticeLine(notice),
-      h('section', { class: 'hero' }, h('h1', null, cur.title), h('p', { class: 'lead' }, '처음이어도 괜찮아요. 하루에 한 Day씩, 내 속도로 따라와 보세요.'), continueArea(ctx)),
-      h('section', { class: 'progress-grid', 'aria-label': '전체 진도' }, trackCard(ctx, 'main', '메인 과정', 'progress-main'), hasSpecial && trackCard(ctx, 'special', '특별 과정', 'progress-special')),
+      noticeEl,
+      h('section', { class: 'hero', 'data-reveal': true }, h('h1', null, cur.title), h('p', { class: 'lead' }, '처음이어도 괜찮아요. 하루에 한 Day씩, 내 속도로 따라와 보세요.'), continueArea(ctx)),
+      h('section', { class: 'progress-grid', 'aria-label': '전체 진도', 'data-reveal': true }, trackCard(ctx, 'main', '메인 과정', 'progress-main'), hasSpecial && trackCard(ctx, 'special', '특별 과정', 'progress-special')),
       h(
         'section',
-        { class: 'path' },
+        { class: 'path', 'data-reveal': true },
         h('h2', null, '학습 경로'),
         h('p', { class: 'muted' }, '앞 프로젝트를 끝내면 다음 프로젝트가 열려요.'),
         h('ol', { class: 'path-list' }, main.map((p) => projectCard(ctx, p))),
@@ -107,7 +110,7 @@ export function renderHome(ctx, root) {
       cur.pages.length > 0 &&
         h(
           'section',
-          { class: 'appendix' },
+          { class: 'appendix', 'data-reveal': true },
           h('h2', null, '부록'),
           h(
             'ul',
@@ -120,5 +123,6 @@ export function renderHome(ctx, root) {
         ),
     ),
   );
+  if (onceInSession('home')) stagger(root.querySelectorAll('[data-reveal]')); // DESIGN.md Motion: 홈 구역 첫 표시, 세션에 한 번
   return '홈';
 }

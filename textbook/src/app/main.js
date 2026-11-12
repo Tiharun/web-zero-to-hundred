@@ -1,4 +1,5 @@
 // 교재 앱 진입점: 임베드된 데이터를 읽고, 진도를 불러오고, 주소(해시)에 맞는 화면을 그린다.
+import { magnetic, motionEnv } from './motion.js';
 import { continueTarget, normalizeProgress } from './progress.js';
 import { parseHash } from './router.js';
 import { createStore } from './storage.js';
@@ -34,6 +35,7 @@ function start() {
   let notice = null; // 다음에 그리는 홈에서 한 번만 보여 줄 안내
   let shell = null;
   let keepFocusNext = false; // 다음 hashchange 에서 포커스를 본문으로 옮기지 않는다 (검색창에서 칠 때)
+  let cleanups = []; // 지금 화면이 붙인 리스너·관찰자를 떼는 함수들. 다음 render 맨 앞에서 부른다
   let changeListeners = []; // 지금 화면이 진도·테마 변화를 따라가려고 건 것들. 화면을 새로 그릴 때마다 비운다
 
   // 404 빌드(GitHub Pages 의 404.html): 빈 주소는 404 화면이고, 틀의 링크는 사이트 주소(cur.url)로 간다
@@ -42,6 +44,10 @@ function start() {
 
   const ctx = {
     cur,
+    /** 지금 화면을 떠날 때(다음 render 시작) 한 번 부를 정리 함수를 등록한다 */
+    onCleanup(fn) {
+      cleanups.push(fn);
+    },
     store,
     /** 404 빌드에서 틀의 링크 앞에 붙일 사이트 주소. 보통 빌드에서는 '' */
     siteBase,
@@ -105,6 +111,13 @@ function start() {
   function render({ focus, scroll }) {
     const emptyHash = location.hash === '' || location.hash === '#';
     const route = notFoundBuild && emptyHash ? { name: 'notfound' } : parseHash(location.hash);
+    for (const fn of cleanups.splice(0)) {
+      try {
+        fn();
+      } catch (error) {
+        console.error(error);
+      }
+    }
     changeListeners = [];
     main.replaceChildren();
     let title;
@@ -115,6 +128,8 @@ function start() {
       main.replaceChildren(h('section', { class: 'notfound' }, h('h1', null, '화면을 그리다 문제가 생겼어요'), h('p', { class: 'lead' }, '새로고침하면 대부분 해결돼요. 계속되면 설정에서 진도를 백업해 두세요.')));
       title = '문제가 생겼어요';
     }
+    const env = motionEnv();
+    for (const el of main.querySelectorAll('.btn-primary')) ctx.onCleanup(magnetic(el, env)); // DESIGN.md: 끌림은 주 버튼에만
     main.dataset.hash = location.hash || '#/'; // e2e 테스트가 "이 주소의 화면이 다 그려졌다"를 기다리는 표시일 뿐, 앱 동작에는 쓰지 않는다
     document.title = `${title} · ${cur.title}`;
     shell.onRoute(route);
