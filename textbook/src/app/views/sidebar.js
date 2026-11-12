@@ -4,6 +4,7 @@ import { shake } from '../motion.js';
 import { continueTarget, isUnlocked, navDayState, projectState } from '../progress.js';
 import { doneCount, h, lockReason, worldLabel } from './common.js';
 import { icon, px } from './icons.js';
+import { menuButton } from './overlay.js';
 import { showToast } from './toast.js';
 
 /** 화면 낭독기가 읽는 행 상태 (준비 중은 글자가 이미 보인다) */
@@ -17,14 +18,53 @@ export function createSidebar(ctx) {
   const worlds = new Map(); // pid → { details, count, lock, list, state(마지막으로 본 값) }
   const rows = new Map(); // dayId → { el, state }
   const pageRows = new Map(); // pageId → { el, mark }
+  const menuItems = new Map(); // pid → { el, count }
   let route = { name: 'home' };
   let currentProjectId = null; // 지금 화면이 속한 월드 (사이드바에서 펼쳐 둔다)
 
-  // ───────── 머리: 홈 · 모두 펼치기 ─────────
+  // ───────── 머리: 홈 · 월드 메뉴 · 모두 펼치기 ─────────
 
   const homeLink = h('a', { class: 'side-home', href: `${base}#/`, dataset: { nav: 'home' } }, '홈');
   const expandBtn = h('button', { type: 'button', class: 'text-btn', dataset: { expandAll: '' } }, '모두 펼치기');
-  const head = h('div', { class: 'side-head' }, homeLink, expandBtn);
+
+  // 월드 Dropdown (DESIGN.md Navigation "월드 Dropdown"): 항목은 그 월드 페이지로 가는 menuitem 링크
+  const worldBtn = h(
+    'button',
+    { id: 'world-btn', type: 'button', class: 'text-btn world-btn', 'aria-haspopup': 'menu', 'aria-controls': 'world-menu', 'aria-expanded': 'false' },
+    '월드',
+    icon('chevron'),
+  );
+  const worldMenu = h('div', { id: 'world-menu', class: 'menu world-menu', role: 'menu', 'aria-labelledby': 'world-btn', hidden: true });
+  for (const project of cur.projects) {
+    const count = h('span', { class: 'world-count' }); // 사이드바 월드 요약과 같은 진도 표시
+    const el = h(
+      'a',
+      { role: 'menuitem', tabindex: '-1', href: `${base}#/project/${project.id}`, dataset: { project: project.id } },
+      h('span', { class: 'world-sum' }, h('span', { class: 'world-tag label' }, worldLabel(project)), h('span', { class: 'world-menu-name' }, project.title)),
+      count,
+      icon('check', 'tick'),
+    );
+    menuItems.set(project.id, { el, count });
+    worldMenu.append(el);
+  }
+  const menuList = () => [...menuItems.values()].map((m) => m.el);
+  const worldCtl = menuButton(worldBtn, worldMenu, {
+    items: menuList,
+    initialIndex: () => Math.max(menuList().findIndex((el) => el.getAttribute('aria-current') === 'page'), 0),
+  });
+  // 잠긴 월드는 이동하지 않고 흔들며 이유를 알린다 (메뉴는 열어 둔다). 열린 월드는 메뉴를 닫고 링크대로 간다
+  worldMenu.addEventListener('click', (event) => {
+    const item = event.target.closest('[role="menuitem"]');
+    if (!item) return;
+    if (item.getAttribute('aria-disabled') === 'true') {
+      event.preventDefault();
+      explainLocked(item, cur.projects.find((p) => p.id === item.dataset.project));
+      return;
+    }
+    worldCtl.close(false);
+  });
+
+  const head = h('div', { class: 'side-head' }, homeLink, worldBtn, expandBtn, worldMenu);
 
   // ───────── 월드 ─────────
 
@@ -98,6 +138,10 @@ export function createSidebar(ctx) {
       else el.removeAttribute('aria-current');
     }
     current?.setAttribute('aria-current', 'page');
+    for (const [pid, { el }] of menuItems) {
+      if (pid === currentProjectId) el.setAttribute('aria-current', 'page');
+      else el.removeAttribute('aria-current');
+    }
     return current;
   }
 
@@ -135,8 +179,13 @@ export function createSidebar(ctx) {
       const state = projectState(cur, prog, project.id);
       w.details.dataset.state = state;
       w.lock.hidden = state !== 'locked';
-      if (state === 'locked') w.count.replaceChildren(px('lock'), h('span', { class: 'sr-only' }, '잠김'));
-      else w.count.replaceChildren(String(doneCount(prog, project)), h('span', { class: 'sr-only' }, '개 완료, 전체'), ` / ${project.days.length}`);
+      const m = menuItems.get(project.id);
+      if (state === 'locked') m.el.setAttribute('aria-disabled', 'true');
+      else m.el.removeAttribute('aria-disabled');
+      for (const box of [w.count, m.count]) {
+        if (state === 'locked') box.replaceChildren(px('lock'), h('span', { class: 'sr-only' }, '잠김'));
+        else box.replaceChildren(String(doneCount(prog, project)), h('span', { class: 'sr-only' }, '개 완료, 전체'), ` / ${project.days.length}`);
+      }
       // 상태가 바뀔 때만 기본 펼침을 다시 정한다: 지금 하는 월드와 보고 있는 월드는 펼치고, 끝났거나 잠긴 것은 접는다
       if (w.state !== state) w.details.open = state === 'active' || project.id === currentProjectId;
       w.state = state;
@@ -166,6 +215,7 @@ export function createSidebar(ctx) {
     currentProjectId =
       next.name === 'project' ? next.pid : next.name === 'day' ? (cur.projects.find((p) => p.days.some((d) => d.id === next.dayId))?.id ?? null) : null;
     if (open && currentProjectId && worlds.has(currentProjectId)) worlds.get(currentProjectId).details.open = true;
+    if (open) worldCtl.close(false); // 화면을 옮기면 메뉴는 닫는다
     return applyCurrent();
   }
 
@@ -177,7 +227,5 @@ export function createSidebar(ctx) {
     focusTarget: () => nav.querySelector('.row.is-today') ?? nav.querySelector('[aria-current="page"]') ?? nav.querySelector('a[href]'),
     /** 서랍 Stagger 대상 */
     summaries: () => [...nav.querySelectorAll('.world > summary')],
-    /** 지금 화면이 속한 월드 id (월드 메뉴 표시용) */
-    currentProjectId: () => currentProjectId,
   };
 }

@@ -82,7 +82,8 @@
 .menu:not([hidden]) {
   animation: pop-in var(--dur-short) var(--ease-out);
 }
-.menu [role="menuitemradio"] {
+.menu [role="menuitemradio"],
+.menu [role="menuitem"] {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
@@ -99,13 +100,17 @@
   cursor: pointer;
 }
 .menu [role="menuitemradio"]:hover,
-.menu [role="menuitemradio"]:focus-visible {
+.menu [role="menuitemradio"]:focus-visible,
+.menu [role="menuitem"]:hover,
+.menu [role="menuitem"]:focus-visible {
   background: var(--color-track);
 }
-.menu [role="menuitemradio"]:focus-visible {
+.menu [role="menuitemradio"]:focus-visible,
+.menu [role="menuitem"]:focus-visible {
   outline-offset: -2px;
 }
-.menu [role="menuitemradio"]:active {
+.menu [role="menuitemradio"]:active,
+.menu [role="menuitem"]:active {
   background: var(--color-rule);
 }
 .menu .tick {
@@ -113,10 +118,12 @@
   visibility: hidden;
   color: var(--color-accent-text);
 }
-.menu [aria-checked="true"] {
+.menu [aria-checked="true"],
+.menu [aria-current="page"] {
   font-weight: 800;
 }
-.menu [aria-checked="true"] .tick {
+.menu [aria-checked="true"] .tick,
+.menu [aria-current="page"] .tick {
   visibility: visible;
 }
 @keyframes pop-in {
@@ -197,6 +204,31 @@
 .side-home:hover,
 .side-home[aria-current="page"] {
   background: var(--color-track);
+}
+/* 월드 Dropdown: 머리 가운데 버튼 아래로 열린다. 서랍(320px 화면에서 272px) 안에 들어가는 폭 */
+.world-btn .icon {
+  transition: transform var(--dur-short) var(--ease-out);
+}
+.world-btn[aria-expanded="true"] .icon {
+  transform: rotate(180deg);
+}
+.world-menu {
+  right: auto;
+  left: 50%;
+  translate: -50% 0;
+  width: max-content;
+  max-width: calc(var(--sidebar-w) - var(--space-lg));
+  transform-origin: top center;
+}
+.world-menu [role="menuitem"] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  padding-block: var(--space-2xs);
+  line-height: 1.35;
+  text-decoration: none;
+}
+.world-menu [aria-disabled="true"] {
+  color: var(--color-ink-2);
 }
 .side-worlds {
   display: grid;

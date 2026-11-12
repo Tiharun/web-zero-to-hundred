@@ -945,7 +945,7 @@ test('sidebar shows the current link without moving the Tab start', TIMEOUT, asy
       const fit = await page.evaluate(() => {
         const sidebar = document.getElementById('sidebar');
         const box = sidebar.getBoundingClientRect();
-        const link = document.querySelector('#sidebar a[aria-current="page"]').getBoundingClientRect();
+        const link = document.querySelector('#sidebar a.row[aria-current="page"]').getBoundingClientRect();
         return { scrollTop: sidebar.scrollTop, top: box.top, bottom: box.bottom, linkTop: link.top, linkBottom: link.bottom, pageScroll: window.scrollY };
       });
       assert.ok(fit.scrollTop > 0, '현재 링크가 보이도록 사이드바가 스크롤돼야 해요');
@@ -1129,4 +1129,79 @@ test('expand all opens every world and flips its label', TIMEOUT, async () => {
     assert.deepEqual(await opens(), [false, false]);
     assert.equal(await btn.innerText(), '모두 펼치기');
   });
+});
+
+test('world menu moves to another world and explains a locked one', TIMEOUT, async () => {
+  await withPage(
+    async (page, app) => {
+      await visit(page, app, '#/');
+      const btn = page.locator('#world-btn');
+      const item = (id) => page.locator(`#world-menu [data-project="${id}"]`);
+      await btn.click();
+      assert.equal(await page.locator('#world-menu [role="menuitem"]').count(), 2);
+      assert.equal(await item('fb').getAttribute('aria-disabled'), 'true');
+      await item('fb').click({ force: true }); // aria-disabled 라서 Playwright 의 '누를 수 있음' 검사를 건너뛴다
+      await until(async () => (await page.locator('.toast').count()) === 1);
+      assert.equal(await page.evaluate(() => location.hash), '#/', '잠긴 월드로는 이동하지 않는다');
+      assert.equal(await page.locator('#world-menu').isHidden(), false, '잠긴 항목을 눌러도 메뉴는 열려 있다');
+      await item('fa').click();
+      await waitRoute(page, '#/project/fa');
+      assert.equal(await page.locator('#world-menu').isHidden(), true);
+      assert.equal(await page.locator('#sidebar details.world[data-project="fa"]').evaluate((d) => d.open), true);
+      await btn.click();
+      assert.equal(await item('fa').getAttribute('aria-current'), 'page');
+      assert.equal(await item('fb').getAttribute('aria-current'), null);
+    },
+    { viewport: { width: 1280, height: 800 } },
+  );
+});
+
+test('world menu keyboard: arrows, End, Escape and Tab', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    const focusedProject = () => page.evaluate(() => document.activeElement.dataset.project ?? document.activeElement.id);
+    await page.locator('#world-btn').focus();
+    await page.keyboard.press('ArrowDown');
+    assert.equal(await focusedProject(), 'fa');
+    await page.keyboard.press('End');
+    assert.equal(await focusedProject(), 'fb');
+    await page.keyboard.press('ArrowDown');
+    assert.equal(await focusedProject(), 'fa', '끝에서 처음으로');
+    await page.keyboard.press('Escape');
+    assert.equal(await focusedProject(), 'world-btn');
+    assert.equal(await page.locator('#world-btn').getAttribute('aria-expanded'), 'false');
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Tab');
+    assert.equal(await page.locator('#world-menu').isHidden(), true, 'Tab 은 메뉴를 닫는다');
+    await page.locator('#world-btn').focus();
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+    await waitRoute(page, '#/project/fa');
+  });
+});
+
+test('world menu works inside the drawer', TIMEOUT, async () => {
+  await withPage(
+    async (page, app) => {
+      await visit(page, app, '#/');
+      await page.locator('#menu-toggle').click();
+      await page.locator('#drawer #world-btn').click();
+      const menu = page.locator('#drawer #world-menu');
+      const box = await menu.boundingBox();
+      const drawerBox = await page.locator('#drawer').boundingBox();
+      assert.ok(box.x >= drawerBox.x && box.x + box.width <= drawerBox.x + drawerBox.width, '메뉴가 서랍 폭 안에 들어간다');
+      // 메뉴 안 Escape 는 메뉴만 닫고 서랍은 그대로
+      await page.keyboard.press('Escape');
+      assert.equal(await menu.isHidden(), true);
+      assert.equal(await page.locator('#drawer').evaluate((d) => d.open), true);
+      await page.locator('#drawer #world-btn').click();
+      await page.locator('#drawer #world-menu [data-project="fb"]').click({ force: true }); // 잠김: 서랍도 닫히지 않는다
+      assert.equal(await page.locator('#drawer').evaluate((d) => d.open), true);
+      await page.locator('#drawer #world-menu [data-project="fa"]').click();
+      await waitRoute(page, '#/project/fa');
+      await until(async () => !(await page.locator('#drawer').evaluate((d) => d.open)));
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+    },
+    { viewport: { width: 320, height: 640 } },
+  );
 });
