@@ -351,3 +351,4 @@ Branch: claude/gifted-goldberg-u1f9c6 (harness-mandated feature branch, not main
 - M0: complete (commits f898950..이 줄을 넣은 커밋; 배포 https://tiharun.github.io/web-zero-to-hundred/; 단위·빌드 201, e2e 46, 시각 24(+비교 함수 2), 전 페이지 168; 계획서 docs/superpowers/plans/2026-11-12-m0-skeleton-deploy.md)
 - M1: complete (commits c377eb3..최종 검토 수정 2e8c416 이후 문서 커밋; 단위·빌드 216, e2e 65, 시각 26, 전 페이지 4폭×168; M0 보류 Minor 전부 처리; 계획서 docs/superpowers/plans/2026-11-12-m1-motion-toast.md)
 - M2: complete (commits 2bc6de5..이 줄을 넣은 커밋; 배포 https://tiharun.github.io/web-zero-to-hundred/; 단위·빌드 226, e2e 84, 시각 30(기준 이미지 28 + 비교 함수 2), 전 페이지 4폭×168 문제 0; 최종 검토 Minor 포함 남긴 문제 없음; 계획서 docs/superpowers/plans/2026-11-12-m2-sidebar-drawer.md)
+- M3: complete (commits b811c71..이 줄을 넣은 커밋; 배포 https://tiharun.github.io/web-zero-to-hundred/; 단위·빌드 235, e2e 98, 시각 38(기준 이미지 36 + 비교 함수 2), 전 페이지 4폭×168 문제 0; 최종 검토(직접) 남긴 문제 없음; 계획서 docs/superpowers/plans/2026-11-12-m3-quest-hud.md)
