@@ -1,24 +1,165 @@
 /* ───────── 홈 ───────── */
 
-.hero h1 {
-  margin: 0 0 8px;
-  font-size: clamp(1.9rem, 4vw, 2.6rem);
-  line-height: 1.25;
-  letter-spacing: -0.01em;
+/* 1행: 퀘스트 카드 (+ 레벨 패널). DESIGN.md Layout 홈 순서, Cards "퀘스트 카드" */
+.top-row {
+  display: grid;
+  gap: var(--space-lg);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
 }
-.continue {
+.quest :is(h2, h3, p, dl, dd) {
+  margin: 0;
+}
+
+.quest {
+  container-type: inline-size;
+  position: relative;
+  padding: var(--space-xl);
+  transform-style: preserve-3d;
+  border-color: var(--color-edge);
+  box-shadow: 0 calc(var(--ledge) + 2px) 0 var(--color-edge);
+  transition: transform var(--dur-short) var(--ease-out); /* Tilt 가 끝나면 200ms 로 돌아온다 */
+}
+@media (max-width: 40rem) {
+  .quest {
+    padding: var(--space-lg) var(--space-md);
+  }
+}
+.quest-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-xs) var(--space-md);
+}
+.quest-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--color-ink);
+}
+.quest-label .px-trophy {
+  width: 16px;
+  height: 16px;
+}
+.world-link {
+  font-size: var(--text-ui);
+  color: var(--color-ink-2);
+  text-decoration: none;
+  border-radius: var(--space-2xs);
+}
+.world-link span {
+  text-decoration: underline;
+}
+.world-link:hover {
+  color: var(--color-ink);
+}
+.quest-body {
+  display: grid;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+@container (min-width: 32rem) {
+  .quest-body {
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: var(--space-xl);
+  }
+  .bignum {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+}
+.bignum {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+}
+.bignum-value {
+  min-width: 2ch;
+  font-size: var(--text-display);
+  font-weight: 800;
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  color: var(--color-ink);
+}
+.bignum.is-pending .bignum-value {
+  color: var(--color-ink-2);
+}
+.quest-main {
+  display: grid;
+  gap: var(--space-md);
+  align-content: start;
+  min-width: 0;
+}
+.quest-title {
+  max-width: 20ch;
+  font-size: var(--text-headline);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+.quest-summary {
+  max-width: 46ch;
+  color: var(--color-ink-2);
+}
+.quest-next {
+  max-width: 46ch;
+}
+.made {
+  display: grid;
+  gap: var(--space-2xs);
+  max-width: 46ch;
+}
+.made dt {
+  font-size: var(--text-ui);
+  color: var(--color-ink-2);
+}
+.quest-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(5.5rem, 1fr));
+  gap: var(--space-sm) var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-rule);
+}
+.quest-facts .fact-wide {
+  grid-column: 1 / -1;
+}
+.quest-facts dt {
+  font-size: var(--text-ui);
+  line-height: 1.4;
+  color: var(--color-ink-2);
+}
+.quest-facts dd {
+  font-weight: 800;
+  line-height: 1.5;
+}
+.quest-facts code {
+  font-weight: 400;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+.xp-gain {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  padding-top: var(--space-2xs);
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  font-weight: 400;
+  color: var(--color-ink);
+}
+.quest .actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px 16px;
-  margin: 20px 0 8px;
+  gap: var(--space-sm) var(--space-lg);
+  margin-top: var(--space-2xs);
 }
-.continue-hint {
-  color: var(--muted);
-}
-.done-note {
-  margin: 0;
-  font-weight: 700;
+@media (prefers-reduced-motion: reduce) {
+  .quest {
+    transform: none !important;
+  }
 }
 
 .progress-grid {

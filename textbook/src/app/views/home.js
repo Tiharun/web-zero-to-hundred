@@ -1,7 +1,8 @@
-// 홈: 전체 진도, 이어서 하기, 학습 경로 지도, 부록 바로가기.
-import { onceInSession, shake, stagger } from '../motion.js';
-import { continueTarget, isUnlocked, percent, projectState } from '../progress.js';
-import { chips, doneCount, h, isDone, linkButton, lockReason, meter, notice as noticeLine } from './common.js';
+// 홈: 1행(퀘스트 카드), 전체 진도, 학습 경로 지도, 부록 바로가기.
+import { onceInSession, shake, stagger, tilt } from '../motion.js';
+import { isUnlocked, percent, projectState } from '../progress.js';
+import { chips, doneCount, h, isDone, lockReason, meter, notice as noticeLine } from './common.js';
+import { questCard } from './quest.js';
 import { showToast } from './toast.js';
 
 const PROJECT_LABEL = { locked: '🔒 잠김', active: '▶ 진행 중', complete: '✅ 완료' };
@@ -67,28 +68,6 @@ function projectCard(ctx, project) {
   );
 }
 
-function continueArea(ctx) {
-  const { cur, prog } = ctx;
-  const target = continueTarget(cur, prog);
-  if (target) {
-    const day = cur.projects.flatMap((p) => p.days).find((d) => d.id === target);
-    const started = Object.keys(prog.completed).length > 0;
-    return h(
-      'div',
-      { class: 'continue' },
-      linkButton(`#/day/${target}`, started ? '이어서 하기' : '첫 Day 시작하기', { primary: true, testid: 'continue-button' }),
-      h('span', { class: 'continue-hint' }, `다음은 Day ${day.num} · ${day.title}`),
-    );
-  }
-  const roadmap = cur.pages.find((p) => p.id === 'roadmap');
-  return h(
-    'div',
-    { class: 'continue' },
-    h('p', { class: 'done-note' }, '열려 있는 Day를 모두 마쳤어요. 정말 수고했어요! 🎉'),
-    roadmap && isUnlocked(cur, prog, roadmap.requires) && linkButton(`#/page/${roadmap.id}`, roadmap.title, { primary: true }),
-  );
-}
-
 export function renderHome(ctx, root) {
   const { cur } = ctx;
   const hasSpecial = cur.projects.some((p) => p.track === 'special' && p.days.length > 0);
@@ -99,12 +78,14 @@ export function renderHome(ctx, root) {
   const notice = ctx.takeNotice();
   const noticeEl = notice && noticeLine(notice);
   noticeEl?.setAttribute('data-reveal', '');
+  const quest = questCard(ctx);
   root.append(
     h(
       'div',
       { class: 'home' },
+      h('h1', { class: 'sr-only' }, '홈'),
       noticeEl,
-      h('section', { class: 'hero', 'data-reveal': true }, h('h1', null, cur.title), h('p', { class: 'lead' }, '처음이어도 괜찮아요. 하루에 한 Day씩, 내 속도로 따라와 보세요.'), continueArea(ctx)),
+      h('div', { class: 'top-row' }, quest),
       h('section', { class: 'progress-grid', 'aria-label': '전체 진도', 'data-reveal': true }, trackCard(ctx, 'main', '메인 과정', 'progress-main'), hasSpecial && trackCard(ctx, 'special', '특별 과정', 'progress-special')),
       h(
         'section',
@@ -130,6 +111,7 @@ export function renderHome(ctx, root) {
         ),
     ),
   );
+  ctx.onCleanup(tilt(quest, 2)); // DESIGN.md Motion: 퀘스트 카드 Tilt 2°
   if (onceInSession('home')) stagger(root.querySelectorAll('[data-reveal]')); // DESIGN.md Motion: 홈 구역 첫 표시, 세션에 한 번
   return '홈';
 }

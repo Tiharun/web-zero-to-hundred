@@ -151,16 +151,19 @@ async function completeDay(page, dayId) {
   assert.equal(await sidebarState(page, dayId), 'done');
 }
 
+/** 저장소에 진도를 미리 넣는다 (withPage 의 init/initArg 로 넘긴다) */
+const seed = (completed, { lastDay = completed.at(-1) ?? null, checks = {} } = {}) => ({
+  init: ([key, value]) => localStorage.setItem(key, value),
+  initArg: [STORAGE_KEY, JSON.stringify({ version: 1, completed: Object.fromEntries(completed.map((id) => [id, '2026-11-12T00:00:00.000Z'])), checks, lastDay, theme: 'system' })],
+});
+const quest = (page) => page.getByTestId('quest-card');
+
 // ───────────────────────── 요구된 테스트 ─────────────────────────
 
-test('home shows 0% and continue goes to fa-d01', TIMEOUT, async () => {
+test('home quest goes to fa-d01', TIMEOUT, async () => {
   await withPage(async (page, app) => {
     await visit(page, app, '#/');
-    const main = page.getByTestId('progress-main');
-    await main.waitFor();
-    assert.equal(await main.getAttribute('data-percent'), '0');
-    assert.match(await main.innerText(), /0%/);
-    assert.equal(await page.getByTestId('progress-special').count(), 0, '특별 과정이 없는 교재에는 특별 진도 카드를 만들지 않아요');
+    await quest(page).waitFor();
 
     const link = page.getByTestId('continue-button');
     assert.equal(await link.getAttribute('href'), '#/day/fa-d01');
@@ -251,7 +254,7 @@ test('storage unavailable banner', TIMEOUT, async () => {
   await withPage(
     async (page, app) => {
       await visit(page, app, '#/');
-      await page.getByTestId('progress-main').waitFor();
+      await quest(page).waitFor();
       const banner = page.getByTestId('storage-banner');
       await banner.waitFor({ state: 'visible' });
       assert.match(await banner.innerText(), /저장되지 않아요/);
@@ -1280,4 +1283,78 @@ test('drawer state follows the dialog without waiting for the close event', TIME
     },
     { viewport: { width: 375, height: 740 } },
   );
+});
+
+// ───────────────────────── 홈 퀘스트 카드 (M3) ─────────────────────────
+
+test('quest card: first visit starts at Day 1', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    assert.equal(await quest(page).getAttribute('data-kind'), 'start');
+    assert.match(await quest(page).locator('.quest-label').innerText(), /오늘의 퀘스트/);
+    assert.equal(await quest(page).locator('.bignum-value').innerText(), '1');
+    assert.match(await quest(page).locator('.quest-title').innerText(), /첫 번째 Day/);
+    const facts = await quest(page).locator('.quest-facts').innerText();
+    assert.match(facts, /60분/);
+    assert.match(facts, /3개/);
+    assert.match(facts, /\+60 XP/);
+    assert.match(facts, /C:\\dev\\fixture-a/);
+    const btn = page.getByTestId('continue-button');
+    assert.equal(await btn.innerText(), '첫 Day 시작하기');
+    assert.equal(await btn.getAttribute('href'), '#/day/fa-d01');
+    assert.equal(await quest(page).getByRole('link', { name: '처음이면 시작하기부터' }).getAttribute('href'), '#/page/start');
+    assert.match(await quest(page).locator('.world-link').innerText(), /월드 1\s*픽스처 프로젝트 A/);
+  });
+});
+
+test('quest card: continue shows checked count and next day', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    assert.equal(await quest(page).getAttribute('data-kind'), 'continue');
+    assert.equal(await quest(page).locator('.bignum-value').innerText(), '2');
+    assert.match(await quest(page).locator('.quest-facts').innerText(), /1 \/ 3/);
+    assert.equal(await page.getByTestId('continue-button').innerText(), '이어서 하기');
+    assert.equal(await quest(page).getByRole('link', { name: '처음이면 시작하기부터' }).count(), 0);
+  }, seed(['fa-d01'], { checks: { 'fa-d02': [0] } }));
+});
+
+test('quest card: world clear names what was made and opens the next world', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    assert.equal(await quest(page).getAttribute('data-kind'), 'clear');
+    assert.match(await quest(page).locator('.quest-label').innerText(), /월드 클리어/);
+    assert.equal(await quest(page).locator('.bignum-value').innerText(), '2');
+    assert.match(await quest(page).locator('.quest-title').innerText(), /‘픽스처 프로젝트 A’ 월드를 모두 마쳤어요/);
+    assert.match(await quest(page).locator('.made').innerText(), /작은 웹 페이지 하나를 만들어요/);
+    assert.match(await quest(page).locator('.quest-next').innerText(), /픽스처 프로젝트 B.*Day 1 ‘비밀 Day’/);
+    const btn = page.getByTestId('continue-button');
+    assert.equal(await btn.innerText(), '다음 월드 시작하기');
+    assert.equal(await btn.getAttribute('href'), '#/day/fb-d01');
+    assert.equal(await quest(page).getByRole('link', { name: '픽스처 프로젝트 A 다시 보기' }).getAttribute('href'), '#/project/fa');
+  }, seed(['fa-d01', 'fa-d02']));
+});
+
+test('quest card: all done has no primary button without a roadmap page', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    assert.equal(await quest(page).getAttribute('data-kind'), 'done');
+    assert.match(await quest(page).locator('.quest-label').innerText(), /모든 월드 클리어/);
+    assert.equal(await quest(page).locator('.bignum-value').innerText(), '3');
+    assert.match(await quest(page).locator('.quest-title').innerText(), /열린 Day를 모두 마쳤어요/);
+    assert.equal(await quest(page).locator('.world-link').count(), 0);
+    assert.equal(await page.locator('main .btn-primary').count(), 0);
+  }, seed(['fa-d01', 'fa-d02', 'fb-d01']));
+});
+
+test('quest card: next day not written yet offers a review', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    assert.equal(await quest(page).getAttribute('data-kind'), 'pending');
+    assert.match(await quest(page).locator('.quest-title').innerText(), /다음 Day는 준비 중이에요/);
+    assert.match(await quest(page).locator('.quest-summary').innerText(), /Day 2 ‘특별 둘째 Day’ 내용은 아직 쓰는 중이에요/);
+    const btn = page.getByTestId('review-button');
+    assert.equal(await btn.innerText(), 'Day 1 복습하기');
+    assert.equal(await btn.getAttribute('href'), '#/day/fs-d01');
+    assert.equal(await quest(page).getByRole('link', { name: '특별 프로젝트 Day 목록' }).getAttribute('href'), '#/project/fs');
+  }, { url: VARIANT_URL, ...seed(['fa-d01', 'fa-d02', 'fb-d01', 'fs-d01']) });
 });

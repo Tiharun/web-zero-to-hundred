@@ -214,6 +214,11 @@
   color: var(--color-ink-2);
 }
 
+/* 숫자 표시: 자리가 흔들리지 않게 고정 폭 숫자 (DESIGN.md Typography) */
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
 kbd {
   font-family: var(--font-code);
   font-size: var(--text-label);

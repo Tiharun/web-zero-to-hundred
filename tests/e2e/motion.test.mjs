@@ -368,3 +368,27 @@ test('reduced motion: drawer closes at once without stagger', TIMEOUT, async () 
     { viewport: { width: 375, height: 740 }, reducedMotion: 'reduce' },
   );
 });
+
+// ───────── 퀘스트 카드 Tilt (M3) ─────────
+
+test('quest card tilts under the mouse and settles on leave', TIMEOUT, async () => {
+  await withPage('#/', async (page) => {
+    const card = page.locator('.quest');
+    const box = await card.boundingBox();
+    await page.mouse.move(box.x + box.width * 0.9, box.y + box.height * 0.1);
+    await page.mouse.move(box.x + box.width * 0.95, box.y + box.height * 0.05);
+    assert.match(await card.evaluate((el) => el.style.transform), /^perspective\(1000px\) rotateX\(.+deg\) rotateY\(.+deg\)$/);
+    await page.mouse.move(0, box.y + box.height + 200);
+    assert.equal(await card.evaluate((el) => el.style.transform), '');
+  });
+});
+
+test('reduced motion: quest card does not tilt', TIMEOUT, async () => {
+  await withPage('#/', async (page) => {
+    const card = page.locator('.quest');
+    const box = await card.boundingBox();
+    await page.mouse.move(box.x + box.width * 0.9, box.y + 10);
+    await page.mouse.move(box.x + box.width * 0.95, box.y + 5);
+    assert.equal(await card.evaluate((el) => el.style.transform), '');
+  }, { reducedMotion: 'reduce' });
+});
