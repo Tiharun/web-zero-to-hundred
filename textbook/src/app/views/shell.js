@@ -3,6 +3,7 @@
 import { dayState, isUnlocked, projectState } from '../progress.js';
 import { doneCount, h } from './common.js';
 import { icon } from './icons.js';
+import { menuButton } from './overlay.js';
 
 const STATE_ICON = { locked: '🔒', done: '✅', next: '▶', open: '○' };
 const STATE_TEXT = { locked: '잠김', done: '완료', next: '다음 할 Day', open: '' };
@@ -211,60 +212,22 @@ export function createShell(ctx) {
     }
   }
 
-  const menuOpen = () => !themeMenu.hidden;
-
-  function openMenu(index) {
-    themeMenu.hidden = false;
-    themeBtn.setAttribute('aria-expanded', 'true');
-    const checked = themeItems.findIndex((item) => item.getAttribute('aria-checked') === 'true');
-    themeItems[index ?? Math.max(checked, 0)].focus();
-  }
-
-  function closeMenu(returnFocus = true) {
-    if (!menuOpen()) return;
-    themeMenu.hidden = true;
-    themeBtn.setAttribute('aria-expanded', 'false');
-    if (returnFocus) themeBtn.focus();
-  }
+  const themeMenuCtl = menuButton(themeBtn, themeMenu, {
+    items: () => themeItems,
+    initialIndex: () => Math.max(themeItems.findIndex((item) => item.getAttribute('aria-checked') === 'true'), 0),
+  });
 
   function choose(item) {
     const value = item.dataset.themeValue;
-    closeMenu();
+    themeMenuCtl.close();
     if (value !== ctx.prog.theme) ctx.setTheme(value);
     announce(`${THEME_NAME[value]} 테마로 바꿨어요.`);
   }
 
-  themeBtn.addEventListener('click', () => (menuOpen() ? closeMenu() : openMenu()));
-  themeBtn.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-      event.preventDefault();
-      openMenu(event.key === 'ArrowDown' ? 0 : themeItems.length - 1);
-    }
-  });
-  themeMenu.addEventListener('keydown', (event) => {
-    const i = themeItems.indexOf(document.activeElement);
-    const n = themeItems.length;
-    const move = (j) => {
-      event.preventDefault();
-      themeItems[(j + n) % n].focus();
-    };
-    if (event.key === 'ArrowDown') move(i + 1);
-    else if (event.key === 'ArrowUp') move(i - 1);
-    else if (event.key === 'Home') move(0);
-    else if (event.key === 'End') move(n - 1);
-    else if (event.key === 'Escape') {
-      event.preventDefault();
-      event.stopPropagation();
-      closeMenu();
-    } else if (event.key === 'Tab') closeMenu(false);
-  });
   // 버튼 요소라서 Enter·Space 도 click 으로 온다
   themeMenu.addEventListener('click', (event) => {
     const item = event.target.closest('[role="menuitemradio"]');
     if (item) choose(item);
-  });
-  document.addEventListener('pointerdown', (event) => {
-    if (menuOpen() && !event.target.closest('.theme')) closeMenu(false);
   });
 
   // ───────── 저장 안내 배너 ─────────
@@ -319,7 +282,7 @@ export function createShell(ctx) {
       currentRoute = route;
       const link = markCurrent(route, { open: true });
       if (navOpen()) setNav(false, { restoreFocus: false });
-      closeMenu(false);
+      themeMenuCtl.close(false);
       revealInSidebar(link);
       if (route.name === 'search') $('search-open').setAttribute('aria-current', 'page');
       else $('search-open').removeAttribute('aria-current');
