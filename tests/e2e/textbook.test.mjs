@@ -139,7 +139,9 @@ async function visit(page, app, hash) {
   await waitRoute(page, hash);
 }
 
-const sidebarState = (page, dayId) => page.locator(`#sidebar a[data-day="${dayId}"]`).getAttribute('data-state');
+/** 조건 함수가 참을 돌려줄 때까지 기다린다 (eventually 는 예외가 날 때만 다시 시도한다) */
+const until = (fn) => eventually(async () => assert.ok(await fn()));
+const sidebarState = (page, dayId) => page.locator(`#sidebar [data-day="${dayId}"]`).getAttribute('data-state');
 const percentOf = (page, which) => page.getByTestId(`progress-${which}`).getAttribute('data-percent');
 
 /** Day 화면에서 [완료]를 누른다 */
@@ -165,7 +167,7 @@ test('home shows 0% and continue goes to fa-d01', TIMEOUT, async () => {
     await link.click();
     await waitRoute(page, '#/day/fa-d01');
     assert.match(await page.locator('main h1').innerText(), /첫 번째 Day/);
-    assert.equal(await sidebarState(page, 'fa-d01'), 'next');
+    assert.equal(await sidebarState(page, 'fa-d01'), 'today');
     assert.equal(await sidebarState(page, 'fa-d02'), 'open');
     assert.equal(await sidebarState(page, 'fb-d01'), 'locked');
   });
@@ -184,7 +186,7 @@ test('complete flow unlocks next project', TIMEOUT, async () => {
     assert.equal(await page.getByTestId('complete-button').count(), 0, '완료한 Day 에는 완료 버튼이 없어요');
     assert.equal(await page.getByTestId('unlock-banner').count(), 0, 'fa 를 아직 다 끝내지 않았어요');
     assert.equal(await sidebarState(page, 'fa-d01'), 'done');
-    assert.equal(await sidebarState(page, 'fa-d02'), 'next');
+    assert.equal(await sidebarState(page, 'fa-d02'), 'today');
     assert.equal(await sidebarState(page, 'fb-d01'), 'locked');
 
     // 체크 상태와 완료는 새로고침해도 남는다
@@ -199,7 +201,7 @@ test('complete flow unlocks next project', TIMEOUT, async () => {
     const banner = page.getByTestId('unlock-banner');
     await banner.waitFor();
     assert.match(await banner.innerText(), /픽스처 프로젝트 B/);
-    assert.equal(await sidebarState(page, 'fb-d01'), 'next');
+    assert.equal(await sidebarState(page, 'fb-d01'), 'today');
 
     // 홈: 3 Day 중 2 Day = 66%, 이어서 하기는 fb-d01
     await page.getByRole('link', { name: '홈', exact: true }).first().click();
@@ -258,7 +260,7 @@ test('storage unavailable banner', TIMEOUT, async () => {
       await page.getByTestId('continue-button').click();
       await waitRoute(page, '#/day/fa-d01');
       await completeDay(page, 'fa-d01');
-      assert.equal(await sidebarState(page, 'fa-d02'), 'next');
+      assert.equal(await sidebarState(page, 'fa-d02'), 'today');
       assert.equal(await banner.isVisible(), true);
     },
     {
@@ -556,7 +558,7 @@ test('reset clears progress after confirm', TIMEOUT, async () => {
     await main.waitFor();
     assert.equal(await main.getAttribute('data-percent'), '0');
     assert.match(await main.innerText(), /0%/);
-    assert.equal(await sidebarState(page, 'fa-d01'), 'next');
+    assert.equal(await sidebarState(page, 'fa-d01'), 'today');
     assert.equal(await page.getByTestId('continue-button').getAttribute('href'), '#/day/fa-d01');
 
     await page.reload(); // 저장소도 비워졌다
@@ -636,17 +638,17 @@ test('valid backup imports only after confirmation and reports skipped days', TI
     await eventually(async () => assert.equal(asked.length, 1));
     assert.match(asked[0], /바꿀까요|덮어/);
     await eventually(async () => assert.match(await message.innerText(), /취소/));
-    assert.equal(await sidebarState(page, 'fa-d02'), 'next', '취소하면 진도가 그대로예요');
+    assert.equal(await sidebarState(page, 'fa-d02'), 'today', '취소하면 진도가 그대로예요');
 
     accept = true;
     await page.getByTestId('import-input').setInputFiles(file);
     await eventually(async () => assert.match(await message.innerText(), /1개/));
     assert.match(await message.innerText(), /건너뛰/);
     assert.equal(await sidebarState(page, 'fa-d02'), 'done');
-    assert.equal(await sidebarState(page, 'fb-d01'), 'next');
+    assert.equal(await sidebarState(page, 'fb-d01'), 'today');
     await page.reload();
     await waitRoute(page, '#/settings');
-    assert.equal(await sidebarState(page, 'fb-d01'), 'next', '가져온 진도는 저장돼요');
+    assert.equal(await sidebarState(page, 'fb-d01'), 'today', '가져온 진도는 저장돼요');
   });
 });
 
@@ -950,4 +952,98 @@ test('early theme script applies the stored theme before the page body is parsed
       { init: seed, initArg: stored, colorScheme },
     );
   }
+});
+
+// ───────────────────────── M2: 사이드바 Accordion · Day 행 5종 ─────────────────────────
+
+test('sidebar rows show the five states', TIMEOUT, async () => {
+  await withPage(
+    async (page, app) => {
+      await visit(page, app, '#/day/fa-d01');
+      const row = (id) => page.locator(`#sidebar [data-day="${id}"]`);
+      assert.equal(await sidebarState(page, 'fa-d01'), 'today');
+      assert.equal(await row('fa-d01').getAttribute('aria-current'), 'page', '지금 화면이면 page 가 우선');
+      assert.match(await row('fa-d01').getAttribute('class'), /is-today/);
+      assert.equal(await sidebarState(page, 'fa-d02'), 'open');
+      assert.equal(await row('fb-d01').evaluate((el) => el.tagName), 'BUTTON');
+      assert.equal(await row('fs-d02').getAttribute('data-state'), 'locked', '잠김이 준비 중보다 먼저');
+      // 1단계: fa-d01 만 끝낸다. 프로젝트 상태(fa active, fs locked)가 그대로이므로 사용자가 편 월드는 유지된다
+      const fsWorld = page.locator('#sidebar details.world[data-project="fs"]');
+      await fsWorld.locator('> summary').click();
+      await completeDay(page, 'fa-d01');
+      assert.equal(await sidebarState(page, 'fa-d01'), 'done');
+      assert.equal(await sidebarState(page, 'fa-d02'), 'today');
+      assert.equal(await fsWorld.evaluate((d) => d.open), true, '사용자가 편 월드는 그대로');
+      // 2단계: fa 를 끝내면 fb·fs 가 열린다
+      await visit(page, app, '#/day/fa-d02');
+      await completeDay(page, 'fa-d02');
+      assert.equal(await sidebarState(page, 'fb-d01'), 'today');
+      assert.equal(await row('fb-d01').evaluate((el) => el.tagName), 'A', '열리면 링크로 바뀐다');
+      assert.equal(await sidebarState(page, 'fs-d01'), 'open', '다른 월드의 첫 Day 는 오늘이 아니다');
+      assert.equal(await sidebarState(page, 'fs-d02'), 'draft');
+      assert.match(await row('fs-d02').innerText(), /준비 중/);
+      assert.equal(await page.locator('#sidebar .row.is-today').count(), 1, '분홍 네모는 하나');
+    },
+    { url: VARIANT_URL },
+  );
+});
+
+test('today row number is a 24px pink square', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    const r = await page.locator('#sidebar .row.is-today .row-num').evaluate((el) => {
+      const probe = document.createElement('i');
+      probe.style.background = 'var(--color-accent)';
+      document.body.append(probe);
+      const pink = getComputedStyle(probe).backgroundColor;
+      probe.remove();
+      const s = getComputedStyle(el);
+      return { bg: s.backgroundColor, pink, w: el.getBoundingClientRect().width, shadow: s.boxShadow };
+    });
+    assert.equal(r.bg, r.pink);
+    assert.equal(Math.round(r.w), 24);
+    assert.match(r.shadow, /0px 2px 0px/);
+  });
+});
+
+test('locked day row explains on click and keyboard', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    await page.locator('#sidebar details.world[data-project="fb"] > summary').click();
+    const locked = page.locator('#sidebar [data-day="fb-d01"]');
+    // 같은 문장의 토스트는 하나로 합쳐진다(toast.js). 그래서 떠 있는 수 대신 새로 뜬 횟수를 센다
+    await page.evaluate(() => {
+      window.__toasts = 0;
+      new MutationObserver((list) => {
+        for (const m of list) for (const n of m.addedNodes) if (n.classList?.contains('toast')) window.__toasts += 1;
+      }).observe(document.body, { childList: true, subtree: true });
+    });
+    const shown = () => page.evaluate(() => window.__toasts);
+    await locked.click();
+    await until(async () => (await shown()) === 1);
+    assert.match(await page.locator('.toast').first().innerText(), /프로젝트를 끝내면 열려요/);
+    assert.equal(await page.evaluate(() => location.hash), '#/');
+    await locked.focus();
+    await page.keyboard.press('Enter');
+    await until(async () => (await shown()) === 2);
+    await page.keyboard.press('Space');
+    await until(async () => (await shown()) === 3);
+    assert.equal(await page.evaluate(() => location.hash), '#/');
+  });
+});
+
+test('expand all opens every world and flips its label', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    const btn = page.locator('#sidebar [data-expand-all]');
+    const opens = () => page.locator('#sidebar details.world').evaluateAll((ds) => ds.map((d) => d.open));
+    assert.deepEqual(await opens(), [true, false], '지금 월드만 펼침');
+    assert.equal(await btn.innerText(), '모두 펼치기');
+    await btn.click();
+    assert.deepEqual(await opens(), [true, true]);
+    assert.equal(await btn.innerText(), '모두 접기');
+    await btn.click();
+    assert.deepEqual(await opens(), [false, false]);
+    assert.equal(await btn.innerText(), '모두 펼치기');
+  });
 });

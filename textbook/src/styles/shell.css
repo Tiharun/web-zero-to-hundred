@@ -156,142 +156,215 @@
   min-height: calc(100dvh - var(--topbar-h));
 }
 
-/* ───────── 사이드바 ───────── */
+/* ───────── 사이드바 (DESIGN.md Navigation "사이드바"·"Day 행") ───────── */
 
 #sidebar {
   position: sticky;
   top: var(--topbar-h);
   align-self: start;
   height: calc(100dvh - var(--topbar-h));
-  padding: 12px 10px 32px;
   overflow-y: auto;
   overscroll-behavior: contain;
   background: var(--color-card);
   border-right: 1px solid var(--color-rule);
-  font-size: 0.93rem;
-  line-height: 1.45;
 }
 
-#sidebar a {
-  color: var(--text);
-  text-decoration: none;
+/* 목록 한 벌: 사이드바와 서랍이 같이 쓴다 */
+.side {
+  padding: var(--space-md) var(--space-sm) var(--space-2xl);
+  color: var(--color-ink);
 }
-
-.side-home,
-.side-days a[data-day] {
-  display: grid;
-  grid-template-columns: 1.7em minmax(0, 1fr);
-  align-items: baseline;
-  gap: 4px;
-  padding: 7px 10px;
-  border-radius: var(--radius-sm);
-}
-.side-days a[data-day] {
-  grid-template-columns: 1.7em auto minmax(0, 1fr);
-}
-.side-overview,
-.side-appendix a {
-  display: block;
-  padding: 7px 10px;
-  border-radius: var(--radius-sm);
-}
-.side-overview {
-  color: var(--muted);
-}
-.side-appendix .mark {
-  margin-right: 0.4em;
-}
-#sidebar a:hover {
-  background: var(--surface-2);
-}
-#sidebar a[aria-current="page"] {
-  background: var(--accent-soft);
-  box-shadow: inset 4px 0 0 var(--accent);
-  font-weight: 700;
-}
-#sidebar a[data-state="next"] {
-  font-weight: 700;
-}
-#sidebar a[data-state="next"] .mark {
-  color: var(--accent);
-}
-#sidebar a[data-state="locked"] {
-  color: var(--muted);
-}
-.side-num {
-  color: var(--muted);
-  white-space: nowrap;
-  font-size: 0.85em;
-}
-.mark {
-  text-align: center;
-}
-
-.side-project {
-  margin-top: 8px;
-}
-.side-project > summary {
+.side-head {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding: 9px 10px;
-  border-radius: var(--radius-sm);
+  gap: var(--space-xs);
+  padding: 0 var(--space-2xs) var(--space-sm);
+}
+.side-home {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 var(--space-xs);
+  border-radius: var(--radius-btn);
+  color: var(--color-ink);
+  font-size: var(--text-ui);
   font-weight: 800;
-  cursor: pointer;
-  list-style: none;
+  text-decoration: none;
+  transition: background-color var(--dur-micro) var(--ease-out);
 }
-.side-project > summary::-webkit-details-marker {
-  display: none;
+.side-home:hover,
+.side-home[aria-current="page"] {
+  background: var(--color-track);
 }
-.side-project > summary::before {
-  content: "▸";
-  flex: none;
-  color: var(--muted);
-  transition: transform 0.15s;
-}
-.side-project[open] > summary::before {
-  transform: rotate(90deg);
-}
-.side-project > summary:hover {
-  background: var(--surface-2);
-}
-.side-title {
-  flex: 1;
-  min-width: 0;
-}
-.side-count {
-  flex: none;
-  color: var(--muted);
-  font-size: 0.85em;
-  font-weight: 600;
-}
-.side-project[data-state="locked"] > summary {
-  color: var(--muted);
-}
-.side-days,
-.side-pages {
-  list-style: none;
-  margin: 2px 0 0;
-  padding: 0;
+.side-worlds {
+  display: grid;
+  gap: var(--space-2xs);
 }
 
+/* 월드 Accordion */
+.world > summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: 52px;
+  padding: var(--space-xs);
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  list-style: none;
+  transition: background-color var(--dur-micro) var(--ease-out);
+}
+.world > summary::-webkit-details-marker {
+  display: none;
+}
+.world > summary:hover {
+  background: var(--color-track);
+}
+.world-sum {
+  display: grid;
+  min-width: 0;
+}
+.world-name {
+  font-size: var(--text-ui);
+  font-weight: 800;
+  line-height: 1.35;
+}
+.world-count {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  font-size: var(--text-ui);
+  color: var(--color-ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.world-chev {
+  color: var(--color-ink-2);
+  transition: transform var(--dur-short) var(--ease-out);
+}
+.world[open] .world-chev {
+  transform: rotate(180deg);
+}
+/* 사용자가 펼칠 때만 내용이 올라온다. 160ms 는 DESIGN.md Motion 표 "Accordion" 값 */
+.world.is-animating[open] > .rows,
+.world.is-animating[open] > .world-lock {
+  animation: acc-in 160ms var(--ease-out);
+}
+@keyframes acc-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+.world-lock {
+  margin: 0;
+  padding: var(--space-2xs) var(--space-xs) var(--space-xs);
+  font-size: var(--text-ui);
+  line-height: 1.5;
+  color: var(--color-ink-2);
+}
+
+/* Day 행 */
+.rows {
+  display: grid;
+  margin: 0;
+  padding: 0 0 var(--space-xs);
+  list-style: none;
+}
+.row {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: 36px;
+  padding: var(--space-2xs) var(--space-xs);
+  border-radius: var(--radius-btn);
+  color: var(--color-ink);
+  font-size: var(--text-ui);
+  line-height: 1.35;
+  text-decoration: none;
+  transition: background-color var(--dur-micro) var(--ease-out);
+}
+a.row:hover,
+a.row[aria-current="page"] {
+  background: var(--color-track);
+}
+a.row:active {
+  background: var(--color-rule);
+}
+button.row {
+  width: 100%;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--text-ui);
+  line-height: 1.35;
+  text-align: start;
+  cursor: pointer;
+}
+.row-num {
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  color: var(--color-ink-2);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.row-mark {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-ink-2);
+}
+.row.is-done .row-mark {
+  color: var(--color-progress);
+}
+.row.is-done .row-title {
+  color: var(--color-ink-2);
+}
+.row.is-today {
+  font-weight: 800;
+}
+.row.is-today .row-num {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin-inline: auto;
+  border-radius: var(--radius-btn);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  box-shadow: 0 2px 0 var(--color-accent-deep);
+}
+.row.is-locked {
+  color: var(--color-ink-2);
+}
+.row-draft {
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  color: var(--color-ink-2);
+}
+@media (pointer: coarse) {
+  .row {
+    min-height: 44px;
+  }
+}
+
+/* 부록 */
 .side-appendix {
-  margin-top: 20px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
+  margin-top: var(--space-md);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-rule);
 }
 .side-appendix h2 {
-  margin: 0 10px 4px;
-  font-size: 0.8rem;
-  color: var(--muted);
-  letter-spacing: 0.04em;
+  margin: 0 var(--space-xs) var(--space-2xs);
+}
+.side-appendix .row {
+  grid-template-columns: minmax(0, 1fr) auto;
 }
 
 .nav-backdrop {
   display: none;
 }
-
 
 /* ───────── 본문 틀 ───────── */
 

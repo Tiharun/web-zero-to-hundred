@@ -315,3 +315,28 @@ test('magnetic follows the Day complete button after the footer redraws, and ski
     else assert.ok(parseFloat(after.mx) > 0, `다시 그린 버튼도 끌린다 (${after.mx})`);
   });
 });
+
+// ───────── M2: 잠긴 사이드바 행 ─────────
+
+test('reduced motion: locked sidebar row does not shake but still explains', TIMEOUT, async () => {
+  await withPage(
+    '#/',
+    async (page) => {
+      await page.locator('#sidebar details.world[data-project="fb"] > summary').click();
+      const row = page.locator('#sidebar [data-day="fb-d01"]');
+      await row.click();
+      await eventually(async () => assert.equal(await page.locator('.toast').count(), 1));
+      assert.equal(await row.evaluate((el) => el.getAnimations().length), 0);
+    },
+    { reducedMotion: 'reduce' },
+  );
+});
+
+test('locked sidebar row shakes', TIMEOUT, async () => {
+  await withPage('#/', async (page) => {
+    await page.locator('#sidebar details.world[data-project="fb"] > summary').click();
+    const row = page.locator('#sidebar [data-day="fb-d01"]');
+    await row.click();
+    assert.equal(await row.evaluate((el) => el.getAnimations().some((a) => a.id === 'shake')), true);
+  });
+});

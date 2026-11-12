@@ -123,6 +123,31 @@
 .text-link:hover {
   color: var(--color-accent-text);
 }
+/* 글자 버튼 (DESIGN.md Buttons "글자 버튼"): 예) "모두 펼치기" */
+.text-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  min-height: 32px;
+  padding: 0 var(--space-xs);
+  border: 0;
+  border-radius: var(--radius-btn);
+  background: none;
+  color: var(--color-ink-2);
+  font: inherit;
+  font-size: var(--text-ui);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+  transition: color var(--dur-micro) var(--ease-out);
+}
+.text-btn:hover {
+  color: var(--color-ink);
+}
+.text-btn:active {
+  color: var(--color-accent-text);
+}
 .btn-danger {
   border-color: var(--danger);
   color: var(--danger);

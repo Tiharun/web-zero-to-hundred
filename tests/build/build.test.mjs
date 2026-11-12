@@ -75,7 +75,7 @@ test('fixture builds to single file', async () => {
     for (const re of [
       /<a class="skip-link" href="#main"/,
       /<header class="topbar">/,
-      /<nav id="sidebar"/,
+      /<aside id="sidebar"/,
       /<main id="main"[^>]*tabindex="-1"/,
       /<div id="storage-banner"[^>]*\bhidden\b/,
     ]) {
