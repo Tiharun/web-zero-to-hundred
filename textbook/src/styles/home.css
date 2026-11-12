@@ -305,6 +305,389 @@
   }
 }
 
+/* 홈 구역 사이 간격(DESIGN.md Layout 홈 순서) */
+.home {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2xl);
+}
+.home > .notice {
+  margin: 0;
+}
+.home :is(h2, h3) {
+  margin: 0;
+}
+
+/* 월드맵 (DESIGN.md Layout "월드맵 배치", Components > Board Tiles·Tooltip) */
+.map {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+.map-card {
+  padding: var(--space-lg) var(--space-xl) var(--space-xl);
+}
+@media (max-width: 40rem) {
+  .map-card {
+    padding: var(--space-lg) var(--space-md);
+  }
+}
+.map-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-xs) var(--space-lg);
+}
+.map-head p {
+  margin: 0;
+}
+.map-name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--text-h2);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+/* 월드 문장: 도트 그림을 담는 작은 칸 */
+.badge {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--color-rule);
+  border-radius: var(--radius-btn);
+  background: var(--color-paper);
+}
+.badge .px {
+  width: 24px;
+  height: 24px;
+}
+.map-count {
+  font-size: var(--text-ui);
+  color: var(--color-ink-2);
+}
+.map-count .num {
+  color: var(--color-ink);
+  font-weight: 800;
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-lg);
+  margin: var(--space-md) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-ui);
+  color: var(--color-ink-2);
+}
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+.lg {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+.lg .px {
+  width: 8px;
+  height: 8px;
+}
+.lg-done {
+  background: var(--color-progress);
+  color: var(--color-progress-ink);
+}
+.lg-open {
+  border: 2px solid var(--color-ink-2);
+  background: var(--color-card);
+}
+.lg-draft {
+  border: 2px dashed var(--color-ink-2);
+  background: var(--color-card);
+}
+
+.trail-wrap {
+  container-type: inline-size;
+  position: relative;
+  margin-top: var(--space-lg);
+  overflow-x: clip;
+}
+.trail {
+  position: relative;
+  height: var(--h-s);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.trail-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.trail-m,
+.trail-l {
+  display: none;
+}
+.trail-svg path {
+  fill: none;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.trail-track {
+  stroke: var(--color-line);
+  stroke-width: 4;
+  stroke-dasharray: 4 6;
+}
+.trail-done {
+  stroke: var(--color-progress);
+  stroke-width: 6;
+  stroke-linecap: square;
+}
+.node {
+  position: absolute;
+  left: calc(var(--xs) * 1%);
+  top: calc(var(--ys) * 1%);
+  transform: translate(-50%, -50%);
+}
+/* 보드게임 칸: 바닥 턱이 있는 둥근 네모. 손을 올리면 통 튀어 오르고 누르면 턱이 눌린다 */
+.node > :is(a, .node-face) {
+  --tile-edge: var(--color-ink-2);
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-btn);
+  background: var(--color-card);
+  border: 2px solid var(--tile-edge);
+  color: var(--color-ink-2);
+  text-decoration: none;
+  box-shadow: 0 3px 0 var(--tile-edge);
+  transition: transform var(--dur-short) var(--ease-bounce), box-shadow var(--dur-short) var(--ease-bounce);
+}
+.node > a::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: var(--radius-card);
+}
+.node > a:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 0 var(--tile-edge);
+}
+.node > a:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--tile-edge);
+  transition-duration: 60ms;
+}
+.node-num {
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.node.is-done > a {
+  --tile-edge: var(--color-progress-deep);
+  background: var(--color-progress);
+  color: var(--color-progress-ink);
+}
+.node.is-draft > a {
+  border-style: dashed;
+  box-shadow: none;
+}
+.node.is-locked > .node-face {
+  border-style: dashed;
+  box-shadow: none;
+}
+.node.is-today > a {
+  --tile-edge: var(--color-accent-deep);
+  width: 46px;
+  height: 46px;
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  box-shadow: 0 var(--ledge) 0 var(--tile-edge);
+}
+.node.is-today .node-num {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  font-weight: 800;
+}
+/* 깃발은 칸 윗면 오른쪽에 꽂혀 선다: 깃대 밑동이 테두리 바깥에 닿고 칸 안으로 들어오지 않는다 */
+.node-flag {
+  position: absolute;
+  left: calc(100% - 12px);
+  bottom: calc(100% + 2px);
+}
+.node.is-today .node-flag {
+  left: calc(100% - 10px);
+}
+/* 진행 방향 화살표: 길 위에 얹히고, 지나온 구간은 완료색 */
+.trail-dirs {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.dir {
+  position: absolute;
+  display: none;
+  padding: var(--space-3xs);
+  background: var(--color-card);
+  transform: translate(-50%, -50%);
+  line-height: 0;
+}
+.dir .px {
+  --px-1: var(--color-line);
+}
+.dir.is-done .px {
+  --px-1: var(--color-progress-deep);
+}
+.dir.is-back .px {
+  transform: scaleX(-1);
+}
+.dir-s {
+  display: block;
+}
+/* 오늘 칸 위에 선 말 */
+.pawn {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + var(--space-2xs));
+  transform: translateX(-50%);
+  pointer-events: none;
+  line-height: 0;
+}
+.node-today {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + var(--ledge) + var(--space-xs));
+  transform: translateX(-50%);
+  color: var(--color-accent-text);
+  white-space: nowrap;
+}
+.tip {
+  display: none;
+}
+@container (min-width: 30rem) {
+  .trail {
+    height: var(--h-m);
+  }
+  .trail-s {
+    display: none;
+  }
+  .trail-m {
+    display: block;
+  }
+  .node {
+    left: calc(var(--xm) * 1%);
+    top: calc(var(--ym) * 1%);
+  }
+  .dir-s {
+    display: none;
+  }
+  .dir-m {
+    display: block;
+  }
+}
+@container (min-width: 47.5rem) {
+  .trail {
+    height: var(--h-l);
+  }
+  .trail-m {
+    display: none;
+  }
+  .trail-l {
+    display: block;
+  }
+  .node {
+    left: calc(var(--xl) * 1%);
+    top: calc(var(--yl) * 1%);
+  }
+  .dir-m {
+    display: none;
+  }
+  .dir-l {
+    display: block;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .tip {
+    display: block;
+    position: absolute;
+    bottom: calc(100% + var(--space-xs));
+    z-index: var(--z-tooltip);
+    padding: var(--space-2xs) var(--space-sm);
+    border-radius: var(--radius-btn);
+    background: var(--color-ink);
+    color: var(--color-paper);
+    font-size: var(--text-ui);
+    font-weight: 800;
+    line-height: 1.4;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--dur-micro) var(--ease-out), visibility 0s linear var(--dur-micro);
+  }
+  .tip[data-s="start"] {
+    left: calc(var(--space-xs) * -1);
+  }
+  .tip[data-s="end"] {
+    right: calc(var(--space-xs) * -1);
+  }
+  @container (min-width: 30rem) {
+    .tip[data-m="start"] {
+      left: calc(var(--space-xs) * -1);
+      right: auto;
+    }
+    .tip[data-m="end"] {
+      right: calc(var(--space-xs) * -1);
+      left: auto;
+    }
+  }
+  @container (min-width: 47.5rem) {
+    .tip[data-l="start"] {
+      left: calc(var(--space-xs) * -1);
+      right: auto;
+    }
+    .tip[data-l="end"] {
+      right: calc(var(--space-xs) * -1);
+      left: auto;
+    }
+  }
+  .node > :is(a, .node-face):hover .tip {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity var(--dur-short) var(--ease-out) 800ms, visibility 0s linear 800ms;
+  }
+  .node > a:focus-visible .tip {
+    opacity: 1;
+    visibility: visible;
+    transition: none;
+  }
+  .node.is-today .tip {
+    bottom: calc(100% + var(--space-2xl));
+  }
+  /* The Tooltip Raise Rule: .node 의 transform 이 쌓임 맥락을 만들어 툴팁이 노드 안에 갇힌다. 툴팁이 뜬 노드를 앞으로 올린다 */
+  .node:hover,
+  .node:focus-within {
+    z-index: var(--z-tooltip);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .node > a:hover,
+  .node > a:active {
+    transform: none;
+  }
+}
+
 .path h2,
 .appendix h2 {
   margin: 40px 0 4px;

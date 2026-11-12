@@ -54,6 +54,18 @@ before(async () => {
   assert.equal(nf.ok, true, JSON.stringify(nf.errors));
   await writeFile(path.join(tmp, '404.html'), nf.html);
 
+  // 월드 fa 를 Day 6개로 늘린 사본: 3~6일차는 파일이 없어 준비 중 칸. 줄 끝 칸·한 칸짜리 줄을 본다
+  const sixDir = path.join(tmp, 'six-content');
+  await cp(FIXTURE, sixDir, { recursive: true });
+  const sixCurFile = path.join(sixDir, 'curriculum.json');
+  const sixCur = JSON.parse(await readFile(sixCurFile, 'utf8'));
+  const fa = sixCur.projects.find((p) => p.id === 'fa');
+  for (let n = 3; n <= 6; n++) fa.days.push({ title: `${n}번째 Day`, minutes: 60, summary: '준비 중인 Day예요.', keywords: ['준비'] });
+  await writeFile(sixCurFile, JSON.stringify(sixCur, null, 2));
+  const six = await build({ contentDir: sixDir, allowMissing: true });
+  assert.equal(six.ok, true, JSON.stringify(six.errors));
+  await writeFile(path.join(tmp, 'six.html'), six.html);
+
   server = await startStaticServer(tmp);
   browser = await launch();
 });
@@ -445,4 +457,54 @@ test('xp numbers keep their unit on the same line when the level panel is narrow
   // 안쪽 요소(.num)가 있으면 같은 줄에서도 조각이 둘이다. 조각들의 윗변이 모두 같으면 한 줄이다
   const lines = (n) => new Set([...n.getClientRects()].map((r) => Math.round(r.top))).size;
   for (const el of await units.all()) assert.equal(await el.evaluate(lines), 1, '숫자와 단위가 갈라지지 않는다');
+});
+
+// ───────── 홈 월드맵 (M4) ─────────
+
+test('world map: tooltip waits 800ms on hover, shows at once on focus, and stays inside the card', TIMEOUT, async () => {
+  const page = await open('#/', { width: 375, file: 'six.html' });
+  const map = page.getByTestId('world-map');
+  assert.equal(await map.locator('.dir-s').count(), 1, '둘째 줄(6일차 하나)에는 화살표가 없다');
+  const fifth = map.locator('.node[data-day="fa-d05"]');
+  const tip = fifth.locator('.tip');
+  const opacity = () => tip.evaluate((el) => getComputedStyle(el).opacity);
+  await fifth.locator('a').scrollIntoViewIfNeeded();
+  await fifth.locator('a').hover();
+  await page.waitForTimeout(300);
+  assert.equal(await opacity(), '0', '800ms 전에는 보이지 않는다');
+  await page.waitForTimeout(900);
+  assert.equal(await opacity(), '1');
+  const t = await tip.boundingBox();
+  const c = await map.locator('.map-card').boundingBox();
+  assert.ok(t.x >= c.x && t.x + t.width <= c.x + c.width, `툴팁 ${t.x}~${t.x + t.width}, 카드 ${c.x}~${c.x + c.width}`);
+
+  await page.mouse.move(0, 0);
+  await page.keyboard.press('Tab');
+  const first = map.locator('.node[data-day="fa-d01"]');
+  await first.locator('a').focus();
+  assert.equal(await first.locator('.tip').evaluate((el) => getComputedStyle(el).opacity), '1', '포커스는 바로 보인다');
+});
+
+test('world map switches layout s → m → l with its own width', TIMEOUT, async () => {
+  for (const [width, shown] of [[375, 's'], [768, 'm'], [1280, 'l']]) {
+    const page = await open('#/', { width });
+    const display = await page.locator('[data-testid="world-map"] .trail-svg').evaluateAll((els) =>
+      els.map((el) => [el.classList[1], getComputedStyle(el).display]),
+    );
+    assert.deepEqual(display, ['s', 'm', 'l'].map((k) => [`trail-${k}`, k === shown ? 'block' : 'none']), `${width}px`);
+  }
+});
+
+test('world map fits 320px: no page scroll and every tile inside the card', TIMEOUT, async () => {
+  const page = await open('#/', { width: 320, file: 'six.html' });
+  assert.equal(await noHorizontalScroll(page), 0);
+  const c = await page.locator('[data-testid="world-map"] .map-card').boundingBox();
+  const boxes = await page.locator('[data-testid="world-map"] .node > :is(a, span.node-face)').evaluateAll((els) =>
+    els.map((el) => {
+      const r = el.getBoundingClientRect();
+      return { x: r.x, w: r.width };
+    }),
+  );
+  assert.equal(boxes.length, 6);
+  for (const box of boxes) assert.ok(box.x >= c.x && box.x + box.w <= c.x + c.width, `칸 ${box.x}~${box.x + box.w}, 카드 ${c.x}~${c.x + c.width}`);
 });

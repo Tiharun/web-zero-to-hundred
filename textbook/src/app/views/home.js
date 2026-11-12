@@ -5,6 +5,7 @@ import { isUnlocked, projectState } from '../progress.js';
 import { chips, doneCount, h, lockReason, meter, notice as noticeLine } from './common.js';
 import { levelPanel } from './hud.js';
 import { questCard } from './quest.js';
+import { worldMap } from './worldmap.js';
 import { showToast } from './toast.js';
 
 const PROJECT_LABEL = { locked: '🔒 잠김', active: '▶ 진행 중', complete: '✅ 완료' };
@@ -64,6 +65,7 @@ export function renderHome(ctx, root) {
       h('h1', { class: 'sr-only' }, '홈'),
       noticeEl,
       h('div', { class: 'top-row' }, quest, levelPanel(ctx)),
+      worldMap(ctx),
       h(
         'section',
         { class: 'path', 'data-reveal': true },

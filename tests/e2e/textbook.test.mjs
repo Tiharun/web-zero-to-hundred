@@ -52,7 +52,7 @@ before(async () => {
     outcome: '특별한 결과물이에요.',
     days: [
       { title: '특별 첫 Day', minutes: 60, summary: '특별 과정의 첫 Day예요.', keywords: ['특별'] },
-      { title: '특별 둘째 Day', minutes: 60, summary: '아직 준비 중인 Day예요.', keywords: ['준비'] },
+      { title: '특별 둘째 Day 배포', minutes: 60, summary: '아직 준비 중인 Day예요.', keywords: ['준비'] },
     ],
   });
   await writeFile(curFile, JSON.stringify(cur));
@@ -1350,7 +1350,7 @@ test('quest card: next day not written yet offers a review', TIMEOUT, async () =
     await visit(page, app, '#/');
     assert.equal(await quest(page).getAttribute('data-kind'), 'pending');
     assert.match(await quest(page).locator('.quest-title').innerText(), /다음 Day는 준비 중이에요/);
-    assert.match(await quest(page).locator('.quest-summary').innerText(), /Day 2 ‘특별 둘째 Day’ 내용은 아직 쓰는 중이에요/);
+    assert.match(await quest(page).locator('.quest-summary').innerText(), /Day 2 ‘특별 둘째 Day 배포’ 내용은 아직 쓰는 중이에요/);
     const btn = page.getByTestId('review-button');
     assert.equal(await btn.innerText(), 'Day 1 복습하기');
     assert.equal(await btn.getAttribute('href'), '#/day/fs-d01');
@@ -1389,4 +1389,64 @@ test('xp grows after completing a day and fills only once per session', TIMEOUT,
     assert.equal(await xpNow(page), '150');
     assert.equal(await page.locator('.xp-fill').evaluate((el) => el.getAnimations().length), 0, '두 번째로 본 막대는 움직이지 않는다');
   });
+});
+
+// ───────────────────────── 홈 월드맵 (M4) ─────────────────────────
+
+const mapNode = (page, id) => page.locator(`[data-testid="world-map"] .node[data-day="${id}"]`);
+
+test('world map: first visit shows the current world with the pawn on today', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    const map = page.getByTestId('world-map');
+    assert.match(await map.locator('.map-name').innerText(), /픽스처 프로젝트 A/);
+    assert.equal(await map.locator('.node').count(), 2);
+    assert.equal(await map.locator('.map-count .num').innerText(), '0 / 2');
+    assert.match(await mapNode(page, 'fa-d01').getAttribute('class'), /is-today/);
+    assert.equal(await mapNode(page, 'fa-d01').locator('.pawn').count(), 1);
+    assert.equal(await mapNode(page, 'fa-d01').locator('a').getAttribute('aria-current'), 'step');
+    assert.equal(await mapNode(page, 'fa-d01').locator('a').getAttribute('aria-label'), 'Day 1 첫 번째 Day, 오늘');
+    assert.equal(await mapNode(page, 'fa-d02').locator('a').getAttribute('aria-label'), 'Day 2 두 번째 Day, 남음');
+    assert.deepEqual(await map.locator('.legend li').allInnerTexts(), ['오늘', '남음']);
+  });
+});
+
+test('world map: a cleared world is all green with a green trail and no pawn', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    const map = page.getByTestId('world-map');
+    for (const id of ['fa-d01', 'fa-d02']) {
+      assert.match(await mapNode(page, id).getAttribute('class'), /is-done/);
+      assert.equal(await mapNode(page, id).locator('a').evaluate((el) => getComputedStyle(el).backgroundColor), 'rgb(22, 163, 74)');
+    }
+    assert.equal(await map.locator('.trail-done').count(), 3);
+    assert.equal(await map.locator('.pawn').count(), 0);
+    assert.deepEqual(await map.locator('.legend li').allInnerTexts(), ['완료']);
+  }, seed(['fa-d01', 'fa-d02']));
+});
+
+test('world map: a skipped day stays green but the green trail starts only from day 1', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    assert.match(await mapNode(page, 'fa-d01').getAttribute('class'), /is-today/);
+    assert.match(await mapNode(page, 'fa-d02').getAttribute('class'), /is-done/);
+    assert.equal(await page.locator('[data-testid="world-map"] .trail-done').count(), 0);
+  }, seed(['fa-d02']));
+});
+
+test('world map: unwritten days are dashed and deploy days carry a flag', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    const map = page.getByTestId('world-map');
+    assert.match(await map.locator('.map-name').innerText(), /특별 프로젝트/);
+    assert.match(await mapNode(page, 'fs-d01').getAttribute('class'), /is-today/);
+    const draft = mapNode(page, 'fs-d02');
+    assert.match(await draft.getAttribute('class'), /is-draft/);
+    assert.match(await draft.getAttribute('class'), /is-deploy/);
+    const look = await draft.locator('a').evaluate((el) => [getComputedStyle(el).borderTopStyle, getComputedStyle(el).boxShadow]);
+    assert.deepEqual(look, ['dashed', 'none']);
+    assert.equal(await draft.locator('.node-flag').count(), 1);
+    assert.equal(await draft.locator('a').getAttribute('aria-label'), 'Day 2 특별 둘째 Day 배포, 준비 중, 배포 Day');
+    assert.deepEqual(await map.locator('.legend li').allInnerTexts(), ['오늘', '준비 중', '배포']);
+  }, { url: VARIANT_URL, ...seed(['fa-d01', 'fa-d02', 'fb-d01'], { lastDay: null }) });
 });
