@@ -450,6 +450,9 @@ components:
 | 다른 월드 `others` | `others (min-width: 30rem)` | 캐러셀에 카드 2장씩 |
 | 다른 월드 `others` | `others (min-width: 47.5rem)` | 4칸 격자, 카드 줄을 subgrid로 맞춘다. 캐러셀 버튼 숨김 |
 
+### Named Rules
+**The Fluid Rule (반응형).** 모든 화면은 한 마크업으로 320px부터 넓은 화면까지 맞춘다. 폭은 고정 px 대신 `%`·`minmax()`·`max-width`·`min()`과 컨테이너 쿼리로 정하고, 바뀌는 지점은 위 브레이크포인트·컨테이너 쿼리 표의 값만 쓴다(새 지점이 필요하면 이 표를 먼저 고친다). 설계 기준 폭은 360px 이상이고, 320px(WCAG 2.2 1.4.10 Reflow, 1280px를 400% 확대한 폭)에서도 가로 스크롤 없이 정보와 기능이 모두 남는다. 표·코드·지도처럼 2차원 배치가 필요한 부분만 자기 상자 안에서 가로로 스크롤한다. 손가락 포인터(`pointer: coarse`)에서는 누르는 대상이 44px 이상이다. 새 화면은 375·768·1280 × 라이트·다크 시각 테스트와 320·375·768·1280 전 페이지 점검(`check:site`)을 통과해야 끝난다.
+
 ### 월드맵 배치
 - Day 칸은 뱀 모양으로 줄을 바꿔 가며 놓는다(짝수 줄 왼→오, 홀수 줄 오→왼). 줄이 바뀌는 곳은 바깥으로 둥글게 도는 곡선(`bulge = a.c === 0 ? -42 : 42`, 칸 한 개 = viewBox 100).
 - 배치 s(기본): 한 줄 5칸, 줄 높이 84px. 배치 m: 한 줄 10칸, 84px. 배치 l: `cols: (n) => Math.min(15, Math.ceil(n / 2))`, `rowH: 88`. 넓은 지도는 한 줄 최대 15칸이며 Day가 30개를 넘으면 3줄이 된다.
@@ -631,6 +634,11 @@ components:
 - `ink` 바탕, `paper` 글자 15px 800 줄간격 1.4, 안쪽 4·12px, 모서리 6px, 한 줄.
 - 나타남: 마우스는 800ms 기다린 뒤 200ms 페이드(`transition: opacity var(--dur-short) var(--ease-out) 800ms, visibility 0s linear 800ms`), 키보드 포커스는 바로. 사라짐 120ms.
 - **The Tooltip Raise Rule.** 칸(`.node`)의 `transform`이 쌓임 맥락을 만들어 툴팁의 z-index가 칸 안에 갇힌다. 그래서 툴팁을 띄운 칸 자체를 앞으로 올린다: `.node:hover, .node:focus-within { z-index: var(--z-tooltip); }`. transform이 걸린 부모 안에 툴팁·팝오버를 넣을 때는 늘 이 규칙을 같이 둔다.
+
+### Forms
+- **라디오:** 브라우저 기본 모양 대신 `appearance: none`. 1.15em 원, 2px `ink-2` 테두리(경계 대비 3:1), `card` 바탕. hover 테두리 `ink`. 고르면 테두리와 가운데 점이 `accent-text`.
+- **체크박스:** 브라우저 기본 모양에 `accent-color: var(--color-accent-text)`.
+- 고른 상태의 분홍은 테마 메뉴의 선 체크와 같은 `accent-text`다(분홍 면이 아니므로 One Pink Rule과 겹치지 않는다).
 
 ### Chips
 - 기술 칩: `track` 바탕, 모서리 6px, 안쪽 2·8px, 15px, 줄간격 1.5. 최대 4개, 넘으면 바탕 없는 `ink-2` "외 n개".

@@ -29,7 +29,7 @@ npm run build
 
 - 결과는 저장소 루트의 `index.html`이다.
 - 옵션: `--check`(검사만), `--allow-missing`(없는 Day는 "준비 중" 화면), `--published`(`published.json` 범위 밖 Day는 "준비 중"), `--notfound`(404.html용), `--content <dir>`, `--out <file>`.
-- 저장소 루트 `index.html`은 배포본과 같은 규칙으로 만든다: `node build.mjs --published --allow-missing`.
+- `npm run build`는 배포본과 같은 규칙(`--published --allow-missing`)으로 저장소 루트 `index.html`을 만든다. 다른 조합은 `node build.mjs <옵션>`으로 직접 실행한다.
 
 ```bash
 npm test
@@ -59,7 +59,7 @@ npm run build:site
 npm run check:site -- https://tiharun.github.io/web-zero-to-hundred/
 ```
 
-- 전 페이지 점검: 사이트맵의 모든 화면과 404 두 개를 375px로 열어 렌더·가로 스크롤·콘솔 오류·외부 요청을 본다. 로컬 서버 주소도 된다.
+- 전 페이지 점검: 사이트맵의 모든 화면과 404 두 개를 320·375·768·1280px로 열어 렌더·가로 스크롤·콘솔 오류·외부 요청을 본다. 로컬 서버 주소도 된다.
 - e2e·시각·전 페이지 점검 전에 `NODE_PATH`를 `npm root -g`의 출력 경로로 맞춘다(`docs/CHECKPOINT.md` 5.2).
 - 기준선: `npm test`, `check`, `test:e2e`, `test:visual`이 모두 통과해야 한다.
 
@@ -109,7 +109,7 @@ node design-system/web-zero-to-hundred/prototype/build-home.mjs
 ## 코드 위치
 
 - 빌드: `textbook/build.mjs`, `textbook/lib/`(조립·검증·Markdown·용어, `site.mjs` 사이트맵·아이콘 채우기·파비콘, `styles.mjs` 스타일 순서·토큰 검사, `fonts.mjs` 글꼴 서브셋)
-- 앱: `textbook/src/app/`(`main.js`, `router.js`, `progress.js`, `storage.js`, `search.js`, `views/`, 아이콘 `views/icons.js`)
+- 앱: `textbook/src/app/`(`main.js`, `router.js`, `progress.js`, `storage.js`, `search.js`, 모션 도우미 `motion.js`, `views/`, 아이콘 `views/icons.js`, 토스트 `views/toast.js`)
 - 스타일·틀: `textbook/src/styles/`(`tokens.css` → `legacy` → `base` → `shell` → `components` → `home` → `day` → `pages` → `print` 순서로 합친다), `textbook/src/template.html`
 - 테스트: `tests/unit/`, `tests/build/`, `tests/e2e/`, `tests/visual/`, `tests/reference/`, 도우미 `tests/helpers/`(정적 서버, 브라우저, `site-check.mjs`), 픽스처 `tests/fixtures/`
 - 배포: `.github/workflows/deploy.yml`, 공개 범위 `textbook/content/published.json`
@@ -151,7 +151,19 @@ node design-system/web-zero-to-hundred/prototype/build-home.mjs
 - 저장소 파일에 모델 식별자나 개인정보를 쓰지 않는다.
 - 게임 어휘(퀘스트, 월드, 레벨, XP)는 라벨에만 쓴다. 지어낸 수치(연속 학습일, 순위, 후기)는 넣지 않는다.
 
-### 6. 보안: 공개 저장소에 올리지 않는 것
+### 6. 반응형 레이아웃
+
+- 모든 화면은 DESIGN.md Layout의 **The Fluid Rule**을 따른다. 320px(WCAG 1.4.10 Reflow)부터 넓은 화면까지 한 마크업으로 맞추고, 가로 스크롤은 0이다.
+- 폭은 고정 px 대신 `%`·`minmax()`·`max-width`·컨테이너 쿼리로 정한다. 바뀌는 지점은 DESIGN.md의 브레이크포인트·컨테이너 쿼리 표의 값만 쓴다.
+- 화면을 바꿨으면 3폭 × 2테마 시각 테스트와 4폭 전 페이지 점검(`check:site`)을 통과해야 완료다.
+
+### 7. 미루지 않는다
+
+- 작업 중에 찾은 작은 문제는 그 작업 안에서 고친다. "보류"로 남기지 않는다.
+- 다른 마일스톤의 화면이 있어야 할 수 있는 일은 그 자리에서 통합 로드맵 11장의 해당 행에 `(Mn에서 넘김: …)`으로 적는다. 대화나 원장에만 남기지 않는다.
+- 계정·되돌릴 수 없는 일(이력 재작성, force push, 결제)처럼 사용자 결정이 필요한 것만 멈추고, 그 절차를 알려 준다.
+
+### 8. 보안: 공개 저장소에 올리지 않는 것
 
 이 저장소는 GitHub에 공개된다. 한 번 push한 것은 지워도 이력·복제본에 남는다고 본다.
 
