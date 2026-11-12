@@ -107,15 +107,33 @@ export function reveal(els, env = motionEnv(), IO = globalThis.IntersectionObser
   return () => observer.disconnect();
 }
 
-/** 마우스가 둘레 32px 안에 오면 최대 6px 끌린다. 주 버튼에만 쓴다 */
-export function magnetic(el, env = motionEnv(), doc = el.ownerDocument) {
+const PRIMARY = '.btn-primary';
+const isInactive = (el) => el.disabled === true || el.getAttribute?.('aria-disabled') === 'true';
+
+function rest(el) {
+  el.style.setProperty('--mx', '0px');
+  el.style.setProperty('--my', '0px');
+  el.classList.remove('is-pulling');
+}
+
+/** 끌림의 몸통: 포인터가 움직일 때마다 getTarget() 으로 지금 버튼을 찾는다. 비활성 버튼은 끌지 않는다 */
+function pull(getTarget, env, doc) {
   if (env.reduce || !env.fine || !doc) return noop;
   const raf = globalThis.requestAnimationFrame ?? ((fn) => setTimeout(fn, 16));
   const caf = globalThis.cancelAnimationFrame ?? clearTimeout;
   let frame = 0;
   let last = null;
+  let pulled = null; // 마지막으로 끈 버튼
   const apply = () => {
     frame = 0;
+    const el = getTarget();
+    if (pulled && pulled !== el) rest(pulled); // 화면이 버튼을 바꿨다
+    pulled = el ?? null;
+    if (!el) return;
+    if (isInactive(el)) {
+      rest(el);
+      return;
+    }
     const r = el.getBoundingClientRect();
     const { x, y, inside } = magneticOffset({
       dx: last.clientX - (r.left + r.width / 2),
@@ -138,10 +156,22 @@ export function magnetic(el, env = motionEnv(), doc = el.ownerDocument) {
     doc.removeEventListener('pointermove', onMove);
     if (frame) caf(frame);
     frame = 0;
-    el.style.setProperty('--mx', '0px');
-    el.style.setProperty('--my', '0px');
-    el.classList.remove('is-pulling');
+    if (pulled) rest(pulled);
   };
+}
+
+/** 마우스가 둘레 32px 안에 오면 최대 6px 끌린다. 주 버튼에만 쓴다 */
+export function magnetic(el, env = motionEnv(), doc = el.ownerDocument) {
+  const dispose = pull(() => el, env, doc);
+  return dispose === noop ? noop : () => {
+    dispose();
+    rest(el);
+  };
+}
+
+/** root 안의 지금 주 버튼에 끌림을 준다. 화면이 버튼을 다시 그려도(예: Day 완료) 새 버튼을 따라간다 */
+export function magneticIn(root, env = motionEnv(), doc = root.ownerDocument) {
+  return pull(() => root.querySelector(PRIMARY), env, doc);
 }
 
 /** 마우스 위치에 따라 최대 maxDeg 만큼 기울인다. 나가면 CSS 전환(--dur-short)으로 돌아온다 */

@@ -1,5 +1,5 @@
 // 교재 앱 진입점: 임베드된 데이터를 읽고, 진도를 불러오고, 주소(해시)에 맞는 화면을 그린다.
-import { magnetic, motionEnv } from './motion.js';
+import { magneticIn } from './motion.js';
 import { continueTarget, normalizeProgress } from './progress.js';
 import { parseHash } from './router.js';
 import { createStore } from './storage.js';
@@ -128,8 +128,7 @@ function start() {
       main.replaceChildren(h('section', { class: 'notfound' }, h('h1', null, '화면을 그리다 문제가 생겼어요'), h('p', { class: 'lead' }, '새로고침하면 대부분 해결돼요. 계속되면 설정에서 진도를 백업해 두세요.')));
       title = '문제가 생겼어요';
     }
-    const env = motionEnv();
-    for (const el of main.querySelectorAll('.btn-primary')) ctx.onCleanup(magnetic(el, env)); // DESIGN.md: 끌림은 주 버튼에만
+    ctx.onCleanup(magneticIn(main)); // DESIGN.md: 끌림은 주 버튼에만. 화면이 버튼을 다시 그려도 따라간다
     main.dataset.hash = location.hash || '#/'; // e2e 테스트가 "이 주소의 화면이 다 그려졌다"를 기다리는 표시일 뿐, 앱 동작에는 쓰지 않는다
     document.title = `${title} · ${cur.title}`;
     shell.onRoute(route);

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   EASE_OUT,
   magnetic,
+  magneticIn,
   magneticOffset,
   motionEnv,
   onceInSession,
@@ -171,6 +172,31 @@ test('magnetic dispose removes the listener it added', () => {
   const doc = fakeDoc();
   const dispose = magnetic(fakeEl(), { reduce: false, fine: true }, doc);
   assert.equal(doc.listeners.length, 1);
+  dispose();
+  assert.equal(doc.listeners.length, 0);
+});
+
+const frame = () => new Promise((r) => setTimeout(r, 40)); // Node 에는 requestAnimationFrame 이 없어 setTimeout 으로 돈다
+
+test('magneticIn pulls whichever primary button is current and skips a disabled one', async () => {
+  const doc = fakeDoc();
+  let current = fakeEl();
+  const root = { ownerDocument: doc, querySelector: () => current };
+  const dispose = magneticIn(root, { reduce: false, fine: true }, doc);
+  const move = () => doc.listeners[0][1]({ pointerType: 'mouse', clientX: 110, clientY: 24 });
+  move();
+  await frame();
+  assert.ok(parseFloat(current.props['--mx']) > 0, '지금 버튼이 끌린다');
+  const old = current;
+  current = fakeEl(); // 화면이 버튼을 새로 만들었다
+  move();
+  await frame();
+  assert.ok(parseFloat(current.props['--mx']) > 0, '새 버튼이 끌린다');
+  assert.equal(old.props['--mx'], '0px', '옛 버튼은 제자리로');
+  current.disabled = true;
+  move();
+  await frame();
+  assert.equal(current.props['--mx'], '0px', '비활성 버튼은 끌리지 않는다');
   dispose();
   assert.equal(doc.listeners.length, 0);
 });

@@ -294,3 +294,24 @@ test('toast survives moving to another screen', TIMEOUT, async () => {
     assert.equal(await page.locator('main [data-testid="toast-region"]').count(), 0, '영역은 main 밖에 있다');
   });
 });
+
+test('magnetic follows the Day complete button after the footer redraws, and skips it while disabled', TIMEOUT, async () => {
+  await withPage('#/day/fa-d01', async (page) => {
+    const near = async () => {
+      const btn = page.getByTestId('complete-button');
+      await btn.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+      const box = await btn.boundingBox();
+      await page.mouse.move(5, 5);
+      await page.mouse.move(box.x + box.width + 14, box.y + box.height / 2, { steps: 4 });
+      await sleep(150);
+      return { disabled: await btn.isDisabled(), mx: await mx(btn) };
+    };
+    // 체크박스를 눌러 푸터를 다시 그리게 한다 (버튼이 새로 만들어진다)
+    const box = page.locator('.lesson-body input[type="checkbox"]').first();
+    await box.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    await box.check();
+    const after = await near();
+    if (after.disabled) assert.ok(isZero(after.mx), `비활성 버튼은 끌리지 않는다 (${after.mx})`);
+    else assert.ok(parseFloat(after.mx) > 0, `다시 그린 버튼도 끌린다 (${after.mx})`);
+  });
+});
