@@ -1205,3 +1205,22 @@ test('world menu works inside the drawer', TIMEOUT, async () => {
     { viewport: { width: 320, height: 640 } },
   );
 });
+
+test('drawer focuses the current row when there is no today Day', TIMEOUT, async () => {
+  await withPage(
+    async (page, app) => {
+      await visit(page, app, '#/day/fa-d02');
+      await page.locator('#menu-toggle').click();
+      await until(() => page.locator('#drawer').evaluate((d) => d.open));
+      // 오늘 행이 없으면 지금 화면 행으로 간다 (숨은 월드 메뉴 항목이 아니라)
+      assert.equal(await page.evaluate(() => document.activeElement.dataset.day ?? document.activeElement.outerHTML.slice(0, 80)), 'fa-d02');
+    },
+    {
+      viewport: { width: 375, height: 740 },
+      init: () => {
+        const at = '2026-01-01T00:00:00.000Z';
+        localStorage.setItem('wzh:v1:progress', JSON.stringify({ version: 1, completed: { 'fa-d01': at, 'fa-d02': at, 'fb-d01': at }, checks: {}, lastDay: 'fb-d01', theme: 'system' }));
+      },
+    },
+  );
+});

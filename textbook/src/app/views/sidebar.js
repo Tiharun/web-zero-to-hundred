@@ -224,7 +224,9 @@ export function createSidebar(ctx) {
     refresh,
     markCurrent,
     /** 서랍을 열 때 포커스할 곳: 오늘 행 → 지금 화면 → 첫 링크 */
-    focusTarget: () => nav.querySelector('.row.is-today') ?? nav.querySelector('[aria-current="page"]') ?? nav.querySelector('a[href]'),
+    // 월드 메뉴 항목도 aria-current 를 갖지만 메뉴가 닫혀 있으면 숨어 있으므로 목록 행과 홈 링크에서만 찾는다
+    focusTarget: () =>
+      nav.querySelector('.row.is-today') ?? nav.querySelector('.side-home[aria-current="page"], .row[aria-current="page"]') ?? nav.querySelector('a[href]'),
     /** 서랍 Stagger 대상 */
     summaries: () => [...nav.querySelectorAll('.world > summary')],
   };
