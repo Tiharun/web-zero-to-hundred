@@ -40,6 +40,10 @@ test('iconSvg is decorative and uses currentColor', () => {
   assert.throws(() => iconSvg('nope'));
 });
 
+test('worldEmblem gives graduation the trophy', () => {
+  assert.equal(worldEmblem({ id: 'grad' }), 'trophy');
+});
+
 test('worldEmblem follows DESIGN.md and falls back to star', () => {
   assert.deepEqual(['p1', 'p2', 'p3', 'sp', 'fa'].map((id) => worldEmblem({ id })), ['house', 'tv', 'pad', 'gift', 'star']);
 });

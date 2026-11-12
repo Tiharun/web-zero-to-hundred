@@ -97,4 +97,4 @@ export const icon = (name, cls = '') => fromString(`i:${name}:${cls}`, () => ico
 export const px = (name, opts = {}) => fromString(`p:${name}:${opts.cls ?? ''}:${opts.scale ?? 2}`, () => pxSvg(name, opts));
 
 /** 월드 엠블럼 도트 아이콘 이름 (DESIGN.md Icons). 모르는 월드는 별 */
-export const worldEmblem = (project) => ({ p1: 'house', p2: 'tv', p3: 'pad', sp: 'gift' })[project.id] ?? 'star';
+export const worldEmblem = (project) => ({ p1: 'house', p2: 'tv', p3: 'pad', sp: 'gift', grad: 'trophy' })[project.id] ?? 'star';

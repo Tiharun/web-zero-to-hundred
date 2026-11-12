@@ -139,9 +139,10 @@ test('no blurred shadow anywhere on the home screen', TIMEOUT, async () => {
 
 test('technology chips use the track chip from DESIGN.md', TIMEOUT, async () => {
   // 공용 함수는 번들 안에 있어서 직접 부르지 않는다. 화면에 그려진 부품으로 확인한다.
-  const page = await open('#/', { width: 1280 });
+  // 홈의 잠긴 월드 카드는 칩을 카드색으로 낮춘다(DESIGN.md "잠긴 월드 카드"). 기본 칩은 월드 화면에서 본다
+  const page = await open('#/project/fa', { width: 1280 });
   const chip = page.locator('main .chips li').first();
-  assert.ok((await chip.count()) > 0, '홈의 기술 칩');
+  assert.ok((await chip.count()) > 0, '월드 화면의 기술 칩');
   const chipStyle = await chip.evaluate((el) => {
     const s = getComputedStyle(el);
     return [s.backgroundColor, s.borderRadius, s.paddingTop, s.paddingLeft, s.fontSize];

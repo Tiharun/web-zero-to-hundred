@@ -6,7 +6,8 @@
   dialog {
     display: none;
   }
-  .toast-region {
+  .toast-region,
+  .carousel-btns {
     display: none !important;
   }
   /* 스크롤하지 않은 섹션 제목도 인쇄에 나온다 */

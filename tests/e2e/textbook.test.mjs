@@ -452,9 +452,9 @@ test('no horizontal page scroll at 360px', TIMEOUT, async () => {
         page.evaluate(() => ({
           scrollWidth: document.documentElement.scrollWidth,
           innerWidth: window.innerWidth,
-          // 코드 블록 안쪽을 빼고, 화면 오른쪽 밖으로 나간 요소
+          // 코드 블록·다른 월드 캐러셀(제 안에서만 넘친다) 안쪽을 빼고, 화면 오른쪽 밖으로 나간 요소
           escaped: [...document.querySelectorAll('main *, .topbar *')]
-            .filter((el) => !el.closest('pre') && el.getBoundingClientRect().right > window.innerWidth + 0.5)
+            .filter((el) => !el.closest('pre, .worlds') && el.getBoundingClientRect().right > window.innerWidth + 0.5)
             .map((el) => el.tagName.toLowerCase() + '.' + el.className),
         }));
 
@@ -1449,4 +1449,84 @@ test('world map: unwritten days are dashed and deploy days carry a flag', TIMEOU
     assert.equal(await draft.locator('a').getAttribute('aria-label'), 'Day 2 특별 둘째 Day 배포, 준비 중, 배포 Day');
     assert.deepEqual(await map.locator('.legend li').allInnerTexts(), ['오늘', '준비 중', '배포']);
   }, { url: VARIANT_URL, ...seed(['fa-d01', 'fa-d02', 'fb-d01'], { lastDay: null }) });
+});
+
+// ───────────────────────── 홈 다른 월드 (M4) ─────────────────────────
+
+const worldCards = (page) => page.locator('[data-testid="other-worlds"] .world-card');
+const worldCard = (page, id) => page.locator(`[data-testid="other-worlds"] .world-card[data-world="${id}"]`);
+
+test('other worlds: every world but the map one plus graduation; locked ones are dashed with the reason', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    assert.deepEqual(await worldCards(page).evaluateAll((els) => els.map((el) => el.dataset.world)), ['fb', 'grad']);
+    const fb = worldCard(page, 'fb');
+    assert.match(await fb.getAttribute('class'), /is-locked/);
+    assert.deepEqual(await fb.evaluate((el) => [getComputedStyle(el).borderTopStyle, getComputedStyle(el).boxShadow]), ['dashed', 'none']);
+    assert.match(await fb.locator('.wc-foot').innerText(), /‘픽스처 프로젝트 A’ 프로젝트를 끝내면 열려요/);
+    assert.match(await worldCard(page, 'grad').locator('.wc-foot').innerText(), /‘픽스처 프로젝트 B’/);
+    assert.equal(await fb.locator('.card-hit').evaluate((el) => el.tagName), 'BUTTON');
+  });
+});
+
+test('other worlds: an open world card opens its world page', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    const fb = worldCard(page, 'fb');
+    assert.match(await fb.getAttribute('class'), /is-open/);
+    assert.equal(await fb.locator('.wc-meta').innerText(), '월드 2, 열림');
+    await fb.locator('.card-hit').click();
+    await waitRoute(page, '#/project/fb');
+  }, seed(['fa-d01', 'fa-d02']));
+});
+
+test('other worlds: a cleared world shows a star and graduation says it is not written yet', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    assert.match(await page.getByTestId('world-map').locator('.map-name').innerText(), /픽스처 프로젝트 B/);
+    assert.deepEqual(await worldCards(page).evaluateAll((els) => els.map((el) => el.dataset.world)), ['fa', 'grad']);
+    const fa = worldCard(page, 'fa');
+    assert.match(await fa.getAttribute('class'), /is-cleared/);
+    assert.equal(await fa.locator('.star').count(), 1);
+    assert.equal(await fa.locator('.wc-meta').innerText(), '월드 1, 클리어');
+    const grad = worldCard(page, 'grad');
+    assert.equal(await grad.locator('.wc-meta').innerText(), '졸업, 준비 중');
+    assert.match(await grad.locator('.wc-foot').innerText(), /아직 쓰는 중이에요/);
+    assert.equal(await grad.locator('a.card-hit').count(), 0);
+  }, seed(['fa-d01', 'fa-d02', 'fb-d01']));
+});
+
+test('other worlds: carousel moves by keys and buttons, and is a grid when wide', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    const list = page.locator('[data-testid="other-worlds"] .worlds');
+    const prev = page.locator('[data-carousel="-1"]');
+    const next = page.locator('[data-carousel="1"]');
+    await list.scrollIntoViewIfNeeded();
+    await until(async () => (await prev.getAttribute('aria-disabled')) === 'true' && (await next.getAttribute('aria-disabled')) === 'false');
+    await list.focus();
+    await page.keyboard.press('ArrowRight');
+    await until(async () => (await list.evaluate((el) => el.scrollLeft)) > 0);
+    await until(async () => (await next.getAttribute('aria-disabled')) === 'true');
+    assert.equal(await prev.getAttribute('aria-disabled'), 'false');
+    await prev.click();
+    await until(async () => (await list.evaluate((el) => el.scrollLeft)) === 0);
+    await next.click();
+    await until(async () => (await list.evaluate((el) => el.scrollLeft)) > 0);
+  }, { viewport: { width: 375, height: 800 } });
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    assert.equal(await page.locator('.carousel-btns').evaluate((el) => getComputedStyle(el).display), 'none');
+    assert.equal(await page.locator('.worlds').evaluate((el) => getComputedStyle(el).display), 'grid');
+  }, { viewport: { width: 1280, height: 800 } });
+});
+
+test('other worlds: arrow keys on a card do not move the carousel', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    await worldCard(page, 'fb').locator('.card-hit').focus();
+    await page.keyboard.press('ArrowRight');
+    await sleep(400);
+    assert.equal(await page.locator('.worlds').evaluate((el) => el.scrollLeft), 0);
+  }, { viewport: { width: 375, height: 800 } });
 });

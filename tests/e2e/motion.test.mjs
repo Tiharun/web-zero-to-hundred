@@ -199,11 +199,12 @@ test('print shows headings that have not been revealed yet', TIMEOUT, async () =
 // ───────── 토스트 · 잠긴 프로젝트 카드 Shake ─────────
 // 픽스처에서 fb 는 fa 를 끝내야 열리므로 잠겨 있다.
 
-const LOCKED = '.path-item[data-project="fb"] .path-card';
+const LOCKED = '.world-card[data-world="fb"] .card-hit';
+const LOCKED_CARD = '.world-card[data-world="fb"]';
 // hover 전환(CSS transition)도 getAnimations 에 잡히므로 흔들림만 센다
 const shakes = (locator) => locator.evaluate((el) => el.getAnimations().filter((a) => a.id === 'shake').length);
 const toasts = (page) => page.getByTestId('toast');
-/** 잠긴 카드는 aria-disabled 라 Playwright 의 locator.click 이 "enabled 아님"으로 기다린다. 사람처럼 좌표로 누른다 */
+/** 사람처럼 카드 가운데 좌표를 누른다 */
 async function clickAt(page, locator) {
   await locator.evaluate((el) => el.scrollIntoView({ block: 'center' }));
   const box = await locator.boundingBox();
@@ -212,11 +213,13 @@ async function clickAt(page, locator) {
 
 test('locked card shakes and explains instead of opening', TIMEOUT, async () => {
   await withPage('#/', async (page) => {
-    const card = page.locator(LOCKED);
-    assert.equal(await card.getAttribute('aria-disabled'), 'true');
-    await clickAt(page, card);
+    const hit = page.locator(LOCKED);
+    const card = page.locator(LOCKED_CARD);
+    assert.equal(await hit.evaluate((el) => el.tagName), 'BUTTON');
+    await clickAt(page, hit);
     assert.equal(await page.evaluate(() => location.hash), '#/');
     assert.equal(await shakes(card), 1, '흔들린다');
+    assert.match(await card.locator('.wc-foot').getAttribute('class'), /is-told/, '발판 문장을 강조한다');
     await toasts(page).first().waitFor();
     assert.equal(await toasts(page).count(), 1);
     assert.match(await toasts(page).first().textContent(), /끝내면 열려요/);
@@ -228,9 +231,8 @@ test('reduced motion: locked card does not shake but still explains', TIMEOUT, a
   await withPage(
     '#/',
     async (page) => {
-      const card = page.locator(LOCKED);
-      await clickAt(page, card);
-      assert.equal(await shakes(card), 0);
+      await clickAt(page, page.locator(LOCKED));
+      assert.equal(await shakes(page.locator(LOCKED_CARD)), 0);
       await toasts(page).first().waitFor();
       assert.match(await toasts(page).first().textContent(), /끝내면 열려요/);
     },
@@ -276,13 +278,6 @@ test('toast hides after four seconds and pauses on hover', TIMEOUT, async () => 
     },
     { clock: true },
   );
-});
-
-test('unlocked card still opens its project', TIMEOUT, async () => {
-  await withPage('#/', async (page) => {
-    await page.locator('.path-item[data-project="fa"] .path-card').click();
-    await page.locator('main[data-hash="#/project/fa"]').waitFor();
-  });
 });
 
 test('toast survives moving to another screen', TIMEOUT, async () => {
@@ -391,6 +386,40 @@ test('reduced motion: quest card does not tilt', TIMEOUT, async () => {
     await page.mouse.move(box.x + box.width * 0.95, box.y + 5);
     assert.equal(await card.evaluate((el) => el.style.transform), '');
   }, { reducedMotion: 'reduce' });
+});
+
+// ───────── 월드 카드 Tilt·Reveal (M4) ─────────
+
+const angles = (t) => (t.match(/-?[\d.]+(?=deg)/g) ?? []).map(Number);
+
+test('world card tilts up to 4° under a mouse and not when reduced', TIMEOUT, async () => {
+  for (const reducedMotion of ['no-preference', 'reduce']) {
+    await withPage('#/', async (page) => {
+      const card = page.locator(LOCKED_CARD);
+      await card.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+      await page.waitForTimeout(400);
+      const box = await card.boundingBox();
+      await page.mouse.move(box.x + box.width * 0.9, box.y + box.height * 0.1);
+      await page.mouse.move(box.x + box.width * 0.95, box.y + box.height * 0.15);
+      const t = await card.evaluate((el) => el.style.transform);
+      if (reducedMotion === 'reduce') assert.equal(t, '');
+      else {
+        assert.match(t, /^perspective\(1000px\) rotateX\(.+deg\) rotateY\(.+deg\)$/);
+        const [rx, ry] = angles(t);
+        assert.ok(Math.abs(rx) <= 4 && Math.abs(ry) <= 4 && Math.abs(ry) > 3, `각도 ${rx}, ${ry}`);
+      }
+    }, { reducedMotion });
+  }
+});
+
+test('world cards rise into view once', TIMEOUT, async () => {
+  await withPage('#/', async (page) => {
+    const card = page.locator(LOCKED_CARD);
+    assert.ok((await card.boundingBox()).y > 800, '처음에는 화면 밖');
+    assert.match(await card.getAttribute('class'), /reveal-pending/);
+    await card.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    await eventually(async () => assert.doesNotMatch(await card.getAttribute('class'), /reveal-pending/));
+  });
 });
 
 // ───────── XP 막대 채움 (M3) ─────────
