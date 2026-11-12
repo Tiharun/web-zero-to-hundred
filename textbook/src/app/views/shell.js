@@ -101,9 +101,15 @@ export function createShell(ctx) {
   }
 
   setupDialog(drawer);
-  drawer.addEventListener('close', () => {
-    sidebar.append(side.nav); // 목록을 사이드바로 돌려놓는다
+  // 닫히는 순간(open 속성이 빠질 때) 목록을 사이드바로 돌려놓고 버튼 상태를 맞춘다.
+  // close 이벤트는 다음 태스크에 오므로 기다리지 않는다
+  new MutationObserver(() => {
+    if (drawer.open) return;
+    sidebar.append(side.nav);
     menuToggle.setAttribute('aria-expanded', 'false');
+  }).observe(drawer, { attributes: true, attributeFilter: ['open'] });
+  // 포커스는 브라우저가 연 버튼으로 돌려놓은 뒤(close 이벤트)에 옮겨야 한다
+  drawer.addEventListener('close', () => {
     const target = focusAfterClose;
     focusAfterClose = undefined;
     if (target?.isConnected) target.focus({ preventScroll: true });

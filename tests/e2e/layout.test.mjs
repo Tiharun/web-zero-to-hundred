@@ -337,7 +337,7 @@ test('the notfound build shows 404 at an empty hash and links home by the config
   assert.equal(await page.locator('.wordmark').getAttribute('href'), 'https://example.test/fixture/#/');
   const footerHrefs = await page.locator('.footer-links a').evaluateAll((els) => els.map((a) => a.getAttribute('href')));
   assert.ok(footerHrefs.length > 0 && footerHrefs.every((href) => href.startsWith('https://example.test/fixture/#/')), footerHrefs.join(' '));
-  const sideHrefs = await page.locator('#sidebar a').evaluateAll((els) => els.map((a) => a.getAttribute('href')));
+  const sideHrefs = await page.locator('#sidebar a[href]').evaluateAll((els) => els.map((a) => a.getAttribute('href')));
   assert.ok(sideHrefs.length > 0 && sideHrefs.every((href) => href.startsWith('https://example.test/fixture/#/')), sideHrefs.join(' '));
   assert.match(await page.title(), /^찾을 수 없어요 · /);
 });

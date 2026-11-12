@@ -39,7 +39,7 @@ export function createSidebar(ctx) {
     const count = h('span', { class: 'world-count' }); // 사이드바 월드 요약과 같은 진도 표시
     const el = h(
       'a',
-      { role: 'menuitem', tabindex: '-1', href: `${base}#/project/${project.id}`, dataset: { project: project.id } },
+      { role: 'menuitem', tabindex: '-1', dataset: { project: project.id } }, // href 는 열린 월드에만 붙인다 (refresh)
       h('span', { class: 'world-sum' }, h('span', { class: 'world-tag label' }, worldLabel(project)), h('span', { class: 'world-menu-name' }, project.title)),
       count,
       icon('check', 'tick'),
@@ -52,16 +52,29 @@ export function createSidebar(ctx) {
     items: menuList,
     initialIndex: () => Math.max(menuList().findIndex((el) => el.getAttribute('aria-current') === 'page'), 0),
   });
-  // 잠긴 월드는 이동하지 않고 흔들며 이유를 알린다 (메뉴는 열어 둔다). 열린 월드는 메뉴를 닫고 링크대로 간다
+  // 잠긴 월드는 링크가 아니다(새 탭으로도 열리지 않는다). 누르면 이동하지 않고 흔들며 이유를 알린다 (메뉴는 열어 둔다).
+  // 열린 월드는 메뉴를 닫고 링크대로 간다
+  const lockedItem = (event) => {
+    const item = event.target.closest('[role="menuitem"]');
+    return item?.getAttribute('aria-disabled') === 'true' ? item : null;
+  };
+  const explainItem = (item) => explainLocked(item, cur.projects.find((p) => p.id === item.dataset.project));
   worldMenu.addEventListener('click', (event) => {
     const item = event.target.closest('[role="menuitem"]');
     if (!item) return;
-    if (item.getAttribute('aria-disabled') === 'true') {
+    if (lockedItem(event)) {
       event.preventDefault();
-      explainLocked(item, cur.projects.find((p) => p.id === item.dataset.project));
+      explainItem(item);
       return;
     }
     worldCtl.close(false);
+  });
+  // href 가 없는 항목은 Enter·Space 로 click 이 오지 않으므로 직접 받는다
+  worldMenu.addEventListener('keydown', (event) => {
+    const item = (event.key === 'Enter' || event.key === ' ') && lockedItem(event);
+    if (!item) return;
+    event.preventDefault();
+    explainItem(item);
   });
 
   const head = h('div', { class: 'side-head' }, homeLink, worldBtn, expandBtn, worldMenu);
@@ -180,8 +193,13 @@ export function createSidebar(ctx) {
       w.details.dataset.state = state;
       w.lock.hidden = state !== 'locked';
       const m = menuItems.get(project.id);
-      if (state === 'locked') m.el.setAttribute('aria-disabled', 'true');
-      else m.el.removeAttribute('aria-disabled');
+      if (state === 'locked') {
+        m.el.setAttribute('aria-disabled', 'true');
+        m.el.removeAttribute('href');
+      } else {
+        m.el.removeAttribute('aria-disabled');
+        m.el.setAttribute('href', `${base}#/project/${project.id}`);
+      }
       for (const box of [w.count, m.count]) {
         if (state === 'locked') box.replaceChildren(px('lock'), h('span', { class: 'sr-only' }, '잠김'));
         else box.replaceChildren(String(doneCount(prog, project)), h('span', { class: 'sr-only' }, '개 완료, 전체'), ` / ${project.days.length}`);

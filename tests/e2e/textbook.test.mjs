@@ -662,8 +662,7 @@ test('mobile drawer opens as a dialog and closes by Escape, backdrop, button and
         await toggle.click();
         await until(isOpen);
       };
-      // close 이벤트(목록 되돌리기·aria-expanded)는 open 이 꺼진 다음 태스크에 온다. 둘 다 끝나야 닫힌 것이다
-      const closed = () => until(async () => !(await isOpen()) && (await toggle.getAttribute('aria-expanded')) === 'false');
+      const closed = () => until(async () => !(await isOpen()));
 
       await openIt();
       assert.equal(await toggle.getAttribute('aria-expanded'), 'true');
@@ -1224,5 +1223,61 @@ test('drawer focuses the current row when there is no today Day', TIMEOUT, async
         localStorage.setItem('wzh:v1:progress', JSON.stringify({ version: 1, completed: { 'fa-d01': at, 'fa-d02': at, 'fb-d01': at }, checks: {}, lastDay: 'fb-d01', theme: 'system' }));
       },
     },
+  );
+});
+
+test('locked world menu item is not a link but still explains from the keyboard', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    const fb = page.locator('#world-menu [data-project="fb"]');
+    // 링크가 아니므로 가운데 클릭·Ctrl+클릭으로 새 탭에 열리지 않는다
+    assert.equal(await fb.getAttribute('href'), null);
+    assert.equal(await page.locator('#world-menu [data-project="fa"]').getAttribute('href'), '#/project/fa');
+    await page.locator('#world-btn').focus();
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('End');
+    await page.keyboard.press('Enter');
+    await until(async () => (await page.locator('.toast').count()) === 1);
+    assert.match(await page.locator('.toast').first().innerText(), /프로젝트를 끝내면 열려요/);
+    assert.equal(await page.evaluate(() => location.hash), '#/');
+    assert.equal(await page.locator('#world-menu').isHidden(), false, '잠긴 항목에서는 메뉴가 열려 있다');
+  });
+});
+
+test('world menu item becomes a link once its world unlocks', TIMEOUT, async () => {
+  await withPage(
+    async (page, app) => {
+      await visit(page, app, '#/');
+      const fb = page.locator('#world-menu [data-project="fb"]');
+      assert.equal(await fb.getAttribute('href'), '#/project/fb');
+      assert.equal(await fb.getAttribute('aria-disabled'), null);
+    },
+    {
+      init: () => {
+        const at = '2026-01-01T00:00:00.000Z';
+        localStorage.setItem('wzh:v1:progress', JSON.stringify({ version: 1, completed: { 'fa-d01': at, 'fa-d02': at }, checks: {}, lastDay: 'fa-d02', theme: 'system' }));
+      },
+    },
+  );
+});
+
+test('drawer state follows the dialog without waiting for the close event', TIMEOUT, async () => {
+  await withPage(
+    async (page, app) => {
+      await visit(page, app, '#/');
+      await page.locator('#menu-toggle').click();
+      await until(() => page.locator('#drawer').evaluate((d) => d.open));
+      // close 이벤트는 다음 태스크에 온다. 그 전(마이크로태스크)에 이미 버튼 상태와 목록 위치가 맞아야 한다
+      const state = await page.evaluate(async () => {
+        document.getElementById('drawer').close();
+        await Promise.resolve();
+        return {
+          expanded: document.getElementById('menu-toggle').getAttribute('aria-expanded'),
+          navInSidebar: document.querySelector('#sidebar > nav.side') !== null,
+        };
+      });
+      assert.deepEqual(state, { expanded: 'false', navInSidebar: true });
+    },
+    { viewport: { width: 375, height: 740 } },
   );
 });
