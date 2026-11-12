@@ -15,6 +15,7 @@ import {
   toggleCheck,
   newlyUnlocked,
   continueTarget,
+  questState,
   navDayState,
   percent,
   exportBackup,
@@ -419,4 +420,31 @@ test('navDayState: today wins over draft, unknown id is locked', () => {
 test('navDayState: todayId argument overrides the computed one', () => {
   const cur = makeCur();
   assert.equal(navDayState(cur, emptyProgress(), 'fa-d01', null), 'open');
+});
+
+const withDone = (ids, lastDay = ids.at(-1) ?? null) => ({ ...emptyProgress(), completed: Object.fromEntries(ids.map((id) => [id, 't'])), lastDay });
+
+test('questState: start, continue and clear', () => {
+  const cur = makeCur();
+  assert.deepEqual(questState(cur, emptyProgress()), { kind: 'start', dayId: 'fa-d01', clearedId: null, reviewId: null, worldId: 'fa' });
+  assert.deepEqual(questState(cur, withDone(['fa-d01'])), { kind: 'continue', dayId: 'fa-d02', clearedId: null, reviewId: null, worldId: 'fa' });
+  assert.deepEqual(questState(cur, withDone(['fa-d01', 'fa-d02'])), { kind: 'clear', dayId: 'fb-d01', clearedId: 'fa', reviewId: null, worldId: 'fa' });
+});
+
+test('questState: without lastDay a finished world is just continue', () => {
+  const s = questState(makeCur(), withDone(['fa-d01', 'fa-d02'], null));
+  assert.equal(s.kind, 'continue');
+  assert.equal(s.dayId, 'fb-d01');
+  assert.equal(s.worldId, 'fb');
+});
+
+test('questState: pending wins and offers the last finished day', () => {
+  const cur = makeCur({ withSpecial: true }); // sp-d02 는 ready: false
+  assert.deepEqual(questState(cur, withDone(['fa-d01', 'fa-d02', 'fb-d01', 'sp-d01'])), { kind: 'pending', dayId: 'sp-d02', clearedId: null, reviewId: 'sp-d01', worldId: 'sp' });
+  assert.deepEqual(questState(makeCur({ readyFa01: false }), emptyProgress()), { kind: 'pending', dayId: 'fa-d01', clearedId: null, reviewId: null, worldId: 'fa' });
+});
+
+test('questState: done when every day is finished', () => {
+  assert.deepEqual(questState(makeCur(), withDone(['fa-d01', 'fa-d02', 'fb-d01'])), { kind: 'done', dayId: null, clearedId: null, reviewId: null, worldId: 'fb' });
+  assert.equal(questState(makeCur(), withDone(['fa-d01', 'fa-d02', 'fb-d01'], null)).worldId, 'fb', 'lastDay 가 없으면 마지막 프로젝트');
 });

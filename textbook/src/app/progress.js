@@ -171,19 +171,55 @@ export function newlyUnlocked(cur, before, after) {
     .map((item) => item.id);
 }
 
+/** main 먼저, 트랙 안에서는 order 순으로 정렬한 프로젝트 (continueTarget 과 같은 순서) */
+const orderedProjects = (cur) =>
+  ['main', 'special'].flatMap((track) =>
+    projectsOf(cur)
+      .filter((p) => p.track === track)
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+  );
+
 /** "이어서 하기" 대상. main 트랙을 order 순으로 보고 첫 next, main 이 끝났으면 special 의 첫 next */
 export function continueTarget(cur, prog) {
-  for (const track of ['main', 'special']) {
-    const projects = projectsOf(cur)
-      .filter((p) => p.track === track)
-      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-    for (const project of projects) {
-      if (!isUnlocked(cur, prog, project.requires)) continue;
-      const index = firstIncompleteIndex(project, prog);
-      if (index >= 0) return project.days[index].id;
-    }
+  for (const project of orderedProjects(cur)) {
+    if (!isUnlocked(cur, prog, project.requires)) continue;
+    const index = firstIncompleteIndex(project, prog);
+    if (index >= 0) return project.days[index].id;
   }
   return null;
+}
+
+/**
+ * 홈 퀘스트 카드의 상태. 저장하지 않고 prog 에서 매번 계산한다.
+ * 우선순위: 모두 완료(done) > 준비 중(pending) > 월드 클리어(clear) > 처음(start) > 공부 중(continue)
+ * worldId 는 "지금 월드": clear 면 끝낸 프로젝트, done 이면 lastDay 의 프로젝트(없으면 마지막 프로젝트), 그 밖에는 dayId 의 프로젝트
+ * @returns {{ kind: 'start' | 'continue' | 'clear' | 'pending' | 'done', dayId: string | null, clearedId: string | null, reviewId: string | null, worldId: string | null }}
+ */
+export function questState(cur, prog) {
+  const dayId = continueTarget(cur, prog);
+  const last = typeof prog.lastDay === 'string' && isDone(prog, prog.lastDay) ? locateDay(cur, prog.lastDay) : null;
+  const base = { dayId, clearedId: null, reviewId: null };
+
+  if (dayId === null) {
+    const world = last?.project ?? orderedProjects(cur).at(-1);
+    return { kind: 'done', ...base, worldId: world?.id ?? null };
+  }
+
+  const target = locateDay(cur, dayId);
+  const worldId = target.project.id;
+  if (target.project.days[target.index].ready === false) {
+    return { kind: 'pending', ...base, reviewId: last ? prog.lastDay : null, worldId };
+  }
+  if (
+    last &&
+    last.project.id !== worldId &&
+    isProjectComplete(cur, prog, last.project.id) &&
+    !target.project.days.some((d) => isDone(prog, d.id))
+  ) {
+    return { kind: 'clear', ...base, clearedId: last.project.id, worldId: last.project.id };
+  }
+  const anyDone = Object.keys(prog.completed).length > 0;
+  return { kind: anyDone ? 'continue' : 'start', ...base, worldId };
 }
 
 /** 트랙의 완료 Day 비율(내림, 0..100). Day 가 없는 트랙은 0 */
