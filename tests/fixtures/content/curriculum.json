@@ -54,8 +54,8 @@
     }
   ],
   "pages": [
-    { "id": "start", "title": "시작하기", "file": "start.md" },
+    { "id": "start", "title": "시작하기", "meta": "교재 쓰는 법, 공부 원칙, 준비물", "file": "start.md" },
     { "id": "secret", "title": "비밀 페이지", "requires": ["fb"], "file": "secret.md" },
-    { "id": "glossary", "title": "용어 사전", "generated": "glossary" }
+    { "id": "glossary", "title": "용어 사전", "meta": "용어 {n}개를 한 줄 정의로", "generated": "glossary" }
   ]
 }

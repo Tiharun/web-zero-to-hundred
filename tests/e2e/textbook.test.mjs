@@ -1530,3 +1530,22 @@ test('other worlds: arrow keys on a card do not move the carousel', TIMEOUT, asy
     assert.equal(await page.locator('.worlds').evaluate((el) => el.scrollLeft), 0);
   }, { viewport: { width: 375, height: 800 } });
 });
+
+// ───────────────────────── 홈 막혔을 때 (M4) ─────────────────────────
+
+test('help row: fixed order, real counts, and it opens the page', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    const row = page.getByTestId('help-row');
+    assert.deepEqual(await row.locator('.help-link').evaluateAll((els) => els.map((el) => el.dataset.page)), ['glossary', 'start']);
+    assert.equal(await row.locator('[data-page="glossary"] .help-meta').innerText(), '용어 2개를 한 줄 정의로');
+    assert.equal(await row.locator('[data-page="start"] .help-meta').innerText(), '교재 쓰는 법, 공부 원칙, 준비물');
+    const columns = () => row.locator('.help-list').evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(' ').length);
+    assert.equal(await columns(), 4);
+    assert.equal(await page.locator('main .appendix').count(), 0);
+    await page.setViewportSize({ width: 375, height: 800 });
+    await until(async () => (await columns()) === 1);
+    await row.locator('[data-page="start"]').click();
+    await waitRoute(page, '#/page/start');
+  });
+});

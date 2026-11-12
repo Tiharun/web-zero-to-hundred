@@ -4,7 +4,7 @@ import { cp, mkdtemp, readFile, rm, writeFile, mkdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadCurriculum } from '../../textbook/lib/curriculum.mjs';
+import { fillMeta, loadCurriculum } from '../../textbook/lib/curriculum.mjs';
 
 const FIXTURE = fileURLToPath(new URL('../fixtures/content', import.meta.url));
 
@@ -247,4 +247,19 @@ test('url must be https and end with a slash; description must be text', async (
     const { errors } = await loadWith(patch);
     assert.ok(errors.some((e) => e.code === 'E_CUR_SCHEMA' && e.message.startsWith(where)), `${where} ${JSON.stringify(patch)}`);
   }
+});
+
+test('page meta must be non-empty text when present', async () => {
+  const { errors } = await loadModified((dir, cur) => {
+    cur.pages[0].meta = '';
+    return cur;
+  });
+  assert.deepEqual(codes(errors), ['E_CUR_SCHEMA']);
+  assert.match(errors[0].message, /pages\[0\]\.meta/);
+});
+
+test('fillMeta puts the real count in place of {n}', () => {
+  assert.equal(fillMeta('용어 {n}개를 한 줄 정의로', 2), '용어 2개를 한 줄 정의로');
+  assert.equal(fillMeta('교재 쓰는 법', 0), '교재 쓰는 법');
+  assert.equal(fillMeta(undefined, 3), '');
 });

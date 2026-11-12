@@ -3360,21 +3360,25 @@
     {
       "id": "start",
       "title": "시작하기",
+      "meta": "교재 쓰는 법, 공부 원칙, 준비물",
       "file": "start.md"
     },
     {
       "id": "help",
       "title": "막혔을 때 탈출 가이드",
+      "meta": "막혔을 때 따라 할 순서",
       "file": "help.md"
     },
     {
       "id": "glossary",
       "title": "용어 사전",
+      "meta": "용어 {n}개를 한 줄 정의로",
       "generated": "glossary"
     },
     {
       "id": "troubleshooting",
       "title": "문제 해결 모음",
+      "meta": "증상 {n}가지와 해결 방법",
       "generated": "troubleshooting"
     }
   ]

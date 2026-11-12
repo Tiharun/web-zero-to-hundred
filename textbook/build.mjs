@@ -5,7 +5,7 @@ import { parseArgs } from 'node:util';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build as esbuild } from 'esbuild';
-import { loadCurriculum } from './lib/curriculum.mjs';
+import { fillMeta, loadCurriculum } from './lib/curriculum.mjs';
 import { parseGlossary, parseTroubleshooting, renderGlossaryPage, renderTroubleshootingPage } from './lib/glossary.mjs';
 import { assemble } from './lib/assemble.mjs';
 import { faviconDataUri, fillIcons, headTags, listRoutes } from './lib/site.mjs';
@@ -200,6 +200,9 @@ export async function build({
     ...days.map((d) => ({ id: `t-day-${d.id}`, html: rendered.get(d.id).html })),
     ...curriculum.pages.map((pg) => ({ id: `t-page-${pg.id}`, html: pageResults.get(pg.id).html })),
   ];
+  // 홈 "막혔을 때" 설명의 {n}: 용어 사전은 용어 항목 수, 문제 해결은 증상 항목 수
+  const symptoms = trouble.groups.reduce((n, g) => n + g.entries.length, 0);
+  const metaCount = (pg) => (pg.generated === 'glossary' ? glossary.entries.length : pg.generated === 'troubleshooting' ? symptoms : 0);
   const data = {
     title: curriculum.title,
     url: curriculum.url,
@@ -227,7 +230,7 @@ export async function build({
         ready: rendered.get(d.id).ready, // false 면 "준비 중" 화면이다 (사이드바 행 표시)
       })),
     })),
-    pages: curriculum.pages.map((pg) => ({ id: pg.id, title: pg.title, requires: pg.requires })),
+    pages: curriculum.pages.map((pg) => ({ id: pg.id, title: pg.title, requires: pg.requires, meta: fillMeta(pg.meta, metaCount(pg)) })),
     search: [
       ...days.map((d) => ({ id: d.id, kind: 'day', project: d.project, title: d.title, text: rendered.get(d.id).text })),
       ...curriculum.pages.map((pg) => ({ id: pg.id, kind: 'page', project: null, title: pg.title, text: pageResults.get(pg.id).text })),

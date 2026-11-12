@@ -890,30 +890,85 @@
   }
 }
 
-.appendix h2 {
-  margin: 40px 0 4px;
-  font-size: 1.5rem;
+/* 막혔을 때 (DESIGN.md Cards "막혔을 때 칸"): 2px rule 테두리 + 턱, 누르면 턱이 눌린다 */
+.help {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-sm);
 }
-
-.link-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 12px 0 0;
+.help-list {
+  display: grid;
+  gap: var(--space-sm);
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
   padding: 0;
   list-style: none;
 }
-.link-grid a {
-  display: inline-block;
-  padding: 6px 16px;
-  background: var(--surface);
-  border: 1px solid var(--border-strong);
-  border-radius: 999px;
-  color: var(--text);
-  text-decoration: none;
+@container (min-width: 30rem) {
+  .help-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
-.link-grid a:hover {
-  background: var(--surface-2);
+@container (min-width: 56rem) {
+  .help-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.help-link {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  height: 100%;
+  padding: var(--space-md);
+  border: 2px solid var(--color-rule);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+  color: var(--color-ink);
+  text-decoration: none;
+  box-shadow: 0 var(--ledge) 0 var(--color-rule);
+  transition: transform var(--dur-short) var(--ease-bounce), box-shadow var(--dur-short) var(--ease-bounce);
+}
+.help-link:active {
+  transform: translateY(calc(var(--ledge) - 1px));
+  box-shadow: 0 1px 0 var(--color-rule);
+  transition-duration: 60ms;
+}
+.help-icon {
+  --px-1: var(--color-ink);
+  --px-2: var(--color-cell);
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+.help-text {
+  display: grid;
+  gap: var(--space-3xs);
+  min-width: 0;
+}
+.help-title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  font-weight: 800;
+  font-size: var(--text-ui);
+  line-height: 1.4;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.18em;
+  transition: text-decoration-color var(--dur-micro) var(--ease-out);
+}
+.help-link:hover .help-title {
+  text-decoration-color: currentColor;
+}
+.help-meta {
+  font-size: var(--text-ui);
+  color: var(--color-ink-2);
+  line-height: 1.45;
+}
+@media (prefers-reduced-motion: reduce) {
+  .help-link:active {
+    transform: none;
+  }
 }
 
 /* ───────── 프로젝트 ───────── */

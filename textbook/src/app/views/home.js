@@ -1,8 +1,8 @@
-// 홈: 1행(퀘스트 카드 + 레벨 패널), 월드맵, 다른 월드, 부록 바로가기.
+// 홈: 1행(퀘스트 카드 + 레벨 패널), 월드맵, 다른 월드, 막혔을 때.
 import { levelOf, totalXp } from '../level.js';
 import { onceInSession, stagger, tilt, xpFill } from '../motion.js';
-import { isUnlocked } from '../progress.js';
 import { h, notice as noticeLine } from './common.js';
+import { helpRow } from './helprow.js';
 import { levelPanel } from './hud.js';
 import { questCard } from './quest.js';
 import { worldMap } from './worldmap.js';
@@ -25,20 +25,7 @@ export function renderHome(ctx, root) {
       h('div', { class: 'top-row' }, quest, levelPanel(ctx)),
       worldMap(ctx),
       others.el,
-      cur.pages.length > 0 &&
-        h(
-          'section',
-          { class: 'appendix', 'data-reveal': true },
-          h('h2', null, '부록'),
-          h(
-            'ul',
-            { class: 'link-grid' },
-            cur.pages.map((page) => {
-              const open = isUnlocked(cur, ctx.prog, page.requires);
-              return h('li', null, h('a', { href: `#/page/${page.id}` }, open ? page.title : `🔒 ${page.title}`));
-            }),
-          ),
-        ),
+      helpRow(ctx),
     ),
   );
   ctx.onCleanup(tilt(quest, 2)); // DESIGN.md Motion: 퀘스트 카드 Tilt 2°

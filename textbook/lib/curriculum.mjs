@@ -86,6 +86,7 @@ function checkSchema(cur, file) {
       }
       if (!isText(pg.title)) bad(`${at}.title`, '비어 있지 않은 글자여야 해요.');
       if (pg.requires !== undefined && !isTextList(pg.requires)) bad(`${at}.requires`, '글자 배열이어야 해요.');
+      if (pg.meta !== undefined && !isText(pg.meta)) bad(`${at}.meta`, '비어 있지 않은 글자여야 해요.');
       const hasFile = pg.file !== undefined;
       const hasGenerated = pg.generated !== undefined;
       if (hasFile === hasGenerated) {
@@ -104,6 +105,11 @@ function checkSchema(cur, file) {
     });
   }
   return problems;
+}
+
+/** 홈 "막혔을 때" 설명 한 줄: {n}을 실제 개수로 바꾼다. 설명이 없으면 '' */
+export function fillMeta(meta, count) {
+  return typeof meta === 'string' ? meta.replaceAll('{n}', String(count)) : '';
 }
 
 /** 'start.md' / 'pages/start.md' → ['pages','start.md']. 폴더 밖으로 나가는 경로는 null */

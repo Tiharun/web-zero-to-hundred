@@ -128,9 +128,9 @@ test('fixture builds to single file', async () => {
     });
     assert.deepEqual(data.projects[1].requires, ['fa']);
     assert.deepEqual(data.pages, [
-      { id: 'start', title: '시작하기', requires: [] },
-      { id: 'secret', title: '비밀 페이지', requires: ['fb'] },
-      { id: 'glossary', title: '용어 사전', requires: [] },
+      { id: 'start', title: '시작하기', requires: [], meta: '교재 쓰는 법, 공부 원칙, 준비물' },
+      { id: 'secret', title: '비밀 페이지', requires: ['fb'], meta: '' },
+      { id: 'glossary', title: '용어 사전', requires: [], meta: '용어 2개를 한 줄 정의로' },
     ]);
     assert.deepEqual(
       data.search.map((s) => [s.id, s.kind, s.project]),
