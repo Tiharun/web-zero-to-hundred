@@ -13,6 +13,7 @@ import {
   staggerDelays,
   tilt,
   tiltAngles,
+  xpFill,
 } from '../../textbook/src/app/motion.js';
 
 /** DOM 없는 Node 에서 쓰는 가짜 요소: animate·classList·style·리스너 기록 */
@@ -199,4 +200,15 @@ test('magneticIn pulls whichever primary button is current and skips a disabled 
   assert.equal(current.props['--mx'], '0px', '비활성 버튼은 끌리지 않는다');
   dispose();
   assert.equal(doc.listeners.length, 0);
+});
+
+test('xpFill: 600ms after 240ms from the left edge, skipped when reduced', () => {
+  const el = fakeEl();
+  el.ownerDocument = { defaultView: { getComputedStyle: () => ({ clipPath: 'inset(0px 80% 0px 0px)' }) } };
+  const anim = xpFill(el, { reduce: false, fine: true });
+  assert.ok(anim);
+  const [kf, opt] = el.calls.at(-1);
+  assert.deepEqual(kf, [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0px 80% 0px 0px)' }]);
+  assert.deepEqual([opt.duration, opt.delay, opt.fill], [600, 240, 'backwards']);
+  assert.equal(xpFill(fakeEl(), { reduce: true, fine: true }), null);
 });

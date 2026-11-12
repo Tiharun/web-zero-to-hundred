@@ -413,3 +413,34 @@ test('Ctrl+K opens search from any screen and focuses the input', TIMEOUT, async
   await page.keyboard.press('Control+k');
   assert.equal(await page.evaluate(() => document.activeElement?.dataset.testid), 'search-input');
 });
+
+// ───────── 홈 1행 (M3) ─────────
+
+test('home row splits 2/3 + 1/3 at 1280px and stacks at 375px', TIMEOUT, async () => {
+  const page = await open('#/', { width: 1280, height: 800 });
+  const q = await page.locator('.quest').boundingBox();
+  const l = await page.locator('.level').boundingBox();
+  assert.ok(Math.abs(q.width - 2 * l.width) <= 2, `퀘스트 ${q.width}, 레벨 ${l.width}`);
+  assert.equal(Math.round(q.y), Math.round(l.y));
+  assert.equal(Math.round(q.height), Math.round(l.height), '레벨 패널이 퀘스트 높이로 늘어난다');
+  const btn = await page.getByTestId('continue-button').boundingBox();
+  const num = await page.locator('.bignum-value').boundingBox();
+  assert.ok(btn.y + btn.height <= 800 && num.y + num.height <= 800, '큰 번호와 버튼이 첫 화면(800px) 안');
+  const narrow = await open('#/', { width: 375 });
+  const q2 = await narrow.locator('.quest').boundingBox();
+  const l2 = await narrow.locator('.level').boundingBox();
+  assert.ok(l2.y >= q2.y + q2.height, '좁으면 레벨 패널이 아래로');
+  assert.equal(await narrow.locator('.level .stats dt .px').first().isVisible(), false, '좁으면 통계 아이콘을 숨긴다');
+});
+
+test('home row fits 320px without horizontal scroll', TIMEOUT, async () => {
+  const page = await open('#/', { width: 320 });
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true);
+});
+
+test('xp text keeps "300 XP" on one line when the level panel is narrow', TIMEOUT, async () => {
+  const page = await open('#/', { width: 768 });
+  const max = page.locator('.level .xp-max');
+  assert.equal(await max.innerText(), '300 XP');
+  assert.equal(await max.evaluate((el) => el.getClientRects().length), 1, '숫자와 단위가 갈라지지 않는다');
+});

@@ -9,6 +9,8 @@ export const SHAKE_MS = 300;
 export const PULL = 6;
 export const REACH = 32;
 export const EASE_OUT = 'cubic-bezier(0.2, 0.8, 0.2, 1)'; // --ease-out
+export const XP_FILL_MS = 600;
+export const XP_FILL_DELAY = 240;
 
 const SESSION_PREFIX = 'wzh:v1:motion:';
 const RISE = [
@@ -196,4 +198,16 @@ export function tilt(el, maxDeg, env = motionEnv()) {
     el.removeEventListener('pointerleave', onLeave);
     el.style.transform = '';
   };
+}
+
+/** XP 막대를 왼쪽 끝에서 지금 비율(CSS 의 clip-path 계산값)까지 채운다. 끝나면 CSS 값 그대로 남는다 */
+export function xpFill(el, env = motionEnv()) {
+  if (env.reduce || !canAnimate(el)) return null;
+  const end = el.ownerDocument.defaultView.getComputedStyle(el).clipPath;
+  return el.animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: end }], {
+    duration: XP_FILL_MS,
+    delay: XP_FILL_DELAY,
+    easing: EASE_OUT,
+    fill: 'backwards',
+  });
 }

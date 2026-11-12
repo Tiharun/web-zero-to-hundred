@@ -1,34 +1,13 @@
-// 홈: 1행(퀘스트 카드), 전체 진도, 학습 경로 지도, 부록 바로가기.
-import { onceInSession, shake, stagger, tilt } from '../motion.js';
-import { isUnlocked, percent, projectState } from '../progress.js';
-import { chips, doneCount, h, isDone, lockReason, meter, notice as noticeLine } from './common.js';
+// 홈: 1행(퀘스트 카드 + 레벨 패널), 학습 경로 지도, 부록 바로가기.
+import { levelOf, totalXp } from '../level.js';
+import { onceInSession, shake, stagger, tilt, xpFill } from '../motion.js';
+import { isUnlocked, projectState } from '../progress.js';
+import { chips, doneCount, h, lockReason, meter, notice as noticeLine } from './common.js';
+import { levelPanel } from './hud.js';
 import { questCard } from './quest.js';
 import { showToast } from './toast.js';
 
 const PROJECT_LABEL = { locked: '🔒 잠김', active: '▶ 진행 중', complete: '✅ 완료' };
-
-/** 퍼센트에 맞춘 격려 한 줄. 모자란 점을 말하지 않는다 */
-function encouragement(pct, hasProgress) {
-  if (pct >= 100) return '모두 마쳤어요! 여기까지 온 것만으로도 정말 대단해요. 🎉';
-  if (!hasProgress) return '아직 시작 전이에요. 첫 Day부터 가볍게 시작해 봐요.';
-  if (pct < 50) return '좋은 출발이에요. 하루에 한 Day씩만 해도 충분해요.';
-  return '절반을 넘었어요! 꾸준히 해 온 만큼 실력도 쌓였어요.';
-}
-
-function trackCard(ctx, track, title, testid) {
-  const { cur, prog } = ctx;
-  const days = cur.projects.filter((p) => p.track === track).flatMap((p) => p.days);
-  const done = days.filter((d) => isDone(prog, d.id)).length;
-  const pct = percent(cur, prog, track);
-  return h(
-    'div',
-    { class: 'progress-card', 'data-testid': testid, 'data-percent': pct, dataset: { track } },
-    h('h3', null, title),
-    h('p', { class: 'pc-figure' }, h('span', { class: 'pc-percent' }, `${pct}%`), h('span', { class: 'pc-count' }, `${done} / ${days.length} Day 완료`)),
-    meter(pct, `${title} 진도 ${pct}%`),
-    h('p', { class: 'pc-note' }, encouragement(pct, done > 0)),
-  );
-}
 
 /** 학습 경로의 프로젝트 카드 하나 */
 function projectCard(ctx, project) {
@@ -70,7 +49,6 @@ function projectCard(ctx, project) {
 
 export function renderHome(ctx, root) {
   const { cur } = ctx;
-  const hasSpecial = cur.projects.some((p) => p.track === 'special' && p.days.length > 0);
   const ordered = [...cur.projects].sort((a, b) => (a.track === b.track ? a.order - b.order : a.track === 'main' ? -1 : 1));
   const main = ordered.filter((p) => p.track === 'main');
   const special = ordered.filter((p) => p.track === 'special');
@@ -85,8 +63,7 @@ export function renderHome(ctx, root) {
       { class: 'home' },
       h('h1', { class: 'sr-only' }, '홈'),
       noticeEl,
-      h('div', { class: 'top-row' }, quest),
-      h('section', { class: 'progress-grid', 'aria-label': '전체 진도', 'data-reveal': true }, trackCard(ctx, 'main', '메인 과정', 'progress-main'), hasSpecial && trackCard(ctx, 'special', '특별 과정', 'progress-special')),
+      h('div', { class: 'top-row' }, quest, levelPanel(ctx)),
       h(
         'section',
         { class: 'path', 'data-reveal': true },
@@ -113,5 +90,7 @@ export function renderHome(ctx, root) {
   );
   ctx.onCleanup(tilt(quest, 2)); // DESIGN.md Motion: 퀘스트 카드 Tilt 2°
   if (onceInSession('home')) stagger(root.querySelectorAll('[data-reveal]')); // DESIGN.md Motion: 홈 구역 첫 표시, 세션에 한 번
+  // DESIGN.md Motion: XP 막대는 세션에 한 번 왼쪽에서 채운다(홈 Stagger 와 따로 센다). 0 이면 채울 것이 없다
+  if (levelOf(totalXp(cur, ctx.prog)).inLevel > 0 && onceInSession('xp')) xpFill(root.querySelector('[data-xp-fill]'));
   return '홈';
 }

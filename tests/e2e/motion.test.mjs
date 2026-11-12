@@ -392,3 +392,24 @@ test('reduced motion: quest card does not tilt', TIMEOUT, async () => {
     assert.equal(await card.evaluate((el) => el.style.transform), '');
   }, { reducedMotion: 'reduce' });
 });
+
+// ───────── XP 막대 채움 (M3) ─────────
+
+test('xp bar fills from the left on the first visit', TIMEOUT, async () => {
+  await withPage('#/day/fa-d01', async (page) => {
+    await page.getByTestId('complete-button').click();
+    await go(page, '#/');
+    const fill = page.locator('.xp-fill');
+    assert.equal(await fill.evaluate((el) => el.getAnimations().length), 1);
+  });
+});
+
+test('reduced motion: xp bar is drawn at its final width', TIMEOUT, async () => {
+  await withPage('#/day/fa-d01', async (page) => {
+    await page.getByTestId('complete-button').click();
+    await go(page, '#/');
+    const fill = page.locator('.xp-fill');
+    assert.equal(await fill.evaluate((el) => el.getAnimations().length), 0);
+    assert.match(await fill.evaluate((el) => getComputedStyle(el).clipPath), /inset\(0px 80%/);
+  }, { reducedMotion: 'reduce' });
+});

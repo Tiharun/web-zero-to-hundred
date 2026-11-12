@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ICON_PATHS, PIXELS, iconSvg, pxSvg } from '../../textbook/src/app/views/icons.js';
+import { ICON_PATHS, PIXELS, iconSvg, pxSvg, worldEmblem } from '../../textbook/src/app/views/icons.js';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 
@@ -38,4 +38,8 @@ test('iconSvg is decorative and uses currentColor', () => {
   assert.match(svg, /viewBox="0 0 16 16" width="16" height="16"/);
   assert.match(iconSvg('check', 'tick'), /^<svg class="icon tick" /);
   assert.throws(() => iconSvg('nope'));
+});
+
+test('worldEmblem follows DESIGN.md and falls back to star', () => {
+  assert.deepEqual(['p1', 'p2', 'p3', 'sp', 'fa'].map((id) => worldEmblem({ id })), ['house', 'tv', 'pad', 'gift', 'star']);
 });

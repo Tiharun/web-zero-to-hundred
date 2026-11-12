@@ -142,7 +142,8 @@ async function visit(page, app, hash) {
 /** 조건 함수가 참을 돌려줄 때까지 기다린다 (eventually 는 예외가 날 때만 다시 시도한다) */
 const until = (fn) => eventually(async () => assert.ok(await fn()));
 const sidebarState = (page, dayId) => page.locator(`#sidebar [data-day="${dayId}"]`).getAttribute('data-state');
-const percentOf = (page, which) => page.getByTestId(`progress-${which}`).getAttribute('data-percent');
+const stat = (page, name) => page.locator(`[data-testid="level-panel"] [data-stat="${name}"] dd`).innerText();
+const xpNow = (page) => page.locator('[data-testid="level-panel"] .xp-bar').getAttribute('aria-valuenow');
 
 /** Day 화면에서 [완료]를 누른다 */
 async function completeDay(page, dayId) {
@@ -206,10 +207,11 @@ test('complete flow unlocks next project', TIMEOUT, async () => {
     assert.match(await banner.innerText(), /픽스처 프로젝트 B/);
     assert.equal(await sidebarState(page, 'fb-d01'), 'today');
 
-    // 홈: 3 Day 중 2 Day = 66%, 이어서 하기는 fb-d01
+    // 홈: 3 Day 중 2 Day, XP 60+90, 이어서 하기는 fb-d01
     await page.getByRole('link', { name: '홈', exact: true }).first().click();
     await waitRoute(page, '#/');
-    assert.equal(await percentOf(page, 'main'), '66');
+    assert.equal(await stat(page, 'days'), '2 / 3');
+    assert.equal(await xpNow(page), '150');
     assert.equal(await page.getByTestId('continue-button').getAttribute('href'), '#/day/fb-d01');
   });
 });
@@ -557,16 +559,15 @@ test('reset clears progress after confirm', TIMEOUT, async () => {
     accept = true;
     await page.getByTestId('reset-button').click();
     await waitRoute(page, '#/');
-    const main = page.getByTestId('progress-main');
-    await main.waitFor();
-    assert.equal(await main.getAttribute('data-percent'), '0');
-    assert.match(await main.innerText(), /0%/);
+    await page.getByTestId('level-panel').waitFor();
+    assert.equal(await stat(page, 'days'), '0 / 3');
+    assert.equal(await xpNow(page), '0');
     assert.equal(await sidebarState(page, 'fa-d01'), 'today');
     assert.equal(await page.getByTestId('continue-button').getAttribute('href'), '#/day/fa-d01');
 
     await page.reload(); // 저장소도 비워졌다
     await waitRoute(page, '#/');
-    assert.equal(await percentOf(page, 'main'), '0');
+    assert.equal(await stat(page, 'days'), '0 / 3');
     await visit(page, app, '#/day/fa-d01');
     assert.equal(await page.locator('main input[data-check]:checked').count(), 0);
   });
@@ -843,13 +844,11 @@ test('code token colors keep 4.5:1 contrast in light and dark themes', TIMEOUT, 
   assert.notDeepEqual(results['light (system)'].colors, results['dark (system)'].colors);
 });
 
-test('special track is counted apart and placeholder days are styled', TIMEOUT, async () => {
+test('special days count toward the level panel and placeholder days are styled', TIMEOUT, async () => {
   await withPage(
     async (page, app) => {
       await visit(page, app, '#/');
-      await page.getByTestId('progress-special').waitFor();
-      assert.equal(await percentOf(page, 'special'), '0');
-      assert.equal(await percentOf(page, 'main'), '0');
+      await page.getByTestId('level-panel').waitFor();
       assert.equal(await sidebarState(page, 'fs-d01'), 'locked');
 
       for (const dayId of ['fa-d01', 'fa-d02']) {
@@ -871,8 +870,8 @@ test('special track is counted apart and placeholder days are styled', TIMEOUT, 
       assert.ok(style.padding >= 12, '준비 중 안내가 눈에 띄게 꾸며져 있어야 해요');
 
       await visit(page, app, '#/');
-      assert.equal(await percentOf(page, 'main'), '66');
-      assert.equal(await percentOf(page, 'special'), '50');
+      assert.equal(await stat(page, 'days'), '3 / 5');
+      assert.equal(await stat(page, 'xp'), '210');
       // 메인 과정이 먼저: 이어서 하기는 fb-d01
       assert.equal(await page.getByTestId('continue-button').getAttribute('href'), '#/day/fb-d01');
     },
@@ -1357,4 +1356,37 @@ test('quest card: next day not written yet offers a review', TIMEOUT, async () =
     assert.equal(await btn.getAttribute('href'), '#/day/fs-d01');
     assert.equal(await quest(page).getByRole('link', { name: '특별 프로젝트 Day 목록' }).getAttribute('href'), '#/project/fs');
   }, { url: VARIANT_URL, ...seed(['fa-d01', 'fa-d02', 'fb-d01', 'fs-d01']) });
+});
+
+// ───────────────────────── 홈 레벨 패널 (M3) ─────────────────────────
+
+test('level panel starts at LV 1 with 0 XP', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/');
+    const panel = page.getByTestId('level-panel');
+    assert.equal(await panel.locator('.lv-value').innerText(), '1');
+    assert.match(await panel.locator('.xp-text').innerText(), /0 \/ 300 XP/);
+    assert.match(await panel.locator('.xp-next').innerText(), /LV 2까지 300 XP/);
+    assert.equal(await xpNow(page), '0');
+    assert.deepEqual([await stat(page, 'xp'), await stat(page, 'days'), await stat(page, 'world')], ['0', '0 / 3', '0 / 2']);
+    assert.match(await panel.locator('.cheer').innerText(), /아직 시작 전이에요/);
+  });
+});
+
+test('xp grows after completing a day and fills only once per session', TIMEOUT, async () => {
+  await withPage(async (page, app) => {
+    await visit(page, app, '#/day/fa-d01');
+    await completeDay(page, 'fa-d01');
+    await visit(page, app, '#/');
+    assert.equal(await xpNow(page), '60');
+    assert.match(await page.locator('.xp-text').innerText(), /60 \/ 300 XP/);
+    assert.equal(await page.locator('.xp-fill').evaluate((el) => el.style.getPropertyValue('--p')), '0.2000');
+    assert.deepEqual([await stat(page, 'xp'), await stat(page, 'days'), await stat(page, 'world')], ['60', '1 / 3', '1 / 2']);
+    assert.match(await page.locator('.cheer').innerText(), /좋은 출발이에요/);
+    await visit(page, app, '#/day/fa-d02');
+    await completeDay(page, 'fa-d02');
+    await visit(page, app, '#/');
+    assert.equal(await xpNow(page), '150');
+    assert.equal(await page.locator('.xp-fill').evaluate((el) => el.getAnimations().length), 0, '두 번째로 본 막대는 움직이지 않는다');
+  });
 });
