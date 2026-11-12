@@ -1,14 +1,14 @@
 # 체크포인트 — 로컬 세션에서 여기서부터 이어서 하세요
 
-- 작성일: 2026-11-12 (M1 완료 시점)
-- 상태: **M1 완료, 다음은 M2**. 마일스톤 목록과 순서는 `docs/superpowers/specs/2026-11-12-unified-roadmap-design.md` 11장입니다.
+- 작성일: 2026-11-12 (M2 완료 시점)
+- 상태: **M2 완료, 다음은 M3**. 마일스톤 목록과 순서는 `docs/superpowers/specs/2026-11-12-unified-roadmap-design.md` 11장입니다.
 - 공개 주소: https://tiharun.github.io/web-zero-to-hundred/ (push하면 GitHub Actions가 테스트 → 빌드 → Pages 배포. 공개 범위는 `textbook/content/published.json`)
 - 저장소: `tiharun/web-zero-to-hundred` / 브랜치 **`claude/gifted-goldberg-u1f9c6`**. 이 브랜치에서만 작업하고 push합니다. PR은 아직 만들지 않았고, 사용자가 요청할 때만 만듭니다.
-- 기준선(M1 완료 시점에 직접 실행한 결과, `textbook/`에서)
-  - `npm test`: 216/216 통과
+- 기준선(M2 완료 시점에 직접 실행한 결과, `textbook/`에서)
+  - `npm test`: 226/226 통과
   - `npm run check -- --allow-missing`: "검사 통과: Day 155개, 페이지 4개"
-  - `npm run test:e2e`: 65/65 통과
-  - `npm run test:visual`: 26/26 통과(기준 이미지 24장 + 비교 함수 2개)
+  - `npm run test:e2e`: 84/84 통과
+  - `npm run test:visual`: 30/30 통과(기준 이미지 28장: 4장면 × 3폭 × 2테마 + 서랍 375·768 × 2테마, 비교 함수 2개)
   - `npm run check:site -- https://tiharun.github.io/web-zero-to-hundred/`: 320·375·768·1280px 각각 "방문 168개, 문제 0개"
 - 이 문서는 새 세션이 **다른 파일보다 먼저** 읽는 문서입니다. 이전 판은 `docs/checkpoint/CHECKPOINT-2026-11-06.md`(Subagent 방식 시절 재개 절차 포함)와 `CHECKPOINT-2026-11-05.md`에 보관했습니다. 내용이 다르면 이 문서가 우선합니다.
 
@@ -31,6 +31,7 @@
    - **T12 P1 통합**, **T15 P2 Day 1–10**
    - **M0 골격**(통합 로드맵): 새 토큰·글꼴·아이콘·공용 부품, 헤더·테마 메뉴·푸터, 404, 전 페이지 점검, 시각 테스트, Pages 자동 배포
    - **M1 모션·토스트**: `motion.js`(Reveal·Stagger·Tilt·Magnetic·Shake·세션 1회), `views/toast.js`, 잠긴 프로젝트 카드 Shake, Ctrl+K 검색 이동, 라디오 모양, CI 이미지 고정, 4폭 전 페이지 점검, 반응형(The Fluid Rule)·미루지 않기 규칙
+   - **M2 사이드바·서랍**: `views/sidebar.js`(월드 Accordion, Day 행 상태 5종, 오늘 Day 분홍 네모, 잠긴 행 Shake + 토스트, 모두 펼치기, 월드 전환 메뉴), `views/overlay.js`(`<dialog>` 열고 닫기·메뉴 버튼 공용), 1024px 아래 `<dialog>` 서랍(Stagger, 스크롤 잠금, closedby 대체 경로), 빌드의 Day `ready` 플래그
 4. **남은 것**: 통합 로드맵 11장 M1부터(기능 M1–M14, 콘텐츠 E1·C1–C35, 품질 Q1–Q5).
 5. **처음 할 일**: 1장 → 5장(환경) → 7장(재개 절차) 순서로 하면 됩니다.
 
@@ -277,7 +278,7 @@ WS=.superpowers/sdd/2026-11-01-web-zero-to-hundred; { head -4 docs/checkpoint/wo
 
 통합 로드맵 설계서 `docs/superpowers/specs/2026-11-12-unified-roadmap-design.md` **10장(작업 방식)과 11장(마일스톤)**을 따릅니다.
 
-1. `CLAUDE.md` → 이 문서 → 설계서 11장에서 다음 마일스톤(지금은 **M2**)을 고릅니다. 행 끝의 `(Mn에서 넘김: …)`도 그 마일스톤의 범위입니다.
+1. `CLAUDE.md` → 이 문서 → 설계서 11장에서 다음 마일스톤(지금은 **M3**)을 고릅니다. 행 끝의 `(Mn에서 넘김: …)`도 그 마일스톤의 범위입니다.
 2. `writing-plans`로 그 마일스톤의 계획서를 `docs/superpowers/plans/`에 쓰고 사용자 승인을 받습니다.
 3. `executing-plans`로 같은 세션이 실행합니다. 마일스톤 끝에 완료 기준을 증거(테스트 출력, 스크린샷, 공개 주소)와 함께 보고합니다.
 4. `docs/checkpoint/workspace/progress.md`에 `Mn: complete` 줄을 남기고 이 문서 맨 위 상태를 고칩니다.

@@ -23,12 +23,16 @@ const TIMEOUT = { timeout: 60_000 };
 
 const P1_FIRST_THREE = { completed: ['p1-d01', 'p1-d02', 'p1-d03'], lastDay: 'p1-d03' };
 
-/** 찍을 장면. 장면을 늘릴 때는 여기에 한 줄을 더한다 */
+/**
+ * 찍을 장면. 장면을 늘릴 때는 여기에 한 줄을 더한다.
+ * widths: 이 폭에서만 찍는다(없으면 WIDTHS), open: 찍기 전에 누를 선택자(누른 뒤 서랍이 열리기를 기다린다)
+ */
 export const SCENES = [
   { id: 'home', hash: '#/', progress: P1_FIRST_THREE },
   { id: 'day', hash: '#/day/p1-d01', progress: P1_FIRST_THREE },
   { id: 'settings', hash: '#/settings', progress: null },
   { id: 'notfound', hash: '#/nope', progress: null },
+  { id: 'drawer', hash: '#/', progress: P1_FIRST_THREE, widths: [375, 768], open: '#menu-toggle' },
 ];
 const WIDTHS = [375, 768, 1280];
 const THEMES = ['light', 'dark'];
@@ -77,6 +81,10 @@ async function shoot(scene, width, theme) {
     await page.clock.setFixedTime(new Date(FIXED_TIME));
     await page.goto(`${server.url}index.html${scene.hash}`);
     await page.locator('main h1').first().waitFor();
+    if (scene.open) {
+      await page.locator(scene.open).click();
+      await page.locator('#drawer[open]').waitFor();
+    }
     await page.evaluate(() => document.fonts.ready.then(() => true));
     // 설정 화면의 빌드 날짜는 빌드할 때마다 바뀌므로 가린다
     const mask = [page.locator('main p', { hasText: /빌드 \d{4}/ })];
@@ -87,7 +95,7 @@ async function shoot(scene, width, theme) {
 }
 
 for (const scene of SCENES) {
-  for (const width of WIDTHS) {
+  for (const width of scene.widths ?? WIDTHS) {
     for (const theme of THEMES) {
       const name = `${scene.id}-${width}-${theme}`;
       test(`visual: ${name}`, TIMEOUT, async () => {
@@ -99,6 +107,7 @@ for (const scene of SCENES) {
           return;
         }
         const expected = await readFile(file).catch(() => null);
+        if (!expected) await writeFile(path.join(OUT, `${name}.actual.png`), actual); // 새 장면도 눈으로 볼 수 있게
         assert.ok(expected, `기준 이미지 없음: ${path.relative(ROOT, file)} — npm run test:visual:update`);
         const r = compare(expected, actual);
         if (!r.ok) {
