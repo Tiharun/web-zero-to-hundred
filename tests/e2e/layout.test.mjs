@@ -438,9 +438,11 @@ test('home row fits 320px without horizontal scroll', TIMEOUT, async () => {
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true);
 });
 
-test('xp text keeps "300 XP" on one line when the level panel is narrow', TIMEOUT, async () => {
+test('xp numbers keep their unit on the same line when the level panel is narrow', TIMEOUT, async () => {
   const page = await open('#/', { width: 768 });
-  const max = page.locator('.level .xp-max');
-  assert.equal(await max.innerText(), '300 XP');
-  assert.equal(await max.evaluate((el) => el.getClientRects().length), 1, '숫자와 단위가 갈라지지 않는다');
+  const units = page.locator('.level .xp-unit');
+  assert.deepEqual(await units.allInnerTexts(), ['300 XP', '300 XP']);
+  // 안쪽 요소(.num)가 있으면 같은 줄에서도 조각이 둘이다. 조각들의 윗변이 모두 같으면 한 줄이다
+  const lines = (n) => new Set([...n.getClientRects()].map((r) => Math.round(r.top))).size;
+  for (const el of await units.all()) assert.equal(await el.evaluate(lines), 1, '숫자와 단위가 갈라지지 않는다');
 });

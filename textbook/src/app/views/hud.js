@@ -39,9 +39,9 @@ export function levelPanel(ctx) {
       h(
         'div',
         { class: 'xp' },
-        // 좁은 패널에서 줄이 바뀌어도 "300 XP"(숫자와 단위)는 한 덩어리로 둔다
-        h('p', { class: 'xp-text label num' }, px('coin'), h('span', null, `${inLevel} / `, h('span', { class: 'xp-max' }, `${LEVEL_XP} XP`))),
-        h('p', { class: 'xp-next' }, `LV ${level + 1}까지 `, h('span', { class: 'num' }, String(toNext)), ' XP'),
+        // 좁은 패널에서 줄이 바뀌어도 숫자와 단위("300 XP")는 한 덩어리로 둔다
+        h('p', { class: 'xp-text label num' }, px('coin'), h('span', null, `${inLevel} / `, h('span', { class: 'xp-unit' }, `${LEVEL_XP} XP`))),
+        h('p', { class: 'xp-next' }, `LV ${level + 1}까지 `, h('span', { class: 'xp-unit' }, h('span', { class: 'num' }, String(toNext)), ' XP')),
       ),
       h(
         'div',

@@ -216,8 +216,8 @@
   gap: var(--space-2xs);
   color: var(--color-ink);
 }
-.xp-max {
-  white-space: nowrap;
+.xp-unit {
+  white-space: nowrap; /* 숫자와 단위가 갈라지지 않게 */
 }
 .xp-next {
   font-size: var(--text-ui);
