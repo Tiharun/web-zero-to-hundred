@@ -15,6 +15,7 @@ import {
   toggleCheck,
   newlyUnlocked,
   continueTarget,
+  navDayState,
   percent,
   exportBackup,
   importBackup,
@@ -29,16 +30,16 @@ function deepFreeze(value) {
   return value;
 }
 
-const day = (id, num, checkCount = 3) => ({ id, num, title: `Day ${num}`, minutes: 60, summary: '', checkCount });
+const day = (id, num, checkCount = 3, ready) => ({ id, num, title: `Day ${num}`, minutes: 60, summary: '', checkCount, ...(ready === undefined ? {} : { ready }) });
 
 /** 픽스처 data: fa 2 Day, fb 1 Day(fa 필요), 페이지 secret(fb 필요) */
-function makeCur({ withSpecial = false } = {}) {
+function makeCur({ withSpecial = false, readyFa01 = true } = {}) {
   const projects = [
-    { id: 'fa', order: 1, track: 'main', requires: [], days: [day('fa-d01', 1), day('fa-d02', 2)] },
+    { id: 'fa', order: 1, track: 'main', requires: [], days: [day('fa-d01', 1, 3, readyFa01 ? undefined : false), day('fa-d02', 2)] },
     { id: 'fb', order: 2, track: 'main', requires: ['fa'], days: [day('fb-d01', 1)] },
   ];
   if (withSpecial) {
-    projects.push({ id: 'sp', order: 3, track: 'special', requires: ['fa'], days: [day('sp-d01', 1), day('sp-d02', 2)] });
+    projects.push({ id: 'sp', order: 3, track: 'special', requires: ['fa'], days: [day('sp-d01', 1), day('sp-d02', 2, 3, false)] });
   }
   return deepFreeze({
     projects,
@@ -393,4 +394,29 @@ test('export→import roundtrip', () => {
   assert.equal(res.ok, true);
   assert.equal(res.dropped, 0);
   assert.deepEqual(res.progress, prog);
+});
+
+test('navDayState: one today, draft and locked win in order', () => {
+  const cur = makeCur({ withSpecial: true }); // sp-d02 는 ready: false
+  const empty = emptyProgress();
+  assert.equal(navDayState(cur, empty, 'fa-d01'), 'today');
+  assert.equal(navDayState(cur, empty, 'fa-d02'), 'open');
+  assert.equal(navDayState(cur, empty, 'fb-d01'), 'locked');
+  assert.equal(navDayState(cur, empty, 'sp-d02'), 'locked', '잠김이 준비 중보다 먼저');
+  const faDone = { ...empty, completed: { 'fa-d01': 't', 'fa-d02': 't' } };
+  assert.equal(navDayState(cur, faDone, 'fa-d01'), 'done');
+  assert.equal(navDayState(cur, faDone, 'fb-d01'), 'today');
+  assert.equal(navDayState(cur, faDone, 'sp-d01'), 'open', '다른 프로젝트의 첫 Day 는 오늘이 아니다');
+  assert.equal(navDayState(cur, faDone, 'sp-d02'), 'draft');
+});
+
+test('navDayState: today wins over draft, unknown id is locked', () => {
+  const cur = makeCur({ readyFa01: false });
+  assert.equal(navDayState(cur, emptyProgress(), 'fa-d01'), 'today');
+  assert.equal(navDayState(cur, emptyProgress(), 'nope'), 'locked');
+});
+
+test('navDayState: todayId argument overrides the computed one', () => {
+  const cur = makeCur();
+  assert.equal(navDayState(cur, emptyProgress(), 'fa-d01', null), 'open');
 });

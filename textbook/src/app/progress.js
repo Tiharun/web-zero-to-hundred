@@ -111,6 +111,19 @@ export function dayState(cur, prog, dayId) {
   return firstIncompleteIndex(loc.project, prog) === loc.index ? 'next' : 'open';
 }
 
+/**
+ * 사이드바 Day 행의 상태. 오늘은 continueTarget 하나뿐이다 (분홍 네모는 하나).
+ * 우선순위: 잠김 > 완료 > 오늘 > 준비 중(ready === false) > 남음
+ * @returns {'locked' | 'done' | 'today' | 'draft' | 'open'}
+ */
+export function navDayState(cur, prog, dayId, todayId = continueTarget(cur, prog)) {
+  const loc = locateDay(cur, dayId);
+  if (!loc || !isUnlocked(cur, prog, loc.project.requires)) return 'locked';
+  if (isDone(prog, dayId)) return 'done';
+  if (dayId === todayId) return 'today';
+  return loc.project.days[loc.index].ready === false ? 'draft' : 'open';
+}
+
 export function canComplete(cur, prog, dayId) {
   const loc = locateDay(cur, dayId);
   if (!loc || !isUnlocked(cur, prog, loc.project.requires)) return false;

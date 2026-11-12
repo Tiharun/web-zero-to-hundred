@@ -124,6 +124,7 @@ test('fixture builds to single file', async () => {
       minutes: 60,
       summary: '교재 화면 구성 요소를 확인해요.',
       checkCount: 3,
+      ready: true,
     });
     assert.deepEqual(data.projects[1].requires, ['fa']);
     assert.deepEqual(data.pages, [
@@ -223,6 +224,8 @@ test('allow-missing builds with placeholder', async () => {
     const day = data.projects[0].days[1];
     assert.equal(day.id, 'fa-d02');
     assert.equal(day.checkCount, 0);
+    assert.equal(day.ready, false, '준비 중 Day 는 ready: false');
+    assert.equal(data.projects[0].days[0].ready, true);
     // 다른 Day는 그대로 렌더된다
     assert.match(template(html, 't-day-fa-d01'), /data-check/);
   });

@@ -44,6 +44,15 @@ export function findDay(cur, dayId) {
   return null;
 }
 
+/** 월드 태그 글자: 메인 과정은 "월드 n", 특별 과정은 "특별 월드" */
+export const worldLabel = (project) => (project.track === 'special' ? '특별 월드' : `월드 ${project.order}`);
+
+/** 잠긴 것이 열리는 조건 한 문장. 홈 카드·사이드바·월드 메뉴가 같이 쓴다. 알 수 있는 조건이 없으면 '' */
+export function lockReason(cur, requires) {
+  const titles = (requires ?? []).map((pid) => getProject(cur, pid)?.title).filter(Boolean);
+  return titles.length > 0 ? `${titles.map((t) => `‘${t}’`).join(', ')} 프로젝트를 끝내면 열려요.` : '';
+}
+
 export const doneCount = (prog, project) => project.days.filter((d) => isDone(prog, d.id)).length;
 export const minutesText = (minutes) => `약 ${minutes}분`;
 

@@ -165,14 +165,14 @@ export async function build({
   let renderedCount = 0;
   for (const day of days) {
     if ((onlySet && !onlySet.has(day.id)) || day.missing || (published && !published.has(day.id))) {
-      rendered.set(day.id, { html: PLACEHOLDER_HTML, text: '', checkCount: 0 });
+      rendered.set(day.id, { html: PLACEHOLDER_HTML, text: '', checkCount: 0, ready: false });
       continue;
     }
     const src = await readFile(day.file, 'utf8');
     const r = renderMarkdown(src, { idPrefix: day.id, terms, routes });
     const found = [...validateDaySource(src, { minChars }), ...r.errors].sort(byLine);
     errors.push(...found.map((e) => ({ ...e, file: day.file })));
-    rendered.set(day.id, { html: r.html, text: r.text, checkCount: r.checkCount });
+    rendered.set(day.id, { html: r.html, text: r.text, checkCount: r.checkCount, ready: true });
     renderedCount++;
   }
 
@@ -224,6 +224,7 @@ export async function build({
         minutes: d.minutes,
         summary: d.summary,
         checkCount: rendered.get(d.id).checkCount,
+        ready: rendered.get(d.id).ready, // false 면 "준비 중" 화면이다 (사이드바 행 표시)
       })),
     })),
     pages: curriculum.pages.map((pg) => ({ id: pg.id, title: pg.title, requires: pg.requires })),

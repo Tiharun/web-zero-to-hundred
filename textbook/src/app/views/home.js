@@ -1,7 +1,7 @@
 // 홈: 전체 진도, 이어서 하기, 학습 경로 지도, 부록 바로가기.
 import { onceInSession, shake, stagger } from '../motion.js';
 import { continueTarget, isUnlocked, percent, projectState } from '../progress.js';
-import { chips, doneCount, getProject, h, isDone, linkButton, meter, notice as noticeLine } from './common.js';
+import { chips, doneCount, h, isDone, linkButton, lockReason, meter, notice as noticeLine } from './common.js';
 import { showToast } from './toast.js';
 
 const PROJECT_LABEL = { locked: '🔒 잠김', active: '▶ 진행 중', complete: '✅ 완료' };
@@ -35,10 +35,9 @@ function projectCard(ctx, project) {
   const state = projectState(cur, prog, project.id);
   const total = project.days.length;
   const done = doneCount(prog, project);
-  const needs = (project.requires ?? []).map((pid) => getProject(cur, pid)).filter(Boolean);
   const note =
     state === 'locked'
-      ? `${needs.map((p) => `‘${p.title}’`).join(', ')} 프로젝트를 끝내면 열려요.`
+      ? lockReason(cur, project.requires)
       : state === 'complete'
         ? '모든 Day를 마쳤어요. 언제든 다시 읽어도 좋아요.'
         : done === 0
