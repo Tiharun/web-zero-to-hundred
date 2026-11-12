@@ -11,6 +11,16 @@ export const REACH = 32;
 export const EASE_OUT = 'cubic-bezier(0.2, 0.8, 0.2, 1)'; // --ease-out
 export const XP_FILL_MS = 600;
 export const XP_FILL_DELAY = 240;
+export const PATH_DRAW_MS = 900;
+export const PATH_DRAW_DELAY = 200;
+export const PATH_THRESHOLD = 0.4;
+export const HOP_MS = 480;
+export const HOP_DELAY = 700;
+export const HOP_TIMES = 3;
+const CONFETTI_COUNT = 18;
+const CONFETTI_MS = 1100;
+const CONFETTI_EASE = 'cubic-bezier(0.2, 0.7, 0.4, 1)';
+const CONFETTI_COLORS = ['var(--color-accent)', 'var(--color-progress)', 'var(--color-coin)', 'var(--color-edge)'];
 
 const SESSION_PREFIX = 'wzh:v1:motion:';
 const RISE = [
@@ -49,9 +59,11 @@ export function tiltAngles({ px, py }, maxDeg) {
 }
 
 /** 이 세션에서 처음이면 true 를 돌려주고 기록한다. 저장소를 쓸 수 없으면 늘 처음으로 본다 */
-export function onceInSession(name, storage = globalThis.sessionStorage) {
+export function onceInSession(name, storage) {
   const key = SESSION_PREFIX + name;
   try {
+    // 저장소를 읽는 것 자체가 예외일 수 있다(쿠키 차단 등). 그래서 기본값도 try 안에서 읽는다
+    storage ??= globalThis.sessionStorage;
     if (!storage) return true;
     if (storage.getItem(key) !== null) return false;
     storage.setItem(key, '1');
@@ -210,4 +222,104 @@ export function xpFill(el, env = motionEnv()) {
     easing: EASE_OUT,
     fill: 'backwards',
   });
+}
+
+/** 완료 경로: watch 가 40% 보이면 한 번 그린다(pathLength=1 기준 dashoffset 1 → 0) */
+export function drawPath(paths, watch, env = motionEnv(), IO = globalThis.IntersectionObserver) {
+  if (env.reduce || typeof IO !== 'function' || !watch) return noop;
+  const list = [...paths].filter(canAnimate);
+  if (list.length === 0) return noop;
+  const observer = new IO(
+    (entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      observer.disconnect();
+      for (const path of list) {
+        path.style.strokeDasharray = '1 1';
+        const anim = path.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], {
+          duration: PATH_DRAW_MS,
+          delay: PATH_DRAW_DELAY,
+          easing: EASE_OUT,
+          fill: 'backwards',
+        });
+        anim.finished?.then(
+          () => (path.style.strokeDasharray = ''),
+          () => (path.style.strokeDasharray = ''),
+        );
+      }
+    },
+    { threshold: PATH_THRESHOLD },
+  );
+  observer.observe(watch);
+  return () => observer.disconnect();
+}
+
+/** 말이 오늘 칸 위에서 세 번 8px 뛴다 */
+export function pawnHop(el, env = motionEnv()) {
+  if (env.reduce || !canAnimate(el)) return null;
+  return el.animate(
+    [{ transform: 'translateX(-50%)' }, { transform: 'translate(-50%, -8px)', offset: 0.45 }, { transform: 'translateX(-50%)' }],
+    { duration: HOP_MS, delay: HOP_DELAY, iterations: HOP_TIMES, easing: EASE_OUT },
+  );
+}
+
+/** 축하 조각 18개의 도착점(위쪽 부채꼴), 회전 방향, 지연, 색 */
+export function confettiPlan() {
+  return Array.from({ length: CONFETTI_COUNT }, (_, i) => {
+    const ang = -Math.PI / 2 + (i / (CONFETTI_COUNT - 1) - 0.5) * 2.4;
+    const dist = 70 + (i % 5) * 18;
+    return {
+      x: round2(Math.cos(ang) * dist),
+      y: round2(Math.sin(ang) * dist),
+      spin: i % 2 ? 1 : -1,
+      delay: 500 + (i % 6) * 30,
+      color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+    };
+  });
+}
+
+/** 월드 클리어 축하: from(큰 숫자)에서 도트 조각이 위로 튀었다 떨어진다. 다 끝나면 지운다 */
+export function confetti(card, from, env = motionEnv()) {
+  if (env.reduce || !card || !from) return;
+  const doc = card.ownerDocument;
+  const box = doc.createElement('span');
+  box.className = 'confetti';
+  box.setAttribute('aria-hidden', 'true');
+  const c = card.getBoundingClientRect();
+  const r = from.getBoundingClientRect();
+  box.style.left = `${r.left - c.left + r.width / 2}px`;
+  box.style.top = `${r.top - c.top + r.height / 3}px`;
+  card.append(box);
+  const runs = confettiPlan().map(({ x, y, spin, delay, color }) => {
+    const bit = doc.createElement('i');
+    bit.style.setProperty('--c', color);
+    box.append(bit);
+    if (!canAnimate(bit)) return Promise.resolve();
+    return bit.animate(
+      [
+        { transform: 'translate(-50%, -50%) scale(0.4)', opacity: 1 },
+        { transform: `translate(${x}px, ${y}px) rotate(${spin * 90}deg)`, opacity: 1, offset: 0.55 },
+        { transform: `translate(${round2(x * 1.15)}px, ${round2(y + 60)}px) rotate(${spin * 180}deg)`, opacity: 0 },
+      ],
+      { duration: CONFETTI_MS, delay, easing: CONFETTI_EASE, fill: 'backwards' },
+    ).finished;
+  });
+  Promise.allSettled(runs).then(() => box.remove());
+}
+
+/** source 에 포인터가 올라가거나 포커스가 들어오면 target 에 cls 를 붙인다 */
+export function linkHover(source, target, cls = 'is-linked') {
+  if (!source || !target) return noop;
+  const on = () => target.classList.add(cls);
+  const off = () => target.classList.remove(cls);
+  const pairs = [
+    ['pointerenter', on],
+    ['focusin', on],
+    ['pointerleave', off],
+    ['focusout', off],
+  ];
+  for (const [type, fn] of pairs) source.addEventListener(type, fn);
+  return () => {
+    for (const [type, fn] of pairs) source.removeEventListener(type, fn);
+    off();
+  };
 }

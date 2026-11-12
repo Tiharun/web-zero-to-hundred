@@ -2,11 +2,15 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   EASE_OUT,
+  confettiPlan,
+  drawPath,
+  linkHover,
   magnetic,
   magneticIn,
   magneticOffset,
   motionEnv,
   onceInSession,
+  pawnHop,
   reveal,
   shake,
   stagger,
@@ -211,4 +215,88 @@ test('xpFill: 600ms after 240ms from the left edge, skipped when reduced', () =>
   assert.deepEqual(kf, [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0px 80% 0px 0px)' }]);
   assert.deepEqual([opt.duration, opt.delay, opt.fill], [600, 240, 'backwards']);
   assert.equal(xpFill(fakeEl(), { reduce: true, fine: true }), null);
+});
+
+// ───────── 홈 모션 (M4) ─────────
+
+test('drawPath: 900ms after 200ms once 40% is visible, skipped when reduced', () => {
+  const paths = [fakeEl(), fakeEl()];
+  const watch = fakeEl();
+  let made = null;
+  const IO = class {
+    constructor(cb, opt) {
+      made = { cb, opt, observed: [], disconnected: false };
+      this.observe = (el) => made.observed.push(el);
+      this.disconnect = () => { made.disconnected = true; };
+    }
+  };
+  drawPath(paths, watch, { reduce: false, fine: true }, IO);
+  assert.deepEqual(made.opt, { threshold: 0.4 });
+  assert.deepEqual(made.observed, [watch]);
+  assert.equal(paths[0].calls.length, 0, '보이기 전에는 그리지 않는다');
+  made.cb([{ isIntersecting: true, target: watch }]);
+  for (const path of paths) {
+    const [kf, opt] = path.calls[0];
+    assert.deepEqual(kf, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }]);
+    assert.deepEqual(opt, { duration: 900, delay: 200, easing: EASE_OUT, fill: 'backwards' });
+    assert.equal(path.style.strokeDasharray, '1 1');
+  }
+  assert.equal(made.disconnected, true, '한 번만');
+
+  made = null;
+  const still = fakeEl();
+  drawPath([still], watch, { reduce: true, fine: true }, IO)();
+  assert.equal(made, null);
+  assert.equal(still.calls.length, 0);
+});
+
+test('pawnHop: three 8px hops after 700ms, none when reduced', () => {
+  const el = fakeEl();
+  pawnHop(el, { reduce: false, fine: false });
+  const [kf, opt] = el.calls[0];
+  assert.deepEqual(kf, [{ transform: 'translateX(-50%)' }, { transform: 'translate(-50%, -8px)', offset: 0.45 }, { transform: 'translateX(-50%)' }]);
+  assert.deepEqual(opt, { duration: 480, delay: 700, iterations: 3, easing: EASE_OUT });
+  const still = fakeEl();
+  assert.equal(pawnHop(still, { reduce: true, fine: false }), null);
+  assert.equal(still.calls.length, 0);
+});
+
+test('confettiPlan: 18 bits, four colors in turn, all thrown upward, delays 500 + 30 steps', () => {
+  const bits = confettiPlan();
+  assert.equal(bits.length, 18);
+  assert.deepEqual(bits.slice(0, 4).map((b) => b.color), ['var(--color-accent)', 'var(--color-progress)', 'var(--color-coin)', 'var(--color-edge)']);
+  assert.ok(bits.every((b) => b.y < 0));
+  assert.deepEqual(bits.slice(0, 7).map((b) => b.delay), [500, 530, 560, 590, 620, 650, 500]);
+  assert.deepEqual(bits.slice(0, 2).map((b) => b.spin), [-1, 1]);
+});
+
+test('linkHover: pointer and focus add the class, leaving removes it, dispose unhooks', () => {
+  const source = fakeEl();
+  const target = fakeEl();
+  const dispose = linkHover(source, target);
+  const fire = (type) => source.listeners.filter(([t]) => t === type).forEach(([, fn]) => fn());
+  fire('pointerenter');
+  fire('focusin');
+  assert.deepEqual(target.added, ['is-linked', 'is-linked']);
+  fire('pointerleave');
+  fire('focusout');
+  assert.deepEqual(target.removed, ['is-linked', 'is-linked']);
+  dispose();
+  assert.equal(source.listeners.length, 0);
+});
+
+test('onceInSession: a storage getter that throws counts as first time', () => {
+  const desc = Object.getOwnPropertyDescriptor(globalThis, 'sessionStorage');
+  Object.defineProperty(globalThis, 'sessionStorage', {
+    configurable: true,
+    get() {
+      throw new Error('blocked');
+    },
+  });
+  try {
+    assert.equal(onceInSession('x'), true);
+  } finally {
+    if (desc) Object.defineProperty(globalThis, 'sessionStorage', desc);
+    else delete globalThis.sessionStorage;
+  }
 });

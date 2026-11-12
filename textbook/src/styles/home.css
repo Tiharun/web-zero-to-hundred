@@ -161,9 +161,28 @@
   gap: var(--space-sm) var(--space-lg);
   margin-top: var(--space-2xs);
 }
+/* 클리어 축하: 큰 Day 숫자에서 도트 조각이 한 번 튄다(motion.js confetti, 세션에 한 번) */
+.confetti {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: var(--z-raised);
+}
+.confetti i {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--c);
+}
 @media (prefers-reduced-motion: reduce) {
   .quest {
     transform: none !important;
+  }
+  .confetti {
+    display: none;
   }
 }
 
@@ -564,6 +583,23 @@
   pointer-events: none;
   line-height: 0;
 }
+/* 퀘스트 카드에 포인터·포커스가 있으면 오늘 칸이 4px 떠오르고 말이 계속 뛴다(motion.js linkHover) */
+.node.is-today.is-linked > a {
+  transform: translateY(-4px);
+  box-shadow: 0 calc(var(--ledge) + 4px) 0 var(--tile-edge);
+}
+.node.is-linked .pawn {
+  animation: hop 520ms var(--ease-out) infinite;
+}
+@keyframes hop {
+  0%,
+  100% {
+    transform: translateX(-50%);
+  }
+  45% {
+    transform: translate(-50%, -7px);
+  }
+}
 .node-today {
   position: absolute;
   left: 50%;
@@ -683,8 +719,12 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .node > a:hover,
-  .node > a:active {
+  .node > a:active,
+  .node.is-today.is-linked > a {
     transform: none;
+  }
+  .node.is-linked .pawn {
+    animation: none;
   }
 }
 

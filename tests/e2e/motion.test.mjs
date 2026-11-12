@@ -9,6 +9,7 @@ import { setTimeout as sleep } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 
 import { build } from '../../textbook/build.mjs';
+import { STORAGE_KEY } from '../../textbook/src/app/progress.js';
 import { launch, collectConsoleErrors } from '../helpers/browser.mjs';
 import { startStaticServer } from '../helpers/static-server.mjs';
 
@@ -47,11 +48,29 @@ async function eventually(check, timeout = 5000) {
   }
 }
 
-/** 새 컨텍스트(깨끗한 저장소)로 hash 를 열어 fn(page, context) 에 넘기고, 끝에서 콘솔 오류 0 을 확인한다 */
-async function withPage(hash, fn, { reducedMotion = 'no-preference', hasTouch = false, viewport = { width: 1280, height: 800 }, clock = false } = {}) {
+/**
+ * 새 컨텍스트(깨끗한 저장소)로 hash 를 열어 fn(page, context) 에 넘기고, 끝에서 콘솔 오류 0 을 확인한다.
+ * progress: 미리 끝낸 Day id 목록(마지막이 lastDay), init: 페이지 스크립트보다 먼저 돌릴 함수
+ */
+async function withPage(
+  hash,
+  fn,
+  { reducedMotion = 'no-preference', hasTouch = false, viewport = { width: 1280, height: 800 }, clock = false, progress = null, init = null } = {},
+) {
   const context = await browser.newContext({ viewport, reducedMotion, hasTouch, isMobile: hasTouch, locale: 'ko-KR' });
   try {
     if (clock) await context.clock.install();
+    if (progress) {
+      const value = JSON.stringify({
+        version: 1,
+        completed: Object.fromEntries(progress.map((id) => [id, '2026-11-12T00:00:00.000Z'])),
+        checks: {},
+        lastDay: progress.at(-1) ?? null,
+        theme: 'system',
+      });
+      await context.addInitScript(([key, v]) => localStorage.setItem(key, v), [STORAGE_KEY, value]);
+    }
+    if (init) await context.addInitScript(init);
     const page = await context.newPage();
     const errors = collectConsoleErrors(page);
     await page.goto(`${server.url}index.html${hash}`);
@@ -441,4 +460,117 @@ test('reduced motion: xp bar is drawn at its final width', TIMEOUT, async () => 
     assert.equal(await fill.evaluate((el) => el.getAnimations().length), 0);
     assert.match(await fill.evaluate((el) => getComputedStyle(el).clipPath), /inset\(0px 80%/);
   }, { reducedMotion: 'reduce' });
+});
+
+// ───────── 홈 모션 (M4): 퀘스트 연결, 말 점프, 경로 그리기, 축하 ─────────
+
+const CLEARED = ['fa-d01', 'fa-d02'];
+const todayNode = (page) => page.locator('[data-testid="world-map"] .node.is-today');
+const translateY = (locator) =>
+  locator.evaluate((el) => {
+    const t = getComputedStyle(el).transform;
+    return t === 'none' ? 0 : new DOMMatrixReadOnly(t).m42;
+  });
+const hopLoop = (locator) =>
+  locator.evaluate((el) => el.getAnimations().filter((a) => a.animationName === 'hop').map((a) => a.effect.getTiming().iterations));
+const motionCount = (page, selector) =>
+  page.evaluate((sel) => [...document.querySelectorAll(sel)].reduce((n, el) => n + el.getAnimations().filter((a) => !a.animationName && !a.transitionProperty).length, 0), selector);
+
+test('quest card lifts today 4px and keeps the pawn hopping while hovered or focused', TIMEOUT, async () => {
+  await withPage('#/', async (page) => {
+    const node = todayNode(page);
+    const box = await page.locator('.quest').boundingBox();
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await eventually(async () => assert.match(await node.getAttribute('class'), /is-linked/));
+    await eventually(async () => assert.equal(await translateY(node.locator('a')), -4));
+    assert.deepEqual(await hopLoop(node.locator('.pawn')), [Infinity]);
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height + 600);
+    await eventually(async () => assert.doesNotMatch(await node.getAttribute('class'), /is-linked/));
+    await page.getByTestId('continue-button').focus();
+    await eventually(async () => assert.match(await node.getAttribute('class'), /is-linked/));
+  });
+});
+
+test('reduced motion: the linked tile does not lift', TIMEOUT, async () => {
+  await withPage(
+    '#/',
+    async (page) => {
+      const node = todayNode(page);
+      await page.getByTestId('continue-button').focus();
+      await eventually(async () => assert.match(await node.getAttribute('class'), /is-linked/));
+      assert.equal(await node.locator('a').evaluate((el) => getComputedStyle(el).transform), 'none');
+      assert.deepEqual(await hopLoop(node.locator('.pawn')), []);
+    },
+    { reducedMotion: 'reduce' },
+  );
+});
+
+test('home motion plays once per session', TIMEOUT, async () => {
+  await withPage('#/', async (page) => {
+    assert.equal(await motionCount(page, '.pawn'), 1, '첫 방문에 말이 뛴다');
+    await go(page, '#/settings');
+    await go(page, '#/');
+    assert.equal(await motionCount(page, '.pawn'), 0, '같은 세션에서는 다시 뛰지 않는다');
+  });
+  await withPage(
+    '#/',
+    async (page) => {
+      assert.equal(await page.locator('.quest .confetti i').count(), 18, '월드 클리어 축하 조각');
+      // 경로는 지도가 보이자마자 1.1초 안에 그리고 끝나므로 축하 조각이 사라지기 전에 본다
+      await page.locator('[data-testid="world-map"] .trail').evaluate((el) => el.scrollIntoView({ block: 'center' }));
+      await eventually(async () => assert.ok((await motionCount(page, '[data-draw]')) >= 1, '완료 경로를 그린다'));
+      await eventually(async () => assert.equal(await page.locator('.confetti').count(), 0), 4000);
+      await go(page, '#/settings');
+      await go(page, '#/');
+      await page.locator('[data-testid="world-map"] .trail').evaluate((el) => el.scrollIntoView({ block: 'center' }));
+      await sleep(400);
+      assert.equal(await motionCount(page, '[data-draw]'), 0);
+      assert.equal(await page.locator('.confetti').count(), 0);
+    },
+    { progress: CLEARED },
+  );
+});
+
+test('reduced motion: no trail drawing, pawn hop or confetti', TIMEOUT, async () => {
+  await withPage('#/', async (page) => assert.equal(await motionCount(page, '.pawn'), 0), { reducedMotion: 'reduce' });
+  await withPage(
+    '#/',
+    async (page) => {
+      await page.locator('[data-testid="world-map"] .trail').evaluate((el) => el.scrollIntoView({ block: 'center' }));
+      await sleep(400);
+      assert.equal(await motionCount(page, '[data-draw]'), 0);
+      assert.equal(await page.locator('.confetti').count(), 0);
+    },
+    { reducedMotion: 'reduce', progress: CLEARED },
+  );
+});
+
+test('touch: tiles have no tooltip', TIMEOUT, async () => {
+  await withPage(
+    '#/',
+    async (page) => {
+      const tips = await page.locator('[data-testid="world-map"] .tip').evaluateAll((els) => els.map((el) => getComputedStyle(el).display));
+      assert.ok(tips.length > 0);
+      assert.ok(tips.every((d) => d === 'none'), tips.join());
+    },
+    { hasTouch: true, viewport: { width: 375, height: 800 } },
+  );
+});
+
+test('blocked session storage still renders the home', TIMEOUT, async () => {
+  await withPage(
+    '#/',
+    async (page) => {
+      for (const id of ['world-map', 'other-worlds', 'help-row']) assert.equal(await page.getByTestId(id).isVisible(), true, id);
+    },
+    {
+      init: () =>
+        Object.defineProperty(window, 'sessionStorage', {
+          configurable: true,
+          get() {
+            throw new DOMException('blocked', 'SecurityError');
+          },
+        }),
+    },
+  );
 });
