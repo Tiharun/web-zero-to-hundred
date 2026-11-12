@@ -22,6 +22,8 @@ const UPDATE = process.env.WZH_VISUAL_UPDATE === '1';
 const TIMEOUT = { timeout: 60_000 };
 
 const P1_FIRST_THREE = { completed: ['p1-d01', 'p1-d02', 'p1-d03'], lastDay: 'p1-d03' };
+/** P1 30 Day 를 모두 마친 직후: 홈 퀘스트 카드가 "월드 클리어" 상태다 */
+const P1_CLEAR = { completed: Array.from({ length: 30 }, (_, i) => `p1-d${String(i + 1).padStart(2, '0')}`), lastDay: 'p1-d30' };
 
 /**
  * 찍을 장면. 장면을 늘릴 때는 여기에 한 줄을 더한다.
@@ -33,6 +35,8 @@ export const SCENES = [
   { id: 'settings', hash: '#/settings', progress: null },
   { id: 'notfound', hash: '#/nope', progress: null },
   { id: 'drawer', hash: '#/', progress: P1_FIRST_THREE, widths: [375, 768], open: '#menu-toggle' },
+  { id: 'home-first', hash: '#/', progress: null, widths: [375, 1280] },
+  { id: 'home-clear', hash: '#/', progress: P1_CLEAR, widths: [375, 1280] },
 ];
 const WIDTHS = [375, 768, 1280];
 const THEMES = ['light', 'dark'];
