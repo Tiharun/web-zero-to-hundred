@@ -48,3 +48,22 @@ test('skeleton rows pulse with --dur-skeleton (1200ms) and stop when motion is r
   assert.match(css, /\.skeleton-row \{[^}]*animation: skeleton-pulse var\(--dur-skeleton\) ease-in-out infinite;/);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{[^@]*\.skeleton-row \{ animation: none; \}/);
 });
+
+test('legacy.css has no raw colours left', async () => {
+  const src = await readFile(path.join(ROOT, 'textbook/src/styles/legacy.css'), 'utf8');
+  assert.equal(/#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|oklch)\(/i.test(src.replace(/\/\*[\s\S]*?\*\//g, '')), false);
+});
+
+test('new colour tokens have identical dark values in both dark blocks', async () => {
+  const css = (await readFile(path.join(ROOT, 'textbook/src/styles/tokens.css'), 'utf8')).replace(/\/\*[\s\S]*?\*\//g, '');
+  const NEW = /^--color-(?:tip|warn|info|path|success|answer|code|tok|danger)-?/;
+  const decls = (body) => Object.fromEntries([...body.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)].filter(([, n]) => NEW.test(n)).map(([, n, v]) => [n, v.trim()]));
+  const light = decls(/^:root \{([\s\S]*?)\n\}/m.exec(css)[1]);
+  const mediaDark = decls(/@media \(prefers-color-scheme: dark\) \{\s*:root:not\(\[data-theme="light"\]\) \{([\s\S]*?)\}/.exec(css)[1]);
+  const manualDark = decls(/:root\[data-theme="dark"\] \{([\s\S]*?)\}/.exec(css)[1]);
+  // 6종×3 + 코드 4 + 구문 12 + 위험 3 = 37. 코드·구문 16개는 두 테마가 같은 값이라 :root 에만 둔다.
+  assert.equal(Object.keys(light).length, 37);
+  assert.deepEqual(mediaDark, manualDark);
+  assert.equal(Object.keys(manualDark).length, 21);
+  assert.ok(Object.keys(manualDark).every((n) => !/^--color-(?:code|tok)-/.test(n)));
+});

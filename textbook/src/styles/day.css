@@ -3,7 +3,7 @@
 .lesson,
 .page-article {
   max-width: calc(var(--measure) + 2rem);
-  line-height: 1.75; /* 긴 본문 줄간격: 미정 값(M8에서 정한다) */
+  line-height: 1.75; /* DESIGN.md Hierarchy "Body long" */
 }
 .lesson-meta {
   margin: 0 0 24px;
@@ -187,8 +187,8 @@ figure.code {
   grid-template-rows: minmax(38px, auto) auto;
   margin: 0 0 1.4em;
   background: var(--code-bg);
-  border: 1px solid var(--code-border);
-  border-radius: var(--radius);
+  border: 2px solid var(--color-edge); /* 밤 코드: 다크에서 카드와 바탕이 비슷해 edge 가 경계를 맡는다 */
+  border-radius: var(--radius-card);
   overflow: hidden;
 }
 figure.code::before,
@@ -207,7 +207,7 @@ figure.code figcaption {
   grid-row: 1;
   padding: 8px 14px;
   font: 600 0.85rem/1.5 var(--font-mono);
-  color: var(--muted);
+  color: var(--code-fg);
   overflow-wrap: anywhere;
 }
 figure.code .copy {
@@ -220,18 +220,18 @@ figure.code .copy {
   border-right: 0;
   border-bottom: 1px solid var(--code-border);
   border-left: 1px solid var(--code-border);
-  color: var(--text);
+  color: var(--code-fg);
   font: 700 0.85rem/1 var(--font-sans);
   cursor: pointer;
 }
 figure.code .copy:hover {
-  background: var(--surface-2);
+  background: var(--code-border);
 }
 figure.code .copy[data-copied="yes"] {
-  color: var(--ok);
+  color: var(--tok-string);
 }
 figure.code .copy[data-copied="no"] {
-  color: var(--danger);
+  color: var(--tok-deletion);
 }
 figure.code pre {
   grid-column: 1 / -1;
@@ -242,7 +242,7 @@ figure.code pre {
   overflow-x: auto; /* 긴 줄은 코드 블록 안에서만 가로로 스크롤한다 */
   background: var(--code-bg);
   color: var(--code-fg);
-  font-size: 0.9rem;
+  font-size: var(--text-code);
   line-height: 1.65;
   tab-size: 2;
   word-break: normal;
@@ -337,23 +337,25 @@ pre {
 /* ───────── 알림 상자 ───────── */
 
 .callout {
-  margin: 1.5em 0;
-  padding: 14px 20px 6px;
+  margin: var(--space-lg) 0;
+  padding: var(--space-sm) var(--space-md) var(--space-2xs);
   background: var(--callout-bg);
-  border: 1px solid var(--callout-line);
-  border-left-width: 6px;
-  border-radius: var(--radius);
+  border: 1px solid var(--color-rule);
+  border-left: 4px solid var(--callout-line);
+  border-radius: var(--radius-card);
 }
 .callout::before {
   display: block;
-  margin-bottom: 0.3em;
+  margin-bottom: var(--space-xs);
   color: var(--callout-ink);
-  font-size: 0.88rem;
-  font-weight: 800;
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  line-height: 1.4;
 }
 .lesson-body .callout-title,
 .page-body .callout-title {
   margin: 0 0 0.4em;
+  color: var(--color-ink);
   font-weight: 800;
 }
 .callout-body > :last-child {
@@ -407,9 +409,10 @@ pre {
 
 details.answer {
   margin: 1.2em 0;
-  background: var(--surface);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius);
+  background: var(--color-answer-bg);
+  border: 1px solid var(--color-rule);
+  border-left: 4px solid var(--color-answer-line);
+  border-radius: var(--radius-card);
 }
 details.answer > summary {
   padding: 12px 18px;
@@ -423,7 +426,7 @@ details.answer > summary::-webkit-details-marker {
 details.answer > summary::before {
   content: "▸ ";
   display: inline-block;
-  color: var(--accent);
+  color: var(--color-answer-ink);
   transition: transform 0.15s;
 }
 details.answer[open] > summary::before {
@@ -431,16 +434,16 @@ details.answer[open] > summary::before {
 }
 .answer-body {
   padding: 8px 20px 6px;
-  border-top: 1px dashed var(--border-strong);
+  border-top: 1px dashed var(--color-answer-line);
 }
 
 .answer-gate {
   margin: 1.2em 0 0;
   padding: 16px 20px;
   background: var(--tip-bg);
-  border: 1px solid var(--tip-line);
-  border-left-width: 6px;
-  border-radius: var(--radius);
+  border: 1px solid var(--color-rule);
+  border-left: 4px solid var(--tip-line);
+  border-radius: var(--radius-card);
 }
 .answer-gate p {
   margin: 0 0 12px;

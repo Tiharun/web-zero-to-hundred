@@ -26,6 +26,43 @@ colors:
   coin-deep: "#B45309"
   coin-hi: "#FEF3C7"
   star: "#B45309"
+  tip-bg: "#FFFBEB"
+  tip-line: "#D97706"
+  tip-ink: "#92400E"
+  warn-bg: "#FEF2F2"
+  warn-line: "#DC2626"
+  warn-ink: "#991B1B"
+  info-bg: "#EFF6FF"
+  info-line: "#2563EB"
+  info-ink: "#1E40AF"
+  path-bg: "#F5F3FF"
+  path-line: "#7C3AED"
+  path-ink: "#5B21B6"
+  success-bg: "#F0FDFA"
+  success-line: "#0D9488"
+  success-ink: "#115E59"
+  answer-bg: "#F1F5F9"
+  answer-line: "#64748B"
+  answer-ink: "#334155"
+  code-bg: "#1E1B4B"
+  code-fg: "#E0E7FF"
+  code-head: "#2E2A6B"
+  code-border: "#3F3A8A"
+  tok-keyword: "#C4B5FD"
+  tok-string: "#FDE68A"
+  tok-number: "#FDBA74"
+  tok-comment: "#A5B4FC"
+  tok-title: "#7DD3FC"
+  tok-attr: "#5EEAD4"
+  tok-variable: "#FCA5A5"
+  tok-meta: "#CBD5E1"
+  tok-tag: "#93C5FD"
+  tok-name: "#93C5FD"
+  tok-deletion: "#FCA5A5"
+  tok-addition: "#5EEAD4"
+  danger: "#B91C1C"
+  danger-ink: "#FFFFFF"
+  danger-deep: "#7F1D1D"
   dark-paper: "#0D0F1F"
   dark-card: "#151833"
   dark-ink: "#EEF2FF"
@@ -50,6 +87,27 @@ colors:
   dark-coin-deep: "#FDE68A"
   dark-coin-hi: "#FFFBEB"
   dark-star: "#FBBF24"
+  dark-tip-bg: "#2A2312"
+  dark-tip-line: "#F59E0B"
+  dark-tip-ink: "#FCD34D"
+  dark-warn-bg: "#2D1618"
+  dark-warn-line: "#F87171"
+  dark-warn-ink: "#FCA5A5"
+  dark-info-bg: "#14203D"
+  dark-info-line: "#60A5FA"
+  dark-info-ink: "#93C5FD"
+  dark-path-bg: "#221A3D"
+  dark-path-line: "#A78BFA"
+  dark-path-ink: "#C4B5FD"
+  dark-success-bg: "#0F2A2A"
+  dark-success-line: "#2DD4BF"
+  dark-success-ink: "#5EEAD4"
+  dark-answer-bg: "#1E2240"
+  dark-answer-line: "#A3A9C9"
+  dark-answer-ink: "#E2E8F0"
+  dark-danger: "#F87171"
+  dark-danger-ink: "#0D0F1F"
+  dark-danger-deep: "#B91C1C"
 typography:
   display:
     fontFamily: "\"WZH Wanted Sans\", \"Malgun Gothic\", system-ui, sans-serif"
@@ -194,6 +252,29 @@ components:
   drawer:
     backgroundColor: "{colors.card}"
     width: "min(280px, calc(100% - 48px))"
+  callout:
+    backgroundColor: "{colors.tip-bg}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.card}"
+    padding: "12px 16px 4px"
+  code-block:
+    backgroundColor: "{colors.code-bg}"
+    textColor: "{colors.code-fg}"
+    rounded: "{rounded.card}"
+  toast:
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.card}"
+    width: "min(100%, 28rem)"
+  levelup-modal:
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.card}"
+    padding: "32px"
+    width: "24rem"
+  figure:
+    backgroundColor: "{colors.card}"
+    rounded: "{rounded.card}"
 ---
 
 <!-- 기준: 사용자가 승인한 홈 시안(hallmark → bolder → polish, 2026-11-11)의 style.css·view.mjs·app.js·template.html·build-home.mjs. 시안 폴더는 git에서 제외되어 있으므로 이 문서만으로 같은 값을 재현할 수 있게 썼다. 모든 값은 코드 그대로이고 반올림하지 않았다(대비값만 소수 둘째 자리 반올림). frontmatter와 표의 이름은 CSS 변수 이름에서 앞부분(--color- 등)을 뗀 것이다. dark- 접두사는 다크 테마 값이다. -->
@@ -202,7 +283,7 @@ components:
 
 ## Overview
 
-**Creative North Star: "공부 퀘스트 보드"** (이름은 미확정 제안)
+**Creative North Star: "공부 퀘스트 보드"**
 
 연한 남색 종이 위에 흰 카드가 장난감처럼 놓인 보드다. 카드와 버튼은 흐림 그림자 대신 단색 **바닥 턱**(아래로 4px 붙은 단색 면)을 달고 있어서, 누르면 턱만큼 내려간다. 지금 월드의 Day는 둥근 네모 **보드게임 칸**으로 줄지어 있고, 오늘 칸 위에 말이 서 있다. 레벨 패널은 게임의 상태 표시줄(HUD)처럼 LV 배지와 10칸 XP 막대로 보여 준다.
 
@@ -254,6 +335,11 @@ components:
 - **Cell** (`cell`): XP 막대의 빈 칸, 도움말 아이콘 채움.
 - **Scrim** (`scrim`): 서랍·검색 뒤 백드롭.
 
+### 알림·코드·위험
+- **알림 상자 6종** (`tip`·`warn`·`info`·`path`·`success`·`answer`): 종류마다 바탕(`*-bg`), 왼쪽 막대(`*-line`), 머리 라벨(`*-ink`) 세 색이다. 본문 글자는 `ink`다. 성공은 청록이다(초록은 Real Progress Rule 전용).
+- **밤 코드** (`code-*`, `tok-*`): 두 테마가 같은 남색 바탕과 같은 구문 색을 쓴다. 그래서 다크 블록에 없다. 다크에서는 카드와 코드 바탕이 비슷해 2px `edge` 테두리가 경계를 맡는다.
+- **위험** (`danger`, `danger-ink`, `danger-deep`): 위험 버튼의 면·글자·턱에만 쓴다. `warn` 알림 상자와 값이 비슷해도 역할이 다른 토큰이다.
+
 ### 색 토큰 표
 
 | 토큰 | 라이트 | 다크 | 쓰는 곳 |
@@ -282,6 +368,28 @@ components:
 | `--color-coin-deep` | `#B45309` | `#FDE68A` | 보상 아이콘 윤곽 |
 | `--color-coin-hi` | `#FEF3C7` | `#FFFBEB` | 보상 아이콘 반짝임 |
 | `--color-star` | `#B45309` | `#FBBF24` | 별 아이콘 |
+| `--color-tip-bg` · `-line` · `-ink` | `#FFFBEB` `#D97706` `#92400E` | `#2A2312` `#F59E0B` `#FCD34D` | 꿀팁 상자, 정답 게이트 |
+| `--color-warn-bg` · `-line` · `-ink` | `#FEF2F2` `#DC2626` `#991B1B` | `#2D1618` `#F87171` `#FCA5A5` | 주의 상자, 결과 문장 오류 |
+| `--color-info-bg` · `-line` · `-ink` | `#EFF6FF` `#2563EB` `#1E40AF` | `#14203D` `#60A5FA` `#93C5FD` | 알아두기 상자, 결과 문장 안내 |
+| `--color-path-bg` · `-line` · `-ink` | `#F5F3FF` `#7C3AED` `#5B21B6` | `#221A3D` `#A78BFA` `#C4B5FD` | 경로 상자 |
+| `--color-success-bg` · `-line` · `-ink` | `#F0FDFA` `#0D9488` `#115E59` | `#0F2A2A` `#2DD4BF` `#5EEAD4` | "이렇게 보이면 성공" 상자, 결과 문장 성공 |
+| `--color-answer-bg` · `-line` · `-ink` | `#F1F5F9` `#64748B` `#334155` | `#1E2240` `#A3A9C9` `#E2E8F0` | 정답 상자 |
+| `--color-code-bg` | `#1E1B4B` | 같음 | 코드 바탕 |
+| `--color-code-fg` | `#E0E7FF` | 같음 | 코드 기본 글자, 파일 이름, 복사 버튼 |
+| `--color-code-head` | `#2E2A6B` | 같음 | 코드 윗줄 |
+| `--color-code-border` | `#3F3A8A` | 같음 | 윗줄 구분선, 복사 버튼 hover(장식) |
+| `--color-tok-keyword` | `#C4B5FD` | 같음 | 키워드 |
+| `--color-tok-string` | `#FDE68A` | 같음 | 문자열, "복사됨" |
+| `--color-tok-number` | `#FDBA74` | 같음 | 숫자 |
+| `--color-tok-comment` | `#A5B4FC` | 같음 | 주석 |
+| `--color-tok-title` | `#7DD3FC` | 같음 | 함수·클래스 이름 |
+| `--color-tok-attr` · `-addition` | `#5EEAD4` | 같음 | 속성, 더한 줄 |
+| `--color-tok-variable` · `-deletion` | `#FCA5A5` | 같음 | 변수, 지운 줄, "복사 실패" |
+| `--color-tok-meta` | `#CBD5E1` | 같음 | 메타 |
+| `--color-tok-tag` · `-name` | `#93C5FD` | 같음 | 태그, 이름 |
+| `--color-danger` | `#B91C1C` | `#F87171` | 위험 버튼 면, 위험 글자 |
+| `--color-danger-ink` | `#FFFFFF` | `#0D0F1F` | 위험 면 위 글자 |
+| `--color-danger-deep` | `#7F1D1D` | `#B91C1C` | 위험 버튼 턱 |
 
 ### 대비 (WCAG 2.x 상대 휘도, 측정)
 
@@ -324,6 +432,32 @@ components:
 | `rule` / `card` | 1.35 | 1.35 | 장식(카드 경계는 면 색과 턱이 맡는다) |
 | `rule` / `paper` | 1.21 | 1.48 | 장식 |
 | `cell` / `card` | 1.35 | 1.35 | 장식(빈 칸 구분은 막대 테두리 안에서만) |
+| `ink` / 알림 6종 `*-bg` (최저) | 10.41 | 13.56 | 본문 글자 통과 |
+| `tip-ink` / `tip-bg` | 6.84 | 10.81 | 라벨 글자 통과 |
+| `tip-line` / `tip-bg` | 3.07 | 7.26 | 막대 통과 |
+| `tip-line` / `card` | 3.19 | 8.08 | 막대 통과 |
+| `warn-ink` / `warn-bg` | 7.6 | 8.93 | 라벨 글자 통과 |
+| `warn-line` / `warn-bg` | 4.41 | 6.12 | 막대 통과 |
+| `warn-line` / `card` | 4.83 | 6.27 | 막대 통과 |
+| `info-ink` / `info-bg` | 8.01 | 8.93 | 라벨 글자 통과 |
+| `info-line` / `info-bg` | 4.75 | 6.34 | 막대 통과 |
+| `info-line` / `card` | 5.17 | 6.82 | 막대 통과 |
+| `path-ink` / `path-bg` | 8.19 | 8.86 | 라벨 글자 통과 |
+| `path-line` / `path-bg` | 5.2 | 6.01 | 막대 통과 |
+| `path-line` / `card` | 5.7 | 6.38 | 막대 통과 |
+| `success-ink` / `success-bg` | 7.27 | 10.25 | 라벨 글자 통과 |
+| `success-line` / `success-bg` | 3.59 | 8.15 | 막대 통과 |
+| `success-line` / `card` | 3.74 | 9.32 | 막대 통과 |
+| `answer-ink` / `answer-bg` | 9.45 | 12.54 | 라벨 글자 통과 |
+| `answer-line` / `answer-bg` | 4.34 | 6.68 | 막대 통과 |
+| `answer-line` / `card` | 4.76 | 7.5 | 막대 통과 |
+| `code-fg` / `code-bg` | 12.98 | 12.98 | 코드 글자 통과 |
+| `code-fg` / `code-head` | 10.27 | 10.27 | 파일 이름·복사 통과 |
+| `tok-*` 12종 / `code-bg` (최저 `tok-comment`) | 8.02 | 8.02 | 구문 색 통과 |
+| `danger` / `card` | 6.47 | 6.27 | 위험 글자·면 통과 |
+| `danger` / `paper` | 5.79 | 6.87 | 통과 |
+| `danger-ink` / `danger` | 6.47 | 6.87 | 위험 버튼 글자 통과 |
+| `danger-deep` / `card` | 10.02 | 2.68 | 턱(장식, 다크 3:1 미만. 면이 6.27로 식별을 맡는다) |
 
 ### Named Rules
 **The One Pink Rule.** 행동을 부르는 색은 분홍 하나다. 한 화면에 주 버튼(분홍 면)은 하나만 둔다. 분홍 면은 그 버튼과 "오늘" 표시(오늘 칸, 사이드바 오늘 번호)에만 쓰고, 장식·배경 띠·제목 색으로 쓰지 않는다. 코인 금색(`coin`)은 도트 아이콘의 채움에만 쓰고 글자·버튼·배경에는 쓰지 않는다.
@@ -368,6 +502,7 @@ components:
 - **Title small** (800, 20px, `line-height: 1.3`): 구역 제목과 월드 카드 제목.
 - **HUD number** (800, 32px, `letter-spacing: -0.02em`, 줄간격 1): LV 숫자. 크기는 토큰 없이 `font-size: 32px`로 고정돼 있다.
 - **Body** (400, 17px, `line-height: 1.65`): 요약·설명. 요약 글은 `max-width: 46ch`.
+- **Body long** (400, 17px, `line-height: 1.75`): Day 본문·부록 본문 같은 긴 설명 글. 한 단락이 길어서 Body보다 줄 사이를 넓힌다.
 - **UI** (400 또는 800, 15px): 줄간격은 쓰임별로 사이드바 행 `line-height: 1.35`, 메타 1.4, 알림·칩·격려 문구 1.5, 월드 카드 설명 `line-height: 1.55`.
 - **Label** (Galmuri 400, 12px, 줄간격 1.4, 색 `ink-2`): "오늘의 퀘스트", "레벨", "LV", "Day", XP 수치, 월드 태그, 사이드바·칸 번호, "준비 중", 검색 결과 위치·태그.
 - **Code** (WZH Code 400, 14px): 작업 폴더 경로. 긴 경로는 `word-break: break-all`.
@@ -661,6 +796,15 @@ components:
 ### Chips
 - 기술 칩: `track` 바탕, 모서리 6px, 안쪽 2·8px, 15px, 줄간격 1.5. 최대 4개, 넘으면 바탕 없는 `ink-2` "외 n개".
 
+### Day 부품
+- **알림 상자:** 종류 색 바탕(`*-bg`), 1px `rule` 테두리, 왼쪽 4px `*-line` 막대, 모서리 `--radius-card`, 안쪽 `var(--space-sm) var(--space-md) var(--space-2xs)`, 위아래 `var(--space-lg)`. 머리는 이모지 + Galmuri 12px 라벨(`*-ink`): "💡 꿀팁", "⚠️ 주의", "ℹ️ 알아두기", "📍 경로", "✅ 이렇게 보이면 성공". 제목 줄은 `ink` 800, 본문은 `ink`. 정답 상자는 같은 틀에 `answer` 색, 정답 게이트는 같은 틀에 `tip` 색.
+- **코드 블록(밤 코드):** `code-bg` 바탕, 2px `edge` 테두리, 모서리 `--radius-card`. 윗줄은 `code-head`에 파일 이름(`code-fg`)과 "복사" 버튼, 구분선은 `code-border`. 글자 14px(`--text-code`), 줄간격 1.65, 긴 줄은 블록 안에서만 가로 스크롤. 복사 결과 글자는 성공 `tok-string`, 실패 `tok-deletion`.
+- **읽기 위치 바:** 상단 바 바로 아래 3px, `z-sticky`. 채움 `ink`, 빈 곳 투명, `transform: scaleX(var(--read))`, `transform-origin: left`. `animation-timeline: scroll(root)`을 지원하면 그것을 쓰고, 아니면 rAF로 `--read`를 쓴다. 장식이라 `role="progressbar"`를 두지 않는다(위치는 퀘스트 로그가 글자로 알린다). M9에서 화면에 넣는다.
+- **퀘스트 로그:** 1280px 이상은 본문 오른쪽 220px 열, `position: sticky`(상단 바 + `var(--space-lg)`). 머리는 Label "퀘스트 로그"와 "단계 n/8", 목록은 섹션 제목 버튼(15px `ink-2`, 최소 36px), 지금 단계는 `ink` 800 + 왼쪽 3px `ink` 막대 + `aria-current="step"`. 그보다 좁으면 본문 위 `<details>` 카드(2px `rule` 테두리, summary 최소 44px "퀘스트 로그 · 단계 n/8" + 오른쪽 `chevron` 아이콘, 열면 180° 회전). 누르면 그 제목으로 smooth scroll(동작 줄이기면 `auto`)하고 제목에 포커스. M9에서 화면에 넣는다.
+- **토스트:** `card` 면, 2px `edge` 테두리, `--ledge` `edge` 턱, 모서리 `--radius-card`, 15px `ink`, `max-width: min(100%, 28rem)`. 왼쪽 도트 아이콘은 부르는 쪽이 정한다(없으면 생략). 들어옴은 아래 8px에서 `--dur-short` `--ease-bounce`, 나감은 투명도 `--dur-exit` `--ease-in`. `role="status"`, 4초, hover·포커스 중에는 멈춘다.
+- **레벨업 Modal:** `<dialog>`(`setupDialog`), `card` 면, 2px `edge` 테두리와 턱, 안쪽 `var(--space-xl)`, 가운데 정렬, `max-width: 24rem`. 순서: Label "레벨 업" → LV 배지(HUD와 같은 모양, 숫자 32px) → 제목 "레벨이 올랐어요"(Title small) → "다음 레벨까지 XP m"(`ink-2`) → 주 버튼 "계속하기"(처음 포커스). 열림 `pop-in` `--dur-enter`. M11에서 화면에 넣는다.
+- **그림 틀:** `figure.figure`, `card` 면, 2px `rule` 테두리, 모서리 `--radius-card`. 무대는 `paper` 바탕, 안쪽 `var(--space-lg) var(--space-md)`, 높이는 그림이 정한다(그림 폭 최대 30rem). 아래 줄은 Label "그림 n" + 캡션 15px `ink`, 오른쪽에 보조 버튼 "▶ 다음 단계"(마지막 단계에서 "↺ 처음부터", 단계 그림만). 대체 설명은 `role="img"` 무대의 `aria-label`. M12에서 화면에 넣는다.
+
 ### Motion
 | 토큰 | 라이트 | 다크 | 쓰는 곳 |
 |---|---|---|---|
@@ -730,10 +874,7 @@ components:
 - **Don't** 화면과 저장소 산출물에 만든 사람의 실명·이메일·계정 같은 개인정보를 넣지 않는다.
 
 ## 아직 정하지 않은 것
-- North Star 이름("공부 퀘스트 보드")은 제안이다.
-- Day 본문(긴 글) 줄간격: 홈 Body는 1.65, 현재 Day 본문은 1.75.
-- 알림 상자 종류별 색(팁·경고·정보·경로·성공), 코드 블록과 구문 강조 색, 위험(danger) 색. 홈 시안에 없다.
-- 업적 토스트, 레벨업 Modal, Day 페이지 부품(읽기 위치 바, 퀘스트 로그 등)의 모양. 홈 시안에 없다.
+- 없다. M8에서 North Star 이름, Day 본문 줄간격, 알림·코드·위험 색, 토스트·레벨업·Day 부품 모양을 정했다.
 
 ## 부록: 토큰 원문 (CSS)
 
@@ -769,6 +910,19 @@ components:
   --color-coin-hi: #FEF3C7;
   --color-star: #B45309;
   --ledge: 4px;
+
+  /* 알림·코드·위험 (M8). 코드·구문 색은 두 테마가 같다("밤 코드")라 여기에만 둔다 */
+  --color-tip-bg: #FFFBEB; --color-tip-line: #D97706; --color-tip-ink: #92400E;
+  --color-warn-bg: #FEF2F2; --color-warn-line: #DC2626; --color-warn-ink: #991B1B;
+  --color-info-bg: #EFF6FF; --color-info-line: #2563EB; --color-info-ink: #1E40AF;
+  --color-path-bg: #F5F3FF; --color-path-line: #7C3AED; --color-path-ink: #5B21B6;
+  --color-success-bg: #F0FDFA; --color-success-line: #0D9488; --color-success-ink: #115E59;
+  --color-answer-bg: #F1F5F9; --color-answer-line: #64748B; --color-answer-ink: #334155;
+  --color-code-bg: #1E1B4B; --color-code-fg: #E0E7FF; --color-code-head: #2E2A6B; --color-code-border: #3F3A8A;
+  --color-tok-keyword: #C4B5FD; --color-tok-string: #FDE68A; --color-tok-number: #FDBA74; --color-tok-comment: #A5B4FC;
+  --color-tok-title: #7DD3FC; --color-tok-attr: #5EEAD4; --color-tok-variable: #FCA5A5; --color-tok-meta: #CBD5E1;
+  --color-tok-tag: #93C5FD; --color-tok-name: #93C5FD; --color-tok-deletion: #FCA5A5; --color-tok-addition: #5EEAD4;
+  --color-danger: #B91C1C; --color-danger-ink: #FFFFFF; --color-danger-deep: #7F1D1D;
 
   --font-body: "WZH Wanted Sans", "Malgun Gothic", system-ui, sans-serif;
   --font-label: "WZH Galmuri11", "WZH Wanted Sans", "Malgun Gothic", sans-serif;
@@ -834,6 +988,13 @@ components:
     --color-coin-deep: #FDE68A;
     --color-coin-hi: #FFFBEB;
     --color-star: #FBBF24;
+    --color-tip-bg: #2A2312; --color-tip-line: #F59E0B; --color-tip-ink: #FCD34D;
+    --color-warn-bg: #2D1618; --color-warn-line: #F87171; --color-warn-ink: #FCA5A5;
+    --color-info-bg: #14203D; --color-info-line: #60A5FA; --color-info-ink: #93C5FD;
+    --color-path-bg: #221A3D; --color-path-line: #A78BFA; --color-path-ink: #C4B5FD;
+    --color-success-bg: #0F2A2A; --color-success-line: #2DD4BF; --color-success-ink: #5EEAD4;
+    --color-answer-bg: #1E2240; --color-answer-line: #A3A9C9; --color-answer-ink: #E2E8F0;
+    --color-danger: #F87171; --color-danger-ink: #0D0F1F; --color-danger-deep: #B91C1C;
   }
 }
 :root[data-theme="dark"] {
@@ -862,5 +1023,12 @@ components:
   --color-coin-deep: #FDE68A;
   --color-coin-hi: #FFFBEB;
   --color-star: #FBBF24;
+  --color-tip-bg: #2A2312; --color-tip-line: #F59E0B; --color-tip-ink: #FCD34D;
+  --color-warn-bg: #2D1618; --color-warn-line: #F87171; --color-warn-ink: #FCA5A5;
+  --color-info-bg: #14203D; --color-info-line: #60A5FA; --color-info-ink: #93C5FD;
+  --color-path-bg: #221A3D; --color-path-line: #A78BFA; --color-path-ink: #C4B5FD;
+  --color-success-bg: #0F2A2A; --color-success-line: #2DD4BF; --color-success-ink: #5EEAD4;
+  --color-answer-bg: #1E2240; --color-answer-line: #A3A9C9; --color-answer-ink: #E2E8F0;
+  --color-danger: #F87171; --color-danger-ink: #0D0F1F; --color-danger-deep: #B91C1C;
 }
 ```

@@ -29,6 +29,19 @@
   --color-star: #B45309;
   --ledge: 4px;
 
+  /* 알림·코드·위험 (M8). 코드·구문 색은 두 테마가 같다("밤 코드")라 여기에만 둔다 */
+  --color-tip-bg: #FFFBEB; --color-tip-line: #D97706; --color-tip-ink: #92400E;
+  --color-warn-bg: #FEF2F2; --color-warn-line: #DC2626; --color-warn-ink: #991B1B;
+  --color-info-bg: #EFF6FF; --color-info-line: #2563EB; --color-info-ink: #1E40AF;
+  --color-path-bg: #F5F3FF; --color-path-line: #7C3AED; --color-path-ink: #5B21B6;
+  --color-success-bg: #F0FDFA; --color-success-line: #0D9488; --color-success-ink: #115E59;
+  --color-answer-bg: #F1F5F9; --color-answer-line: #64748B; --color-answer-ink: #334155;
+  --color-code-bg: #1E1B4B; --color-code-fg: #E0E7FF; --color-code-head: #2E2A6B; --color-code-border: #3F3A8A;
+  --color-tok-keyword: #C4B5FD; --color-tok-string: #FDE68A; --color-tok-number: #FDBA74; --color-tok-comment: #A5B4FC;
+  --color-tok-title: #7DD3FC; --color-tok-attr: #5EEAD4; --color-tok-variable: #FCA5A5; --color-tok-meta: #CBD5E1;
+  --color-tok-tag: #93C5FD; --color-tok-name: #93C5FD; --color-tok-deletion: #FCA5A5; --color-tok-addition: #5EEAD4;
+  --color-danger: #B91C1C; --color-danger-ink: #FFFFFF; --color-danger-deep: #7F1D1D;
+
   --font-body: "WZH Wanted Sans", "Malgun Gothic", system-ui, sans-serif;
   --font-label: "WZH Galmuri11", "WZH Wanted Sans", "Malgun Gothic", sans-serif;
   --font-code: "WZH Code", Consolas, monospace;
@@ -93,6 +106,13 @@
     --color-coin-deep: #FDE68A;
     --color-coin-hi: #FFFBEB;
     --color-star: #FBBF24;
+    --color-tip-bg: #2A2312; --color-tip-line: #F59E0B; --color-tip-ink: #FCD34D;
+    --color-warn-bg: #2D1618; --color-warn-line: #F87171; --color-warn-ink: #FCA5A5;
+    --color-info-bg: #14203D; --color-info-line: #60A5FA; --color-info-ink: #93C5FD;
+    --color-path-bg: #221A3D; --color-path-line: #A78BFA; --color-path-ink: #C4B5FD;
+    --color-success-bg: #0F2A2A; --color-success-line: #2DD4BF; --color-success-ink: #5EEAD4;
+    --color-answer-bg: #1E2240; --color-answer-line: #A3A9C9; --color-answer-ink: #E2E8F0;
+    --color-danger: #F87171; --color-danger-ink: #0D0F1F; --color-danger-deep: #B91C1C;
   }
 }
 :root[data-theme="dark"] {
@@ -121,4 +141,11 @@
   --color-coin-deep: #FDE68A;
   --color-coin-hi: #FFFBEB;
   --color-star: #FBBF24;
+  --color-tip-bg: #2A2312; --color-tip-line: #F59E0B; --color-tip-ink: #FCD34D;
+  --color-warn-bg: #2D1618; --color-warn-line: #F87171; --color-warn-ink: #FCA5A5;
+  --color-info-bg: #14203D; --color-info-line: #60A5FA; --color-info-ink: #93C5FD;
+  --color-path-bg: #221A3D; --color-path-line: #A78BFA; --color-path-ink: #C4B5FD;
+  --color-success-bg: #0F2A2A; --color-success-line: #2DD4BF; --color-success-ink: #5EEAD4;
+  --color-answer-bg: #1E2240; --color-answer-line: #A3A9C9; --color-answer-ink: #E2E8F0;
+  --color-danger: #F87171; --color-danger-ink: #0D0F1F; --color-danger-deep: #B91C1C;
 }

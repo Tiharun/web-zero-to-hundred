@@ -715,7 +715,85 @@ test('code token colors keep 4.5:1 contrast in light and dark themes', TIMEOUT, 
   // 시스템 다크와 수동 다크, 시스템 라이트와 수동 라이트는 같은 색이어야 한다 (CSS 두 곳의 값이 어긋나지 않았는지)
   assert.deepEqual(results['dark (system)'].colors, results['dark (manual over light system)'].colors);
   assert.deepEqual(results['light (system)'].colors, results['light (manual over dark system)'].colors);
-  assert.notDeepEqual(results['light (system)'].colors, results['dark (system)'].colors);
+  // 밤 코드(DESIGN.md): 두 테마가 같은 코드 바탕·구문 색을 쓴다
+  assert.deepEqual(results['light (system)'].colors, results['dark (system)'].colors);
+  assert.equal(results['light (system)'].background, results['dark (system)'].background);
+});
+
+test('callout, code and danger pairs keep their contrast in four theme scenarios', TIMEOUT, async () => {
+  const KINDS = ['tip', 'warn', 'info', 'path', 'success'];
+  const measure = (page, kinds) =>
+    page.evaluate((kinds) => {
+      const channels = (css) => css.match(/[\d.]+/g).slice(0, 3).map(Number);
+      const luminance = (css) => {
+        const [r, g, b] = channels(css).map((v) => {
+          const c = v / 255;
+          return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      };
+      const ratio = (a, b) => {
+        const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+        return (hi + 0.05) / (lo + 0.05);
+      };
+      const body = document.querySelector('.lesson-body');
+      const card = getComputedStyle(document.body).getPropertyValue('--color-card').trim();
+      const probe = document.createElement('span');
+      probe.style.cssText = `transition:none;color:${card}`;
+      body.append(probe);
+      const cardRgb = getComputedStyle(probe).color;
+      probe.remove();
+      const rows = [];
+      // Markdown(markdown.mjs renderBox)이 만드는 알림 상자와 같은 구조
+      for (const kind of kinds) {
+        const box = document.createElement('aside');
+        box.className = `callout callout-${kind}`;
+        box.innerHTML = '<p class="callout-title">제목</p><div class="callout-body"><p>본문</p></div>';
+        body.append(box);
+        const s = getComputedStyle(box);
+        rows.push([`${kind} 제목/바탕`, ratio(getComputedStyle(box.querySelector('.callout-title')).color, s.backgroundColor), 4.5]);
+        rows.push([`${kind} 본문/바탕`, ratio(getComputedStyle(box.querySelector('.callout-body p')).color, s.backgroundColor), 4.5]);
+        rows.push([`${kind} 막대/card`, ratio(s.borderLeftColor, cardRgb), 3]);
+        box.remove();
+      }
+      const answer = document.querySelector('details.answer');
+      const a = getComputedStyle(answer);
+      rows.push(['answer 글자/바탕', ratio(getComputedStyle(answer.querySelector('summary')).color, a.backgroundColor), 4.5]);
+      rows.push(['answer 막대/card', ratio(a.borderLeftColor, cardRgb), 3]);
+      return rows;
+    }, kinds);
+  const dangerRatio = (page) =>
+    page.getByTestId('reset-button').evaluate((btn) => {
+      const lum = (css) =>
+        css.match(/[\d.]+/g).slice(0, 3).map(Number).map((v) => ((v /= 255) <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4)).reduce((s, v, i) => s + v * [0.2126, 0.7152, 0.0722][i], 0);
+      const s = getComputedStyle(btn);
+      const [hi, lo] = [lum(s.color), lum(s.backgroundColor)].sort((x, y) => y - x);
+      return (hi + 0.05) / (lo + 0.05);
+    });
+  const scenarios = [
+    ['light (system)', { colorScheme: 'light', theme: null }],
+    ['dark (system)', { colorScheme: 'dark', theme: null }],
+    ['dark (manual over light system)', { colorScheme: 'light', theme: 'dark' }],
+    ['light (manual over dark system)', { colorScheme: 'dark', theme: 'light' }],
+  ];
+  for (const [name, { colorScheme, theme }] of scenarios) {
+    await withPage(
+      async (page, app) => {
+        await visit(page, app, '#/day/fa-d01');
+        await page.locator('details.answer').first().waitFor();
+        if (theme) await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
+        for (const [pair, value, min] of await measure(page, KINDS)) {
+          assert.ok(value >= min, `${name}: ${pair} 대비 ${value.toFixed(2)}:1 < ${min}:1`);
+        }
+        await visit(page, app, '#/settings');
+        await page.getByTestId('reset-button').waitFor();
+        if (theme) await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
+        const danger = await dangerRatio(page);
+        assert.ok(danger >= 4.5, `${name}: 위험 버튼 글자/면 대비 ${danger.toFixed(2)}:1 < 4.5:1`);
+      },
+      { colorScheme },
+    );
+  }
 });
 
 test('special days count toward the level panel and placeholder days are styled', TIMEOUT, async () => {
