@@ -662,6 +662,14 @@ li.task input[type="checkbox"] {
   }
 }
 
+/* ───────── 🧯 증상 (DESIGN.md "Day 증상 Accordion"): 모양은 pages.css 의 .ts-entry 를 함께 쓴다 ───────── */
+
+.trouble-tools {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 var(--space-xs);
+}
+
 /* ───────── 읽기 위치 바 (DESIGN.md "Day 부품" 읽기 위치 바) ───────── */
 
 .read-bar {

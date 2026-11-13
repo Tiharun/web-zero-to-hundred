@@ -402,3 +402,51 @@ test('read bar is hidden in print', TIMEOUT, async () => {
     { viewport: PHONE },
   );
 });
+
+// ───────── 🧯 증상 Accordion (M10) ─────────
+
+test('day symptoms open one by one and expand all follows', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      const entries = page.locator('.lesson-body details.ts-entry');
+      assert.equal(await entries.count(), 2);
+      assert.deepEqual(await entries.evaluateAll((els) => els.map((d) => d.open)), [false, false]);
+      const btn = page.locator('.lesson-body [data-expand-all]');
+      await entries.first().locator('summary').click();
+      assert.deepEqual(await entries.evaluateAll((els) => els.map((d) => d.open)), [true, false]);
+      assert.equal(await btn.innerText(), '모두 펼치기');
+      await btn.click();
+      assert.deepEqual(await entries.evaluateAll((els) => els.map((d) => d.open)), [true, true]);
+      assert.equal(await btn.innerText(), '모두 접기');
+      await btn.click();
+      assert.deepEqual(await entries.evaluateAll((els) => els.map((d) => d.open)), [false, false]);
+      const [btnTop, h2Bottom] = await page.evaluate(() => {
+        const h2 = [...document.querySelectorAll('.lesson-body > h2')].find((el) => el.textContent.trim().startsWith('🧯'));
+        return [document.querySelector('.lesson-body [data-expand-all]').getBoundingClientRect().top, h2.getBoundingClientRect().bottom];
+      });
+      assert.ok(btnTop >= h2Bottom - 0.5, `버튼은 🧯 제목 아래 (${btnTop} < ${h2Bottom})`);
+    },
+    { viewport: PHONE },
+  );
+});
+
+test('day symptoms work from the keyboard', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      const entries = page.locator('.lesson-body details.ts-entry');
+      await entries.first().locator('summary').focus();
+      await page.keyboard.press('Enter');
+      assert.equal(await entries.first().evaluate((d) => d.open), true);
+      await entries.first().locator('summary').evaluate((el) => el.blur());
+      await page.locator('.lesson-body [data-expand-all]').focus();
+      await page.keyboard.press('Enter');
+      assert.deepEqual(await entries.evaluateAll((els) => els.map((d) => d.open)), [true, true]);
+      // Tab 순서: 모두 펼치기 → 첫 증상 summary
+      await page.keyboard.press('Tab');
+      assert.equal(await page.evaluate(() => document.activeElement === document.querySelector('.lesson-body details.ts-entry > summary')), true);
+    },
+    { viewport: PHONE },
+  );
+});

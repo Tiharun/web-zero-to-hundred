@@ -1,6 +1,7 @@
 // Day 화면: 본문 템플릿을 붙이고, 체크박스·정답 게이트·코드 복사·완료 버튼을 연결한다.
 import { reveal } from '../motion.js';
 import { canComplete, canUncomplete, completeDay, dayState, isProjectComplete, newlyUnlocked, toggleCheck, uncompleteDay } from '../progress.js';
+import { symptomAccordions } from './accordion.js';
 import { breadcrumb, chips, findDay, getPage, getProject, h, isDone, lockScreen, minutesText, textLink } from './common.js';
 import { mountReadBar } from './readbar.js';
 
@@ -116,6 +117,15 @@ function bindAnswerGate(body) {
   });
 }
 
+// ───────── 🧯 증상 ─────────
+
+/** 🧯 섹션 제목 바로 아래 줄 오른쪽 끝에 "모두 펼치기" (DESIGN.md "Day 증상 Accordion") */
+function bindSymptoms(body) {
+  const btn = symptomAccordions(body);
+  const heading = [...body.querySelectorAll(':scope > h2')].find((el) => el.textContent.trim().startsWith('🧯'));
+  if (btn && heading) heading.after(h('div', { class: 'trouble-tools' }, btn));
+}
+
 // ───────── 체크박스 ─────────
 
 function bindChecklist(ctx, dayId, body, onChange) {
@@ -216,6 +226,7 @@ export function renderDay(ctx, dayId, root) {
   const checklist = bindChecklist(ctx, dayId, body, () => renderFooter());
   bindAnswerGate(body);
   bindCopyButtons(ctx, body);
+  bindSymptoms(body);
 
   const footer = h('footer', { class: 'lesson-foot' });
   let justUnlocked = []; // 이 화면에서 방금 열린 프로젝트·페이지 id
