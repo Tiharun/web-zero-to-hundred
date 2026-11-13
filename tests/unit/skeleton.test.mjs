@@ -100,3 +100,33 @@ test('skeletonGate: the 300ms minimum counts from when the rows are on screen, e
   clock.advance(1000);
   assert.deepEqual(log, [['shown', 220], ['hide', 520], ['apply', 520]]);
 });
+
+test('skeletonGate: poll shows the skeleton once the delay has passed even if the timer never got a turn', () => {
+  // 느린 기기: 계산이 쉬는 틈마다 poll 을 부르지만, 다른 작업이 먼저 돌아 200ms 타이머 차례가 오지 않는다
+  const { clock, log, gate, apply } = setup();
+  clock.spend(150);
+  gate.poll();
+  assert.deepEqual(log, [], '200ms 전에는 보이지 않는다');
+  clock.spend(100);
+  gate.poll();
+  gate.poll();
+  assert.deepEqual(log, [['show', 250]], '한 번만 보인다');
+  gate.finish(apply);
+  clock.advance(1000);
+  assert.deepEqual(log, [['show', 250], ['hide', 550], ['apply', 550]]);
+});
+
+test('skeletonGate: poll after finish or cancel does nothing', () => {
+  const { clock, log, gate, apply } = setup();
+  clock.spend(100);
+  gate.finish(apply);
+  clock.spend(500);
+  gate.poll();
+  const other = setup();
+  other.clock.spend(100);
+  other.gate.cancel();
+  other.clock.spend(500);
+  other.gate.poll();
+  assert.deepEqual(log, [['apply', 100]]);
+  assert.deepEqual(other.log, []);
+});

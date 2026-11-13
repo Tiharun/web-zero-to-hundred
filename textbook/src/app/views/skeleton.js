@@ -13,16 +13,21 @@ const realClock = () => ({ now: () => performance.now(), setTimeout: (fn, ms) =>
  * 오래 걸릴 때만 자리표시를 보인다. 만들 때 시계가 돈다.
  * finish(apply): 안 보였으면 바로 apply, 보였으면 최소 시간을 채운 뒤 hide → apply.
  * cancel(): 타이머를 지우고, 보였으면 hide. apply 는 부르지 않는다(finish 가 최소 시간을 기다리던 apply 도 버린다).
+ * poll(): 지연 시간이 지났는데 아직 안 보였으면 지금 보인다. 오래 걸리는 계산이 쉬는 틈마다 부른다.
+ *   타이머만 믿으면, 계산이 쉬는 틈에 다른 작업이 먼저 돌아 타이머 차례가 오기 전에 finish 가 끝내 버릴 수 있다.
  * 그 밖의 두 번째 호출은 아무 일도 하지 않는다.
  */
 export function skeletonGate({ show, hide }, { delay = SKELETON_DELAY, min = SKELETON_MIN, clock = realClock() } = {}) {
+  const startedAt = clock.now();
   let shownAt = null;
   let settled = false;
-  let timer = clock.setTimeout(() => {
+  const reveal = () => {
+    if (timer !== null) clock.clearTimeout(timer);
     timer = null;
     show();
     shownAt = clock.now(); // 최소 시간은 행이 화면에 붙은 뒤부터 잰다 (느린 기기에서는 붙이는 데도 시간이 든다)
-  }, delay);
+  };
+  let timer = clock.setTimeout(reveal, delay);
 
   function stop() {
     settled = true;
@@ -31,6 +36,9 @@ export function skeletonGate({ show, hide }, { delay = SKELETON_DELAY, min = SKE
   }
 
   return {
+    poll() {
+      if (!settled && shownAt === null && clock.now() - startedAt >= delay) reveal();
+    },
     finish(apply) {
       if (settled) return;
       stop();

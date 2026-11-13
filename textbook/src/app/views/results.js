@@ -141,7 +141,12 @@ export function createResultsView(ctx, { list, hint, empty, row }) {
       });
       controller = mine;
       gate = myGate;
-      const results = await searchAsync(ctx.cur.search, query.trim(), (item) => isItemLocked(ctx, item), { signal: mine.signal });
+      // 쉬는 틈마다 늦었는지 본다: 느린 기기에서 200ms 타이머 차례가 오기 전에 계산이 끝나 Skeleton 을 건너뛰지 않게
+      const pause = () => {
+        myGate.poll();
+        return new Promise((resolve) => setTimeout(resolve, 0));
+      };
+      const results = await searchAsync(ctx.cur.search, query.trim(), (item) => isItemLocked(ctx, item), { signal: mine.signal, pause });
       if (results === null || controller !== mine) return; // 더 새 검색어가 왔다
       await new Promise((resolve) => myGate.finish(resolve));
       if (controller !== mine) return; // 최소 시간을 기다리는 동안 새 검색어가 왔다

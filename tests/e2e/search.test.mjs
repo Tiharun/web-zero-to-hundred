@@ -402,18 +402,27 @@ const watchSkeleton = (page) =>
 test('a slow first search shows the skeleton for at least 300ms', TIMEOUT, async () => {
   await withPage(
     '#/',
-    async (page, context) => {
+    async (page) => {
       await watchSkeleton(page);
-      const cdp = await context.newCDPSession(page);
-      await cdp.send('Emulation.setCPUThrottlingRate', { rate: 30 });
+      // 느린 기기 흉내: 글자 정규화(검색이 항목마다 하는 일) 한 번에 5ms 를 쓰게 한다. 색인 159항목이면 1.5초쯤 걸린다.
+      // CDP CPU 감속은 병렬 부하에서 스레드를 몇 초씩 통째로 멈춰, 쉬는 틈 없이 검색이 끝나 버리는 일이 있었다(M9 진단)
+      await page.evaluate(() => {
+        const normalize = String.prototype.normalize;
+        window.__restoreNormalize = () => {
+          String.prototype.normalize = normalize;
+        };
+        String.prototype.normalize = function slowNormalize(...args) {
+          const end = performance.now() + 5;
+          while (performance.now() < end);
+          return normalize.apply(this, args);
+        };
+      });
       try {
         await openModal(page);
         await modalInput(page).fill('html');
-        await page.waitForFunction(() => window.__sk.shown !== null, null, { timeout: 60_000 });
+        await page.waitForFunction(() => window.__sk.shown !== null, null, { timeout: 30_000 });
       } finally {
-        // Skeleton 이 뜬 뒤에는 감속을 푼다. 감속한 채로는 다른 테스트 파일과 같이 돌 때 검색이 몇십 초 걸린다.
-        // 최소 표시 시간(300ms)은 Skeleton 이 뜬 시각부터 재므로 그대로 확인된다
-        await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
+        await page.evaluate(() => window.__restoreNormalize());
       }
       await page.waitForFunction(() => window.__sk.hidden !== null, null, { timeout: 30_000 });
       const sk = await page.evaluate(() => window.__sk);
