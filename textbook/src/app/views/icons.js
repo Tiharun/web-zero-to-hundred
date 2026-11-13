@@ -98,3 +98,6 @@ export const px = (name, opts = {}) => fromString(`p:${name}:${opts.cls ?? ''}:$
 
 /** 월드 엠블럼 도트 아이콘 이름 (DESIGN.md Icons). 모르는 월드는 별 */
 export const worldEmblem = (project) => ({ p1: 'house', p2: 'tv', p3: 'pad', sp: 'gift', grad: 'trophy' })[project.id] ?? 'star';
+
+/** 부록 페이지 도트 그림 이름 (DESIGN.md Cards "부록 머리"·"막혔을 때 칸"). 그림이 없는 페이지는 null */
+export const pageArt = (id) => ({ help: 'ladder', troubleshooting: 'wrench', glossary: 'words', start: 'book' })[id] ?? null;

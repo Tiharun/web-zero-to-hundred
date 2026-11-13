@@ -121,19 +121,64 @@ function joinPage(parts, empty) {
   };
 }
 
+// 한글 초성 19자 → 색인 14자. 겹자음(ㄲ ㄸ ㅃ ㅆ ㅉ)은 홑자음 묶음에 넣는다
+const CHOSEONG = 'ㄱㄱㄴㄷㄷㄹㅁㅂㅂㅅㅅㅇㅈㅈㅊㅋㅌㅍㅎ';
+const KO_LABELS = 'ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ';
+
 /**
- * 용어 사전 페이지. 항목은 한글 사전순이고, 각 항목은 id="term-<slug>" 요소 안에 있다.
+ * 용어 색인 묶음. 한글 음절은 초성(14자), 라틴 글자는 대문자, 그 밖(기호·숫자 등)은 한 묶음.
+ * @returns {{ key: string, label: string }} key 는 'ko-1'…'ko-14', 'en-a'…'en-z', 'etc'
+ */
+export function glossaryIndexKey(term) {
+  const ch = String(term).normalize('NFC').charAt(0);
+  const code = ch.charCodeAt(0);
+  if (code >= 0xac00 && code <= 0xd7a3) {
+    const label = CHOSEONG[Math.floor((code - 0xac00) / 588)];
+    return { key: `ko-${KO_LABELS.indexOf(label) + 1}`, label };
+  }
+  if (/^[a-z]$/i.test(ch)) return { key: `en-${ch.toLowerCase()}`, label: ch.toUpperCase() };
+  return { key: 'etc', label: '기호·숫자' };
+}
+
+/** 묶음 순서: 기호·숫자 → ㄱ…ㅎ → A…Z */
+const groupRank = (key) => (key === 'etc' ? 0 : key.startsWith('ko-') ? Number(key.slice(3)) : 100 + key.charCodeAt(3));
+
+/**
+ * 용어 사전 페이지. 맨 앞에 ㄱㄴㄷ 색인, 이어서 묶음(h2)마다 용어(h3)를 한글 사전순으로 놓는다.
+ * 각 항목은 id="term-<slug>" 요소 안에 있다.
  * @param {{term,slug,md,file,line}[]} entries
  * @param {{ terms: Map<string,string>, routes: Set<string> }} ctx
  */
 export function renderGlossaryPage(entries, { terms, routes }) {
   const sorted = [...entries].sort((a, b) => a.term.localeCompare(b.term, 'ko') || a.slug.localeCompare(b.slug));
-  const parts = sorted.map((e) => {
-    // 항목 안의 제목 id 가 section id(term-*)와 겹치지 않게 다른 접두어를 쓴다
-    const r = renderEntry({ level: 2, title: e.term, md: e.md, file: e.file, line: e.line }, { idPrefix: `th-${e.slug}`, terms, routes });
-    return { ...r, html: `<section class="term-entry" id="term-${e.slug}">\n${r.html}</section>\n` };
+  const groups = new Map();
+  for (const e of sorted) {
+    const { key, label } = glossaryIndexKey(e.term);
+    if (!groups.has(key)) groups.set(key, { key, label, entries: [] });
+    groups.get(key).entries.push(e);
+  }
+  const ordered = [...groups.values()].sort((a, b) => groupRank(a.key) - groupRank(b.key));
+
+  const parts = ordered.map((g) => {
+    const items = g.entries.map((e) => {
+      // 항목 안의 제목 id 가 section id(term-*)와 겹치지 않게 다른 접두어를 쓴다
+      const r = renderEntry({ level: 3, title: e.term, md: e.md, file: e.file, line: e.line }, { idPrefix: `th-${e.slug}`, terms, routes });
+      return { ...r, html: `<section class="term-entry" id="term-${e.slug}">\n${r.html}</section>\n` };
+    });
+    const body = joinPage(items, '');
+    return {
+      ...body,
+      html: `<section class="gl-group" id="gl-${g.key}" aria-labelledby="glh-${g.key}">\n<h2 id="glh-${g.key}">${esc(g.label)}</h2>\n${body.html}</section>\n`,
+    };
   });
-  return joinPage(parts, '<p>아직 등록된 용어가 없어요.</p>\n');
+  const page = joinPage(parts, '<p>아직 등록된 용어가 없어요.</p>\n');
+  if (ordered.length === 0) return page;
+
+  const links = ordered
+    .map((g) => `<li><a href="#/page/glossary/gl-${g.key}" aria-label="${esc(g.label)}, 용어 ${g.entries.length}개">${esc(g.label)}</a></li>`)
+    .join('');
+  const index = `<nav class="toc gl-index" aria-labelledby="gl-index-h">\n<h2 class="label" id="gl-index-h">ㄱㄴㄷ 색인</h2>\n<ul>${links}</ul>\n</nav>\n`;
+  return { ...page, html: index + page.html };
 }
 
 /**

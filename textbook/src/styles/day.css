@@ -165,16 +165,17 @@
   background: var(--surface-2);
 }
 
+/* 찾아온 항목 (DESIGN.md Cards "찾아온 항목"): track 바탕과 같은 색 띠, 분홍을 쓰지 않는다 */
 .is-target {
-  border-radius: var(--radius-sm);
-  background: var(--accent-soft);
-  box-shadow: 0 0 0 8px var(--accent-soft);
+  border-radius: var(--radius-btn);
+  background: var(--color-track);
+  box-shadow: 0 0 0 var(--space-xs) var(--color-track);
   animation: target-fade 2.4s ease-out 0.6s forwards;
 }
 @keyframes target-fade {
   to {
     background: transparent;
-    box-shadow: 0 0 0 8px transparent;
+    box-shadow: 0 0 0 var(--space-xs) transparent;
   }
 }
 

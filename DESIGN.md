@@ -542,6 +542,10 @@ components:
 - **월드 페이지:** 빵부스러기 → 머리(월드 카드와 같은 40px 문장 칸 + 엠블럼 3배, 월드 태그 Label, 제목, lead, 설명 Body `ink-2`) → 결과물 카드(기본 카드, 안쪽 `var(--space-lg)`, 640px 이하 `var(--space-md)`, 세로 간격 `var(--space-sm)`: Label 머리 "끝나면 남는 결과물", 결과물 문장 Body `ink` 800, 기술 칩 전부, 사실 줄 작업 폴더·진도 `n / 전체 Day 완료`, 진도 막대) → 제목 "Day 목록" → Day 목록 카드(기본 카드, 안쪽 `var(--space-2xs)`). 주 버튼은 두지 않는다.
 - **월드 페이지 Day 행:** `grid-template-columns: 28px minmax(0, 1fr) auto`, 최소 48px, 안쪽 `var(--space-sm)`, 모서리 6px, 행 사이 1px `rule` 선, hover `track`, 누름 `rule`. 번호는 사이드바 Day 행과 같다(오늘은 24px 분홍 네모, `aria-current="step"`. 오늘 Day가 다른 월드에 있으면 분홍이 없다). 가운데는 제목(15px 800)과 요약(15px `ink-2`). 오른쪽은 예상 시간 Label과 상태 표시(완료 초록 도트 체크와 제목 `ink-2`, 준비 중 Galmuri "준비 중"). 640px 이하에서 오른쪽 칸은 가운데 칸 아래로 내려간다.
 - **진도 막대:** 높이 `var(--space-sm)`, 바탕 `track`, 모서리 `--radius-btn`, 채움 `progress`(완료 비율만). 폭은 움직이지 않는다.
+- **부록 머리:** 빵부스러기 → 도움말 도트 그림 3배(막혔을 때 칸과 같은 그림) → 제목 → lead(`ink-2`, 페이지 설명). 그림이 없는 페이지는 그림 없이 같다.
+- **목차 카드(용어 색인·문제 해결 목차):** 기본 카드, 안쪽 `var(--space-md)`, Label 머리. 색인·Day 링크 칸: 최소 40×40px(`pointer: coarse`에서 44px), 15px 800 `ink`, 모서리 6px, 1px `rule` 테두리, hover `track`, 칸 사이 `var(--space-2xs)`, 줄바꿈 허용.
+- **용어 묶음:** 묶음 제목(Title small) 아래 용어 항목. 항목 사이 1px `rule` 선, 위아래 `var(--space-md)`.
+- **찾아온 항목:** 주소로 찾아온 용어·증상은 `track` 바탕(사방 `var(--space-xs)` 같은 색 띠)으로 표시하고 2.4초 뒤 사라진다(분홍을 쓰지 않는다).
 
 ### Board Tiles (signature)
 보드게임 칸. 둥근 네모(모서리 6px)에 2px 테두리와 같은 색 턱. 테두리·턱 색은 `--tile-edge` 하나로 묶는다.

@@ -196,8 +196,9 @@
   padding-inline: var(--space-2xs);
 }
 
-/* 카드 (DESIGN.md Cards): 그림자 대신 4px 턱 */
-.card {
+/* 카드 (DESIGN.md Cards): 그림자 대신 4px 턱. 목차 카드(.toc)는 빌드가 만든 HTML이라 같은 모양을 선택자로 받는다 */
+.card,
+.toc {
   background: var(--color-card);
   color: var(--color-ink);
   border: 2px solid var(--color-rule);

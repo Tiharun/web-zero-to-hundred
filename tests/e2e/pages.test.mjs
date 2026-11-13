@@ -1,9 +1,9 @@
 // 월드 페이지·부록 페이지 e2e(M7): 월드 페이지, 부록 머리, 용어 색인, 문제 해결 목차·Accordion.
 // 모양·문구는 DESIGN.md(월드 페이지, 부록 머리, 목차 카드, 증상 Accordion)와 M7 계획서를 따른다. 실행: cd textbook && npm run test:e2e
-// 픽스처를 복사해 고친다: fa-d02 는 파일을 지워 "준비 중"으로 만든다.
+// 픽스처를 복사해 고친다: fa-d02 는 파일을 지워 "준비 중"으로 만들고, 용어 사전에 라틴 글자 용어(API)를 더한다.
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { cp, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { appendFile, cp, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
@@ -25,6 +25,7 @@ let browser;
 /** 픽스처 복사본을 이 파일의 장면에 맞게 고친다 */
 async function prepareContent(content) {
   await rm(path.join(content, 'fa', 'day-02.md'));
+  await appendFile(path.join(content, 'glossary', 'fixture.md'), '\n### API\n- 처음 등장: [Day 1](#/day/fa-d01)\n\n프로그램끼리 주고받는 약속이에요.\n');
 }
 
 before(async () => {
@@ -162,4 +163,63 @@ test('world page rows follow DESIGN.md', TIMEOUT, async () => {
     const meter = page.locator('.world-outcome .meter');
     assert.equal(await css(meter, 'borderTopLeftRadius'), '6px');
   });
+});
+
+// ───────── 부록 머리·용어 색인 ─────────
+
+test('appendix pages share one head: dot art, title and description', TIMEOUT, async () => {
+  await withPage('#/page/start', async (page) => {
+    const head = page.locator('.page-article .page-head');
+    assert.equal(await head.locator('.page-art').count(), 1);
+    assert.equal(await head.locator('h1').innerText(), '시작하기');
+    assert.equal(await head.locator('.lead').innerText(), '교재 쓰는 법, 공부 원칙, 준비물');
+  });
+  await withPage('#/page/glossary', async (page) => {
+    const head = page.locator('.page-article .page-head');
+    assert.equal(await head.locator('.page-art').count(), 1);
+    assert.equal(await head.locator('.lead').innerText(), '용어 3개를 한 줄 정의로');
+  });
+  await withPage('#/page/secret', async (page) => {
+    assert.equal(await page.locator('.page-head').count(), 0, '잠긴 페이지는 잠금 화면이에요');
+  });
+  await withPage(
+    '#/page/secret',
+    async (page) => {
+      const head = page.locator('.page-article .page-head');
+      assert.equal(await head.locator('h1').innerText(), '비밀 페이지');
+      assert.equal(await head.locator('.page-art').count(), 0, '그림이 없는 페이지는 그림 없이 같은 머리');
+      assert.equal(await head.locator('.lead').count(), 0);
+    },
+    { progress: ['fa-d01', 'fa-d02', 'fb-d01'] },
+  );
+});
+
+test('the glossary index jumps to a group and a term link lands on the term', TIMEOUT, async () => {
+  await withPage(
+    '#/page/glossary',
+    async (page) => {
+      const links = page.locator('.gl-index a');
+      assert.deepEqual(await links.allInnerTexts(), ['ㄱ', 'ㅍ', 'A']);
+      await links.filter({ hasText: 'A' }).click();
+      await page.waitForURL(/#\/page\/glossary\/gl-en-a$/);
+      const bar = await page.locator('.topbar').boundingBox();
+      await eventually(async () => {
+        const box = await page.locator('#gl-en-a').boundingBox();
+        assert.ok(box.y >= bar.y + bar.height, `묶음이 상단 바 아래에 보여요 (${box.y})`);
+        assert.ok(box.y < 800);
+      });
+      assert.equal(await page.locator('#gl-en-a.is-target').count(), 0, '묶음 전체는 찾아온 항목 띠를 쓰지 않아요');
+    },
+    { viewport: { width: 1280, height: 800 } },
+  );
+  // 움직임 줄이기: 띠가 사라지는 애니메이션 없이 표시만 남아 색을 확실히 읽는다
+  await withPage(
+    '#/page/glossary/term-api',
+    async (page) => {
+      const entry = page.locator('#term-api.is-target');
+      assert.equal(await entry.count(), 1);
+      assert.equal(await css(entry, 'backgroundColor'), await tokenColor(page, '--color-track'));
+    },
+    { reducedMotion: 'reduce' },
+  );
 });

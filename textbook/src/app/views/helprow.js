@@ -2,19 +2,14 @@
 // 순서는 고정(help → troubleshooting → glossary → start)이고 교재에 있는 페이지만 보인다. 설명의 개수는 빌드가 센 값이다.
 import { isUnlocked } from '../progress.js';
 import { getPage, h } from './common.js';
-import { px } from './icons.js';
+import { pageArt, px } from './icons.js';
 
-const ORDER = [
-  ['help', 'ladder'],
-  ['troubleshooting', 'wrench'],
-  ['glossary', 'words'],
-  ['start', 'book'],
-];
+const ORDER = ['help', 'troubleshooting', 'glossary', 'start'];
 
 /** 막혔을 때 구역. 해당 페이지가 하나도 없으면 null */
 export function helpRow(ctx) {
   const { cur, prog } = ctx;
-  const items = ORDER.map(([id, art]) => [getPage(cur, id), art]).filter(([page]) => page);
+  const items = ORDER.map((id) => [getPage(cur, id), pageArt(id)]).filter(([page]) => page);
   if (items.length === 0) return null;
 
   return h(

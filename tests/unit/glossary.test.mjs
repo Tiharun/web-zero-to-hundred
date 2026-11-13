@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  glossaryIndexKey,
   parseGlossary,
   parseTroubleshooting,
   renderGlossaryPage,
@@ -158,7 +159,7 @@ test('glossary page sorts entries in Korean order and gives each an id', () => {
   const ids = [...page.html.matchAll(/<section class="term-entry" id="(term-[^"]+)"/g)].map((m) => m[1]);
   // localeCompare('ko'): 한글이 영문보다 앞에 오고, 한글끼리는 사전순이다
   assert.deepEqual(ids, ['term-가나', 'term-바다', 'term-하늘', 'term-c']);
-  assert.match(page.html, /<h2[^>]*>가나<\/h2>/);
+  assert.match(page.html, /<h3[^>]*>가나<\/h3>/); // 용어는 h3, 묶음(ㄱ 등)이 h2
   // 본문은 renderMarkdown을 거친다: 용어 링크가 같은 규칙으로 걸린다
   assert.match(page.html, /<a class="term" href="#\/page\/glossary\/term-하늘">하늘<\/a>/);
   assert.match(page.text, /가나 처음/);
@@ -229,4 +230,36 @@ test('empty generated pages still render', () => {
   const page = renderTroubleshootingPage([], [], { terms: new Map(), routes });
   assert.deepEqual(page.errors, []);
   assert.equal(typeof page.html, 'string');
+});
+
+
+test('glossaryIndexKey groups by merged initial consonant, Latin letter or symbol', () => {
+  assert.deepEqual(glossaryIndexKey('가변 참조'), { key: 'ko-1', label: 'ㄱ' });
+  assert.deepEqual(glossaryIndexKey('깃허브'), { key: 'ko-1', label: 'ㄱ' });
+  assert.deepEqual(glossaryIndexKey('쓰레드'), { key: 'ko-7', label: 'ㅅ' });
+  assert.deepEqual(glossaryIndexKey('후원'), { key: 'ko-14', label: 'ㅎ' });
+  assert.deepEqual(glossaryIndexKey('xUnit'), { key: 'en-x', label: 'X' });
+  assert.deepEqual(glossaryIndexKey('.NET'), { key: 'etc', label: '기호·숫자' });
+  assert.deepEqual(glossaryIndexKey('1:N 관계'), { key: 'etc', label: '기호·숫자' });
+});
+
+test('glossary page has an index and groups in symbol, Hangul, Latin order', () => {
+  const { entries, terms } = makeGlossary([{ file: '/c/glossary/a.md', src: '### API\n영문\n\n### 하나\n끝\n\n### .env\n기호\n\n### 가나다\n처음\n' }]);
+  const page = renderGlossaryPage(entries, { terms, routes });
+  assert.deepEqual(page.errors, []);
+  const groups = [...page.html.matchAll(/<section class="gl-group" id="([^"]+)"/g)].map((m) => m[1]);
+  assert.deepEqual(groups, ['gl-etc', 'gl-ko-1', 'gl-ko-14', 'gl-en-a']);
+  const index = page.html.slice(0, page.html.indexOf('</nav>'));
+  assert.match(index, /^<nav class="toc gl-index" aria-labelledby="gl-index-h">/);
+  const links = [...index.matchAll(/<a href="([^"]+)" aria-label="([^"]+)">([^<]+)<\/a>/g)].map((m) => [m[1], m[2], m[3]]);
+  assert.deepEqual(links, [
+    ['#/page/glossary/gl-etc', '기호·숫자, 용어 1개', '기호·숫자'],
+    ['#/page/glossary/gl-ko-1', 'ㄱ, 용어 1개', 'ㄱ'],
+    ['#/page/glossary/gl-ko-14', 'ㅎ, 용어 1개', 'ㅎ'],
+    ['#/page/glossary/gl-en-a', 'A, 용어 1개', 'A'],
+  ]);
+  const ids = [...page.html.matchAll(/<section class="term-entry" id="(term-[^"]+)"/g)].map((m) => m[1]);
+  assert.deepEqual(ids, ['term-env', 'term-가나다', 'term-하나', 'term-api']);
+  assert.match(page.html, /<h2 id="glh-ko-1">ㄱ<\/h2>/);
+  assert.match(page.html, /<h3[^>]*>API<\/h3>/);
 });
