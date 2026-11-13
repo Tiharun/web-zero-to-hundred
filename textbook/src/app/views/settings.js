@@ -1,7 +1,7 @@
 // 설정: 테마, 진도 백업(내보내기·불러오기), 진도 초기화, 교재 정보.
 import { shake } from '../motion.js';
 import { backupFilename, emptyProgress, exportBackup, importBackup } from '../progress.js';
-import { h, notice } from './common.js';
+import { card, h, notice } from './common.js';
 
 const THEME_OPTIONS = [
   ['system', '기기 설정 따르기'],
@@ -84,16 +84,19 @@ export function renderSettings(ctx, root) {
   ctx.onChange(() => {
     for (const radio of root.querySelectorAll('input[name="theme"]')) radio.checked = radio.value === ctx.prog.theme;
   });
+  /** 설정 카드 하나: 기본 카드 + 제목(Title small). DESIGN.md Cards "설정 카드" */
+  const section = (id, title, ...children) =>
+    card({ class: 'settings-card', 'aria-labelledby': `settings-${id}` }, h('h2', { id: `settings-${id}` }, title), ...children);
+  const text = (t) => h('p', { class: 'settings-text' }, t);
+
   root.append(
     h(
       'div',
       { class: 'settings' },
       h('h1', null, '설정'),
-
-      h(
-        'section',
-        { class: 'panel' },
-        h('h2', null, '화면 모양'),
+      section(
+        'theme',
+        '화면 모양',
         h(
           'div',
           { class: 'radio-row', role: 'radiogroup', 'aria-label': '테마' },
@@ -102,32 +105,27 @@ export function renderSettings(ctx, root) {
           ),
         ),
       ),
-
-      h(
-        'section',
-        { class: 'panel' },
-        h('h2', null, '진도 백업'),
+      section(
+        'backup',
+        '진도 백업',
         saved
-          ? h('p', { class: 'muted' }, '진도는 이 브라우저 안에 저장돼요. 브라우저 기록을 지우거나 다른 컴퓨터로 옮길 때는 백업 파일이 필요해요.')
+          ? text('진도는 이 브라우저 안에 저장돼요. 브라우저 기록을 지우거나 다른 컴퓨터로 옮길 때는 백업 파일이 필요해요.')
           : notice('이 브라우저에서는 진도를 저장할 수 없어요. 이 창을 닫기 전에 꼭 백업 파일을 내보내 두세요.'),
         h(
           'div',
-          { class: 'button-row' },
+          { class: 'settings-actions' },
           h('button', { class: 'btn', type: 'button', 'data-testid': 'export-button', onclick: () => download(backupFilename(new Date()), exportBackup(ctx.prog, ctx.now())) }, '진도 내보내기'),
           h('label', { class: 'btn file-btn' }, '진도 불러오기', h('input', { class: 'sr-only', type: 'file', accept: '.json,application/json', 'data-testid': 'import-input', onchange: onImport })),
         ),
         message,
       ),
-
-      h(
-        'section',
-        { class: 'panel' },
-        h('h2', null, '진도 초기화'),
-        h('p', { class: 'muted' }, '처음부터 다시 하고 싶을 때만 눌러 주세요. 먼저 백업 파일을 내보내 두면 안전해요.'),
-        h('div', { class: 'button-row' }, h('button', { class: 'btn btn-danger', type: 'button', 'data-testid': 'reset-button', onclick: onReset }, '진도 모두 지우기')),
+      section(
+        'reset',
+        '진도 초기화',
+        text('처음부터 다시 하고 싶을 때만 눌러 주세요. 먼저 백업 파일을 내보내 두면 안전해요.'),
+        h('div', { class: 'settings-actions' }, h('button', { class: 'btn btn-danger', type: 'button', 'data-testid': 'reset-button', onclick: onReset }, '진도 모두 지우기')),
       ),
-
-      h('section', { class: 'panel' }, h('h2', null, '이 교재에 대해'), h('p', { class: 'muted' }, `${cur.title} · 작성 기준일 ${cur.writtenAt} · 빌드 ${cur.builtAt}`)),
+      section('about', '이 교재에 대해', text(`${cur.title} · 작성 기준일 ${cur.writtenAt} · 빌드 ${cur.builtAt}`)),
     ),
   );
   return '설정';

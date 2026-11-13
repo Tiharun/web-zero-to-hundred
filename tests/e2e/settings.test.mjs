@@ -349,3 +349,49 @@ test('import works in memory when storage is blocked', TIMEOUT, async () => {
     },
   );
 });
+
+// ───────── 설정 카드 ─────────
+
+test('settings cards follow DESIGN.md: basic card, title small, notice-style message', TIMEOUT, async () => {
+  await withPage('#/settings', async (page) => {
+    const cards = page.locator('.settings .settings-card');
+    assert.equal(await cards.count(), 4);
+    const h3 = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--text-h3').trim());
+    for (const card of await cards.all()) {
+      const s = await card.evaluate((el) => {
+        const c = getComputedStyle(el);
+        const t = getComputedStyle(el.querySelector('h2'));
+        return { border: c.borderTopWidth, radius: c.borderTopLeftRadius, shadow: c.boxShadow, size: t.fontSize, weight: t.fontWeight, labelled: el.getAttribute('aria-labelledby') === el.querySelector('h2').id };
+      });
+      assert.deepEqual({ border: s.border, radius: s.radius, size: s.size, weight: s.weight, labelled: s.labelled }, { border: '2px', radius: '12px', size: h3, weight: '800', labelled: true });
+      assert.match(s.shadow, /\b4px\b/, '기본 카드의 턱 4px');
+    }
+    await page.getByTestId('import-input').setInputFiles({ name: 'x.json', mimeType: 'application/json', buffer: Buffer.from('{"app":"other"}') });
+    const message = page.getByTestId('import-message');
+    await eventually(async () => assert.notEqual(await message.innerText(), ''));
+    const m = await message.evaluate((el) => {
+      const c = getComputedStyle(el);
+      return { top: c.borderTopWidth, left: c.borderLeftWidth, radius: c.borderTopLeftRadius };
+    });
+    assert.deepEqual(m, { top: '1px', left: '1px', radius: '12px' }, '알림 상자 모양(옛 6px 왼쪽 띠가 없다)');
+  });
+});
+
+test('settings has no sideways scroll from 320px up', TIMEOUT, async () => {
+  for (const width of [320, 375, 768, 1280]) {
+    await withPage(
+      '#/settings',
+      async (page) => {
+        const sideways = () => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+        assert.equal(await sideways(), 0, `${width}px`);
+        await page.getByTestId('reset-button').click();
+        await page.getByTestId('confirm-modal').waitFor();
+        await page.waitForFunction(() => document.getElementById('confirm-dialog').getAnimations().length === 0);
+        assert.equal(await sideways(), 0, `${width}px + 확인 Modal`);
+        const box = await page.getByTestId('confirm-modal').boundingBox();
+        assert.ok(box.x >= 0 && box.x + box.width <= width, `${width}px: 확인 Modal 이 화면 안에 있다`);
+      },
+      { viewport: { width, height: 800 } },
+    );
+  }
+});

@@ -7,22 +7,38 @@
   overflow: hidden;
 }
 
+/* 설정 카드 (DESIGN.md Cards "설정 카드"): 기본 카드 + Title small + Body ink-2 */
 .settings {
   max-width: 44rem;
 }
-.panel {
-  margin: 20px 0 0;
-  padding: 20px 24px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+.settings-card {
+  margin-top: var(--space-lg);
+  padding: var(--space-lg);
 }
-.panel h2 {
-  margin: 0 0 8px;
-  font-size: 1.2rem;
+.settings-card h2 {
+  margin: 0 0 var(--space-xs);
+  font-size: var(--text-h3);
+  font-weight: 800;
+  line-height: 1.3;
 }
-.panel p {
-  margin: 0 0 14px;
+.settings-text {
+  margin: 0 0 var(--space-md);
+  color: var(--color-ink-2);
+  font-size: var(--text-body);
+  line-height: 1.65;
+}
+.settings-card > :last-child {
+  margin-bottom: 0;
+}
+.settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+@media (max-width: 40rem) {
+  .settings-card {
+    padding: var(--space-md);
+  }
 }
 .radio-row {
   display: flex;
@@ -55,25 +71,16 @@
   border-color: var(--color-accent-text);
   background: radial-gradient(circle, var(--color-accent-text) 0 38%, var(--color-card) 42%);
 }
+/* 백업 불러오기 결과 문장: 알림 상자 모양. 종류별 색은 알림 상자 색이 정해지면(M8) 입힌다 */
 .message {
-  margin: 14px 0 0;
-  padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  background: var(--surface-2);
-  border-left: 6px solid var(--border-strong);
+  margin: var(--space-md) 0 0;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-ink-2);
+  border-radius: var(--radius-card);
+  color: var(--color-ink);
+  font-size: var(--text-ui);
+  line-height: 1.5;
 }
 .message:empty {
   display: none;
-}
-.message[data-kind="error"] {
-  background: var(--warn-bg);
-  border-left-color: var(--warn-line);
-}
-.message[data-kind="ok"] {
-  background: var(--success-bg);
-  border-left-color: var(--success-line);
-}
-.warn-text {
-  color: var(--warn-ink);
-  font-weight: 700;
 }
