@@ -171,7 +171,7 @@ export async function build({
       continue;
     }
     const src = await readFile(day.file, 'utf8');
-    const r = renderMarkdown(src, { idPrefix: day.id, terms, routes });
+    const r = renderMarkdown(src, { idPrefix: day.id, terms, routes, symptoms: true });
     const found = [...validateDaySource(src, { minChars }), ...r.errors].sort(byLine);
     errors.push(...found.map((e) => ({ ...e, file: day.file })));
     rendered.set(day.id, { html: r.html, text: r.text, checkCount: r.checkCount, ready: true });

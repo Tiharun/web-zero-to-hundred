@@ -57,7 +57,7 @@ test('container renders with class and title', () => {
 test('answer container renders details', () => {
   const r = render(':::answer 과제 1 정답\n**굵게**\n:::');
   assert.ok(r.html.includes('<details class="answer" data-answer="p1-d01-a1">'), r.html);
-  assert.match(r.html, /<summary>과제 1 정답<\/summary>/);
+  assert.match(r.html, /<summary><svg class="icon answer-chev"[^]*<span>과제 1 정답<\/span><\/summary>/);
   assert.ok(r.html.includes('<strong>굵게</strong>'), r.html);
   assert.equal(r.answerCount, 1);
   assert.deepEqual(r.errors, []);
@@ -445,4 +445,71 @@ test('result has the documented shape', () => {
   assert.equal(r.answerCount, 0);
   assert.deepEqual(r.headings, []);
   assert.deepEqual(r.errors, []);
+});
+
+// ───────── 🧯 증상 Accordion (M10, DESIGN.md "Day 증상 Accordion") ─────────
+
+const TROUBLE = [
+  '## 🧯 자주 막히는 곳',
+  '',
+  '먼저 이것부터 확인해요.',
+  '',
+  '### 증상 A',
+  '',
+  '원인을 찾아요.',
+  '',
+  '```html',
+  '<p>x</p>',
+  '```',
+  '',
+  ':::tip 꿀팁',
+  '저장부터 해요.',
+  ':::',
+  '',
+  '### 증상 B',
+  '',
+  '1. 하나',
+  '2. 둘',
+  '',
+  '## 📝 오늘의 체크리스트',
+  '',
+  '- [ ] 하나',
+].join('\n');
+const count = (s, needle) => s.split(needle).length - 1;
+
+test('symptom h3s under the 🧯 section become ts-entry details', () => {
+  const { html, errors } = render(TROUBLE, { idPrefix: 'x', symptoms: true });
+  assert.deepEqual(errors, []);
+  assert.equal(count(html, '<details class="ts-entry"'), 2, html);
+  assert.ok(html.includes('id="x-증상-a"'), html);
+  assert.ok(html.includes('id="x-증상-b"'), html);
+  assert.equal(count(html, '<h3'), 0, html);
+  assert.ok(html.indexOf('먼저 이것부터') < html.indexOf('<details'), '안내 단락은 첫 증상 앞');
+  const firstClose = html.indexOf('</details>');
+  assert.ok(html.indexOf('<figure class="code"') < firstClose, '코드 블록은 첫 증상 안');
+  assert.ok(html.indexOf('callout-tip') < firstClose, '알림 상자는 첫 증상 안');
+  assert.ok(html.indexOf('callout-tip') > html.indexOf('<details'), '알림 상자는 첫 증상 안');
+  assert.equal(count(html, '</details>'), 2);
+  assert.ok(html.lastIndexOf('</details>') < html.lastIndexOf('<h2'), '다음 h2 는 증상 밖');
+  assert.ok(html.includes('<summary><svg class="icon ts-chev"'), html);
+  assert.ok(html.includes('<span class="ts-title">증상 A</span>'), html);
+});
+
+test('h3s stay headings outside the 🧯 section or without the symptoms option', () => {
+  const steps = render('## 🛠️ 따라 하기\n\n### 단계\n\n글', { idPrefix: 'x', symptoms: true }).html;
+  assert.ok(steps.includes('<h3 id='), steps);
+  assert.equal(count(steps, '<details'), 0);
+  assert.equal(count(render(TROUBLE, { idPrefix: 'x' }).html, 'ts-entry'), 0);
+});
+
+test('a symptom section that ends the document closes its details', () => {
+  const { html } = render('## 🧯 자주 막히는 곳\n\n### 증상\n\n글', { idPrefix: 'x', symptoms: true });
+  assert.equal(count(html, '<details'), 1, html);
+  assert.equal(count(html, '</details>'), 1, html);
+  assert.ok(html.trimEnd().endsWith('</details>'), html);
+});
+
+test('answer summary carries a chevron icon', () => {
+  const { html } = render(':::answer 과제 1 정답\n답이에요.\n:::');
+  assert.match(html, /<summary><svg class="icon answer-chev"[^]*<\/svg><span>과제 1 정답<\/span><\/summary>/);
 });

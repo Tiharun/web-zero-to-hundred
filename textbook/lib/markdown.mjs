@@ -3,6 +3,7 @@
 // 전부 글자 그대로 escape한다. 실행 가능한 HTML은 이 렌더러가 만든 것뿐이다.
 import { Marked } from 'marked';
 import hljs from 'highlight.js';
+import { iconSvg } from '../src/app/views/icons.js';
 
 /** 허용하는 코드 펜스 언어 → highlight.js 언어 이름 */
 export const LANG_MAP = Object.freeze({
@@ -390,7 +391,15 @@ function createMarked(state, { terms, routes, prefixed }) {
       const text = tidy(plainText(token.tokens));
       const id = claimId(prefixed(slugify(text) || 'section'));
       state.headings.push({ level: token.depth, text, id });
-      return `<h${token.depth} id="${esc(id)}">${this.parser.parseInline(token.tokens)}</h${token.depth}>\n`;
+      // 🧯 섹션의 h3 는 증상 Accordion 하나가 된다(DESIGN.md "Day 증상 Accordion"). 다음 h3·h2·문서 끝에서 닫는다
+      const close = token.depth <= 3 ? state.closeEntry() : '';
+      if (token.depth === 2) state.inTrouble = text.startsWith('🧯');
+      if (state.symptoms && state.inTrouble && token.depth === 3) {
+        state.entryOpen = true;
+        const title = this.parser.parseInline(token.tokens);
+        return `${close}<details class="ts-entry" id="${esc(id)}"><summary>${iconSvg('chevron', 'ts-chev')}<span class="ts-title">${title}</span></summary><div class="ts-body">\n`;
+      }
+      return close + `<h${token.depth} id="${esc(id)}">${this.parser.parseInline(token.tokens)}</h${token.depth}>\n`;
     },
 
     listitem(item) {
@@ -475,6 +484,14 @@ export function renderMarkdown(src, ctx = {}) {
     checkCount: 0,
     answerCount: 0,
     taskLabel: '',
+    symptoms: Boolean(ctx.symptoms),
+    inTrouble: false,
+    entryOpen: false,
+    closeEntry() {
+      if (!this.entryOpen) return '';
+      this.entryOpen = false;
+      return '</div></details>\n';
+    },
     error: (code, line, message) => errors.push({ code, line: line ?? null, message }),
   };
   const marked = createMarked(state, { terms, routes, prefixed });
@@ -495,7 +512,7 @@ export function renderMarkdown(src, ctx = {}) {
       const n = ++state.answerCount;
       return (
         `<details class="answer" data-answer="${esc(prefixed(`a${n}`))}">\n` +
-        `<summary>${esc(box.title || '정답 보기')}</summary>\n` +
+        `<summary>${iconSvg('chevron', 'answer-chev')}<span>${esc(box.title || '정답 보기')}</span></summary>\n` +
         `<div class="answer-body">\n${body}</div>\n` +
         `</details>\n`
       );
@@ -512,7 +529,7 @@ export function renderMarkdown(src, ctx = {}) {
   const segments = splitBlocks(normalizeSource(src).split('\n'), state);
   const html = segments
     .map((seg) => (seg.type === 'box' ? renderBox(seg) : renderChunk(seg.lines, seg.line)))
-    .join('');
+    .join('') + state.closeEntry();
 
   errors.sort((a, b) => (a.line ?? Infinity) - (b.line ?? Infinity) || 0);
   return {
