@@ -394,7 +394,8 @@ kbd {
   --px-1: var(--color-ink);
   --px-2: var(--color-coin);
 }
-.px.emblem {
+.px.emblem,
+.px.answer-gift {
   --px-1: var(--color-ink);
   --px-2: var(--color-coin);
   --px-3: var(--color-coin-hi);

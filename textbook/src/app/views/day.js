@@ -3,6 +3,7 @@ import { reveal, shake } from '../motion.js';
 import { canComplete, canUncomplete, completeDay, dayState, isProjectComplete, newlyUnlocked, toggleCheck, uncompleteDay } from '../progress.js';
 import { symptomAccordions } from './accordion.js';
 import { breadcrumb, chips, findDay, getPage, getProject, h, isDone, lockScreen, minutesText, textLink } from './common.js';
+import { px } from './icons.js';
 import { mountQuestLog } from './questlog.js';
 import { mountReadBar } from './readbar.js';
 
@@ -131,6 +132,8 @@ function bindSymptoms(body) {
 
 function bindChecklist(ctx, dayId, body, onChange) {
   const boxes = [...body.querySelectorAll('input[type="checkbox"][data-check]')];
+  // 체크 칸 위에 얹는 도트 체크(장식). 체크했을 때만 CSS 가 보인다 (DESIGN.md "Day 부품" 체크리스트)
+  for (const box of boxes) box.after(h('span', { class: 'task-check', 'aria-hidden': 'true' }, px('check')));
   const sync = () => {
     const checked = new Set(ctx.prog.checks[dayId] ?? []);
     for (const box of boxes) {
@@ -216,7 +219,9 @@ export function renderDay(ctx, dayId, root) {
         h(
           'section',
           { class: 'completion card is-done', 'aria-label': 'Day 완료' },
+          completionLabel('퀘스트 클리어!'),
           h('p', { class: 'completion-status', id: 'completion-status', tabindex: '-1' }, `✅ Day ${day.num} 완료! 오늘도 한 걸음 나아갔어요.`),
+          Number.isFinite(day.minutes) && h('p', { class: 'completion-reward' }, px('coin'), h('span', null, '보상 ', h('span', { class: 'num' }, `+${day.minutes}`), ' XP 획득')),
           isProjectComplete(cur, prog, project.id) && h('p', { class: 'celebrate' }, `🎉 프로젝트 ‘${project.title}’를 모두 마쳤어요. 정말 대단해요!`),
           h(
             'div',
@@ -233,7 +238,9 @@ export function renderDay(ctx, dayId, root) {
         h(
           'section',
           { class: 'completion card', 'aria-label': 'Day 완료' },
+          completionLabel('퀘스트 완료 조건'),
           h('p', { class: 'completion-status', id: 'completion-status', tabindex: '-1' }, checks ?? '오늘 할 일을 마쳤나요?'),
+          checklist.total > 0 && checkBar(checklist.checked(), checklist.total),
           h(
             'div',
             { class: 'completion-actions' },
@@ -319,6 +326,7 @@ function dayHead(project, day, statusChip) {
   const meta = chips([minutesText(day.minutes), project.folder, project.title], Infinity);
   meta.classList.add('lesson-chips');
   meta.children[1]?.classList.add('is-code');
+  if (Number.isFinite(day.minutes)) meta.append(h('li', { class: 'chip-reward' }, px('coin'), h('span', null, '보상 ', h('span', { class: 'num' }, `+${day.minutes}`), ' XP')));
   meta.append(statusChip);
   return h(
     'header',
@@ -327,6 +335,17 @@ function dayHead(project, day, statusChip) {
     h('h1', null, h('span', { class: 'sr-only' }, `Day ${day.num} · `), day.title),
     meta,
   );
+}
+
+/** 완료 카드 맨 위 Label 줄: 트로피 도트 + 글자 (DESIGN.md "Day 완료 카드") */
+const completionLabel = (text) => h('p', { class: 'completion-label label' }, px('trophy'), h('span', null, text));
+
+/** 체크 칸 막대: 칸 수 = 항목 수, 채운 칸 = 체크한 수. 숫자는 상태 줄이 말하므로 장식 (DESIGN.md "Day 완료 카드") */
+function checkBar(checked, total) {
+  const bar = h('div', { class: 'check-bar', 'aria-hidden': 'true' }, h('span', { class: 'check-fill' }));
+  bar.style.setProperty('--n', String(total));
+  bar.style.setProperty('--p', String(checked / total));
+  return bar;
 }
 
 function uncompleteReason(cur, prog, project, index) {

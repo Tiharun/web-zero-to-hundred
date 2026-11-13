@@ -287,15 +287,18 @@ components:
 
 연한 남색 종이 위에 흰 카드가 장난감처럼 놓인 보드다. 카드와 버튼은 흐림 그림자 대신 단색 **바닥 턱**(아래로 4px 붙은 단색 면)을 달고 있어서, 누르면 턱만큼 내려간다. 지금 월드의 Day는 둥근 네모 **보드게임 칸**으로 줄지어 있고, 오늘 칸 위에 말이 서 있다. 레벨 패널은 게임의 상태 표시줄(HUD)처럼 LV 배지와 10칸 XP 막대로 보여 준다.
 
-게임 느낌은 세 군데에서만 난다: 도트 그림(게임 물건), 픽셀 글꼴 라벨, 바닥 턱과 튀는 움직임. 글은 반듯한 고딕 한 가족이고, Day 제목·요약·본문 어휘는 바꾸지 않는다. 분홍은 "지금 누를 것", 초록은 "실제로 끝낸 것", 금색은 "보상 그림"에만 쓴다.
+게임 느낌은 화면의 **틀** 전체에서 난다: 도트 그림(게임 물건), 픽셀 글꼴 라벨, 바닥 턱과 누름, 칸 모양 번호·막대, 튀는 움직임. **글**은 반듯한 고딕 한 가족이고, Day 제목·요약·본문 어휘는 바꾸지 않는다. 분홍은 "지금 누를 것", 초록은 "실제로 끝낸 것", 금색은 "보상 그림"에만 쓴다.
 
-홈은 할 일로 바로 들어가는 출발 화면(Operate)이다. Day 페이지는 긴 글을 읽는 화면(Read)이며 같은 토큰을 쓴다. 큰 숫자와 강한 표현은 홈의 퀘스트 카드와 지도에 모으고, 읽는 화면에서는 줄인다.
+**The Game Frame Rule.** 화면의 틀(머리·진행 표시·조작 부품·아래쪽)은 게임 UI처럼, 글(본문 문단·코드·표·알림 상자 내용)은 반듯한 교재처럼 둔다. 틀의 부품마다 게임 신호를 하나 이상 단다: 도트 그림, Galmuri 라벨, 바닥 턱과 누름, 칸 모양 번호·막대. 수치는 진도 데이터에서 계산한 값만 쓴다(XP = 완료한 Day의 분). 글 열에는 게임 신호를 넣지 않는다.
+
+홈은 할 일로 바로 들어가는 출발 화면(Operate)이다. Day 페이지는 긴 글을 읽는 화면(Read)이며 같은 토큰을 쓴다. 큰 숫자와 강한 표현은 홈의 퀘스트 카드와 지도에 모으고, 읽는 화면에서는 줄인다. 읽는 화면도 틀(머리, 퀘스트 로그, 체크리스트, 완료 카드, 이전·다음)은 게임 부품으로 만든다.
 
 **Key Characteristics:**
 - 남색 잉크, 흰 카드, 연한 남색 바탕. 라이트·다크가 같은 역할 이름을 쓴다.
 - 흐림 없는 단색 바닥 턱(`--ledge` 4px)과 2px 테두리
 - 행동색 분홍 하나, 진도색 초록 하나, 보상 금색은 도트 아이콘 채움에만
 - 조작은 선 아이콘, 게임 물건은 도트 아이콘
+- 틀은 게임 부품, 글 열은 교재(The Game Frame Rule)
 - 큰 Day 번호 하나(80px)가 화면의 초점
 - 픽셀 글꼴은 12px 라벨에만
 
@@ -622,6 +625,9 @@ components:
 | LV 배지 | `box-shadow: 0 var(--ledge) 0 var(--color-edge)` | | |
 | 막혔을 때 칸 | `box-shadow: 0 var(--ledge) 0 var(--color-rule)` | 제목 밑줄만 | `transform: translateY(calc(var(--ledge) - 1px))`, `box-shadow: 0 1px 0 var(--color-rule)` |
 | 사이드바 오늘 번호 | `box-shadow: 0 2px 0 var(--color-accent-deep)` | | |
+| 이전·다음 칸 | `box-shadow: 0 var(--ledge) 0 var(--color-rule)` | `track` 바탕 | `transform: translateY(calc(var(--ledge) - 1px))`, `box-shadow: 0 1px 0 var(--color-rule)` |
+| 퀘스트 로그 번호 칸 | `box-shadow: 0 2px 0 var(--tile-edge)` | | |
+| 체크 칸 | `box-shadow: 0 2px 0 var(--tile-edge)` | | `transform: translateY(1px)`, `box-shadow: 0 1px 0 var(--tile-edge)` |
 
 - 턱이 레이아웃을 밀지 않도록 주 버튼은 `margin-bottom: var(--ledge)`로 자리를 미리 잡는다.
 - 누름은 `transition-duration: 60ms`로 빠르게, 떠오름은 200ms `--ease-bounce`로 살짝 튄다.
@@ -763,7 +769,8 @@ components:
 | 별 | `star` | — | — |
 | 말 | `ink` | `accent` | `accent-hover` |
 | 깃발 | `ink` | `coin` | — |
-| 월드 엠블럼 | `ink` | `coin` | `coin-hi` |
+| 월드 엠블럼·정답 선물 | `ink` | `coin` | `coin-hi` |
+| 퀘스트 로그 커서 | `ink` | — | — |
 | 잠긴 월드 엠블럼 | `ink-2` | 투명 | 투명 |
 | 도움말 그림 | `ink` | `cell` | — |
 | 방향 화살표 | `line`(지난 길 `progress-deep`) | — | — |
@@ -802,7 +809,7 @@ components:
 - 기술 칩: `track` 바탕, 모서리 6px, 안쪽 2·8px, 15px, 줄간격 1.5. 최대 4개, 넘으면 바탕 없는 `ink-2` "외 n개".
 
 ### Day 부품
-- **Day 머리:** 빵부스러기 → 큰 Day 번호 → 제목 → 메타 칩 줄. 머리 아래 `var(--space-xl)`. 큰 번호는 Display(800, 80px, 줄간격 0.85, `letter-spacing: -0.04em`, 고정폭 숫자, `ink`)이고, 앞에 Galmuri "Day" 라벨(`ink-2`)을 글자 바닥선에 맞춰 붙인다(사이 `var(--space-xs)`, 위 `var(--space-md)`, 아래 `var(--space-xs)`). 큰 번호는 `aria-hidden`이고, h1 안 앞쪽에 `sr-only` "Day n · "를 둔다(읽는 이름 "Day n · 제목"). 제목 h1은 Headline(800, 38px, 줄간격 1.15, `letter-spacing: -0.025em`, `max-width: 20ch`, `text-wrap: balance`), 아래 `var(--space-md)`. 메타 칩은 기술 칩 모양으로 예상 시간, 작업 폴더(WZH Code `--text-code`), 월드 이름 순서다. 그 뒤에 상태 칩 "✅ 완료" 또는 "▶ 다음 할 Day"를 있을 때만 붙인다. 칩 개수 상한은 없다.
+- **Day 머리:** 빵부스러기 → 큰 Day 번호 → 제목 → 메타 칩 줄. 머리 아래 `var(--space-xl)`. 큰 번호는 Display(800, 80px, 줄간격 0.85, `letter-spacing: -0.04em`, 고정폭 숫자, `ink`)이고, 앞에 Galmuri "Day" 라벨(`ink-2`)을 글자 바닥선에 맞춰 붙인다(사이 `var(--space-xs)`, 위 `var(--space-md)`, 아래 `var(--space-xs)`). 큰 번호는 `aria-hidden`이고, h1 안 앞쪽에 `sr-only` "Day n · "를 둔다(읽는 이름 "Day n · 제목"). 제목 h1은 Headline(800, 38px, 줄간격 1.15, `letter-spacing: -0.025em`, `max-width: 20ch`, `text-wrap: balance`), 아래 `var(--space-md)`. 메타 칩은 기술 칩 모양으로 예상 시간, 작업 폴더(WZH Code `--text-code`), 월드 이름, 보상 칩 순서다. 보상 칩은 코인 도트(16px) + "보상 +n XP"(n은 그 Day의 분, 퀘스트 카드 보상과 같은 값, 고정폭 숫자)이고, 분이 숫자가 아니면 두지 않는다. 그 뒤에 상태 칩 "✅ 완료" 또는 "▶ 다음 할 Day"를 있을 때만 붙인다. 칩 개수 상한은 없다.
 - **Day 본문:** 머리·본문·아래쪽을 담는 `.lesson`은 `max-width: var(--lesson-max)`(720px). 글은 Body long(17px, 줄간격 1.75). 섹션 제목 h2는 Title(800, 26px, 줄간격 1.2, `letter-spacing: -0.02em`), 위 `var(--space-3xl)`·아래 `var(--space-md)`, 선이나 카드 상자를 두지 않는다. 첫 h2는 위 0. 제목으로 옮겨 가면 상단 바 + `var(--space-lg)` 아래에 멈춘다. 이 간격은 루트의 `scroll-padding-top`이 정하고, 제목에 `scroll-margin-top`을 더하지 않는다(둘은 더해진다). 단계 제목 h3는 Title small(800, 20px, 줄간격 1.3), 위 `var(--space-xl)`·아래 `var(--space-xs)`. h4는 800 17px, 위 `var(--space-lg)`·아래 `var(--space-2xs)`. 단락·목록 아래 `var(--space-md)`, 목록 항목 사이 `var(--space-2xs)`.
 - **인라인 코드:** `track` 바탕, 1px `rule` 테두리, 모서리 `var(--space-2xs)`(`kbd`와 같다), 안쪽 `0 var(--space-2xs)`, WZH Code `--text-code`. 긴 경로는 아무 데서나 줄을 바꾼다(`overflow-wrap: anywhere`). 표 안의 코드만 줄을 바꾸지 않고 표 안에서 스크롤한다.
 - **경로 상자:** `path` 알림 상자다("📍 경로", `path` 색). 제목 줄(예: "📂 시작 상태") 아래에 폴더·파일 경로를 목록으로 둔다. 따로 만든 모양은 없고, 경로는 인라인 코드 규칙에 따라 상자 안에서 줄을 바꾼다.
@@ -810,14 +817,14 @@ components:
 - **알림 상자:** 종류 색 바탕(`*-bg`), 1px `rule` 테두리, 왼쪽 4px `*-line` 막대, 모서리 `--radius-card`, 안쪽 `var(--space-sm) var(--space-md) var(--space-2xs)`, 위아래 `var(--space-lg)`. 머리는 이모지 + Galmuri 12px 라벨(`*-ink`): "💡 꿀팁", "⚠️ 주의", "ℹ️ 알아두기", "📍 경로", "✅ 이렇게 보이면 성공". 제목 줄은 `ink` 800, 본문은 `ink`. 정답 상자는 같은 틀에 `answer` 색, 정답 게이트는 같은 틀에 `tip` 색.
 - **코드 블록(밤 코드):** `code-bg` 바탕, 2px `edge` 테두리, 모서리 `--radius-card`. 윗줄은 `code-head`에 파일 이름(`code-fg`)과 "복사" 버튼, 구분선은 `code-border`. 글자 14px(`--text-code`), 줄간격 1.65, 긴 줄은 블록 안에서만 가로 스크롤. 복사 결과 글자는 성공 `tok-string`, 실패 `tok-deletion`. 윗줄 최소 40px, 파일 이름은 WZH Code `--text-code`, 안쪽 `var(--space-xs) var(--space-md)`, 긴 이름은 줄을 바꾼다. 복사 버튼은 윗줄 오른쪽, 최소 72×40px, 15px 800 `code-fg`, 왼쪽 1px `code-border` 선, hover `code-border` 바탕. 누르면 "복사됨"이 2초 보이고 "복사"로 돌아온다. 실패하면 코드를 선택해 두고 "직접 복사해 주세요"를 보인다. 결과는 `role="status"`로도 읽힌다. 코드 안쪽 `var(--space-md)`, 블록 위아래 `var(--space-lg)`.
 - **읽기 위치 바:** 상단 바 바로 아래(`position: fixed; top: var(--topbar-h)`, 좌우 끝까지) 3px, `z-sticky`. 채움 `ink`, 빈 곳 투명, `transform: scaleX(var(--read))`, `transform-origin: left`. `animation-timeline: scroll(root)`을 지원하면 그것을 쓰고(`animation` 줄임 속성 뒤에 적는다), 아니면 rAF로 `--read`를 쓴다. 본문을 그린 Day 화면(준비 중 포함)에만 있고 다른 화면으로 가면 없앤다. 스크롤할 수 없으면 0이다. 위치 값이라 동작 줄이기에서도 그대로 따라간다. 장식이라 `aria-hidden`이고 `role="progressbar"`를 두지 않는다(위치는 퀘스트 로그가 글자로 알린다). 인쇄에서 숨긴다.
-- **퀘스트 로그:** 1280px 이상은 본문 오른쪽 `var(--aside-w)` 열(사이 `var(--space-xl)`), `position: sticky`(상단 바 + `var(--space-lg)`). 머리는 Label "퀘스트 로그"와 "단계 n/전체"(전체는 섹션 h2 수, 보통 7~8), 목록은 섹션 제목 버튼(15px `ink-2`, 줄간격 1.35, 최소 36px, 안쪽 `var(--space-2xs) var(--space-sm)`, 왼쪽 3px 투명 막대, hover `track`), 지금 단계는 `ink` 800 + 왼쪽 3px `ink` 막대 + `aria-current="step"`. 그보다 좁으면 본문 위 `<details>` 카드(`card` 바탕, 2px `rule` 테두리, 모서리 `--radius-card`, 아래 `var(--space-xl)`, summary 최소 44px·안쪽 `var(--space-xs) var(--space-md)` "퀘스트 로그 · 단계 n/전체" + 오른쪽 `chevron` 아이콘, 열면 180° 회전). 지금 단계는 상단 바 아래 96px 선을 지난 마지막 섹션이고, 페이지 맨 아래에 닿으면 마지막 섹션이다. 누르면 그 제목으로 smooth scroll(동작 줄이기면 `auto`)하고 제목에 포커스. 섹션이 없는 Day(준비 중)에는 두지 않는다.
-- **정답 상자:** 알림 상자 틀에 `answer` 색. 요약 줄 최소 48px, 안쪽 `var(--space-xs) var(--space-md)`, 17px 800 `ink`, 앞에 선 꺾쇠(`answer-ink`, 열리면 180° 회전). 펼친 내용 위에 1px 점선 `answer-line`, 안쪽 `var(--space-sm) var(--space-md) var(--space-2xs)`. 처음 펼칠 때는 바로 위에 정답 게이트(알림 상자 틀에 `tip` 색, Body, 보조 버튼 "그래도 정답 볼래요"·"조금 더 풀어 볼게요", 버튼 사이 `var(--space-xs)`)를 보인다. 확인한 정답은 새로 고칠 때까지 다시 묻지 않는다.
+- **퀘스트 로그:** 1280px 이상은 본문 오른쪽 `var(--aside-w)` 열(사이 `var(--space-xl)`), `position: sticky`(상단 바 + `var(--space-lg)`). 머리는 Label "퀘스트 로그"와 "단계 n/전체"(전체는 섹션 h2 수, 보통 7~8), 목록은 섹션 제목 버튼(15px `ink-2`, 줄간격 1.35, 최소 36px, 안쪽 `var(--space-2xs) var(--space-xs)`, hover `track`, 모서리 `--radius-btn`). 버튼 안은 커서 자리 → 번호 칸 → 제목 순서이고 사이는 `var(--space-2xs)`·`var(--space-xs)`다. 커서 자리는 도트 화살표(`arrow`, 2배, 10×14px, `ink`) 폭만큼 늘 비워 두고 지금 단계에서만 보인다. 번호 칸은 작은 보드게임 칸: 22px 정사각, 모서리 4px, 2px `--tile-edge` 테두리와 2px 턱, Galmuri 12px 번호. 지난·남은 단계는 `card` 면 / `ink-2` 글자 / `ink-2` 테두리, 지금 단계는 `ink` 면 / `card` 글자 / `edge` 테두리. 읽고 지나간 단계는 완료가 아니므로 초록을 쓰지 않는다(Real Progress). 지금 단계는 제목도 `ink` 800이고 `aria-current="step"`. 그보다 좁으면 본문 위 `<details>` 카드(`card` 바탕, 2px `rule` 테두리, 모서리 `--radius-card`, 아래 `var(--space-xl)`, summary 최소 44px·안쪽 `var(--space-xs) var(--space-md)` "퀘스트 로그 · 단계 n/전체" + 오른쪽 `chevron` 아이콘, 열면 180° 회전). 지금 단계는 상단 바 아래 96px 선을 지난 마지막 섹션이고, 페이지 맨 아래에 닿으면 마지막 섹션이다. 누르면 그 제목으로 smooth scroll(동작 줄이기면 `auto`)하고 제목에 포커스. 섹션이 없는 Day(준비 중)에는 두지 않는다.
+- **정답 상자:** 알림 상자 틀에 `answer` 색. 요약 줄 최소 48px, 안쪽 `var(--space-xs) var(--space-md)`, 17px 800 `ink`, 앞에 선 꺾쇠(`answer-ink`, 열리면 180° 회전)와 선물 도트(`gift`, 2배 16px, 정답 선물 색). 꺾쇠는 조작, 선물은 "보상 상자"라는 내용 표시다. 펼친 내용 위에 1px 점선 `answer-line`, 안쪽 `var(--space-sm) var(--space-md) var(--space-2xs)`. 처음 펼칠 때는 바로 위에 정답 게이트(알림 상자 틀에 `tip` 색, Body, 보조 버튼 "그래도 정답 볼래요"·"조금 더 풀어 볼게요", 버튼 사이 `var(--space-xs)`)를 보인다. 확인한 정답은 새로 고칠 때까지 다시 묻지 않는다.
 - **Day 증상 Accordion:** "🧯 자주 막히는 곳" 안의 h3 하나가 증상 하나다(빌드가 만든다). 모양과 모션은 Cards "증상 Accordion"과 같고, 증상 제목은 heading이 아니다. 첫 증상 앞의 안내 글은 그대로 둔다. 섹션 제목 바로 아래 줄 오른쪽 끝에 "모두 펼치기" 글자 버튼(모두 펼쳐져 있으면 "모두 접기").
-- **체크리스트:** 항목 행 최소 44px, 안쪽 `var(--space-2xs) var(--space-xs)`, 모서리 `--radius-btn`, hover `track`. 체크박스는 1.25em, 글자와 사이 `var(--space-xs)`. 글자를 눌러도 체크된다. 체크한 항목은 `ink-2`(줄 긋기 없음). 누르는 즉시 저장되고 새로 고쳐도 남는다.
+- **체크리스트:** 항목 행 최소 44px, 안쪽 `var(--space-2xs) var(--space-xs)`, 모서리 `--radius-btn`, hover `track`. 체크박스는 체크 칸: 22px 정사각(`appearance: none`), 모서리 4px, 2px `--tile-edge` 테두리와 2px 턱, 글자와 사이 `var(--space-xs)`. 빈 칸은 보드게임 남은 칸처럼 `card` 면 / `ink-2` 테두리, 체크하면 완료 칸처럼 `progress` 면 / `progress-deep` 테두리에 도트 체크(`check`, 2배 16px, `progress-ink`)가 칸 가운데에 선다. 누르면 칸이 1px 내려간다(Press, 60ms). 포커스 링은 칸에 그린다. 글자를 눌러도 체크된다. 체크한 항목은 `ink-2`(줄 긋기 없음). 누르는 즉시 저장되고 새로 고쳐도 남는다.
 - **Day 아래쪽:** 위 1px `rule` 선(선 위 `var(--space-3xl)`, 선 아래 `var(--space-xl)`), 부품 사이 `var(--space-lg)`. 순서는 새로 열림 알림(있을 때) → Day 완료 카드 → 이전·다음.
-- **Day 완료 카드:** 기본 카드, 안쪽 `var(--space-lg)`(640px 이하 `var(--space-md)`). 상태 줄 17px 800 `ink`("체크리스트 n / 전체" 또는 "오늘 할 일을 마쳤나요?"), 아래 `var(--space-sm)`. 주 버튼 "Day 완료". 이유 문장 15px `ink-2`, 위 `var(--space-sm)`. 이전 Day를 안 끝냈으면 버튼은 `aria-disabled="true"`(투명도 0.4, 턱 없음, 포커스는 받는다)이고 `aria-describedby`로 이유 문장과 잇는다. 누르면 버튼이 Shake하고, 이유 문장이 `ink` 800으로 바뀌고, 같은 문장을 `role="status"`로 알린다(동작 줄이기에서는 흔들림만 없다). 완료한 뒤에는 `success-bg` 바탕, 2px `success-line` 테두리와 같은 색 턱, 상태 줄 "✅ Day n 완료!", 보조 버튼 "완료 취소". 월드를 다 마치면 `success-ink` 800 축하 문장을 더한다.
+- **Day 완료 카드:** 기본 카드, 안쪽 `var(--space-lg)`(640px 이하 `var(--space-md)`). 맨 위에 Label 줄(트로피 도트 2배 16px + "퀘스트 완료 조건", 아래 `var(--space-xs)`). 상태 줄 17px 800 `ink`("체크리스트 n / 전체" 또는 "오늘 할 일을 마쳤나요?"), 아래 `var(--space-sm)`. 체크리스트가 있으면 상태 줄 아래에 체크 칸 막대: HUD XP 막대와 같은 틀(높이 24px, 2px `rule` 테두리, 모서리 6px, `card` 바탕, 안쪽 4px)에 칸 수 = 체크리스트 항목 수(칸 사이 3px, 빈 칸 `cell`, 채운 칸 `xp`), 채운 칸 = 체크한 수. 숫자는 상태 줄이 말하므로 막대는 `aria-hidden`. 막대 아래 `var(--space-sm)`. 주 버튼 "Day 완료". 이유 문장 15px `ink-2`, 위 `var(--space-sm)`. 이전 Day를 안 끝냈으면 버튼은 `aria-disabled="true"`(투명도 0.4, 턱 없음, 포커스는 받는다)이고 `aria-describedby`로 이유 문장과 잇는다. 누르면 버튼이 Shake하고, 이유 문장이 `ink` 800으로 바뀌고, 같은 문장을 `role="status"`로 알린다(동작 줄이기에서는 흔들림만 없다). 완료한 뒤에는 `success-bg` 바탕, 2px `success-line` 테두리와 같은 색 턱, Label 줄은 트로피 도트 + "퀘스트 클리어!"(`success-ink`), 상태 줄 "✅ Day n 완료!", 그 아래 보상 줄(코인 도트 16px + "보상 +n XP 획득", 15px `ink`, 숫자 800 고정폭, n은 보상 칩과 같은 값, 분이 숫자가 아니면 없음), 보조 버튼 "완료 취소". 월드를 다 마치면 `success-ink` 800 축하 문장을 더한다.
 - **새로 열림 알림:** `success` 알림 상자(머리 "🎉 새로 열렸어요"), `role="status"`, 목록에 새로 열린 월드·부록 링크.
-- **이전·다음:** `nav` 2칸 격자(640px 이하 1칸), 사이 `var(--space-sm)`. 칸은 링크 카드(`card` 바탕, 2px `rule` 테두리, 모서리 `--radius-card`, 안쪽 `var(--space-sm) var(--space-md)`, hover `track` 바탕): 위 Label("← 이전", "다음 →", `ink-2`), 아래 제목 15px 800 `ink`. 다음 칸은 오른쪽 정렬(1칸일 때 왼쪽). `rel="prev"`·`rel="next"`.
+- **이전·다음:** `nav` 2칸 격자(640px 이하 1칸), 사이 `var(--space-sm)`. 칸은 누르는 링크 카드(`card` 바탕, 2px `rule` 테두리, 모서리 `--radius-card`, 안쪽 `var(--space-sm) var(--space-md)`, `rule` 턱 `--ledge`, hover `track` 바탕, 누르면 Press: `translateY(calc(var(--ledge) - 1px))`·턱 1px, 60ms, 격자 아래 `var(--ledge)` 자리를 비워 턱이 다음 것을 밀지 않게 한다): 위 Label("← 이전", "다음 →", `ink-2`), 아래 제목 15px 800 `ink`. 다음 칸은 오른쪽 정렬(1칸일 때 왼쪽). `rel="prev"`·`rel="next"`.
 - **부록 목차 열:** 목차 카드가 있는 부록 페이지는 1280px 이상에서 `minmax(0, var(--lesson-max))`와 `var(--aside-w)` 두 열(사이 `var(--space-xl)`)로 나뉜다. 목차 카드는 오른쪽 열에서 `position: sticky`(상단 바 + `var(--space-lg)`)이고, 높이는 `calc(100dvh - var(--topbar-h) - 2 * var(--space-lg))`까지이며, 넘치면 카드 안에서 세로로 스크롤한다.
 - **토스트:** `card` 면, 2px `edge` 테두리, `--ledge` `edge` 턱, 모서리 `--radius-card`, 15px `ink`, `max-width: min(100%, 28rem)`. 왼쪽 도트 아이콘은 부르는 쪽이 정한다(없으면 생략). 들어옴은 아래 8px에서 `--dur-short` `--ease-bounce`, 나감은 투명도 `--dur-exit` `--ease-in`. `role="status"`, 4초, hover·포커스 중에는 멈춘다.
 - **레벨업 Modal:** `<dialog>`(`setupDialog`), `card` 면, 2px `edge` 테두리와 턱, 안쪽 `var(--space-xl)`, 가운데 정렬, `max-width: 24rem`. 순서: Label "레벨 업" → LV 배지(HUD와 같은 모양, 숫자 32px) → 제목 "레벨이 올랐어요"(Title small) → "다음 레벨까지 XP m"(`ink-2`) → 주 버튼 "계속하기"(처음 포커스). 열림 `pop-in` `--dur-enter`. M11에서 화면에 넣는다.
@@ -879,6 +886,7 @@ components:
 - **Do** transform이 걸린 요소 안의 툴팁·팝오버에는 Tooltip Raise Rule을 같이 둔다.
 - **Do** 모든 모션에 동작 줄이기 대체(최종 상태 바로 보기)를 둔다. 보상 연출은 세션에 한 번만.
 - **Do** 게임 어휘(퀘스트, 월드, LV, XP, 클리어, 보상)는 화면 라벨과 진행 표시에만 쓴다.
+- **Do** 새 화면·부품을 만들면 틀의 부품마다 게임 신호(도트 그림, Galmuri 라벨, 바닥 턱과 누름, 칸 모양 번호·막대)를 하나 이상 단다(The Game Frame Rule).
 
 ### Don't:
 - **Don't** 흐림 그림자를 쓰지 않는다(`--shadow-lift` 포함). 깊이는 바닥 턱으로만.

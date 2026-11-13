@@ -2,7 +2,7 @@
 // 이 파일은 맨 위에서 document 를 읽지 않는다 (node 단위 테스트가 import 한다).
 import { motionEnv } from '../motion.js';
 import { h } from './common.js';
-import { icon } from './icons.js';
+import { icon, px } from './icons.js';
 
 /** 상단 바 아래 기준선(px). 이 선을 지난 마지막 제목이 지금 단계다. 승인 시안 proto.js 값 */
 export const READ_LINE = 96;
@@ -43,7 +43,20 @@ export function mountQuestLog(headings, env = motionEnv()) {
     h(
       'ol',
       { class: 'quest-list' },
-      headings.map((heading) => h('li', null, h('button', { type: 'button', class: 'quest-item', onclick: () => jump(heading) }, heading.textContent.trim()))),
+      // 커서 자리(지금 단계에서만 보이는 도트 화살표) → 번호 칸(작은 보드게임 칸) → 제목. DESIGN.md "Day 부품" 퀘스트 로그
+      headings.map((heading, i) =>
+        h(
+          'li',
+          null,
+          h(
+            'button',
+            { type: 'button', class: 'quest-item', onclick: () => jump(heading) },
+            h('span', { class: 'quest-cursor', 'aria-hidden': 'true' }, px('arrow')),
+            h('span', { class: 'quest-no' }, String(i + 1)),
+            h('span', { class: 'quest-name' }, heading.textContent.trim()),
+          ),
+        ),
+      ),
     );
 
   const step = h('span', { class: 'quest-step' });

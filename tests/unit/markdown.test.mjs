@@ -57,7 +57,7 @@ test('container renders with class and title', () => {
 test('answer container renders details', () => {
   const r = render(':::answer 과제 1 정답\n**굵게**\n:::');
   assert.ok(r.html.includes('<details class="answer" data-answer="p1-d01-a1">'), r.html);
-  assert.match(r.html, /<summary><svg class="icon answer-chev"[^]*<span>과제 1 정답<\/span><\/summary>/);
+  assert.match(r.html, /<summary><svg class="icon answer-chev"[^]*<svg class="px px-gift answer-gift"[^]*<span>과제 1 정답<\/span><\/summary>/);
   assert.ok(r.html.includes('<strong>굵게</strong>'), r.html);
   assert.equal(r.answerCount, 1);
   assert.deepEqual(r.errors, []);

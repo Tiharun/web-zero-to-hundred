@@ -39,6 +39,11 @@
   letter-spacing: -0.025em;
   text-wrap: balance;
 }
+.lesson-chips .chip-reward {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+}
 .lesson-chips .is-code {
   font-family: var(--font-code);
   font-size: var(--text-code);
@@ -473,6 +478,10 @@ details.answer > summary {
 details.answer > summary::-webkit-details-marker {
   display: none;
 }
+.answer-gift {
+  flex-shrink: 0;
+  margin-top: calc((1.5em - 16px) / 2); /* 첫 줄 가운데. 16px 는 도트 2배 크기 */
+}
 .answer-chev {
   flex-shrink: 0;
   margin-top: calc((1.5em - 16px) / 2); /* 첫 줄 가운데. 16px 는 선 아이콘 크기 */
@@ -523,13 +532,46 @@ li.task:hover {
 li.task.is-checked {
   color: var(--color-ink-2);
 }
+/* 체크 칸: 빈 칸은 보드게임 남은 칸, 체크하면 완료 칸 + 도트 체크. 22px 칸, 2px 테두리와 턱 */
 li.task input[type="checkbox"] {
-  width: 1.25em;
-  height: 1.25em;
+  --tile-edge: var(--color-ink-2);
+  appearance: none;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
   margin: 0 var(--space-xs) 0 0;
-  vertical-align: -0.2em;
-  accent-color: var(--color-accent-text);
+  vertical-align: middle;
+  border: 2px solid var(--tile-edge);
+  border-radius: var(--space-2xs);
+  background: var(--color-card);
+  box-shadow: 0 2px 0 var(--tile-edge);
   cursor: pointer;
+  transition: transform 60ms, box-shadow 60ms;
+}
+li.task input[type="checkbox"]:checked {
+  --tile-edge: var(--color-progress-deep);
+  background: var(--color-progress);
+}
+li.task input[type="checkbox"]:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 var(--tile-edge);
+}
+/* 도트 체크(16px)를 칸(22px) 가운데에 얹는다: 칸 왼쪽 + 3px 로 돌아갔다가 원래 자리로 */
+.task-check {
+  display: inline-block;
+  margin: 0 calc(22px + var(--space-xs) - 3px - 16px) 0 calc(3px - 22px - var(--space-xs));
+  vertical-align: middle;
+  line-height: 0;
+  visibility: hidden;
+  pointer-events: none;
+  --px-1: var(--color-progress-ink);
+  transition: transform 60ms;
+}
+li.task input:checked + .task-check {
+  visibility: visible;
+}
+li.task input:active + .task-check {
+  transform: translateY(1px);
 }
 
 /* ───────── Day 아래쪽 (DESIGN.md "Day 부품" Day 아래쪽 · Day 완료 카드 · 새로 열림 알림 · 이전·다음) ───────── */
@@ -550,12 +592,57 @@ li.task input[type="checkbox"] {
   border-color: var(--color-success-line);
   box-shadow: 0 var(--ledge) 0 var(--color-success-line);
 }
+.completion-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  margin: 0 0 var(--space-xs);
+}
+.completion.is-done .completion-label {
+  color: var(--color-success-ink);
+}
 .completion-status {
   margin: 0 0 var(--space-sm);
   color: var(--color-ink);
   font-size: var(--text-body);
   font-weight: 800;
   line-height: 1.5;
+}
+.completion-reward {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  margin: 0 0 var(--space-sm);
+  color: var(--color-ink);
+  font-size: var(--text-ui);
+  line-height: 1.5;
+}
+.completion-reward .num {
+  font-weight: 800;
+}
+/* 체크 칸 막대: HUD XP 막대와 같은 틀, 칸 수 = 체크리스트 항목 수(--n), 채운 비율 --p */
+.check-bar {
+  position: relative;
+  height: 24px;
+  margin: 0 0 var(--space-sm);
+  border: 2px solid var(--color-rule);
+  border-radius: var(--radius-btn);
+  background: var(--color-card);
+}
+.check-bar::before,
+.check-fill {
+  position: absolute;
+  inset: var(--space-2xs);
+  border-radius: var(--space-3xs);
+}
+.check-bar::before {
+  content: "";
+  background: repeating-linear-gradient(90deg, var(--color-cell) 0 calc(100% / var(--n) - 3px), transparent calc(100% / var(--n) - 3px) calc(100% / var(--n)));
+}
+.check-fill {
+  display: block;
+  clip-path: inset(0 calc((1 - var(--p)) * 100%) 0 0);
+  background: repeating-linear-gradient(90deg, var(--color-xp) 0 calc(100% / var(--n) - 3px), transparent calc(100% / var(--n) - 3px) calc(100% / var(--n)));
 }
 .completion .reason {
   margin: var(--space-sm) 0 0;
@@ -594,6 +681,7 @@ li.task input[type="checkbox"] {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-sm);
+  margin-bottom: var(--ledge); /* 턱이 아래 것을 밀지 않게 자리를 잡는다 */
 }
 .nav-card {
   display: grid;
@@ -608,9 +696,15 @@ li.task input[type="checkbox"] {
   font-weight: 800;
   line-height: 1.4;
   text-decoration: none;
+  box-shadow: 0 var(--ledge) 0 var(--color-rule);
+  transition: transform 60ms, box-shadow 60ms;
 }
 .nav-card:hover {
   background: var(--color-track);
+}
+.nav-card:active {
+  transform: translateY(calc(var(--ledge) - 1px));
+  box-shadow: 0 1px 0 var(--color-rule);
 }
 .nav-next {
   text-align: right;
@@ -685,12 +779,13 @@ li.task input[type="checkbox"] {
   list-style: none;
 }
 .quest-item {
+  display: flex;
+  align-items: center;
   width: 100%;
   min-height: 36px;
-  padding: var(--space-2xs) var(--space-sm);
+  padding: var(--space-2xs) var(--space-xs);
   border: 0;
-  border-left: 3px solid transparent;
-  border-radius: 0 var(--radius-btn) var(--radius-btn) 0;
+  border-radius: var(--radius-btn);
   background: none;
   color: var(--color-ink-2);
   font: inherit;
@@ -704,9 +799,44 @@ li.task input[type="checkbox"] {
   color: var(--color-ink);
 }
 .quest-item[aria-current="step"] {
-  border-left-color: var(--color-ink);
   color: var(--color-ink);
   font-weight: 800;
+}
+/* 커서 자리는 늘 비워 두고 지금 단계에서만 도트 화살표를 보인다 */
+.quest-cursor {
+  display: flex;
+  flex: none;
+  margin-right: var(--space-2xs);
+  visibility: hidden;
+  --px-1: var(--color-ink);
+}
+.quest-item[aria-current="step"] .quest-cursor {
+  visibility: visible;
+}
+/* 번호 칸: 작은 보드게임 칸(22px, 모서리 4px, 2px 테두리와 턱, Galmuri 12px) */
+.quest-no {
+  --tile-edge: var(--color-ink-2);
+  display: grid;
+  flex: none;
+  place-items: center;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  margin-right: var(--space-xs);
+  border: 2px solid var(--tile-edge);
+  border-radius: var(--space-2xs);
+  background: var(--color-card);
+  box-shadow: 0 2px 0 var(--tile-edge);
+  color: var(--color-ink-2);
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  font-weight: 400;
+  line-height: 1;
+}
+.quest-item[aria-current="step"] .quest-no {
+  --tile-edge: var(--color-edge);
+  background: var(--color-ink);
+  color: var(--color-card);
 }
 .quest-mini {
   margin: 0 0 var(--space-xl);

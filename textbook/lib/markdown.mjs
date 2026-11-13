@@ -3,7 +3,7 @@
 // 전부 글자 그대로 escape한다. 실행 가능한 HTML은 이 렌더러가 만든 것뿐이다.
 import { Marked } from 'marked';
 import hljs from 'highlight.js';
-import { iconSvg } from '../src/app/views/icons.js';
+import { iconSvg, pxSvg } from '../src/app/views/icons.js';
 
 /** 허용하는 코드 펜스 언어 → highlight.js 언어 이름 */
 export const LANG_MAP = Object.freeze({
@@ -512,7 +512,7 @@ export function renderMarkdown(src, ctx = {}) {
       const n = ++state.answerCount;
       return (
         `<details class="answer" data-answer="${esc(prefixed(`a${n}`))}">\n` +
-        `<summary>${iconSvg('chevron', 'answer-chev')}<span>${esc(box.title || '정답 보기')}</span></summary>\n` +
+        `<summary>${iconSvg('chevron', 'answer-chev')}${pxSvg('gift', { cls: 'answer-gift' })}<span>${esc(box.title || '정답 보기')}</span></summary>\n` +
         `<div class="answer-body">\n${body}</div>\n` +
         `</details>\n`
       );

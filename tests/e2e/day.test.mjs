@@ -728,3 +728,156 @@ test('completed day card uses success colors', TIMEOUT, async () => {
     { viewport: PHONE },
   );
 });
+
+// ───────── 게임 틀 (DESIGN.md The Game Frame Rule) ─────────
+
+test('day head shows a reward chip worth the day minutes', TIMEOUT, async () => {
+  await withPage('#/day/fa-d01', async (page) => {
+    const cur = await curriculum(page);
+    const day = cur.projects.find((p) => p.id === 'fa').days.find((d) => d.id === 'fa-d01');
+    const chip = page.locator('.lesson-chips > li.chip-reward');
+    assert.equal((await chip.innerText()).trim(), `보상 +${day.minutes} XP`);
+    assert.equal(await chip.locator('svg.px-coin').count(), 1);
+    const order = await page.locator('.lesson-chips > li').evaluateAll((els) => els.map((el) => el.className));
+    assert.ok(order.indexOf('chip-reward') === 3 && order.at(-1).includes('lesson-status'), order.join(','));
+  });
+});
+
+test('quest log steps have tile numbers and a pixel cursor on the current step', TIMEOUT, async () => {
+  await withPage('#/day/fa-d01', async (page) => {
+    const ink = await tokenColor(page, '--color-ink');
+    const card = await tokenColor(page, '--color-card');
+    const progress = await tokenColor(page, '--color-progress');
+    await page.evaluate(() => window.scrollTo(0, document.querySelectorAll('.lesson-body > h2[id]')[1].offsetTop));
+    await eventually(async () => {
+      const items = await page.locator('.quest-log .quest-item').evaluateAll((els) =>
+        els.map((el) => {
+          const no = el.querySelector('.quest-no');
+          const cursor = el.querySelector('.quest-cursor');
+          const r = no.getBoundingClientRect();
+          return {
+            no: no.textContent,
+            size: [Math.round(r.width), Math.round(r.height)],
+            bg: getComputedStyle(no).backgroundColor,
+            current: el.getAttribute('aria-current') === 'step',
+            cursorShown: getComputedStyle(cursor).visibility === 'visible',
+            arrow: cursor.querySelectorAll('svg.px-arrow').length,
+            nameSize: getComputedStyle(el.querySelector('.quest-name')).fontSize,
+          };
+        }),
+      );
+      assert.ok(items.length > 2);
+      items.forEach((it, i) => {
+        assert.equal(it.no, String(i + 1));
+        assert.deepEqual(it.size, [22, 22]);
+        assert.equal(it.arrow, 1);
+        assert.equal(it.nameSize, '15px', `제목 글자 (${i + 1})`);
+        assert.equal(it.cursorShown, it.current, `커서는 지금 단계에만 (${i + 1})`);
+        assert.equal(it.bg, it.current ? ink : card, `번호 칸 면 (${i + 1})`);
+        assert.notEqual(it.bg, progress, '읽은 단계를 초록으로 칠하지 않는다');
+      });
+      assert.equal(items.filter((it) => it.current).length, 1);
+    });
+  });
+});
+
+test('checklist boxes are pixel tiles that turn green with a pixel check', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      const progress = await tokenColor(page, '--color-progress');
+      const card = await tokenColor(page, '--color-card');
+      const box = page.locator('li.task input[data-check]').first();
+      await box.scrollIntoViewIfNeeded();
+      const read = () =>
+        box.evaluate((el) => {
+          const r = el.getBoundingClientRect();
+          const check = el.closest('li').querySelector('.task-check');
+          return {
+            appearance: getComputedStyle(el).appearance,
+            size: [Math.round(r.width), Math.round(r.height)],
+            bg: getComputedStyle(el).backgroundColor,
+            check: check ? getComputedStyle(check).visibility : 'missing',
+            px: check?.querySelectorAll('svg.px-check').length ?? 0,
+          };
+        });
+      let s = await read();
+      assert.equal(s.appearance, 'none');
+      assert.deepEqual(s.size, [22, 22]);
+      assert.equal(s.bg, card);
+      assert.equal(s.check, 'hidden');
+      assert.equal(s.px, 1);
+      await box.click();
+      await eventually(async () => {
+        s = await read();
+        assert.equal(s.bg, progress);
+        assert.equal(s.check, 'visible');
+      });
+    },
+    { viewport: PHONE },
+  );
+});
+
+test('completion card has a quest label and a checklist tile bar that follows checks', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      const label = page.locator('.completion .completion-label');
+      assert.equal((await label.innerText()).trim(), '퀘스트 완료 조건');
+      assert.equal(await label.locator('svg.px-trophy').count(), 1);
+      const bar = page.locator('.completion .check-bar');
+      assert.equal(await bar.getAttribute('aria-hidden'), 'true');
+      const vars = () => bar.evaluate((el) => [el.style.getPropertyValue('--n'), Number(el.style.getPropertyValue('--p'))]);
+      assert.deepEqual(await vars(), ['3', 0]);
+      await page.locator('li.task input[data-check]').first().click();
+      await eventually(async () => {
+        const [n, p] = await vars();
+        assert.equal(n, '3');
+        assert.ok(Math.abs(p - 1 / 3) < 0.001, String(p));
+      });
+    },
+    { viewport: PHONE },
+  );
+});
+
+test('cleared day card says 퀘스트 클리어 and shows the XP reward', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      const btn = page.getByTestId('complete-button');
+      await btn.scrollIntoViewIfNeeded();
+      await btn.click();
+      const label = page.locator('.completion.is-done .completion-label');
+      assert.equal((await label.innerText()).trim(), '퀘스트 클리어!');
+      assert.equal(await label.locator('svg.px-trophy').count(), 1);
+      const reward = page.locator('.completion.is-done .completion-reward');
+      assert.equal((await reward.innerText()).trim(), '보상 +60 XP 획득');
+      assert.equal(await reward.locator('svg.px-coin').count(), 1);
+      assert.equal(await page.locator('.completion.is-done .check-bar').count(), 0);
+    },
+    { viewport: PHONE },
+  );
+});
+
+test('prev and next cards sit on a ledge and press down', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      const rule = await tokenColor(page, '--color-rule');
+      const next = page.locator('.nav-card.nav-next');
+      await next.scrollIntoViewIfNeeded();
+      const shadow = await next.evaluate((el) => getComputedStyle(el).boxShadow);
+      assert.ok(shadow.startsWith(`${rule} 0px 4px 0px`), shadow);
+      const box = await next.boundingBox();
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+      await page.mouse.down();
+      await eventually(async () => {
+        const t = await next.evaluate((el) => getComputedStyle(el).transform);
+        assert.equal(t, 'matrix(1, 0, 0, 1, 0, 3)');
+      });
+      await page.mouse.move(0, 0);
+      await page.mouse.up();
+    },
+    { viewport: PHONE },
+  );
+});
