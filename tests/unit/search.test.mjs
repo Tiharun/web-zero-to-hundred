@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { search } from '../../textbook/src/app/search.js';
+import { search, searchAsync } from '../../textbook/src/app/search.js';
 
 function deepFreeze(value) {
   if (value && typeof value === 'object' && !Object.isFrozen(value)) {
@@ -169,4 +169,38 @@ test('regex characters in the query are literal', () => {
   assert.deepEqual(ids(search(one, '[대괄호]', nothingLocked)), ['r']);
   assert.deepEqual(search(one, 'a.c', nothingLocked), []);
   assert.deepEqual(ids(search(one, 'a.b', nothingLocked)), ['r']);
+});
+
+// ───────── searchAsync (M5): 시간을 나눠 계산하고 멈출 수 있다 ─────────
+
+const LOCKED = (item) => item.project === 'fb' || item.id === 'secret';
+
+test('searchAsync gives the same results as search', async () => {
+  for (const q of ['day', '첫', 'zz 없음', 'HTML 태그', 'flexbox', '비밀', '']) {
+    assert.deepEqual(await searchAsync(index, q, LOCKED), search(index, q, LOCKED), q);
+  }
+  assert.deepEqual(await searchAsync(index, 'flexbox', LOCKED, { limit: 1 }), search(index, 'flexbox', LOCKED, 1));
+});
+
+test('searchAsync pauses whenever the time budget is spent', async () => {
+  let t = 0;
+  let pauses = 0;
+  const big = Array.from({ length: 50 }, (_, i) => ({ id: `d${i}`, kind: 'day', project: 'p', title: `제목 ${i}`, text: '낱말' }));
+  const result = await searchAsync(big, '낱말', undefined, {
+    budget: 8,
+    now: () => (t += 1),
+    pause: async () => {
+      pauses++;
+    },
+  });
+  assert.equal(result.length, 30);
+  assert.ok(pauses >= 5, `쉰 횟수 ${pauses}`);
+});
+
+test('searchAsync resolves null once aborted', async () => {
+  const ac = new AbortController();
+  let t = 0;
+  const p = searchAsync(index, 'day', undefined, { signal: ac.signal, budget: 1, now: () => (t += 1), pause: async () => ac.abort() });
+  assert.equal(await p, null);
+  assert.equal(await searchAsync(index, 'day', undefined, { signal: AbortSignal.abort() }), null);
 });

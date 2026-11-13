@@ -41,6 +41,43 @@ function makeSnippet(text, terms) {
   return cut(shown, Math.max(0, first - CONTEXT), Math.min(shown.length, first + length + CONTEXT));
 }
 
+// 항목마다 한 번만 접어 둔다. 색인은 빌드가 넣은 뒤 바뀌지 않는다
+const folded = new WeakMap();
+function foldOf(item) {
+  let f = folded.get(item);
+  if (!f) {
+    f = { title: fold(item.title), text: fold(item.text) };
+    folded.set(item, f);
+  }
+  return f;
+}
+
+const termsOf = (query) => fold(query).split(/\s+/).filter(Boolean);
+
+/** 모든 단어가 제목이나 본문에 있으면 점수, 하나라도 없으면 null */
+function scoreItem(item, terms) {
+  const { title, text } = foldOf(item);
+  let score = 0;
+  for (const term of terms) {
+    const inTitle = countOccurrences(title, term);
+    const inText = countOccurrences(text, term);
+    if (inTitle + inText === 0) return null;
+    score += inTitle * TITLE_WEIGHT + inText;
+  }
+  return score;
+}
+
+function finish(hits, terms, isItemLocked, limit) {
+  hits.sort((a, b) => b.score - a.score); // 안정 정렬: 같은 점수는 색인 순서 그대로
+  return hits.slice(0, limit).map(({ item }) => ({
+    id: item.id,
+    kind: item.kind,
+    project: item.project,
+    title: item.title,
+    snippet: isItemLocked(item) ? null : makeSnippet(item.text, terms),
+  }));
+}
+
 /**
  * @param {{ id: string, kind: string, project: string|null, title: string, text: string }[]} index
  * @param {string} query 공백으로 나눈 모든 단어가 제목이나 본문에 있어야 한다
@@ -53,35 +90,42 @@ function makeSnippet(text, terms) {
  */
 export function search(index, query, isItemLocked = () => false, limit = 30) {
   if (!Array.isArray(index) || typeof query !== 'string') return [];
-  const terms = fold(query).split(/\s+/).filter(Boolean);
+  const terms = termsOf(query);
   if (terms.length === 0) return [];
-
   const hits = [];
   for (const item of index) {
-    const title = fold(item.title);
-    const text = fold(item.text);
-    let score = 0;
-    let matchesAll = true;
-    for (const term of terms) {
-      const inTitle = countOccurrences(title, term);
-      const inText = countOccurrences(text, term);
-      if (inTitle + inText === 0) {
-        matchesAll = false;
-        break;
-      }
-      score += inTitle * TITLE_WEIGHT + inText;
-    }
-    if (matchesAll) hits.push({ item, score });
+    const score = scoreItem(item, terms);
+    if (score !== null) hits.push({ item, score });
   }
+  return finish(hits, terms, isItemLocked, limit);
+}
 
-  hits.sort((a, b) => b.score - a.score); // 안정 정렬: 같은 점수는 색인 순서 그대로
-  return hits.slice(0, limit).map(({ item }) => {
-    return {
-      id: item.id,
-      kind: item.kind,
-      project: item.project,
-      title: item.title,
-      snippet: isItemLocked(item) ? null : makeSnippet(item.text, terms),
-    };
-  });
+/**
+ * search 와 같은 결과를 내되, budget(ms)만큼 계산하면 pause() 로 쉬어 가며 화면이 그려질 틈을 준다
+ * (느린 기기에서 입력과 Skeleton 이 멈추지 않게). signal 이 멈춤을 알리면 다음 쉼에서 null 로 끝난다.
+ * @returns {Promise<ReturnType<typeof search> | null>}
+ */
+export async function searchAsync(
+  index,
+  query,
+  isItemLocked = () => false,
+  { limit = 30, signal, budget = 8, now = () => performance.now(), pause = () => new Promise((resolve) => setTimeout(resolve, 0)) } = {},
+) {
+  if (signal?.aborted) return null;
+  if (!Array.isArray(index) || typeof query !== 'string') return [];
+  const terms = termsOf(query);
+  if (terms.length === 0) return [];
+  const hits = [];
+  let started = now();
+  for (const item of index) {
+    if (now() - started >= budget) {
+      await pause();
+      if (signal?.aborted) return null;
+      started = now();
+    }
+    const score = scoreItem(item, terms);
+    if (score !== null) hits.push({ item, score });
+  }
+  if (signal?.aborted) return null;
+  return finish(hits, terms, isItemLocked, limit);
 }
