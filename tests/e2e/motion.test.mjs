@@ -97,7 +97,12 @@ test('primary button follows the mouse within 6px', TIMEOUT, async () => {
     assert.equal((await btn.textContent()).trim(), '첫 Day 시작하기');
     const box = await btn.boundingBox();
     await page.mouse.move(box.x + box.width + 16, box.y + box.height / 2, { steps: 4 });
+    let nudge = 0;
     await eventually(async () => {
+      // 다시 확인할 때마다 1px 씩 흔들어 새 pointermove 를 낸다. 실제 마우스도 계속 이벤트를 낸다.
+      // 병렬 부하에서 첫 이동 이벤트가 처리되지 않아 --mx 가 한 번도 안 붙은 일이 있었다(M9: '--mx NaN' 2회)
+      nudge = nudge === 0 ? 1 : 0;
+      await page.mouse.move(box.x + box.width + 16, box.y + box.height / 2 + nudge);
       const v = parseFloat(await mx(btn));
       assert.ok(v > 0 && v <= 6, `--mx ${v}`);
       assert.equal(await btn.evaluate((el) => el.classList.contains('is-pulling')), true);
