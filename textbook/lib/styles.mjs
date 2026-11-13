@@ -10,11 +10,10 @@ const SOURCE_FILES = new Set(['tokens', 'legacy']);
 
 /** legacy.css 가 정의할 수 있는 옛 변수 이름. 화면을 개편하는 마일스톤마다 줄여 간다 */
 export const LEGACY_VARS = new Set([
-  'bg', 'surface', 'surface-2', 'accent-soft', 'ok-soft', 'text', 'link', 'muted', 'border', 'border-strong',
-  'accent', 'on-accent', 'focus', 'ok', 'ok-bar', 'overlay', 'shadow', 'font-sans', 'font-mono', 'radius', 'radius-sm',
-  'measure', 'code-bg', 'code-fg', 'code-head', 'code-border',
-  ...['tip', 'warn', 'info', 'path', 'success', 'callout'].flatMap((k) => [`${k}-bg`, `${k}-line`, `${k}-ink`]),
-  ...['keyword', 'string', 'number', 'comment', 'title', 'attr', 'variable', 'meta', 'tag', 'name', 'deletion', 'addition'].map((k) => `tok-${k}`),
+  'bg', 'surface', 'surface-2', 'ok-soft', 'text', 'link', 'muted', 'border', 'border-strong',
+  'accent', 'on-accent', 'ok', 'shadow', 'font-mono', 'radius', 'radius-sm', 'measure',
+  'tip-bg', 'tip-line', 'warn-bg', 'warn-line',
+  ...['callout'].flatMap((k) => [`${k}-bg`, `${k}-line`, `${k}-ink`]), // day.css 의 지역 변수(알림 상자마다 바꿔 끼운다)
 ]);
 
 const RAW_COLOR = /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|oklch|color-mix)\(/i;

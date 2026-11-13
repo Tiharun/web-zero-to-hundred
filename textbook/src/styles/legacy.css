@@ -1,13 +1,13 @@
 /* 옛 변수 이름 → DESIGN.md 토큰.
    아직 개편하지 않은 화면(홈 본문, Day 본문, 검색, 설정)이 새 팔레트로 보이게 잇는 다리다.
    뒤 마일스톤이 화면을 개편할 때마다 여기서 이름을 지운다. 새 이름은 더하지 않는다(빌드가 막는다).
-   알림·코드·위험 색도 이제 DESIGN.md 토큰을 가리킨다(M8). 테마는 새 토큰이 맡으므로 여기엔 다크 블록이 없다. */
+   알림·코드·위험 색도 이제 DESIGN.md 토큰을 가리킨다(M8). 테마는 새 토큰이 맡으므로 여기엔 다크 블록이 없다.
+   M9: Day 본문·코드 블록이 새 토큰을 직접 써서 코드·토큰 색과 쓰지 않게 된 알림 이름을 지웠다. */
 
 :root {
   --bg: var(--color-paper);
   --surface: var(--color-card);
   --surface-2: var(--color-track);
-  --accent-soft: var(--color-track);
   --ok-soft: var(--color-track);
   --text: var(--color-ink);
   --link: var(--color-ink);
@@ -17,48 +17,15 @@
   /* One Pink Rule: 옛 화면에서 분홍 면이 퍼지지 않게 남색으로 둔다 */
   --accent: var(--color-ink);
   --on-accent: var(--color-card);
-  --focus: var(--color-focus);
   --ok: var(--color-xp);
-  --ok-bar: var(--color-progress);
-  --overlay: var(--color-scrim);
   --shadow: none;
-  --font-sans: var(--font-body);
   --font-mono: var(--font-code);
   --radius: var(--radius-card);
   --radius-sm: var(--radius-btn);
   --measure: 72ch;
 
-  --code-bg: var(--color-code-bg);
-  --code-fg: var(--color-code-fg);
-  --code-head: var(--color-code-head);
-  --code-border: var(--color-code-border);
-
   --tip-bg: var(--color-tip-bg);
   --tip-line: var(--color-tip-line);
-  --tip-ink: var(--color-tip-ink);
   --warn-bg: var(--color-warn-bg);
   --warn-line: var(--color-warn-line);
-  --warn-ink: var(--color-warn-ink);
-  --info-bg: var(--color-info-bg);
-  --info-line: var(--color-info-line);
-  --info-ink: var(--color-info-ink);
-  --path-bg: var(--color-path-bg);
-  --path-line: var(--color-path-line);
-  --path-ink: var(--color-path-ink);
-  --success-bg: var(--color-success-bg);
-  --success-line: var(--color-success-line);
-  --success-ink: var(--color-success-ink);
-
-  --tok-keyword: var(--color-tok-keyword);
-  --tok-string: var(--color-tok-string);
-  --tok-number: var(--color-tok-number);
-  --tok-comment: var(--color-tok-comment);
-  --tok-title: var(--color-tok-title);
-  --tok-attr: var(--color-tok-attr);
-  --tok-variable: var(--color-tok-variable);
-  --tok-meta: var(--color-tok-meta);
-  --tok-tag: var(--color-tok-tag);
-  --tok-name: var(--color-tok-name);
-  --tok-deletion: var(--color-tok-deletion);
-  --tok-addition: var(--color-tok-addition);
 }

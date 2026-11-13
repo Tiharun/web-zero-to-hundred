@@ -47,6 +47,9 @@ const ALL_DONE = (() => {
 export const SCENES = [
   { id: 'home', hash: '#/', progress: P1_FIRST_THREE, fullPage: true },
   { id: 'day', hash: '#/day/p1-d01', progress: P1_FIRST_THREE },
+  // M9: 본문 아래쪽 부품. scrollTo 의 첫 요소를 상단 바 바로 아래로 옮겨 찍는다
+  { id: 'day-code', hash: '#/day/p1-d01', progress: P1_FIRST_THREE, scrollTo: 'figure.code' },
+  { id: 'day-table', hash: '#/day/p1-d01', progress: P1_FIRST_THREE, scrollTo: '.lesson-body table' },
   { id: 'settings', hash: '#/settings', progress: null },
   { id: 'notfound', hash: '#/nope', progress: null },
   { id: 'confirm', hash: '#/settings', progress: null, open: '[data-testid="reset-button"]', waitFor: '#confirm-dialog[open]' },
@@ -115,6 +118,14 @@ async function shoot(scene, width, theme) {
       await page.locator(scene.waitFor).waitFor();
     }
     await page.evaluate(() => document.fonts.ready.then(() => true));
+    if (scene.scrollTo) {
+      await page.locator(scene.scrollTo).first().evaluate(async (el) => {
+        el.scrollIntoView({ block: 'start' });
+        // 고정된 상단 바에 가리지 않게 바 높이 + 16px 만큼 되돌린다
+        window.scrollBy(0, -((document.querySelector('.topbar')?.offsetHeight ?? 0) + 16));
+        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      });
+    }
     // 설정 화면의 빌드 날짜는 빌드할 때마다 바뀌므로 가린다
     const mask = [page.locator('main p', { hasText: /빌드 \d{4}/ })];
     return await page.screenshot({ fullPage: scene.fullPage ?? false, mask, animations: 'disabled', caret: 'hide' });
