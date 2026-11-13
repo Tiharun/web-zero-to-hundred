@@ -274,3 +274,110 @@ test('code block head and body follow DESIGN.md', TIMEOUT, async () => {
     assert.ok(head >= 40, `윗줄 ${head}px`);
   });
 });
+
+// ───────── 읽기 위치 바 ─────────
+
+const PHONE = { width: 375, height: 640 };
+
+/** .read-bar-fill 의 가로 배율(계산된 transform 행렬의 a). transform 이 none 이면 1 */
+const scaleOf = (page) =>
+  page.locator('.read-bar-fill').evaluate((el) => {
+    const t = getComputedStyle(el).transform;
+    return t === 'none' ? 1 : new DOMMatrixReadOnly(t).a;
+  });
+
+/** 맨 아래까지 스크롤할 수 있는 비율(0~1)로 옮기고 두 프레임 기다린다 */
+const scrollToRatio = (page, ratio) =>
+  page.evaluate(async (r) => {
+    const el = document.scrollingElement;
+    window.scrollTo(0, (el.scrollHeight - el.clientHeight) * r);
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  }, ratio);
+
+const goHash = async (page, hash) => {
+  await page.evaluate((h) => {
+    location.hash = h;
+  }, hash);
+  await page.locator(`main[data-hash="${hash}"]`).waitFor();
+};
+
+test('read bar fills as the page scrolls', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      const bar = page.locator('.read-bar');
+      assert.equal(await bar.count(), 1);
+      assert.equal(await bar.getAttribute('aria-hidden'), 'true');
+      const r = await bar.evaluate((el) => el.getBoundingClientRect().toJSON());
+      assert.equal(r.top, 56);
+      assert.equal(r.height, 3);
+      await eventually(async () => assert.ok((await scaleOf(page)) <= 0.02, `맨 위 ${await scaleOf(page)}`));
+      await scrollToRatio(page, 0.5);
+      await eventually(async () => {
+        const s = await scaleOf(page);
+        assert.ok(s >= 0.4 && s <= 0.6, `가운데 ${s}`);
+      });
+      await scrollToRatio(page, 1);
+      await eventually(async () => assert.ok((await scaleOf(page)) >= 0.98, `맨 아래 ${await scaleOf(page)}`));
+    },
+    { viewport: PHONE },
+  );
+});
+
+test('read bar keeps tracking with reduced motion', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      await scrollToRatio(page, 1);
+      await eventually(async () => assert.ok((await scaleOf(page)) >= 0.98, `맨 아래 ${await scaleOf(page)}`));
+    },
+    { viewport: PHONE, reducedMotion: 'reduce' },
+  );
+});
+
+test('read bar falls back to --read without scroll timelines', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      await scrollToRatio(page, 1);
+      await eventually(async () => assert.equal(await page.locator('.read-bar').evaluate((el) => el.style.getPropertyValue('--read')), '1.0000'));
+    },
+    {
+      viewport: PHONE,
+      init: () => {
+        const supports = CSS.supports.bind(CSS);
+        CSS.supports = (...args) => (String(args.join(' ')).includes('animation-timeline') ? false : supports(...args));
+      },
+    },
+  );
+});
+
+test('read bar exists only on day screens', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      const bars = page.locator('.read-bar');
+      assert.equal(await bars.count(), 1);
+      await goHash(page, '#/');
+      assert.equal(await bars.count(), 0, '홈에는 없다');
+      await goHash(page, '#/day/fa-d01');
+      await goHash(page, '#/day/fa-d02');
+      assert.equal(await bars.count(), 1, '준비 중 Day 에도 하나');
+      await eventually(async () => assert.ok((await scaleOf(page)) <= 0.02, `준비 중 ${await scaleOf(page)}`));
+      await goHash(page, '#/day/fb-d01');
+      assert.equal(await bars.count(), 0, '잠긴 Day 에는 없다');
+    },
+    { viewport: PHONE },
+  );
+});
+
+test('read bar is hidden in print', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      await page.emulateMedia({ media: 'print' });
+      assert.equal(await page.locator('.read-bar').evaluate((el) => getComputedStyle(el).display), 'none');
+    },
+    { viewport: PHONE },
+  );
+});

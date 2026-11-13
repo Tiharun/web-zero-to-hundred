@@ -661,3 +661,37 @@ li.task input[type="checkbox"] {
     animation: none; /* 움직임 없이 표시만 남긴다 */
   }
 }
+
+/* ───────── 읽기 위치 바 (DESIGN.md "Day 부품" 읽기 위치 바) ───────── */
+
+.read-bar {
+  position: fixed;
+  top: var(--topbar-h);
+  right: 0;
+  left: 0;
+  z-index: var(--z-sticky);
+  height: 3px;
+  pointer-events: none;
+}
+.read-bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--color-ink);
+  transform: scaleX(var(--read, 0));
+  transform-origin: left;
+}
+/* 스크롤 타임라인을 지원하면 CSS 가 채운다. animation-timeline 은 animation 줄임 속성 뒤에 둔다(줄임 속성이 초기화한다) */
+@supports (animation-timeline: scroll()) {
+  .read-bar-fill {
+    animation: read-grow linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+@keyframes read-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}

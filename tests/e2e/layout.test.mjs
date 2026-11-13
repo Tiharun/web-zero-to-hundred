@@ -86,8 +86,9 @@ async function open(hash, { width = 1280, height = 900, theme = 'light', file = 
   opened.push({ context, errors });
   await page.goto(`${server.url}${file}${hash}`);
   await page.locator('main h1').first().waitFor();
-  // 홈 첫 표시의 Stagger 가 도는 동안에는 상자 값이 소수점만큼 흔들린다. 끝난 모습을 잰다
-  await page.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished.catch(() => {}))));
+  // 홈 첫 표시의 Stagger 가 도는 동안에는 상자 값이 소수점만큼 흔들린다. 끝난 모습을 잰다.
+  // 시간으로 도는 것만 기다린다: 스크롤 타임라인(Day 읽기 위치 바)은 맨 아래까지 스크롤해야 끝나서 영영 기다리게 된다
+  await page.evaluate(() => Promise.all(document.getAnimations().filter((a) => a.timeline === document.timeline).map((a) => a.finished.catch(() => {}))));
   return page;
 }
 

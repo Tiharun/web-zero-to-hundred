@@ -2,6 +2,7 @@
 import { reveal } from '../motion.js';
 import { canComplete, canUncomplete, completeDay, dayState, isProjectComplete, newlyUnlocked, toggleCheck, uncompleteDay } from '../progress.js';
 import { breadcrumb, chips, findDay, getPage, getProject, h, isDone, lockScreen, minutesText, textLink } from './common.js';
+import { mountReadBar } from './readbar.js';
 
 const COPY_RESET_MS = 2000;
 
@@ -204,6 +205,7 @@ export function renderDay(ctx, dayId, root) {
     return `잠김 · ${day.title}`;
   }
 
+  ctx.onCleanup(mountReadBar()); // 본문(준비 중 포함)을 그리는 Day 화면에만. 잠김·없는 Day 는 위에서 돌아간다
   const previous = project.days[index - 1] ?? null;
   const next = project.days[index + 1] ?? null;
   const body = h('div', { class: 'lesson-body' });

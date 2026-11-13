@@ -7,7 +7,8 @@
     display: none;
   }
   .toast-region,
-  .carousel-btns {
+  .carousel-btns,
+  .read-bar {
     display: none !important;
   }
   /* 다른 월드 캐러셀: 화면 밖 카드도 종이에 나오게 줄을 바꿔 모두 편다 */
