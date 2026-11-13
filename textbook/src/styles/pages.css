@@ -71,11 +71,15 @@
   border-color: var(--color-accent-text);
   background: radial-gradient(circle, var(--color-accent-text) 0 38%, var(--color-card) 42%);
 }
-/* 백업 불러오기 결과 문장: 알림 상자 모양. 종류별 색은 알림 상자 색이 정해지면(M8) 입힌다 */
+/* 백업 불러오기 결과 문장: 알림 상자와 같은 틀(1px rule + 왼쪽 4px 막대). 색은 data-kind 가 고른다 */
 .message {
+  --msg-bg: var(--color-card);
+  --msg-line: var(--color-ink-2);
   margin: var(--space-md) 0 0;
   padding: var(--space-sm) var(--space-md);
-  border: 1px solid var(--color-ink-2);
+  background: var(--msg-bg);
+  border: 1px solid var(--color-rule);
+  border-left: 4px solid var(--msg-line);
   border-radius: var(--radius-card);
   color: var(--color-ink);
   font-size: var(--text-ui);
@@ -83,6 +87,18 @@
 }
 .message:empty {
   display: none;
+}
+.message[data-kind="ok"] {
+  --msg-bg: var(--color-success-bg);
+  --msg-line: var(--color-success-line);
+}
+.message[data-kind="error"] {
+  --msg-bg: var(--color-warn-bg);
+  --msg-line: var(--color-warn-line);
+}
+.message[data-kind="info"] {
+  --msg-bg: var(--color-info-bg);
+  --msg-line: var(--color-info-line);
 }
 
 /* ───────── 월드 페이지 (DESIGN.md Cards "월드 페이지"·"월드 페이지 Day 행"·"진도 막대") ───────── */

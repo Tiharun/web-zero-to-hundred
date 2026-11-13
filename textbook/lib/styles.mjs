@@ -12,7 +12,7 @@ const SOURCE_FILES = new Set(['tokens', 'legacy']);
 export const LEGACY_VARS = new Set([
   'bg', 'surface', 'surface-2', 'accent-soft', 'ok-soft', 'text', 'link', 'muted', 'border', 'border-strong',
   'accent', 'on-accent', 'focus', 'ok', 'ok-bar', 'overlay', 'shadow', 'font-sans', 'font-mono', 'radius', 'radius-sm',
-  'measure', 'danger', 'on-danger', 'code-bg', 'code-fg', 'code-head', 'code-border',
+  'measure', 'code-bg', 'code-fg', 'code-head', 'code-border',
   ...['tip', 'warn', 'info', 'path', 'success', 'callout'].flatMap((k) => [`${k}-bg`, `${k}-line`, `${k}-ink`]),
   ...['keyword', 'string', 'number', 'comment', 'title', 'attr', 'variable', 'meta', 'tag', 'name', 'deletion', 'addition'].map((k) => `tok-${k}`),
 ]);

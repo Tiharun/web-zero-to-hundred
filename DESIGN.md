@@ -662,6 +662,8 @@ components:
 - **아이콘·도구 버튼:** 최소 40×40px, 투명 바탕, 1px 투명 테두리, 모서리 6px. hover `track`, active `rule`, 비활성은 투명도 0.4. 검색 버튼만 1px `rule` 테두리와 `ink-2` 글자, 640px 이하에서 아이콘만.
 - **글자 링크(보조 행동):** 밑줄 있는 `ink` 글자 400, hover에서 `accent-text`. 예: "처음이면 시작하기부터", "월드 다시 보기".
 - **글자 버튼:** `min-height: 32px`, 15px `ink-2` 밑줄, hover `ink`, 누르면 `accent-text`. 예: "모두 펼치기".
+- **보조 버튼(`.btn`):** `card` 면, 2px `ink-2` 테두리와 같은 색 3px 턱, 모서리 6px, `min-height: 44px`, 좌우 `var(--space-md)`, 15px 800 `ink`. hover는 `track` 바탕과 2px 떠오름, 누르면 턱 안으로(60ms). 비활성은 투명도 0.4에 떠오름 없음. 목차 열쇠와 같은 계열이다. 예: "진도 내보내기", "완료 취소", 확인 Modal "취소".
+- **위험 버튼(`.btn.btn-danger`):** 주 버튼과 같은 꼴(48px, 좌우 24px, 17px 800, 모서리 6px)에 `danger` 면, `danger-ink` 글자, `danger-deep` 턱 4px. hover는 2px 떠오름만(면 색은 그대로). 되돌릴 수 없는 일(진도 지우기)과 그 확인 Modal에만 쓰고, 한 층에 하나다.
 
 ### Cards / Containers
 - **기본 카드:** 바탕 `card`, 2px `rule` 테두리, 모서리 12px, `rule` 턱 4px.
@@ -803,6 +805,7 @@ components:
 - **퀘스트 로그:** 1280px 이상은 본문 오른쪽 220px 열, `position: sticky`(상단 바 + `var(--space-lg)`). 머리는 Label "퀘스트 로그"와 "단계 n/8", 목록은 섹션 제목 버튼(15px `ink-2`, 최소 36px), 지금 단계는 `ink` 800 + 왼쪽 3px `ink` 막대 + `aria-current="step"`. 그보다 좁으면 본문 위 `<details>` 카드(2px `rule` 테두리, summary 최소 44px "퀘스트 로그 · 단계 n/8" + 오른쪽 `chevron` 아이콘, 열면 180° 회전). 누르면 그 제목으로 smooth scroll(동작 줄이기면 `auto`)하고 제목에 포커스. M9에서 화면에 넣는다.
 - **토스트:** `card` 면, 2px `edge` 테두리, `--ledge` `edge` 턱, 모서리 `--radius-card`, 15px `ink`, `max-width: min(100%, 28rem)`. 왼쪽 도트 아이콘은 부르는 쪽이 정한다(없으면 생략). 들어옴은 아래 8px에서 `--dur-short` `--ease-bounce`, 나감은 투명도 `--dur-exit` `--ease-in`. `role="status"`, 4초, hover·포커스 중에는 멈춘다.
 - **레벨업 Modal:** `<dialog>`(`setupDialog`), `card` 면, 2px `edge` 테두리와 턱, 안쪽 `var(--space-xl)`, 가운데 정렬, `max-width: 24rem`. 순서: Label "레벨 업" → LV 배지(HUD와 같은 모양, 숫자 32px) → 제목 "레벨이 올랐어요"(Title small) → "다음 레벨까지 XP m"(`ink-2`) → 주 버튼 "계속하기"(처음 포커스). 열림 `pop-in` `--dur-enter`. M11에서 화면에 넣는다.
+- **설정 결과 문장(`.message[data-kind]`):** 알림 상자와 같은 틀(1px `rule` 테두리, 왼쪽 4px 막대, 모서리 `--radius-card`), 15px `ink`, 줄간격 1.5. 색은 종류로 고른다: `ok` → `success`, `error` → `warn`, `info` → `info`의 바탕과 막대.
 - **그림 틀:** `figure.figure`, `card` 면, 2px `rule` 테두리, 모서리 `--radius-card`. 무대는 `paper` 바탕, 안쪽 `var(--space-lg) var(--space-md)`, 높이는 그림이 정한다(그림 폭 최대 30rem). 아래 줄은 Label "그림 n" + 캡션 15px `ink`, 오른쪽에 보조 버튼 "▶ 다음 단계"(마지막 단계에서 "↺ 처음부터", 단계 그림만). 대체 설명은 `role="img"` 무대의 `aria-label`. M12에서 화면에 넣는다.
 
 ### Motion

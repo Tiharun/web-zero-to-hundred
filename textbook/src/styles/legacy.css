@@ -28,9 +28,6 @@
   --radius-sm: var(--radius-btn);
   --measure: 72ch;
 
-  --danger: var(--color-danger);
-  --on-danger: var(--color-danger-ink);
-
   --code-bg: var(--color-code-bg);
   --code-fg: var(--color-code-fg);
   --code-head: var(--color-code-head);

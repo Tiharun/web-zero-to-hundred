@@ -608,3 +608,40 @@ test('narrow map: no tooltip even with a mouse, wide map keeps it', TIMEOUT, asy
     assert.ok((await shown(page)).every((d) => d === 'block'));
   });
 });
+
+// ───────── 토스트 확정 모양 (DESIGN.md Day 부품 "토스트") ─────────
+test('toast uses the final shape', TIMEOUT, async () => {
+  await withPage('#/', async (page) => {
+    await clickAt(page, page.locator(LOCKED));
+    const toast = toasts(page).first();
+    await toast.waitFor();
+    const r = await toast.evaluate((el) => {
+      const probe = document.createElement('span');
+      probe.style.cssText = 'transition:none;color:var(--color-edge)';
+      document.body.append(probe);
+      const edge = getComputedStyle(probe).color;
+      probe.remove();
+      const root = getComputedStyle(document.documentElement);
+      const s = getComputedStyle(el);
+      return { width: s.borderTopWidth, color: s.borderTopColor, shadow: s.boxShadow, radius: s.borderTopLeftRadius, edge, ledge: root.getPropertyValue('--ledge').trim(), card: root.getPropertyValue('--radius-card').trim() };
+    });
+    assert.equal(r.width, '2px');
+    assert.equal(r.color, r.edge, '테두리는 edge');
+    assert.ok(r.shadow.includes(r.edge) && r.shadow.includes(`0px ${r.ledge}`), `턱은 edge ${r.ledge}: ${r.shadow}`);
+    assert.equal(r.radius, r.card);
+  });
+});
+
+test('reduced motion shows the toast without movement', TIMEOUT, async () => {
+  await withPage(
+    '#/',
+    async (page) => {
+      await clickAt(page, page.locator(LOCKED));
+      const toast = toasts(page).first();
+      await toast.waitFor();
+      const durations = await toast.evaluate((el) => el.getAnimations().map((a) => Number(a.effect.getComputedTiming().duration)));
+      assert.ok(durations.every((d) => d <= 0.01), `등장 애니메이션 ${durations.join(',')}ms`);
+    },
+    { reducedMotion: 'reduce' },
+  );
+});

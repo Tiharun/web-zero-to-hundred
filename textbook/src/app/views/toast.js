@@ -1,5 +1,5 @@
 // 토스트: 화면 아래 가운데에 잠깐 뜨는 알림(개편 설계서 5장). 영역은 <body> 바로 아래 하나라 화면을 옮겨도 남는다.
-// 모양은 M8 에서 확정할 때까지 기존 카드 토큰만 쓴 임시 모양이다(DESIGN.md "아직 정하지 않은 것").
+// 모양은 DESIGN.md Day 부품 "토스트"를 따른다(components.css .toast).
 import { motionEnv } from '../motion.js';
 
 export const TOAST_MS = 4000;

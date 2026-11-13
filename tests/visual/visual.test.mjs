@@ -61,6 +61,7 @@ export const SCENES = [
   { id: 'start', hash: '#/page/start', progress: null },
   { id: 'glossary', hash: '#/page/glossary', progress: null },
   { id: 'troubleshooting', hash: '#/page/troubleshooting', progress: null, open: '.ts-entry > summary', waitFor: '.ts-entry[open]' },
+  { id: 'toast', hash: '#/', progress: null, widths: [375, 1280], open: '.world-card.is-locked .card-hit', waitFor: '.toast' },
 ];
 const WIDTHS = [375, 768, 1280];
 const THEMES = ['light', 'dark'];

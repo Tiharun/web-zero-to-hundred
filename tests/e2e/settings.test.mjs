@@ -416,7 +416,7 @@ test('settings cards follow DESIGN.md: basic card, title small, notice-style mes
       const c = getComputedStyle(el);
       return { top: c.borderTopWidth, left: c.borderLeftWidth, radius: c.borderTopLeftRadius };
     });
-    assert.deepEqual(m, { top: '1px', left: '1px', radius: '12px' }, '알림 상자 모양(옛 6px 왼쪽 띠가 없다)');
+    assert.deepEqual(m, { top: '1px', left: '4px', radius: '12px' }, '알림 상자 모양(1px rule 테두리 + 왼쪽 4px 막대)');
   });
 });
 
@@ -487,4 +487,83 @@ test('in the notfound build the error screen links home and settings by the site
   } finally {
     await context.close();
   }
+});
+
+// ───────── 결과 문장·위험·보조 버튼 (DESIGN.md Buttons, Day 부품) ─────────
+/** CSS 변수 색을 계산된 rgb 글자로 */
+const cssColor = (page, name) =>
+  page.evaluate((n) => {
+    const probe = document.createElement('span');
+    probe.style.cssText = `transition:none;color:var(${n})`;
+    document.body.append(probe);
+    const c = getComputedStyle(probe).color;
+    probe.remove();
+    return c;
+  }, name);
+const styleOf = (locator) =>
+  locator.evaluate((el) => {
+    const s = getComputedStyle(el);
+    return { bg: s.backgroundColor, color: s.color, left: s.borderLeftColor, leftWidth: s.borderLeftWidth, top: s.borderTopColor, topWidth: s.borderTopWidth, radius: s.borderTopLeftRadius, shadow: s.boxShadow };
+  });
+
+test('import message colours follow its kind', TIMEOUT, async () => {
+  await withPage('#/settings', async (page) => {
+    const message = page.getByTestId('import-message');
+    await page.getByTestId('import-input').setInputFiles(jsonFile('other.json', '{"app":"other"}'));
+    await eventually(async () => assert.equal(await message.getAttribute('data-kind'), 'error'));
+    let s = await styleOf(message);
+    assert.equal(s.leftWidth, '4px');
+    assert.equal(s.left, await cssColor(page, '--color-warn-line'));
+    assert.equal(s.bg, await cssColor(page, '--color-warn-bg'));
+    await page.getByTestId('import-input').setInputFiles(jsonFile('backup.json', backupText(['fa-d02'])));
+    await page.getByTestId('confirm-modal').waitFor();
+    await page.getByTestId('confirm-ok').click();
+    await eventually(async () => assert.equal(await message.getAttribute('data-kind'), 'ok'));
+    s = await styleOf(message);
+    assert.equal(s.left, await cssColor(page, '--color-success-line'));
+    assert.equal(s.bg, await cssColor(page, '--color-success-bg'));
+  });
+});
+
+test('danger and secondary buttons follow DESIGN.md', TIMEOUT, async () => {
+  await withPage('#/settings', async (page) => {
+    const secondary = await styleOf(page.getByTestId('export-button'));
+    const ink2 = await cssColor(page, '--color-ink-2');
+    assert.equal(secondary.radius, '6px', '알약 모양이 아니다');
+    assert.equal(secondary.topWidth, '2px');
+    assert.equal(secondary.top, ink2);
+    assert.ok(secondary.shadow.includes(ink2) && secondary.shadow.includes('0px 3px'), `보조 버튼 턱 3px: ${secondary.shadow}`);
+
+    await page.getByTestId('reset-button').click();
+    await page.getByTestId('confirm-modal').waitFor();
+    const ok = page.getByTestId('confirm-ok');
+    assert.match(await ok.getAttribute('class'), /btn-danger/);
+    const danger = await styleOf(ok);
+    assert.equal(danger.bg, await cssColor(page, '--color-danger'));
+    assert.equal(danger.color, await cssColor(page, '--color-danger-ink'));
+    assert.ok(danger.shadow.includes(await cssColor(page, '--color-danger-deep')), `위험 턱: ${danger.shadow}`);
+    assert.equal(danger.radius, '6px');
+  });
+});
+
+test('toast and settings message wrap at 320px without sideways scroll', TIMEOUT, async () => {
+  const sideways = (page) => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  await withPage(
+    '#/settings',
+    async (page) => {
+      await page.getByTestId('import-input').setInputFiles(jsonFile('other.json', '{"app":"other"}'));
+      await eventually(async () => assert.equal(await page.getByTestId('import-message').getAttribute('data-kind'), 'error'));
+      assert.equal(await sideways(page), 0, '결과 문장');
+      await page.evaluate(() => { location.hash = '#/'; });
+      const locked = page.locator('.world-card.is-locked .card-hit').first();
+      await locked.waitFor();
+      await locked.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+      await locked.click();
+      await page.getByTestId('toast').first().waitFor();
+      const box = await page.getByTestId('toast').first().boundingBox();
+      assert.ok(box.x >= 0 && box.x + box.width <= 320, `토스트가 화면 안: ${box.x}+${box.width}`);
+      assert.equal(await sideways(page), 0, '토스트');
+    },
+    { viewport: { width: 320, height: 720 } },
+  );
 });
