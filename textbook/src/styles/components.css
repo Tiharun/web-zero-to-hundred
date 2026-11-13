@@ -446,6 +446,14 @@ kbd {
   text-wrap: pretty;
   animation: toast-in var(--dur-short) var(--ease-bounce);
 }
+.toast.has-icon {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+.toast.has-icon .px {
+  flex-shrink: 0;
+}
 @keyframes toast-in {
   from {
     opacity: 0;

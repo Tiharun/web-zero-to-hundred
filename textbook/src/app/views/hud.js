@@ -18,6 +18,9 @@ function encouragement(ctx, kind, done) {
 /** 통계 한 행: 도트 아이콘 + 이름 | 값 */
 const statRow = (name, mark, label, value) => h('div', { 'data-stat': name }, h('dt', null, mark, label), h('dd', { class: 'num' }, value));
 
+/** LV 배지 (DESIGN.md Components > HUD). 레벨 패널과 레벨업 Modal 이 같이 쓴다 */
+export const lvBadge = (level) => h('p', { class: 'lv' }, h('span', { class: 'lv-unit' }, 'LV'), h('span', { class: 'lv-value num' }, String(level)));
+
 /** 레벨 패널 한 장 */
 export function levelPanel(ctx) {
   const { cur, prog } = ctx;
@@ -35,7 +38,7 @@ export function levelPanel(ctx) {
     h(
       'div',
       { class: 'hud' },
-      h('p', { class: 'lv' }, h('span', { class: 'lv-unit' }, 'LV'), h('span', { class: 'lv-value num' }, String(level))),
+      lvBadge(level),
       h(
         'div',
         { class: 'xp' },

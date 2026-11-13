@@ -2,10 +2,11 @@
 @media print {
   .topbar,
   #sidebar,
-  .site-footer,
-  dialog {
+  .site-footer {
     display: none;
   }
+  /* 열린 대화상자(.reward[open]·.drawer[open] 등)의 display 보다 앞서야 해서 !important */
+  dialog,
   .toast-region,
   .carousel-btns,
   .read-bar {

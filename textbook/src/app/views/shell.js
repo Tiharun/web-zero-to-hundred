@@ -153,7 +153,8 @@ export function createShell(ctx) {
     // Ctrl+K(맥은 ⌘K). 누르고 있어 반복되는 키는 무시한다
     if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === 'k' && !event.isComposing && !event.repeat) {
       event.preventDefault();
-      if (document.getElementById('confirm-dialog')?.open) return; // 확인 Modal 위에 검색을 겹쳐 열지 않는다
+      // 확인·보상 Modal 위에 검색을 겹쳐 열지 않는다
+      if (document.getElementById('confirm-dialog')?.open || document.getElementById('reward-dialog')?.open) return;
       openSearch(document.activeElement);
     }
   });

@@ -5,6 +5,7 @@ import { parseHash } from './router.js';
 import { createStore } from './storage.js';
 import { errorScreen, helpHref, notFoundScreen } from './views/common.js';
 import { createConfirm } from './views/confirm.js';
+import { createRewardModal } from './views/rewardmodal.js';
 import { renderDay } from './views/day.js';
 import { renderHome } from './views/home.js';
 import { anchorTarget, renderPage } from './views/page.js';
@@ -43,6 +44,7 @@ function start() {
   const notFoundBuild = document.documentElement.hasAttribute('data-notfound');
   const siteBase = notFoundBuild ? cur.url : '';
   const confirmModal = createConfirm(document.getElementById('confirm-dialog'));
+  const rewardModal = createRewardModal(document.getElementById('reward-dialog'));
 
   const ctx = {
     cur,
@@ -79,6 +81,8 @@ function start() {
     announce: (text) => shell.announce(text),
     /** 되돌릴 수 없는 일 앞에서 확인 Modal 로 묻는다. 확인만 true (views/confirm.js) */
     confirm: (opts, opener) => confirmModal.ask(opts, opener),
+    /** 레벨업·월드 클리어 보상 Modal (views/rewardmodal.js) */
+    reward: rewardModal,
     /** 지금 할 수 있는 곳의 주소 (없으면 null) */
     continueHref() {
       const target = continueTarget(cur, prog);
@@ -116,6 +120,7 @@ function start() {
     const emptyHash = location.hash === '' || location.hash === '#';
     const route = notFoundBuild && emptyHash ? { name: 'notfound' } : parseHash(location.hash);
     confirmModal.dismiss(); // 화면이 바뀌면(뒤로 가기 등) 묻던 것은 취소다
+    rewardModal.dismiss(); // 보상 Modal 도 바로 닫는다. 미뤄 둔 토스트는 새 화면에서 뜬다
     for (const fn of cleanups.splice(0)) {
       try {
         fn();

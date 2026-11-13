@@ -1,11 +1,13 @@
 // Day 화면: 본문 템플릿을 붙이고, 체크박스·정답 게이트·코드 복사·완료 버튼을 연결한다.
-import { reveal, shake } from '../motion.js';
+import { onceInSession, reveal, shake } from '../motion.js';
 import { canComplete, canUncomplete, completeDay, dayState, isProjectComplete, newlyUnlocked, toggleCheck, uncompleteDay } from '../progress.js';
+import { rewardEvents, rewardKey, rewardModal, rewardToast } from '../reward.js';
 import { symptomAccordions } from './accordion.js';
 import { breadcrumb, chips, findDay, getPage, getProject, h, isDone, lockScreen, minutesText, textLink } from './common.js';
 import { px } from './icons.js';
 import { mountQuestLog } from './questlog.js';
 import { mountReadBar } from './readbar.js';
+import { showToast } from './toast.js';
 
 const COPY_RESET_MS = 2000;
 
@@ -281,8 +283,14 @@ export function renderDay(ctx, dayId, root) {
     ctx.commit(after);
     justUnlocked = newlyUnlocked(cur, before, after);
     renderFooter();
-    document.getElementById('completion-status')?.focus({ preventScroll: true });
-    ctx.announce(`Day ${day.num} 완료했어요.` + (justUnlocked.length > 0 ? ' 새로 열린 곳이 있어요.' : ''));
+    const status = document.getElementById('completion-status');
+    status?.focus({ preventScroll: true });
+    // 보상(DESIGN.md "보상 Modal"·"업적 토스트"): Modal 이 뜨면 닫힌 뒤에 토스트. 토스트 문장이 완료 알림이다
+    const events = rewardEvents(cur, before, after, dayId);
+    const modal = rewardModal(events);
+    const toast = () => showToast(rewardToast(events), { icon: 'trophy' });
+    if (modal && onceInSession(rewardKey(modal))) ctx.reward.show(modal, cur, status).then(toast);
+    else toast();
   }
 
   function uncomplete() {

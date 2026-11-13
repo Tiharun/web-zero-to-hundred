@@ -1,6 +1,7 @@
 // 토스트: 화면 아래 가운데에 잠깐 뜨는 알림(개편 설계서 5장). 영역은 <body> 바로 아래 하나라 화면을 옮겨도 남는다.
 // 모양은 DESIGN.md Day 부품 "토스트"를 따른다(components.css .toast).
 import { motionEnv } from '../motion.js';
+import { px } from './icons.js';
 
 export const TOAST_MS = 4000;
 export const TOAST_MAX = 3;
@@ -66,15 +67,22 @@ function dismiss(item) {
 
 /**
  * 토스트 하나를 띄우고 그 항목을 돌려준다. 같은 문장이 떠 있으면 그것을 지우고 새로 띄운다(다시 읽히고 시간이 처음부터).
- * 항목이 TOAST_MAX 를 넘으면 가장 오래된 것부터 지운다.
+ * 항목이 TOAST_MAX 를 넘으면 가장 오래된 것부터 지운다. icon: 왼쪽에 둘 도트 아이콘 이름(없으면 글자만).
  */
-export function showToast(text, { duration = TOAST_MS, doc = document } = {}) {
+export function showToast(text, { duration = TOAST_MS, doc = document, icon = null } = {}) {
   const area = region(doc);
   for (const old of [...area.children]) if (old.textContent === text) remove(old);
   const item = doc.createElement('p');
   item.className = 'toast';
   item.dataset.testid = 'toast';
-  item.textContent = text;
+  if (icon) {
+    const span = doc.createElement('span');
+    span.textContent = text;
+    item.classList.add('has-icon');
+    item.append(px(icon), span);
+  } else {
+    item.textContent = text;
+  }
   area.append(item);
   while (area.children.length > TOAST_MAX) remove(area.firstElementChild);
   const state = { remaining: duration, startedAt: Date.now(), timer: 0 };

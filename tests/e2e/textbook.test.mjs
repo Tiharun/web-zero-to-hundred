@@ -206,6 +206,10 @@ test('complete flow unlocks next project', TIMEOUT, async () => {
     await banner.waitFor();
     assert.match(await banner.innerText(), /픽스처 프로젝트 B/);
     assert.equal(await sidebarState(page, 'fb-d01'), 'today');
+    // 월드 fa 클리어: 보상 Modal 이 한 번 뜬다(M11). 닫아야 뒤 화면을 누를 수 있다
+    await page.locator('#reward-dialog[open]').waitFor();
+    await page.getByTestId('reward-ok').click();
+    await page.waitForFunction(() => !document.getElementById('reward-dialog').open);
 
     // 홈: 3 Day 중 2 Day, XP 60+90, 이어서 하기는 fb-d01
     await page.getByRole('link', { name: '홈', exact: true }).first().click();
