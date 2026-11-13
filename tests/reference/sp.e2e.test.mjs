@@ -10,13 +10,13 @@ import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdtempSync, rmSync } from 'node:fs';
-import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import zlib from 'node:zlib';
 
 import { launch, collectConsoleErrors } from '../helpers/browser.mjs';
+import { freePort } from '../helpers/static-server.mjs'; // 브라우저가 거절하는 포트(예: 4045)는 건너뛴다
 
 const ROOT = fileURLToPath(new URL('../../reference/sp-image-donation/', import.meta.url));
 const CLIENT = path.join(ROOT, 'client');
@@ -61,17 +61,6 @@ function psqlEnv() {
 function psql(sql) {
   const result = spawnSync('psql', ['-v', 'ON_ERROR_STOP=1', '-qAtc', sql], { env: psqlEnv(), encoding: 'utf8' });
   if (result.status !== 0) throw new Error(`psql 실패: ${result.stderr}`);
-}
-
-function freePort() {
-  return new Promise((resolve, reject) => {
-    const server = createServer();
-    server.once('error', reject);
-    server.listen(0, '127.0.0.1', () => {
-      const { port } = server.address();
-      server.close(() => resolve(port));
-    });
-  });
 }
 
 async function waitForHealthy(url, timeoutMs = 90_000) {

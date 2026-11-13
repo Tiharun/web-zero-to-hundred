@@ -57,6 +57,7 @@ __pycache__/
 .claude/settings.local.json
 .superpowers/
 textbook/.impeccable/
+.impeccable/
 design-system/web-zero-to-hundred/playground/
 design-system/web-zero-to-hundred/prototype/
 .vs/

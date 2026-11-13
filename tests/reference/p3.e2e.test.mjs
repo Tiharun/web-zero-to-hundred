@@ -11,10 +11,10 @@ import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import net from 'node:net';
 import { fileURLToPath } from 'node:url';
 
 import { launch, collectConsoleErrors } from '../helpers/browser.mjs';
+import { freePort } from '../helpers/static-server.mjs'; // 브라우저가 거절하는 포트(예: 4045)는 건너뛴다
 
 const ROOT = fileURLToPath(new URL('../../reference/p3-viewer-arena/', import.meta.url));
 const DIST = `${ROOT}client/dist`;
@@ -28,18 +28,6 @@ let baseUrl;
 let browser;
 
 // ---------- 도우미 ----------
-
-// 운영체제에게 빈 포트를 받아 온다(0번 포트로 열었다가 바로 닫는다).
-function freePort() {
-  return new Promise((resolve, reject) => {
-    const probe = net.createServer();
-    probe.once('error', reject);
-    probe.listen(0, '127.0.0.1', () => {
-      const { port: free } = probe.address();
-      probe.close(() => resolve(free));
-    });
-  });
-}
 
 async function waitForHealth(timeoutMs = 15000) {
   const deadline = Date.now() + timeoutMs;

@@ -88,6 +88,8 @@ const go = async (page, hash) => {
 };
 const mx = (handle) => handle.evaluate((el) => el.style.getPropertyValue('--mx'));
 const isZero = (v) => v === '' || v === '0px';
+/** 페이지에서 프레임 두 번을 기다린다(rAF 로 미룬 일이 끝난 뒤) */
+const afterFrames = (page) => page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 
 // ───────── Magnetic ─────────
 
@@ -96,18 +98,17 @@ test('primary button follows the mouse within 6px', TIMEOUT, async () => {
     const btn = page.getByTestId('continue-button');
     assert.equal((await btn.textContent()).trim(), '첫 Day 시작하기');
     const box = await btn.boundingBox();
+    // 끌림은 pointermove 다음 프레임(rAF)에 붙는다. 부하가 크면 프레임이 몇 초씩 늦으므로 프레임을 기다린 뒤 읽는다
+    // (M9: 프레임 전에 읽어 '--mx NaN' 으로 흔들렸다. 첫 8초 rAF 를 늦추면 재현된다)
     await page.mouse.move(box.x + box.width + 16, box.y + box.height / 2, { steps: 4 });
-    let nudge = 0;
+    await afterFrames(page);
     await eventually(async () => {
-      // 다시 확인할 때마다 1px 씩 흔들어 새 pointermove 를 낸다. 실제 마우스도 계속 이벤트를 낸다.
-      // 병렬 부하에서 첫 이동 이벤트가 처리되지 않아 --mx 가 한 번도 안 붙은 일이 있었다(M9: '--mx NaN' 2회)
-      nudge = nudge === 0 ? 1 : 0;
-      await page.mouse.move(box.x + box.width + 16, box.y + box.height / 2 + nudge);
       const v = parseFloat(await mx(btn));
       assert.ok(v > 0 && v <= 6, `--mx ${v}`);
       assert.equal(await btn.evaluate((el) => el.classList.contains('is-pulling')), true);
     });
     await page.mouse.move(5, 795, { steps: 4 });
+    await afterFrames(page);
     await eventually(async () => assert.equal(await mx(btn), '0px'));
   });
 });
@@ -119,7 +120,7 @@ test('reduced motion: primary button stays put', TIMEOUT, async () => {
       const btn = page.getByTestId('continue-button');
       const box = await btn.boundingBox();
       await page.mouse.move(box.x + box.width + 16, box.y + box.height / 2, { steps: 4 });
-      await sleep(200);
+      await afterFrames(page);
       assert.ok(isZero(await mx(btn)));
       await btn.hover();
       await sleep(100);
@@ -137,7 +138,7 @@ test('touch context never pulls the primary button', TIMEOUT, async () => {
       const btn = page.getByTestId('continue-button');
       const box = await btn.boundingBox();
       await page.mouse.move(box.x + box.width / 2 + 10, box.y + box.height / 2, { steps: 4 });
-      await sleep(200);
+      await afterFrames(page);
       assert.ok(isZero(await mx(btn)), `--mx ${await mx(btn)}`);
     },
     { hasTouch: true, viewport: { width: 375, height: 812 } },
@@ -159,7 +160,7 @@ test('leaving home detaches magnetic from the old button', TIMEOUT, async () => 
       };
     });
     await page.mouse.move(box.x + box.width + 10, box.y + box.height / 2, { steps: 4 });
-    await sleep(200);
+    await afterFrames(page);
     assert.equal(await old.evaluate((el) => el.__writes), 0, '옛 버튼에 붙은 pointermove 가 떨어져야 한다');
     assert.ok(isZero(await mx(old)), `옛 버튼 --mx ${await mx(old)}`);
   });
@@ -322,7 +323,7 @@ test('magnetic follows the Day complete button after the footer redraws, and ski
       const box = await btn.boundingBox();
       await page.mouse.move(5, 5);
       await page.mouse.move(box.x + box.width + 14, box.y + box.height / 2, { steps: 4 });
-      await sleep(150);
+      await afterFrames(page);
       return { disabled: await btn.isDisabled(), mx: await mx(btn) };
     };
     // 체크박스를 눌러 푸터를 다시 그리게 한다 (버튼이 새로 만들어진다)
