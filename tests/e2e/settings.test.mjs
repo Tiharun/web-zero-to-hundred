@@ -26,6 +26,9 @@ before(async () => {
   const r = await build({ contentDir: FIXTURE });
   assert.equal(r.ok, true, JSON.stringify(r.errors));
   await writeFile(path.join(tmp, 'index.html'), r.html);
+  const nf = await build({ contentDir: FIXTURE, notFound: true }); // GitHub Pages 의 404.html 로 쓰는 빌드
+  assert.equal(nf.ok, true, JSON.stringify(nf.errors));
+  await writeFile(path.join(tmp, '404.html'), nf.html);
   server = await startStaticServer(tmp);
   browser = await launch();
 });
@@ -163,6 +166,46 @@ test('ctrl+k does nothing while the confirm modal is open', TIMEOUT, async () =>
     assert.equal(await page.locator('#search-dialog[open]').count(), 0);
     assert.equal(await page.getByTestId('confirm-modal').isVisible(), true);
   });
+});
+
+test('a cancelled confirm stays cancelled even if OK is pressed while it fades out', TIMEOUT, async () => {
+  await withPage(
+    '#/settings',
+    async (page) => {
+      await page.getByTestId('reset-button').click();
+      const modal = page.getByTestId('confirm-modal');
+      await modal.waitFor();
+      // 취소를 누른 뒤 닫히는 애니메이션 동안 바로 옆의 확인 버튼이 눌려도 결정은 취소다
+      await page.evaluate(() => {
+        document.querySelector('[data-testid="confirm-cancel"]').click();
+        document.querySelector('[data-testid="confirm-ok"]').click();
+      });
+      await modal.waitFor({ state: 'hidden' });
+      await sleep(200);
+      assert.equal(await page.evaluate(() => location.hash), '#/settings');
+      assert.equal(await sidebarState(page, 'fa-d01'), 'done', '진도는 그대로');
+    },
+    { progress: ['fa-d01'] },
+  );
+});
+
+test('asking again while the modal is open replaces the question and still answers', TIMEOUT, async () => {
+  await withPage(
+    '#/settings',
+    async (page) => {
+      await page.getByTestId('reset-button').click();
+      await page.getByTestId('confirm-modal').waitFor();
+      // 페이지는 Modal 뒤에서 inert 라 사람은 못 누른다. 코드에서 한 번 더 물어도 새 질문이 답을 받아야 한다
+      await page.evaluate(() => document.querySelector('[data-testid="reset-button"]').click());
+      await sleep(100);
+      assert.equal(await page.getByTestId('confirm-modal').isVisible(), true);
+      await page.getByTestId('confirm-ok').click();
+      await waitRoute(page, '#/');
+      await page.getByTestId('level-panel').waitFor();
+      assert.equal(await stat(page, 'days'), '0 / 3');
+    },
+    { progress: ['fa-d01'] },
+  );
 });
 
 test('reduced motion: the confirm modal opens and closes at once', TIMEOUT, async () => {
@@ -398,6 +441,18 @@ test('settings has no sideways scroll from 320px up', TIMEOUT, async () => {
 
 // ───────── 상태 화면 ─────────
 
+/** Day 본문 template 을 읽으면 예외를 낸다: 화면을 그리다 문제가 생긴 상황을 만든다 */
+function throwOnDayTemplate() {
+  const own = Object.getOwnPropertyDescriptor(HTMLTemplateElement.prototype, 'content');
+  Object.defineProperty(HTMLTemplateElement.prototype, 'content', {
+    configurable: true,
+    get() {
+      if (this.id.startsWith('t-day-')) throw new Error('boom');
+      return own.get.call(this);
+    },
+  });
+}
+
 test('a view that throws shows the error screen with a way home and keeps the shell', TIMEOUT, async () => {
   await withPage(
     '#/',
@@ -416,17 +471,20 @@ test('a view that throws shows the error screen with a way home and keeps the sh
       assert.ok(errors.some((e) => /boom/.test(e)), '예외는 콘솔에 남는다');
       errors.length = 0;
     },
-    {
-      init: () => {
-        const own = Object.getOwnPropertyDescriptor(HTMLTemplateElement.prototype, 'content');
-        Object.defineProperty(HTMLTemplateElement.prototype, 'content', {
-          configurable: true,
-          get() {
-            if (this.id.startsWith('t-day-')) throw new Error('boom');
-            return own.get.call(this);
-          },
-        });
-      },
-    },
+    { init: throwOnDayTemplate },
   );
+});
+
+test('in the notfound build the error screen links home and settings by the site url', TIMEOUT, async () => {
+  const context = await newContext({ init: throwOnDayTemplate });
+  try {
+    const page = await context.newPage();
+    await page.goto(`${server.url}404.html#/day/fa-d01`);
+    const screen = page.getByTestId('error-screen');
+    await screen.waitFor();
+    assert.equal(await screen.locator('.btn-primary').getAttribute('href'), 'https://example.test/fixture/');
+    assert.equal(await screen.locator('.text-link').getAttribute('href'), 'https://example.test/fixture/#/settings');
+  } finally {
+    await context.close();
+  }
 });

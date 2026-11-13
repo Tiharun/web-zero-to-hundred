@@ -142,15 +142,18 @@ export function lockScreen(ctx, what, requires) {
   );
 }
 
-/** 화면을 그리다 예외가 났을 때: 렌치 도트 아이콘, 제목, 설명, 주 버튼 "홈으로 가기", 글자 링크 "설정 · 진도 백업". 셸은 그대로 둔다 */
-export function errorScreen({ homeHref = '#/' } = {}) {
+/**
+ * 화면을 그리다 예외가 났을 때: 렌치 도트 아이콘, 제목, 설명, 주 버튼 "홈으로 가기", 글자 링크 "설정 · 진도 백업". 셸은 그대로 둔다.
+ * base 는 404 빌드에서 붙이는 사이트 주소 (helpHref 와 같다)
+ */
+export function errorScreen({ homeHref = '#/', base = '' } = {}) {
   return h(
     'section',
     { class: 'notfound', 'data-testid': 'error-screen', 'aria-labelledby': 'error-title' },
     px('wrench', { cls: 'notfound-icon', scale: 3 }),
     h('h1', { id: 'error-title' }, '화면을 그리다 문제가 생겼어요'),
     h('p', { class: 'lead' }, '새로고침하면 대부분 해결돼요. 계속되면 설정에서 진도를 백업해 두세요.'),
-    h('div', { class: 'lock-actions' }, primaryButton(homeHref, '홈으로 가기'), textLink('#/settings', '설정 · 진도 백업')),
+    h('div', { class: 'lock-actions' }, primaryButton(homeHref, '홈으로 가기'), textLink(`${base}#/settings`, '설정 · 진도 백업')),
   );
 }
 

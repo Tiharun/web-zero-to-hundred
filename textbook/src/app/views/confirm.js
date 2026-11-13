@@ -27,14 +27,16 @@ export function createConfirm(dlg) {
   dlg.addEventListener('close', () => finish(accepted));
   cancelButton.addEventListener('click', () => closeDialog(dlg));
   okButton.addEventListener('click', () => {
+    if (dlg.classList.contains('is-closing')) return; // 취소·ESC·바깥 클릭으로 닫히는 중이면 이미 취소로 정해졌다
     accepted = true;
     closeDialog(dlg);
   });
 
   return {
     ask({ title: heading, body: text, ok, danger = false }, opener) {
-      finish(false); // 앞에서 기다리던 질문은 취소로 끝낸다
-      if (dlg.open) closeDialog(dlg, { restoreFocus: false, immediate: true });
+      // 앞에서 기다리던 질문은 취소로 끝내고, 열려 있으면 닫지 않고 그 자리에서 새 질문으로 바꾼다.
+      // (닫았다 다시 열면 늦게 오는 close 이벤트가 새 질문까지 취소로 끝낸다)
+      finish(false);
       accepted = false;
       title.textContent = heading;
       body.textContent = text;

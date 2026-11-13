@@ -130,7 +130,7 @@ function start() {
       title = (VIEWS[route.name] ?? VIEWS.notfound)(ctx, route, main);
     } catch (error) {
       console.error(error);
-      main.replaceChildren(errorScreen({ homeHref: siteBase || '#/' }));
+      main.replaceChildren(errorScreen({ homeHref: siteBase || '#/', base: siteBase }));
       title = '문제가 생겼어요';
     }
     ctx.onCleanup(magneticIn(main)); // DESIGN.md: 끌림은 주 버튼에만. 화면이 버튼을 다시 그려도 따라간다
