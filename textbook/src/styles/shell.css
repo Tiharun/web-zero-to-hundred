@@ -787,3 +787,22 @@ button.row {
     padding: var(--space-md);
   }
 }
+
+/* ───────── 화면 전환 (DESIGN.md Motion "화면 전환") ─────────
+   짝 요소(wzh-shared)만 280ms 로 옮기고 화면 나머지는 바로 바뀐다. 전환 중 클릭은 문서로 간다 */
+/* 화면 전체(root)는 찍지 않는다: 나머지는 실제 화면 그대로라 바로 바뀌고, 클릭도 실제 DOM 으로 간다 */
+:root {
+  view-transition-name: none;
+}
+::view-transition {
+  pointer-events: none;
+}
+::view-transition-group(wzh-shared) {
+  animation-duration: var(--dur-enter);
+  animation-timing-function: var(--ease-out);
+}
+/* 한쪽에만 있는 그림(짝을 못 찾은 경우)은 움직이지 않는다 */
+::view-transition-old(wzh-shared):only-child,
+::view-transition-new(wzh-shared):only-child {
+  animation: none;
+}

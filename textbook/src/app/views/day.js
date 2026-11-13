@@ -339,7 +339,7 @@ function dayHead(project, day, statusChip) {
   return h(
     'header',
     { class: 'lesson-head' },
-    h('p', { class: 'lesson-num', 'aria-hidden': 'true' }, h('span', { class: 'label' }, 'Day'), h('span', { class: 'num' }, String(day.num))),
+    h('p', { class: 'lesson-num', 'aria-hidden': 'true', dataset: { vt: `day-${day.id}` } }, h('span', { class: 'label' }, 'Day'), h('span', { class: 'num' }, String(day.num))),
     h('h1', null, h('span', { class: 'sr-only' }, `Day ${day.num} · `), day.title),
     meta,
   );

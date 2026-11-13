@@ -15,6 +15,9 @@ import {
   pawnHop,
   seenInSession,
   reveal,
+  SHARED_NAME,
+  sharedKey,
+  sharedTransition,
   shake,
   stagger,
   staggerDelays,
@@ -362,4 +365,88 @@ test('accordionOpened adds is-animating and clears it after ACCORDION_CLEAR_MS',
   } finally {
     mock.timers.reset();
   }
+});
+
+// ───────── 화면 전환 (DESIGN.md Motion "화면 전환") ─────────
+
+test('sharedKey', () => {
+  assert.equal(sharedKey({ name: 'day', dayId: 'p1-d04' }, { name: 'home' }), 'day-p1-d04');
+  assert.equal(sharedKey({ name: 'home' }, { name: 'day', dayId: 'p1-d04' }), 'day-p1-d04');
+  assert.equal(sharedKey({ name: 'project', pid: 'p2' }, { name: 'home' }), 'world-p2');
+  assert.equal(sharedKey({ name: 'home' }, { name: 'project', pid: 'p2' }), 'world-p2');
+  assert.equal(sharedKey({ name: 'settings' }, { name: 'search' }), null);
+  assert.equal(sharedKey({ name: 'settings' }, null), null);
+});
+
+/** 짝 요소를 찾는 가짜 main. update 가 els 를 새 화면 요소로 바꾼다 */
+const vtEl = (vt) => ({ dataset: { vt }, style: { viewTransitionName: '' } });
+function vtRoot(els, doc) {
+  const root = {
+    els,
+    ownerDocument: doc,
+    querySelector(sel) {
+      const m = /^\[data-vt="(.+)"\]$/.exec(sel);
+      return (m && root.els.find((el) => el.dataset.vt === m[1])) ?? null;
+    },
+  };
+  return root;
+}
+const ENV = { reduce: false, fine: true };
+
+test('sharedTransition falls back to plain update', () => {
+  const vtDoc = { startViewTransition: () => assert.fail('전환을 시작하면 안 된다') };
+  const cases = [
+    ['동작 줄이기', vtRoot([vtEl('day-a')], vtDoc), 'day-a', { reduce: true, fine: true }],
+    ['짝 키 없음', vtRoot([vtEl('day-a')], vtDoc), null, ENV],
+    ['짝 요소 없음', vtRoot([vtEl('day-b')], vtDoc), 'day-a', ENV],
+    ['API 없음', vtRoot([vtEl('day-a')], {}), 'day-a', ENV],
+  ];
+  for (const [name, root, key, env] of cases) {
+    let calls = 0;
+    assert.equal(sharedTransition(root, key, () => calls++, env), null, name);
+    assert.equal(calls, 1, `${name}: 바로 한 번 그린다`);
+    assert.equal(root.els[0].style.viewTransitionName, '', `${name}: 이름을 붙이지 않는다`);
+  }
+});
+
+test('sharedTransition names old then new element only', async () => {
+  const oldEl = vtEl('day-a');
+  const newEl = vtEl('day-a');
+  const log = [];
+  let finish;
+  const doc = {
+    startViewTransition(cb) {
+      log.push(['start', oldEl.style.viewTransitionName]);
+      cb();
+      log.push(['after', oldEl.style.viewTransitionName, newEl.style.viewTransitionName]);
+      return { finished: new Promise((resolve) => (finish = resolve)) };
+    },
+  };
+  const root = vtRoot([oldEl, vtEl('world-p1')], doc);
+  const vt = sharedTransition(root, 'day-a', () => (root.els = [newEl]), ENV);
+  assert.ok(vt, '전환 객체를 돌려준다');
+  assert.deepEqual(log, [
+    ['start', SHARED_NAME],
+    ['after', '', SHARED_NAME],
+  ]);
+  finish();
+  await vt.finished;
+  await Promise.resolve();
+  assert.equal(newEl.style.viewTransitionName, '', '끝나면 이름을 뗀다');
+});
+
+test('sharedTransition clears the name even when skipped', async () => {
+  const oldEl = vtEl('world-p1');
+  const newEl = vtEl('world-p1');
+  const doc = {
+    startViewTransition(cb) {
+      cb();
+      return { finished: Promise.reject(new DOMException('skipped', 'AbortError')) };
+    },
+  };
+  const root = vtRoot([oldEl], doc);
+  const vt = sharedTransition(root, 'world-p1', () => (root.els = [newEl]), ENV);
+  await vt.finished.catch(() => {});
+  await Promise.resolve();
+  assert.equal(newEl.style.viewTransitionName, '');
 });

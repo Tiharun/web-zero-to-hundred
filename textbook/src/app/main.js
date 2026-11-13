@@ -1,5 +1,5 @@
 // 교재 앱 진입점: 임베드된 데이터를 읽고, 진도를 불러오고, 주소(해시)에 맞는 화면을 그린다.
-import { magneticIn } from './motion.js';
+import { magneticIn, sharedKey, sharedTransition } from './motion.js';
 import { continueTarget, normalizeProgress } from './progress.js';
 import { parseHash } from './router.js';
 import { createStore } from './storage.js';
@@ -166,7 +166,10 @@ function start() {
   window.addEventListener('hashchange', () => {
     const focus = !keepFocusNext;
     keepFocusNext = false;
-    render({ focus, scroll: true });
+    const draw = () => render({ focus, scroll: true });
+    // 퀘스트 카드 번호 ↔ Day 머리, 월드 카드 엠블럼 ↔ 월드 머리는 화면 전환으로 잇는다(짝이 없으면 바로 그린다)
+    if (notFoundBuild) draw();
+    else sharedTransition(main, sharedKey(parseHash(location.hash), lastRoute), draw);
   });
   render({ focus: false, scroll: false }); // 처음 열 때는 포커스를 옮기지 않는다 (건너뛰기 링크가 맨 앞에 있게)
 }

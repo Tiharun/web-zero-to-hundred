@@ -39,6 +39,7 @@ function content(ctx, state) {
         ...today,
         world: project,
         num: day.num,
+        vt: `day-${day.id}`,
         title: day.title,
         below: [h('p', { class: 'quest-summary' }, day.summary), facts(ctx, project, day)],
         primary: primaryButton(`#/day/${day.id}`, state.kind === 'start' ? '첫 Day 시작하기' : '이어서 하기', { testid: 'continue-button' }),
@@ -69,6 +70,7 @@ function content(ctx, state) {
         ...today,
         world: project,
         num: day.num,
+        vt: `day-${day.id}`,
         pending: true,
         title: '다음 Day는 준비 중이에요',
         below: [h('p', { class: 'quest-summary' }, `Day ${day.num} ‘${day.title}’ 내용은 아직 쓰는 중이에요. 그동안 지난 Day를 복습해 두면 좋아요.`)],
@@ -114,7 +116,7 @@ export function questCard(ctx) {
     h(
       'div',
       { class: 'quest-body' },
-      h('p', { class: c.pending ? 'bignum is-pending' : 'bignum' }, h('span', { class: 'bignum-unit label' }, 'Day'), h('span', { class: 'bignum-value num' }, String(c.num))),
+      h('p', { class: c.pending ? 'bignum is-pending' : 'bignum', dataset: c.vt && { vt: c.vt } }, h('span', { class: 'bignum-unit label' }, 'Day'), h('span', { class: 'bignum-value num' }, String(c.num))),
       h(
         'div',
         { class: 'quest-main' },

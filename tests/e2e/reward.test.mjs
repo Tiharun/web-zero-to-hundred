@@ -378,3 +378,119 @@ test('term drawer hidden in print and closes on navigation', TIMEOUT, async () =
     assert.equal(await drawerOpen(page), false, '화면이 바뀌면 바로 닫힌다');
   });
 });
+
+// ───────── 화면 전환 (Shared Element) ─────────
+
+/** startViewTransition 을 감싸 부를 때 이름 붙은 요소의 data-vt 를 기록한다 */
+const RECORD_VT = () => {
+  window.__vt = [];
+  window.__vtDone = true;
+  const orig = Document.prototype.startViewTransition;
+  if (!orig) return;
+  Document.prototype.startViewTransition = function (...args) {
+    window.__vt.push([...document.querySelectorAll('[style*="view-transition-name"]')].map((el) => el.dataset.vt));
+    const t = orig.apply(this, args);
+    window.__lastVt = t;
+    window.__vtDone = false;
+    const done = () => (window.__vtDone = true);
+    t.finished.then(done, done);
+    return t;
+  };
+};
+const vtLog = (page) => page.evaluate(() => window.__vt);
+const waitHash = (page, hash) => page.waitForFunction((h) => document.getElementById('main').dataset.hash === h, hash);
+const vtSettled = async (page) => {
+  await page.waitForFunction(() => window.__vtDone);
+  assert.equal(await page.locator('[style*="view-transition-name"]').count(), 0, '끝나면 이름이 남지 않는다');
+};
+
+test('quest number morphs into day head and back', TIMEOUT, async () => {
+  await withPage(
+    'a',
+    '#/',
+    async (page) => {
+      assert.equal(await page.locator('[data-testid="quest-card"] .bignum').getAttribute('data-vt'), 'day-fa-d01');
+      await page.getByTestId('continue-button').click();
+      await waitHash(page, '#/day/fa-d01');
+      await vtSettled(page);
+      assert.deepEqual(await vtLog(page), [['day-fa-d01']], '퀘스트 카드 번호에서 출발');
+      assert.equal(await page.locator('main .lesson-num').getAttribute('data-vt'), 'day-fa-d01');
+
+      await page.goBack();
+      await waitHash(page, '#/');
+      await vtSettled(page);
+      assert.deepEqual(await vtLog(page), [['day-fa-d01'], ['day-fa-d01']], 'Day 머리 번호에서 퀘스트 카드로 돌아간다');
+    },
+    { init: RECORD_VT },
+  );
+});
+
+test('world card emblem morphs into world head', TIMEOUT, async () => {
+  await withPage(
+    'a',
+    '#/',
+    async (page) => {
+      // 홈의 월드 카드는 지도에 없는 "다른 월드"다: fa 를 막 마치면 지도는 fa, 열린 카드는 fb
+      const card = page.locator('.world-card[data-world="fb"]');
+      assert.equal(await card.locator('.wc-title .badge').getAttribute('data-vt'), 'world-fb');
+      await card.locator('.card-hit').click();
+      await waitHash(page, '#/project/fb');
+      await vtSettled(page);
+      assert.deepEqual(await vtLog(page), [['world-fb']]);
+      assert.equal(await page.locator('main .world-head .badge').getAttribute('data-vt'), 'world-fb');
+    },
+    { init: RECORD_VT, progress: ['fa-d01', 'fa-d02', 'fa-d03', 'fa-d04'] },
+  );
+});
+
+test('unrelated navigation has no transition', TIMEOUT, async () => {
+  await withPage(
+    'a',
+    '#/',
+    async (page) => {
+      await goHash(page, '#/settings');
+      await goHash(page, '#/page/glossary');
+      assert.deepEqual(await vtLog(page), []);
+    },
+    { init: RECORD_VT },
+  );
+});
+
+test('shared transition falls back without the API or with reduced motion', TIMEOUT, async () => {
+  await withPage(
+    'a',
+    '#/',
+    async (page) => {
+      await page.getByTestId('continue-button').click();
+      await waitHash(page, '#/day/fa-d01');
+      assert.equal(await page.locator('main h1').count(), 1);
+    },
+    { init: () => delete Document.prototype.startViewTransition },
+  );
+  await withPage(
+    'a',
+    '#/',
+    async (page) => {
+      await page.getByTestId('continue-button').click();
+      await waitHash(page, '#/day/fa-d01');
+      assert.deepEqual(await vtLog(page), [], '동작 줄이기면 전환하지 않는다');
+    },
+    { init: RECORD_VT, reducedMotion: 'reduce' },
+  );
+});
+
+test('clicks pass through during transition', TIMEOUT, async () => {
+  await withPage(
+    'a',
+    '#/',
+    async (page) => {
+      await page.addStyleTag({ content: '::view-transition-group(wzh-shared) { animation-duration: 3s !important; }' });
+      await page.getByTestId('continue-button').click();
+      await waitHash(page, '#/day/fa-d01');
+      assert.equal(await page.evaluate(() => window.__vtDone), false, '아직 전환 중');
+      await page.getByRole('link', { name: /다음 →/ }).click({ timeout: 2_000 });
+      await waitHash(page, '#/day/fa-d02');
+    },
+    { init: RECORD_VT },
+  );
+});

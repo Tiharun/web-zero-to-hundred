@@ -369,3 +369,42 @@ export function accordionOpened(details, env = motionEnv()) {
   details.classList.add('is-animating');
   setTimeout(() => details.classList.remove('is-animating'), ACCORDION_CLEAR_MS);
 }
+
+// ───────── 화면 전환 (DESIGN.md Motion "화면 전환": Shared Element) ─────────
+
+/** 짝 요소 두 개에 잠깐 붙이는 view-transition-name (shell.css 의 ::view-transition-group(wzh-shared)) */
+export const SHARED_NAME = 'wzh-shared';
+
+const keyOf = (route) => (route?.name === 'day' ? `day-${route.dayId}` : route?.name === 'project' ? `world-${route.pid}` : null);
+
+/** 이번 이동의 짝 키. 가는 화면(Day·월드)을 먼저 보고, 아니면 떠나는 화면(뒤로 가기)을 본다. 짝이 없으면 null */
+export function sharedKey(next, prev) {
+  return keyOf(next) ?? keyOf(prev);
+}
+
+/**
+ * 지금 화면에 짝 요소([data-vt=key])가 있으면 View Transition 으로 update 를 감싼다. 이름은 한순간에 한 요소에만 붙는다:
+ * 옛 요소에 붙였다가 update 직전에 떼고, update 뒤 새 요소에 붙였다가 전환이 끝나면(건너뛰어도) 뗀다.
+ * 동작 줄이기, 짝 없음, API 미지원이면 바로 update 하고 null.
+ */
+export function sharedTransition(root, key, update, env = motionEnv(), doc = root.ownerDocument) {
+  const find = () => (key ? root.querySelector(`[data-vt="${key}"]`) : null);
+  const old = !env.reduce && typeof doc?.startViewTransition === 'function' ? find() : null;
+  if (!old) {
+    update();
+    return null;
+  }
+  old.style.viewTransitionName = SHARED_NAME;
+  let fresh = null;
+  const vt = doc.startViewTransition(() => {
+    old.style.viewTransitionName = '';
+    update();
+    fresh = find();
+    if (fresh) fresh.style.viewTransitionName = SHARED_NAME;
+  });
+  const clear = () => {
+    if (fresh) fresh.style.viewTransitionName = '';
+  };
+  vt.finished.then(clear, clear);
+  return vt;
+}

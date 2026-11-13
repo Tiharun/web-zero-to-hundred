@@ -58,7 +58,7 @@ function worldCard(ctx, world) {
   const card = h(
     'li',
     { class: `world-card card is-${locked ? 'locked' : 'open'}${cleared ? ' is-cleared' : ''}`, dataset: { world: world.id } },
-    h('h3', { class: 'wc-title' }, h('span', { class: 'badge' }, px(worldEmblem(world), { cls: 'emblem', scale: 3 })), world.title),
+    h('h3', { class: 'wc-title' }, h('span', { class: 'badge', dataset: !isGrad && { vt: `world-${world.id}` } }, px(worldEmblem(world), { cls: 'emblem', scale: 3 })), world.title),
     h('p', { class: 'wc-meta label' }, cleared && px('star', { cls: 'star' }), `${isGrad ? '졸업' : worldLabel(world)}, ${status}`),
     world.outcome && h('p', { class: 'wc-outcome' }, world.outcome),
     world.stack?.length > 0 && chips(world.stack),

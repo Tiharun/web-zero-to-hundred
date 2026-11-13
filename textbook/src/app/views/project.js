@@ -61,7 +61,7 @@ export function renderProject(ctx, pid, root) {
       h(
         'header',
         { class: 'world-head' },
-        h('span', { class: 'badge' }, px(worldEmblem(project), { cls: 'emblem', scale: 3 })),
+        h('span', { class: 'badge', dataset: { vt: `world-${project.id}` } }, px(worldEmblem(project), { cls: 'emblem', scale: 3 })),
         h('p', { class: 'label world-head-tag' }, worldLabel(project)),
         h('h1', null, project.title),
         project.subtitle && h('p', { class: 'lead' }, project.subtitle),
