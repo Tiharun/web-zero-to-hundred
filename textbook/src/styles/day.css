@@ -260,9 +260,9 @@
 figure.code {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: minmax(38px, auto) auto;
-  margin: 0 0 1.4em;
-  background: var(--code-bg);
+  grid-template-rows: minmax(40px, auto) auto;
+  margin: var(--space-lg) 0;
+  background: var(--color-code-bg);
   border: 2px solid var(--color-edge); /* 밤 코드: 다크에서 카드와 바탕이 비슷해 edge 가 경계를 맡는다 */
   border-radius: var(--radius-card);
   overflow: hidden;
@@ -270,8 +270,8 @@ figure.code {
 figure.code::before,
 figure.code figcaption,
 figure.code .copy {
-  background: var(--code-head);
-  border-bottom: 1px solid var(--code-border);
+  background: var(--color-code-head);
+  border-bottom: 1px solid var(--color-code-border);
 }
 figure.code::before {
   content: ""; /* 파일 이름이 없는 코드 블록도 윗줄 막대를 갖게 한다 */
@@ -281,9 +281,9 @@ figure.code::before {
 figure.code figcaption {
   grid-column: 1;
   grid-row: 1;
-  padding: 8px 14px;
-  font: 600 0.85rem/1.5 var(--font-mono);
-  color: var(--code-fg);
+  padding: var(--space-xs) var(--space-md);
+  font: 600 var(--text-code)/1.5 var(--font-code);
+  color: var(--color-code-fg);
   overflow-wrap: anywhere;
 }
 figure.code .copy {
@@ -291,33 +291,34 @@ figure.code .copy {
   grid-row: 1;
   align-self: stretch;
   min-width: 72px;
-  padding: 0 14px;
+  min-height: 40px;
+  padding: 0 var(--space-md);
   border-top: 0;
   border-right: 0;
-  border-bottom: 1px solid var(--code-border);
-  border-left: 1px solid var(--code-border);
-  color: var(--code-fg);
-  font: 700 0.85rem/1 var(--font-sans);
+  border-bottom: 1px solid var(--color-code-border);
+  border-left: 1px solid var(--color-code-border);
+  color: var(--color-code-fg);
+  font: 800 var(--text-ui)/1 var(--font-body);
   cursor: pointer;
 }
 figure.code .copy:hover {
-  background: var(--code-border);
+  background: var(--color-code-border);
 }
 figure.code .copy[data-copied="yes"] {
-  color: var(--tok-string);
+  color: var(--color-tok-string);
 }
 figure.code .copy[data-copied="no"] {
-  color: var(--tok-deletion);
+  color: var(--color-tok-deletion);
 }
 figure.code pre {
   grid-column: 1 / -1;
   grid-row: 2;
   min-width: 0;
   margin: 0;
-  padding: 16px 18px;
+  padding: var(--space-md);
   overflow-x: auto; /* 긴 줄은 코드 블록 안에서만 가로로 스크롤한다 */
-  background: var(--code-bg);
-  color: var(--code-fg);
+  background: var(--color-code-bg);
+  color: var(--color-code-fg);
   font-size: var(--text-code);
   line-height: 1.65;
   tab-size: 2;
@@ -351,57 +352,57 @@ pre {
 .hljs-selector-tag,
 .hljs-doctag,
 .hljs-template-tag {
-  color: var(--tok-keyword);
+  color: var(--color-tok-keyword);
 }
 .hljs-string,
 .hljs-regexp,
 .hljs-link {
-  color: var(--tok-string);
+  color: var(--color-tok-string);
 }
 .hljs-number,
 .hljs-literal,
 .hljs-symbol,
 .hljs-bullet {
-  color: var(--tok-number);
+  color: var(--color-tok-number);
 }
 .hljs-comment,
 .hljs-quote {
-  color: var(--tok-comment);
+  color: var(--color-tok-comment);
   font-style: italic;
 }
 .hljs-title,
 .hljs-section,
 .hljs-selector-id,
 .hljs-selector-class {
-  color: var(--tok-title);
+  color: var(--color-tok-title);
 }
 .hljs-attr,
 .hljs-attribute,
 .hljs-property,
 .hljs-selector-attr,
 .hljs-selector-pseudo {
-  color: var(--tok-attr);
+  color: var(--color-tok-attr);
 }
 .hljs-variable,
 .hljs-built_in,
 .hljs-type,
 .hljs-template-variable {
-  color: var(--tok-variable);
+  color: var(--color-tok-variable);
 }
 .hljs-meta {
-  color: var(--tok-meta);
+  color: var(--color-tok-meta);
 }
 .hljs-tag {
-  color: var(--tok-tag);
+  color: var(--color-tok-tag);
 }
 .hljs-name {
-  color: var(--tok-name);
+  color: var(--color-tok-name);
 }
 .hljs-deletion {
-  color: var(--tok-deletion);
+  color: var(--color-tok-deletion);
 }
 .hljs-addition {
-  color: var(--tok-addition);
+  color: var(--color-tok-addition);
 }
 .hljs-emphasis {
   font-style: italic;

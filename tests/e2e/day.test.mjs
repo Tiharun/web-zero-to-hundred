@@ -231,3 +231,46 @@ test('day page has no horizontal scroll at 320px', TIMEOUT, async () => {
     { viewport: { width: 320, height: 640 } },
   );
 });
+
+// ───────── 코드 블록 ─────────
+
+test('copy button copies code and shows 복사됨', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      const button = page.locator('figure.code button.copy').first();
+      const code = await page.locator('figure.code pre code').first().textContent();
+      await button.click();
+      await eventually(async () => assert.equal((await button.innerText()).trim(), '복사됨'));
+      assert.equal(await page.evaluate(() => navigator.clipboard.readText()), code);
+      assert.equal(await button.evaluate((el) => getComputedStyle(el).color), await tokenRgb(page, '--color-tok-string'));
+      const box = await button.boundingBox();
+      assert.ok(box.width >= 72 && box.height >= 40, JSON.stringify(box));
+      await eventually(async () => assert.equal((await button.innerText()).trim(), '복사'), 4000);
+    },
+    { permissions: ['clipboard-read', 'clipboard-write'] },
+  );
+});
+
+test('code block head and body follow DESIGN.md', TIMEOUT, async () => {
+  await withPage('#/day/fa-d01', async (page) => {
+    const s = await page.locator('figure.code').first().evaluate((fig) => {
+      const cs = (el) => getComputedStyle(el);
+      const button = fig.querySelector('.copy');
+      return {
+        margin: [cs(fig).marginTop, cs(fig).marginBottom],
+        pre: cs(fig.querySelector('pre')).padding,
+        weight: cs(button).fontWeight,
+        size: cs(button).fontSize,
+      };
+    });
+    const caption = await page.locator('figure.code figcaption').first().evaluate((el) => [getComputedStyle(el).fontSize, getComputedStyle(el).padding]);
+    assert.deepEqual(s.margin, ['24px', '24px']);
+    assert.equal(s.pre, '16px');
+    assert.equal(s.weight, '800');
+    assert.equal(s.size, '15px');
+    assert.deepEqual(caption, ['14px', '8px 16px']);
+    const head = await page.locator('figure.code:has(figcaption) .copy').first().evaluate((el) => el.getBoundingClientRect().height);
+    assert.ok(head >= 40, `윗줄 ${head}px`);
+  });
+});
