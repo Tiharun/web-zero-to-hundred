@@ -491,7 +491,8 @@ button.row {
   }
 }
 
-.drawer {
+.drawer,
+.term-drawer {
   margin: 0;
   inset: 0 auto 0 0;
   width: min(var(--sidebar-w), calc(100% - var(--space-2xl)));
@@ -505,21 +506,25 @@ button.row {
   color: var(--color-ink);
   overflow: hidden;
 }
-.drawer[open] {
+.drawer[open],
+.term-drawer[open] {
   display: flex;
   flex-direction: column;
   animation: drawer-in var(--dur-enter) var(--ease-out);
 }
-.drawer::backdrop {
+.drawer::backdrop,
+.term-drawer::backdrop {
   background: var(--color-scrim);
 }
-.drawer[open]::backdrop {
+.drawer[open]::backdrop,
+.term-drawer[open]::backdrop {
   animation: fade-in var(--dur-enter) var(--ease-out);
 }
 .drawer.is-closing {
   animation: drawer-out var(--dur-exit) var(--ease-in) forwards;
 }
-.drawer.is-closing::backdrop {
+.drawer.is-closing::backdrop,
+.term-drawer.is-closing::backdrop {
   animation: fade-out var(--dur-exit) var(--ease-in) forwards;
 }
 .drawer-head {
@@ -542,13 +547,64 @@ button.row {
   overscroll-behavior: contain;
 }
 /* 서랍이 열려 있는 동안 뒤 문서는 스크롤하지 않는다 */
-:root:has(.drawer[open]) {
+:root:has(.drawer[open]),
+:root:has(.term-drawer[open]) {
   overflow: hidden;
 }
 @media (min-width: 64rem) {
   .drawer {
     display: none;
   }
+}
+
+/* 용어 서랍 (DESIGN.md Navigation "용어 서랍"): 겉모양은 위 서랍과 같고, 모든 폭에서 오른쪽에 붙는다 */
+.term-drawer {
+  inset: 0 0 0 auto;
+  width: min(28rem, calc(100% - var(--space-2xl)));
+  border-right: 0;
+  border-left: 1px solid var(--color-rule);
+}
+.term-drawer[open] {
+  animation-name: drawer-end-in;
+}
+.term-drawer.is-closing {
+  animation: drawer-end-out var(--dur-exit) var(--ease-in) forwards;
+}
+.term-drawer-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-width: 0;
+  margin: 0;
+  line-height: 1.3;
+}
+.term-drawer-title .px {
+  flex-shrink: 0;
+}
+.term-drawer-title span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.term-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-lg) var(--space-md);
+  font-size: var(--text-body);
+  line-height: 1.65;
+}
+.term-drawer-body > * {
+  margin: 0;
+}
+.term-drawer-body > * + * {
+  margin-top: var(--space-sm);
+}
+.term-drawer-foot {
+  flex-shrink: 0;
+  margin: 0;
+  padding: var(--space-sm) var(--space-md);
+  border-top: 1px solid var(--color-rule);
 }
 /* Modal 표면: 검색 Modal 과 확인 Modal 이 같이 쓴다 (DESIGN.md Navigation "검색 Modal"·"확인 Modal") */
 .search,
@@ -697,6 +753,16 @@ button.row {
 @keyframes drawer-out {
   to {
     transform: translateX(-100%);
+  }
+}
+@keyframes drawer-end-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+@keyframes drawer-end-out {
+  to {
+    transform: translateX(100%);
   }
 }
 @keyframes fade-in {

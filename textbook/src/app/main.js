@@ -13,6 +13,7 @@ import { renderProject } from './views/project.js';
 import { renderSearch } from './views/search.js';
 import { renderSettings } from './views/settings.js';
 import { createShell } from './views/shell.js';
+import { createTermDrawer, termSlug } from './views/termdrawer.js';
 
 /** 라우트 → 화면. 각 화면은 main 에 내용을 붙이고 창 제목에 쓸 이름을 돌려준다 */
 const VIEWS = {
@@ -36,6 +37,7 @@ function start() {
   let prog = normalizeProgress(store.load(), cur);
   let notice = null; // 다음에 그리는 홈에서 한 번만 보여 줄 안내
   let shell = null;
+  let lastRoute = { name: 'home' }; // 지금 그려 둔 화면의 라우트
   let keepFocusNext = false; // 다음 hashchange 에서 포커스를 본문으로 옮기지 않는다 (검색창에서 칠 때)
   let cleanups = []; // 지금 화면이 붙인 리스너·관찰자를 떼는 함수들. 다음 render 맨 앞에서 부른다
   let changeListeners = []; // 지금 화면이 진도·테마 변화를 따라가려고 건 것들. 화면을 새로 그릴 때마다 비운다
@@ -45,6 +47,7 @@ function start() {
   const siteBase = notFoundBuild ? cur.url : '';
   const confirmModal = createConfirm(document.getElementById('confirm-dialog'));
   const rewardModal = createRewardModal(document.getElementById('reward-dialog'));
+  const termDrawer = createTermDrawer(document.getElementById('term-drawer'));
 
   const ctx = {
     cur,
@@ -83,6 +86,8 @@ function start() {
     confirm: (opts, opener) => confirmModal.ask(opts, opener),
     /** 레벨업·월드 클리어 보상 Modal (views/rewardmodal.js) */
     reward: rewardModal,
+    /** 용어 서랍 (views/termdrawer.js) */
+    terms: termDrawer,
     /** 지금 할 수 있는 곳의 주소 (없으면 null) */
     continueHref() {
       const target = continueTarget(cur, prog);
@@ -121,6 +126,8 @@ function start() {
     const route = notFoundBuild && emptyHash ? { name: 'notfound' } : parseHash(location.hash);
     confirmModal.dismiss(); // 화면이 바뀌면(뒤로 가기 등) 묻던 것은 취소다
     rewardModal.dismiss(); // 보상 Modal 도 바로 닫는다. 미뤄 둔 토스트는 새 화면에서 뜬다
+    termDrawer.close({ restoreFocus: false, immediate: true });
+    lastRoute = route;
     for (const fn of cleanups.splice(0)) {
       try {
         fn();
@@ -148,6 +155,14 @@ function start() {
   }
 
   shell = createShell(ctx);
+  // 본문의 용어 링크: 그냥 누르면 이동하지 않고 용어 서랍을 연다(DESIGN.md "용어 서랍").
+  // 수정 키·가운데 버튼, 용어 사전 페이지 안, 사전에 없는 항목은 링크 그대로 이동한다
+  main.addEventListener('click', (event) => {
+    const link = event.target.closest('a.term');
+    if (!link || event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    if (lastRoute.name === 'page' && lastRoute.id === 'glossary') return;
+    if (termDrawer.open(termSlug(link.getAttribute('href')), link)) event.preventDefault();
+  });
   window.addEventListener('hashchange', () => {
     const focus = !keepFocusNext;
     keepFocusNext = false;

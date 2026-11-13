@@ -260,3 +260,121 @@ test('reward modal fits 320px without horizontal scroll', TIMEOUT, async () => {
     { progress: ['fa-d01', 'fa-d02', 'fa-d03'], viewport: { width: 320, height: 640 } },
   );
 });
+
+// ───────── 용어 서랍 ─────────
+
+const drawer = (page) => page.locator('#term-drawer');
+const drawerOpen = (page) => page.evaluate(() => document.getElementById('term-drawer').open);
+const hashNow = (page) => page.evaluate(() => decodeURIComponent(location.hash));
+const openTerm = async (page) => {
+  await page.locator('main a.term').first().click();
+  await page.locator('#term-drawer[open]').waitFor();
+  await drawer(page).evaluate((el) => Promise.all(el.getAnimations().map((a) => a.finished))); // 들어오는 애니메이션이 끝난 자리
+};
+
+test('term link opens right drawer', TIMEOUT, async () => {
+  for (const viewport of [{ width: 1280, height: 800 }, { width: 375, height: 700 }]) {
+    await withPage(
+      'a',
+      '#/day/fa-d01',
+      async (page) => {
+        await openTerm(page);
+        assert.equal(await hashNow(page), '#/day/fa-d01', '주소는 그대로');
+        assert.equal((await drawer(page).locator('#term-drawer-title').innerText()).trim(), '픽스처용어');
+        assert.match(await drawer(page).locator('.term-drawer-body').innerText(), /교재 테스트에 쓰는 가짜 용어예요/);
+        assert.equal(await drawer(page).locator('.term-drawer-body h3').count(), 0, '제목은 머리로 옮긴다');
+        assert.equal(await drawer(page).locator('.term-drawer-body [id]').count(), 0, '복제본에 id 가 남지 않는다');
+        assert.equal(await activeTestid(page), 'term-drawer-title');
+        const box = await drawer(page).boundingBox();
+        assert.ok(Math.abs(box.x + box.width - viewport.width) <= 1, `오른쪽에 붙는다 (${JSON.stringify(box)})`);
+        assert.ok(box.width < viewport.width, '뒤가 조금 보인다');
+        assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, '가로 스크롤 0');
+      },
+      { viewport },
+    );
+  }
+});
+
+test('term drawer closes and returns focus', TIMEOUT, async () => {
+  await withPage('a', '#/day/fa-d01', async (page) => {
+    await openTerm(page);
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => !document.getElementById('term-drawer').open);
+    assert.equal(await page.evaluate(() => document.activeElement?.matches('main a.term')), true, '누른 용어 링크로 돌아간다');
+
+    await openTerm(page);
+    await page.mouse.click(40, 400); // 서랍 왼쪽 바깥(백드롭)
+    await page.waitForFunction(() => !document.getElementById('term-drawer').open);
+
+    await openTerm(page);
+    await page.getByRole('button', { name: '용어 설명 닫기' }).click();
+    await page.waitForFunction(() => !document.getElementById('term-drawer').open);
+    assert.equal(await page.evaluate(() => document.activeElement?.matches('main a.term')), true);
+  });
+});
+
+test('term drawer more link goes to glossary', TIMEOUT, async () => {
+  await withPage('a', '#/day/fa-d01', async (page) => {
+    await openTerm(page);
+    const more = page.getByTestId('term-drawer-more');
+    assert.equal((await more.innerText()).trim(), '용어 사전에서 보기 →');
+    await more.click();
+    await page.waitForFunction(() => decodeURIComponent(document.getElementById('main').dataset.hash) === '#/page/glossary/term-픽스처용어');
+    assert.equal(await drawerOpen(page), false);
+    assert.equal(await page.locator('#term-픽스처용어').evaluate((el) => el.classList.contains('is-target')), true);
+  });
+});
+
+test('term link inside drawer swaps entry', TIMEOUT, async () => {
+  await withPage('a', '#/day/fa-d01', async (page) => {
+    await openTerm(page);
+    await drawer(page).locator('.term-drawer-body a.term').click();
+    await page.waitForFunction(() => document.getElementById('term-drawer-title').textContent.trim() === '가나다 용어');
+    assert.equal(await drawerOpen(page), true, '서랍은 열린 채');
+    assert.equal(await hashNow(page), '#/day/fa-d01', '주소 그대로');
+    assert.match(await drawer(page).locator('.term-drawer-body').innerText(), /정렬 순서를 확인하는 용어예요/);
+    assert.match(decodeURIComponent(await page.getByTestId('term-drawer-more').getAttribute('href')), /term-가나다/);
+    // 닫으면 처음 누른 본문 링크로 돌아간다
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => !document.getElementById('term-drawer').open);
+    assert.equal(await page.evaluate(() => document.activeElement?.matches('main a.term')), true);
+  });
+});
+
+test('glossary page links and modified clicks still navigate', TIMEOUT, async () => {
+  await withPage('a', '#/page/glossary', async (page) => {
+    await page.locator('main a.term').first().click();
+    await page.waitForFunction(() => decodeURIComponent(location.hash).startsWith('#/page/glossary/term-가나다'));
+    assert.equal(await drawerOpen(page), false, '용어 사전 안에서는 서랍 없이 이동');
+  });
+  await withPage('a', '#/day/fa-d01', async (page, { context }) => {
+    const popup = context.waitForEvent('page', { timeout: 5_000 }).catch(() => null);
+    await page.locator('main a.term').first().click({ modifiers: ['Control'] });
+    await popup;
+    await sleep(200);
+    assert.equal(await drawerOpen(page), false, 'Ctrl+클릭은 서랍을 열지 않는다');
+  });
+});
+
+test('ctrl+k from term drawer opens search', TIMEOUT, async () => {
+  await withPage('a', '#/day/fa-d01', async (page) => {
+    await openTerm(page);
+    await page.keyboard.press('Control+k');
+    await page.locator('#search-dialog[open]').waitFor();
+    assert.equal(await drawerOpen(page), false);
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => !document.getElementById('search-dialog').open);
+    await page.waitForFunction(() => document.activeElement?.id === 'main'); // 검색을 닫으면 본문으로
+  });
+});
+
+test('term drawer hidden in print and closes on navigation', TIMEOUT, async () => {
+  await withPage('a', '#/day/fa-d01', async (page) => {
+    await openTerm(page);
+    await page.emulateMedia({ media: 'print' });
+    assert.equal(await drawer(page).isVisible(), false);
+    await page.emulateMedia({ media: 'screen' });
+    await goHash(page, '#/');
+    assert.equal(await drawerOpen(page), false, '화면이 바뀌면 바로 닫힌다');
+  });
+});

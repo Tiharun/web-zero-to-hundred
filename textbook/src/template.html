@@ -50,6 +50,15 @@
   <div class="drawer-body"></div>
 </dialog>
 
+<dialog id="term-drawer" class="term-drawer" aria-labelledby="term-drawer-title" data-testid="term-drawer">
+  <div class="drawer-head term-drawer-head">
+    <h2 id="term-drawer-title" class="drawer-title term-drawer-title" tabindex="-1">{{PX:book}}<span></span></h2>
+    <button class="icon-btn term-drawer-close" type="button" aria-label="용어 설명 닫기">{{ICON:close}}</button>
+  </div>
+  <div class="term-drawer-body"></div>
+  <p class="term-drawer-foot"><a class="text-link" data-testid="term-drawer-more" href="#/page/glossary">용어 사전에서 보기 →</a></p>
+</dialog>
+
 <dialog id="search-dialog" class="search" data-testid="search-modal" aria-label="검색">
   <div class="search-field">
     {{ICON:search}}

@@ -133,7 +133,7 @@ export function createShell(ctx) {
 
   /**
    * 검색을 연다. 검색 화면에서는 그 화면의 입력칸으로, 그 밖에서는 Modal 로.
-   * 서랍이 열려 있으면 바로 닫고 Modal 이 닫힌 뒤에는 메뉴 버튼으로 돌아간다. 404 빌드는 사이트의 검색 화면으로 간다.
+   * 서랍이 열려 있으면 바로 닫고 Modal 이 닫힌 뒤에는 메뉴 버튼(용어 서랍이면 본문)으로 돌아간다. 404 빌드는 사이트의 검색 화면으로 간다.
    */
   function openSearch(opener) {
     if (ctx.siteBase) {
@@ -144,6 +144,11 @@ export function createShell(ctx) {
     if (drawer.open) {
       closeDrawer({ focus: null, immediate: true });
       opener = menuToggle;
+    }
+    // 용어 서랍도 바로 닫는다. 검색을 닫으면 본문으로 돌아간다
+    if (ctx.terms.isOpen()) {
+      ctx.terms.close({ restoreFocus: false, immediate: true });
+      opener = main;
     }
     if (currentRoute.name === 'search') document.querySelector('[data-testid="search-input"]')?.focus();
     else searchModal.open(opener);

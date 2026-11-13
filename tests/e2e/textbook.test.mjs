@@ -855,7 +855,10 @@ test('glossary term link scrolls to its entry and unknown routes say so', TIMEOU
   await withPage(
     async (page, app) => {
       await visit(page, app, '#/day/fa-d01');
+      // 용어 링크는 서랍을 연다(M11). 서랍의 "용어 사전에서 보기"로 사전 항목에 간다
       await page.locator('main a.term').click();
+      await page.locator('#term-drawer[open]').waitFor();
+      await page.getByTestId('term-drawer-more').click();
       await waitRoute(page, '#/page/glossary/term-픽스처용어');
       assert.match(await page.locator('main h1').innerText(), /용어 사전/);
       const entry = page.locator('#term-픽스처용어');
