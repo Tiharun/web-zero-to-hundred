@@ -549,15 +549,21 @@ li.task input[type="checkbox"] {
   font-size: 0.85rem;
 }
 
+/* 준비 중 Day 칸 (DESIGN.md Cards "준비 중 Day 칸"): 점선, 턱 없음, paper 바탕 */
 .coming-soon {
-  margin: 0 0 1.2em;
-  padding: 28px 24px;
-  border: 2px dashed var(--border-strong);
-  border-radius: var(--radius);
-  background: var(--surface-2);
-  color: var(--muted);
-  text-align: center;
-  font-weight: 700;
+  margin: 0 0 var(--space-lg);
+  padding: var(--space-lg);
+  border: 2px dashed var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-paper);
+  color: var(--color-ink-2);
+}
+.coming-soon p {
+  margin: 0 0 var(--space-xs);
+}
+.coming-soon-title {
+  color: var(--color-ink);
+  font-weight: 800;
 }
 
 /* 좁은 화면 (옛 styles.css 의 600px 블록에서 옮김) */

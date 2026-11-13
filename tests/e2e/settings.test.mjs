@@ -395,3 +395,38 @@ test('settings has no sideways scroll from 320px up', TIMEOUT, async () => {
     );
   }
 });
+
+// ───────── 상태 화면 ─────────
+
+test('a view that throws shows the error screen with a way home and keeps the shell', TIMEOUT, async () => {
+  await withPage(
+    '#/',
+    async (page, { errors }) => {
+      await page.goto(`${server.url}index.html#/day/fa-d01`);
+      const screen = page.getByTestId('error-screen');
+      await screen.waitFor();
+      assert.equal(await screen.locator('h1').innerText(), '화면을 그리다 문제가 생겼어요');
+      assert.equal(await screen.locator('.notfound-icon').count(), 1);
+      assert.equal(await screen.locator('.btn-primary').count(), 1);
+      assert.equal(await screen.locator('.btn-primary').getAttribute('href'), '#/');
+      assert.equal(await screen.locator('.text-link').getAttribute('href'), '#/settings');
+      assert.equal(await page.locator('#sidebar').isVisible(), true, '셸은 그대로');
+      await screen.locator('.btn-primary').click();
+      await page.getByTestId('quest-card').waitFor();
+      assert.ok(errors.some((e) => /boom/.test(e)), '예외는 콘솔에 남는다');
+      errors.length = 0;
+    },
+    {
+      init: () => {
+        const own = Object.getOwnPropertyDescriptor(HTMLTemplateElement.prototype, 'content');
+        Object.defineProperty(HTMLTemplateElement.prototype, 'content', {
+          configurable: true,
+          get() {
+            if (this.id.startsWith('t-day-')) throw new Error('boom');
+            return own.get.call(this);
+          },
+        });
+      },
+    },
+  );
+});

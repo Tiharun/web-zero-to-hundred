@@ -238,6 +238,10 @@ test('locked deep link shows lock screen', TIMEOUT, async () => {
     await lock.waitFor();
     const text = await lock.innerText();
     assert.match(text, /픽스처 프로젝트 A/, '해금 조건이 보여야 해요');
+    assert.equal(await lock.locator('.notfound-icon').count(), 1, '도트 자물쇠 아이콘');
+    assert.ok(!text.includes('🔒'), '이모지 자물쇠는 쓰지 않는다');
+    assert.equal(await lock.locator('.btn-primary').count(), 1, '주 버튼은 하나');
+    assert.equal(await lock.locator('.text-link').getAttribute('href'), '#/', '홈은 글자 링크');
     assert.ok(!(await page.locator('body').innerText()).includes(SECRET), '잠긴 본문이 화면에 있으면 안 돼요');
     assert.ok(!(await page.locator('main').innerHTML()).includes(SECRET), '잠긴 본문이 main 에 붙으면 안 돼요');
     assert.equal(await page.locator('main input[data-check]').count(), 0);
@@ -738,6 +742,20 @@ test('special days count toward the level panel and placeholder days are styled'
       });
       assert.equal(style.borderStyle, 'dashed');
       assert.ok(style.padding >= 12, '준비 중 안내가 눈에 띄게 꾸며져 있어야 해요');
+      const box = page.getByTestId('coming-soon');
+      assert.match(await box.innerText(), /이 Day는 아직 준비 중이에요./);
+      const review = box.locator('a.text-link');
+      assert.equal(await review.innerText(), 'Day 1 복습하기');
+      assert.equal(await review.getAttribute('href'), '#/day/fs-d01');
+      const paper = await page.evaluate(() => {
+        const probe = document.createElement('div');
+        probe.style.background = 'var(--color-paper)';
+        document.body.append(probe);
+        const v = getComputedStyle(probe).backgroundColor;
+        probe.remove();
+        return v;
+      });
+      assert.equal(await box.evaluate((el) => getComputedStyle(el).backgroundColor), paper, '바탕은 paper');
 
       await visit(page, app, '#/');
       assert.equal(await stat(page, 'days'), '3 / 5');

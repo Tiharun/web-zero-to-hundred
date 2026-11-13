@@ -3,7 +3,7 @@ import { magneticIn } from './motion.js';
 import { continueTarget, normalizeProgress } from './progress.js';
 import { parseHash } from './router.js';
 import { createStore } from './storage.js';
-import { h, helpHref, notFoundScreen } from './views/common.js';
+import { errorScreen, helpHref, notFoundScreen } from './views/common.js';
 import { createConfirm } from './views/confirm.js';
 import { renderDay } from './views/day.js';
 import { renderHome } from './views/home.js';
@@ -130,7 +130,7 @@ function start() {
       title = (VIEWS[route.name] ?? VIEWS.notfound)(ctx, route, main);
     } catch (error) {
       console.error(error);
-      main.replaceChildren(h('section', { class: 'notfound' }, h('h1', null, '화면을 그리다 문제가 생겼어요'), h('p', { class: 'lead' }, '새로고침하면 대부분 해결돼요. 계속되면 설정에서 진도를 백업해 두세요.')));
+      main.replaceChildren(errorScreen({ homeHref: siteBase || '#/' }));
       title = '문제가 생겼어요';
     }
     ctx.onCleanup(magneticIn(main)); // DESIGN.md: 끌림은 주 버튼에만. 화면이 버튼을 다시 그려도 따라간다

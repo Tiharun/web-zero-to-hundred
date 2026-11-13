@@ -285,14 +285,9 @@ kbd {
 .notfound {
   max-width: 40rem;
   padding: 28px 28px 24px;
-  background: var(--surface);
-  border: 2px dashed var(--border-strong);
-  border-radius: var(--radius);
-}
-.lock-icon {
-  margin: 0;
-  font-size: 2.6rem;
-  line-height: 1.2;
+  background: var(--color-card);
+  border: 2px dashed var(--color-line);
+  border-radius: var(--radius-card);
 }
 .lock-screen h2 {
   margin: 24px 0 8px;

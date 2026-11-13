@@ -76,11 +76,6 @@ export function breadcrumb(...items) {
   );
 }
 
-/** 링크 모양의 버튼. primary 는 primaryButton 과 같은 모양이다(한 화면에 하나) */
-export function linkButton(href, text, { primary = false, testid = null } = {}) {
-  return primary ? primaryButton(href, text, { testid }) : h('a', { class: 'btn', href, 'data-testid': testid }, text);
-}
-
 // ───────── 공용 부품 (DESIGN.md Components) ─────────
 
 /** 카드: card 바탕, 2px rule 테두리, 4px 턱. props.class 는 card 뒤에 붙는다 */
@@ -129,7 +124,7 @@ export function lockScreen(ctx, what, requires) {
   return h(
     'section',
     { class: 'lock-screen', 'data-testid': 'lock-screen', 'aria-labelledby': 'lock-title' },
-    h('p', { class: 'lock-icon', 'aria-hidden': 'true' }, '🔒'),
+    px('lock', { cls: 'notfound-icon', scale: 3 }),
     h('h1', { id: 'lock-title' }, '아직 잠겨 있어요'),
     h('p', { class: 'lead' }, `‘${what}’ 화면은 앞 단계를 마치면 저절로 열려요. 서두르지 않아도 괜찮아요. 순서대로 가면 가장 편해요.`),
     missing.length > 0 && [
@@ -143,7 +138,19 @@ export function lockScreen(ctx, what, requires) {
         }),
       ),
     ],
-    h('div', { class: 'lock-actions' }, target ? linkButton(target, '지금 할 수 있는 곳으로 가기', { primary: true }) : null, linkButton('#/', '홈으로')),
+    h('div', { class: 'lock-actions' }, target ? primaryButton(target, '지금 할 수 있는 곳으로 가기') : null, textLink('#/', '홈으로')),
+  );
+}
+
+/** 화면을 그리다 예외가 났을 때: 렌치 도트 아이콘, 제목, 설명, 주 버튼 "홈으로 가기", 글자 링크 "설정 · 진도 백업". 셸은 그대로 둔다 */
+export function errorScreen({ homeHref = '#/' } = {}) {
+  return h(
+    'section',
+    { class: 'notfound', 'data-testid': 'error-screen', 'aria-labelledby': 'error-title' },
+    px('wrench', { cls: 'notfound-icon', scale: 3 }),
+    h('h1', { id: 'error-title' }, '화면을 그리다 문제가 생겼어요'),
+    h('p', { class: 'lead' }, '새로고침하면 대부분 해결돼요. 계속되면 설정에서 진도를 백업해 두세요.'),
+    h('div', { class: 'lock-actions' }, primaryButton(homeHref, '홈으로 가기'), textLink('#/settings', '설정 · 진도 백업')),
   );
 }
 

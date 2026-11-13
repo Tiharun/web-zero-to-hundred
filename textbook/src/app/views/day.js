@@ -1,7 +1,7 @@
 // Day 화면: 본문 템플릿을 붙이고, 체크박스·정답 게이트·코드 복사·완료 버튼을 연결한다.
 import { reveal } from '../motion.js';
 import { canComplete, canUncomplete, completeDay, dayState, isProjectComplete, newlyUnlocked, toggleCheck, uncompleteDay } from '../progress.js';
-import { breadcrumb, findDay, getPage, getProject, h, isDone, lockScreen, minutesText } from './common.js';
+import { breadcrumb, findDay, getPage, getProject, h, isDone, lockScreen, minutesText, textLink } from './common.js';
 
 const COPY_RESET_MS = 2000;
 
@@ -178,6 +178,17 @@ function outline(body) {
   );
 }
 
+/** 아직 쓰지 않은 Day: 안내와 복습 링크(앞 Day가 있을 때) 또는 홈 링크. DESIGN.md Cards "준비 중 Day 칸" */
+function comingSoon(previous) {
+  return h(
+    'section',
+    { class: 'coming-soon', 'data-testid': 'coming-soon' },
+    h('p', { class: 'coming-soon-title' }, '이 Day는 아직 준비 중이에요.'),
+    h('p', null, '내용은 지금 쓰는 중이에요. 그동안 지난 Day를 복습해 두면 좋아요.'),
+    previous ? textLink(`#/day/${previous.id}`, `Day ${previous.num} 복습하기`) : textLink('#/', '홈으로'),
+  );
+}
+
 // ───────── 화면 ─────────
 
 export function renderDay(ctx, dayId, root) {
@@ -196,7 +207,8 @@ export function renderDay(ctx, dayId, root) {
   const previous = project.days[index - 1] ?? null;
   const next = project.days[index + 1] ?? null;
   const body = h('div', { class: 'lesson-body' });
-  body.append(template.content.cloneNode(true));
+  if (day.ready === false) body.append(comingSoon(previous));
+  else body.append(template.content.cloneNode(true));
 
   const statusChip = h('span', { class: 'chip' });
   const checklist = bindChecklist(ctx, dayId, body, () => renderFooter());
