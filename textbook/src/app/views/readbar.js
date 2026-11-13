@@ -11,7 +11,7 @@ export function readRatio(scrollTop, scrollHeight, clientHeight) {
 
 /**
  * body 에 바를 하나 붙인다(있던 것은 지운다). 스크롤 타임라인을 지원하면 CSS 가 채우고,
- * 아니면 scroll·resize 때 rAF 로 --read 를 쓴다. 돌려준 함수가 리스너와 바를 모두 지운다.
+ * 아니면 scroll·resize·본문 크기 변화(정답 펼치기 등) 때 rAF 로 --read 를 쓴다. 돌려준 함수가 리스너와 바를 모두 지운다.
  * @returns {() => void}
  */
 export function mountReadBar() {
@@ -31,10 +31,13 @@ export function mountReadBar() {
   };
   window.addEventListener('scroll', schedule, { passive: true });
   window.addEventListener('resize', schedule, { passive: true });
+  const grow = typeof ResizeObserver === 'function' ? new ResizeObserver(schedule) : null;
+  grow?.observe(document.body);
   schedule();
   return () => {
     window.removeEventListener('scroll', schedule);
     window.removeEventListener('resize', schedule);
+    grow?.disconnect();
     if (frame) cancelAnimationFrame(frame);
     bar.remove();
   };

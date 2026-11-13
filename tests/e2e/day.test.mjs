@@ -352,6 +352,27 @@ test('read bar falls back to --read without scroll timelines', TIMEOUT, async ()
   );
 });
 
+test('read bar fallback follows content that grows without scrolling', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      const read = async () => Number(await page.locator('.read-bar').evaluate((el) => el.style.getPropertyValue('--read')));
+      await scrollToRatio(page, 0.5);
+      await eventually(async () => assert.ok(Math.abs((await read()) - 0.5) < 0.05, `가운데 ${await read()}`));
+      // 정답 펼치기처럼 스크롤 없이 화면 아래쪽 본문이 길어지면, 읽은 비율은 줄어든다
+      await page.evaluate(() => document.querySelector('.lesson-foot').append(Object.assign(document.createElement('div'), { style: 'height: 6000px' })));
+      await eventually(async () => assert.ok((await read()) < 0.4, `--read ${await read()}`));
+    },
+    {
+      viewport: PHONE,
+      init: () => {
+        const supports = CSS.supports.bind(CSS);
+        CSS.supports = (...args) => (String(args.join(' ')).includes('animation-timeline') ? false : supports(...args));
+      },
+    },
+  );
+});
+
 test('read bar exists only on day screens', TIMEOUT, async () => {
   await withPage(
     '#/day/fa-d01',
