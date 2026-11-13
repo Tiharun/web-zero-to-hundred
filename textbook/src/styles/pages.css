@@ -318,7 +318,33 @@
   margin: 0 0 var(--space-xl);
   padding: var(--space-md);
 }
-.page-body .toc h2 {
+
+/* 80rem 이상: 목차 카드가 있는 부록은 글 열 + 오른쪽 열. 목차는 sticky, 화면보다 길면 카드 안에서 스크롤 (DESIGN.md "Day 부품" 부록 목차 열) */
+@media (min-width: 80rem) {
+  .page-article.has-aside {
+    display: grid;
+    grid-template-columns: minmax(0, var(--lesson-max)) var(--aside-w);
+    column-gap: var(--space-xl);
+    justify-content: start;
+    max-width: none;
+  }
+  .page-article.has-aside > * {
+    grid-column: 1;
+  }
+  /* 자식 넷(빵부스러기, 머리, 목차, 본문) 높이에 걸친 오른쪽 열 */
+  .page-article.has-aside > .toc {
+    grid-column: 2;
+    grid-row: 1 / span 4;
+    align-self: start;
+    position: sticky;
+    top: calc(var(--topbar-h) + var(--space-lg));
+    max-height: calc(100dvh - var(--topbar-h) - 2 * var(--space-lg));
+    margin: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+.page-article .toc h2 {
   margin: 0 0 var(--space-xs);
   padding: 0;
   border: 0;
@@ -326,8 +352,8 @@
   font-weight: 400;
   line-height: 1.4;
 }
-.page-body .toc ul,
-.page-body .toc ol {
+.page-article .toc ul,
+.page-article .toc ol {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs); /* 턱(3px)과 손을 올렸을 때 떠오르는 높이를 담는 간격 */
@@ -335,11 +361,11 @@
   padding: 0;
   list-style: none;
 }
-.page-body .toc li + li {
+.page-article .toc li + li {
   margin-top: 0;
 }
 /* 목차 열쇠: 보드게임 칸과 같은 2px 테두리와 같은 색 턱 3px. 손을 올리면 튀어 오르고 누르면 눌린다 */
-.page-body .toc li a {
+.page-article .toc li a {
   --tile-edge: var(--color-ink-2);
   display: inline-grid;
   place-items: center;
@@ -357,23 +383,23 @@
   box-shadow: 0 3px 0 var(--tile-edge);
   transition: transform var(--dur-short) var(--ease-bounce), box-shadow var(--dur-short) var(--ease-bounce);
 }
-.page-body .toc li a:hover {
+.page-article .toc li a:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 0 var(--tile-edge);
 }
-.page-body .toc li a:active {
+.page-article .toc li a:active {
   transform: translateY(2px);
   box-shadow: 0 1px 0 var(--tile-edge);
   transition-duration: 60ms;
 }
 @media (prefers-reduced-motion: reduce) {
-  .page-body .toc li a:hover,
-  .page-body .toc li a:active {
+  .page-article .toc li a:hover,
+  .page-article .toc li a:active {
     transform: none;
   }
 }
 @media (pointer: coarse) {
-  .page-body .toc li a {
+  .page-article .toc li a {
     min-width: 44px;
     min-height: 44px;
   }
@@ -439,7 +465,7 @@
 .ts-toc-world > .label {
   margin-left: var(--space-2xs);
 }
-.page-body .ts-toc-world ol {
+.page-article .ts-toc-world ol {
   margin-top: var(--space-xs);
 }
 

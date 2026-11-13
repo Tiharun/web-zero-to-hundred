@@ -358,3 +358,49 @@ test('world and appendix pages have no sideways scroll from 320px up', TIMEOUT, 
     }
   }
 });
+
+// ───────── 목차 카드 오른쪽 열 (M10, M7에서 넘김) ─────────
+
+const rect = (page, sel) => page.evaluate((s) => document.querySelector(s).getBoundingClientRect().toJSON(), sel);
+
+test('glossary index sits in the right column at 1280px and above the body below', TIMEOUT, async () => {
+  await withPage('#/page/glossary', async (page) => {
+    const [toc, body] = [await rect(page, '.gl-index'), await rect(page, '.page-body')];
+    assert.ok(toc.left > body.right, `오른쪽 열 (${toc.left} <= ${body.right})`);
+    // 본문을 길게 늘려 스크롤해도 목차는 상단 바 + 24px 에 붙어 있다
+    await page.evaluate(() => {
+      document.querySelector('.page-body').append(Object.assign(document.createElement('div'), { style: 'height: 3000px' }));
+      window.scrollTo(0, 1500);
+    });
+    await eventually(async () => assert.ok(Math.abs((await rect(page, '.gl-index')).top - 80) <= 2, `sticky ${(await rect(page, '.gl-index')).top}`));
+  });
+  await withPage(
+    '#/page/glossary',
+    async (page) => {
+      const [toc, body] = [await rect(page, '.gl-index'), await rect(page, '.page-body')];
+      assert.ok(toc.bottom <= body.top + 0.5, `좁으면 본문 위 (${toc.bottom} > ${body.top})`);
+    },
+    { viewport: { width: 768, height: 900 } },
+  );
+});
+
+test('a long troubleshooting toc scrolls inside its card', TIMEOUT, async () => {
+  await withPage(
+    '#/page/troubleshooting',
+    async (page) => {
+      await page.evaluate(() => {
+        const ol = document.querySelector('.ts-toc ol');
+        for (let i = 0; i < 60; i++) ol.append(Object.assign(document.createElement('li'), { innerHTML: `<a href="#/page/troubleshooting">긴 목록 ${i}</a>` }));
+      });
+      const box = await page.locator('.ts-toc').evaluate((el) => ({ sh: el.scrollHeight, ch: el.clientHeight, bottom: el.getBoundingClientRect().bottom }));
+      assert.ok(box.sh > box.ch, `카드 안에서 스크롤 (${box.sh} <= ${box.ch})`);
+      assert.ok(box.bottom <= 720, `카드는 화면 안 (${box.bottom})`);
+      const last = page.locator('.ts-toc li a').last();
+      await last.focus();
+      const r = await last.evaluate((el) => el.getBoundingClientRect().toJSON());
+      assert.ok(r.top >= 0 && r.bottom <= 720, `마지막 링크가 보인다 (${r.top}, ${r.bottom})`);
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), '가로 스크롤 없음');
+    },
+    { viewport: { width: 1280, height: 720 } },
+  );
+});
