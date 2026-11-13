@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  filterPublished,
   glossaryIndexKey,
   parseGlossary,
   parseTroubleshooting,
@@ -204,12 +205,14 @@ test('troubleshooting page groups by project title and keeps authored order', ()
   const terms = new Map([['용어', '용어']]);
   const page = renderTroubleshootingPage(groups, projects, { terms, routes });
   assert.deepEqual(page.errors, []);
-  const heads = [...page.html.matchAll(/<h2[^>]*>(.*?)<\/h2>/g)].map((m) => m[1]);
+  // 목차 머리("목차")를 빼고 월드 묶음의 h2 만 본다
+  const heads = [...page.html.matchAll(/<section class="ts-group"[^>]*>\n<h2[^>]*>(.*?)<\/h2>/g)].map((m) => m[1]);
   // 프로젝트 순서(p1, sp) 다음에, 프로젝트가 아닌 접두어는 접두어 이름 그대로 맨 뒤에
   assert.deepEqual(heads, ['나의 크리에이터 홈페이지', '이미지 도네이션', 'zz']);
   assert.match(page.html, /<section class="ts-group" id="ts-p1">/);
-  assert.match(page.html, /<h3[^>]*>증상 하나<\/h3>/);
-  assert.match(page.html, /<h3[^>]*><code>npm<\/code> 이 안 돼요<\/h3>/);
+  // 증상 제목은 heading 이 아니라 Accordion 요약 줄이다
+  assert.match(page.html, /<summary>[^]*?<span class="ts-title">증상 하나<\/span><\/summary>/);
+  assert.match(page.html, /<span class="ts-title"><code>npm<\/code> 이 안 돼요<\/span><\/summary>/);
   assert.match(page.html, /<a class="term" href="#\/page\/glossary\/term-용어">용어<\/a>/);
   assert.ok(page.html.indexOf('증상 하나') < page.html.indexOf('이 안 돼요'));
 });
@@ -262,4 +265,63 @@ test('glossary page has an index and groups in symbol, Hangul, Latin order', () 
   assert.deepEqual(ids, ['term-env', 'term-가나다', 'term-하나', 'term-api']);
   assert.match(page.html, /<h2 id="glh-ko-1">ㄱ<\/h2>/);
   assert.match(page.html, /<h3[^>]*>API<\/h3>/);
+});
+
+test('troubleshooting entries remember their first related day', () => {
+  const { groups } = parseTroubleshooting([{ file: '/c/ts/p1.md', src: '### 하나\n- 관련: [P1 Day 2](#/day/p1-d02), [P1 Day 1](#/day/p1-d01)\n\n본문\n\n### 둘\n본문\n' }]);
+  assert.deepEqual(groups[0].entries.map((e) => e.day), ['p1-d02', null]);
+});
+
+test('filterPublished drops entries of unpublished days and empty groups', () => {
+  const entry = (title, day) => ({ title, md: '', file: 'f', line: 1, day });
+  const groups = [
+    { project: 'p1', entries: [entry('a', 'p1-d01'), entry('b', 'p1-d02'), entry('c', null)] },
+    { project: 'sp', entries: [entry('d', 'sp-d01')] },
+  ];
+  const kept = filterPublished(groups, new Set(['p1-d01']));
+  assert.deepEqual(
+    kept.map((g) => [g.project, g.entries.map((e) => e.day)]),
+    [['p1', ['p1-d01', null]]],
+  );
+  assert.equal(filterPublished(groups, null), groups);
+});
+
+test('troubleshooting page has a toc and day groups of details with no heading inside summary', () => {
+  const src = [
+    '### A\n- 관련: [Day 2](#/day/p1-d02)\n\n본문 A\n',
+    '### B\n- 관련: [Day 1](#/day/p1-d01)\n\n본문 B\n',
+    '### `npm` 이 안 돼요\n- 관련: [Day 1](#/day/p1-d01)\n\n본문\n',
+    '### C\n관련 줄 없음\n',
+    '### D\n- 관련: [다른 월드](#/day/p9-d01)\n\n본문 D\n',
+  ].join('\n');
+  const { groups } = parseTroubleshooting([{ file: '/c/ts/p1.md', src }]);
+  const projects = [{ id: 'p1', title: 'P1', days: [{ id: 'p1-d01', num: 1, title: '첫날' }, { id: 'p1-d02', num: 2, title: '둘째날' }] }];
+  const routes2 = new Set([...routes, '#/day/p1-d01', '#/day/p1-d02', '#/day/p9-d01']);
+  const page = renderTroubleshootingPage(groups, projects, { terms: new Map(), routes: routes2 });
+  assert.deepEqual(page.errors, []);
+  const days = [...page.html.matchAll(/<section class="ts-day" id="([^"]+)"[^>]*>\n<h3[^>]*>([^<]+)<\/h3>/g)].map((m) => [m[1], m[2]]);
+  assert.deepEqual(days, [
+    ['ts-p1-d01', 'Day 1 · 첫날'],
+    ['ts-p1-d02', 'Day 2 · 둘째날'],
+    ['ts-p1-etc', '그 밖의 증상'],
+  ]);
+  const ids = [...page.html.matchAll(/<details class="ts-entry" id="([^"]+)"/g)].map((m) => m[1]);
+  assert.deepEqual(ids, ['ts-p1-d01-1', 'ts-p1-d01-2', 'ts-p1-d02-1', 'ts-p1-etc-1', 'ts-p1-etc-2']);
+  assert.match(page.html, /<summary>[^]*?<code>npm<\/code> 이 안 돼요[^]*?<\/summary>/);
+  for (const m of page.html.matchAll(/<summary>([^]*?)<\/summary>/g)) assert.doesNotMatch(m[1], /<h\d/, 'summary 안에는 heading 이 없다');
+  // D(다른 월드의 Day)는 그 밖의 증상 묶음의 둘째
+  assert.match(page.html, /id="ts-p1-etc-2"[^]*?<span class="ts-title">D<\/span>/);
+  const toc = page.html.slice(0, page.html.indexOf('</nav>'));
+  assert.match(toc, /^<nav class="toc ts-toc" aria-labelledby="ts-toc-h">/);
+  assert.match(toc, /<a href="#\/page\/troubleshooting\/ts-p1">P1<\/a>/);
+  assert.match(toc, /<span class="label">증상 5개<\/span>/);
+  const links = [...toc.matchAll(/<li><a href="([^"]+)" aria-label="([^"]+)">([^<]+)<\/a><\/li>/g)].map((m) => [m[1], m[2], m[3]]);
+  assert.deepEqual(links, [
+    ['#/page/troubleshooting/ts-p1-d01', 'Day 1, 증상 2개', 'Day 1'],
+    ['#/page/troubleshooting/ts-p1-d02', 'Day 2, 증상 1개', 'Day 2'],
+    ['#/page/troubleshooting/ts-p1-etc', '그 밖의 증상, 증상 2개', '그 밖의 증상'],
+  ]);
+  const help = renderTroubleshootingPage(groups, projects, { terms: new Map(), routes: routes2, pageId: 'help' });
+  assert.match(help.html, /href="#\/page\/help\/ts-p1-d01"/);
+  assert.doesNotMatch(help.html, /#\/page\/troubleshooting\//);
 });

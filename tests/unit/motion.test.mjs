@@ -1,7 +1,9 @@
-import { test } from 'node:test';
+import { mock, test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  ACCORDION_CLEAR_MS,
   EASE_OUT,
+  accordionOpened,
   confettiPlan,
   drawPath,
   linkHover,
@@ -340,4 +342,24 @@ test('seenInSession reads without recording, also from page memory', () => {
   assert.equal(seenInSession('seen-b', blocked), false);
   onceInSession('seen-b', blocked);
   assert.equal(seenInSession('seen-b', blocked), true);
+});
+
+test('accordionOpened adds is-animating and clears it after ACCORDION_CLEAR_MS', () => {
+  mock.timers.enable({ apis: ['setTimeout'] });
+  try {
+    assert.equal(ACCORDION_CLEAR_MS, 400);
+    const el = fakeEl();
+    accordionOpened(el, { reduce: false, fine: true });
+    assert.deepEqual(el.added, ['is-animating']);
+    mock.timers.tick(ACCORDION_CLEAR_MS - 1);
+    assert.deepEqual(el.removed, []);
+    mock.timers.tick(1);
+    assert.deepEqual(el.removed, ['is-animating']);
+    // 움직임 줄이기: 표시 클래스를 붙이지 않아 내용이 바로 보인다
+    const still = fakeEl();
+    accordionOpened(still, { reduce: true, fine: false });
+    assert.deepEqual(still.added, []);
+  } finally {
+    mock.timers.reset();
+  }
 });

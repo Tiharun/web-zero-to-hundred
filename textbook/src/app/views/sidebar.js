@@ -1,6 +1,6 @@
 // 사이드바 목록(DESIGN.md Navigation "사이드바"·"Day 행"). 넓은 화면의 #sidebar 와 좁은 화면의 서랍이
 // 이 목록 한 벌을 옮겨 쓴다. 틀은 한 번만 만들고, 진도가 바뀌면 바뀐 행만 새로 만든다 (포커스·스크롤을 지키려고).
-import { shake } from '../motion.js';
+import { accordionOpened, shake } from '../motion.js';
 import { continueTarget, isUnlocked, navDayState, projectState } from '../progress.js';
 import { doneCount, h, lockReason, worldLabel } from './common.js';
 import { icon, px } from './icons.js';
@@ -9,8 +9,6 @@ import { showToast } from './toast.js';
 
 /** 화면 낭독기가 읽는 행 상태 (준비 중은 글자가 이미 보인다) */
 const STATE_TEXT = { done: '완료', today: '오늘', locked: '잠김', draft: '', open: '' };
-/** Accordion 등장(160ms, DESIGN.md Motion)이 끝난 뒤 표시 클래스를 뗀다 */
-const ACCORDION_CLEAR_MS = 400;
 
 export function createSidebar(ctx) {
   const { cur } = ctx;
@@ -163,20 +161,14 @@ export function createSidebar(ctx) {
     expandBtn.textContent = all ? '모두 접기' : '모두 펼치기';
   }
 
-  /** 사용자가 펼칠 때만 내용이 올라온다 (페이지를 열 때 이미 펼쳐진 월드는 그대로) */
-  function animateOpen(details) {
-    details.classList.add('is-animating');
-    setTimeout(() => details.classList.remove('is-animating'), ACCORDION_CLEAR_MS);
-  }
-
   worldList.addEventListener('click', (event) => {
     const summary = event.target.closest('details.world > summary');
-    if (summary) animateOpen(summary.parentElement);
+    if (summary) accordionOpened(summary.parentElement);
   });
   expandBtn.addEventListener('click', () => {
     const open = ![...worlds.values()].every((w) => w.details.open);
     for (const { details } of worlds.values()) {
-      if (open && !details.open) animateOpen(details);
+      if (open && !details.open) accordionOpened(details);
       details.open = open;
     }
     syncExpand();

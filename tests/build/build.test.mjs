@@ -541,6 +541,30 @@ test('published build hides days outside the reviewed ranges', async () => {
   });
 });
 
+test('published build drops symptoms of unpublished days', async () => {
+  await withContentCopy(async ({ content }) => {
+    const file = path.join(content, 'curriculum.json');
+    const cur = JSON.parse(await readFile(file, 'utf8'));
+    cur.pages.push({ id: 'troubleshooting', title: '문제 해결 모음', meta: '증상 {n}가지와 해결 방법', generated: 'troubleshooting' });
+    await writeFile(file, JSON.stringify(cur));
+    await mkdir(path.join(content, 'troubleshooting'));
+    await writeFile(path.join(content, 'troubleshooting', 'fa.md'), '### 공개된 증상\n- 관련: [Day 1](#/day/fa-d01)\n\n해결\n');
+    await writeFile(path.join(content, 'troubleshooting', 'fb.md'), '### 숨은 증상\n- 관련: [Day 1](#/day/fb-d01)\n\n해결\n');
+    await writePublished(content, { fa: [1, 2] });
+    const r = await build({ contentDir: content, publishedOnly: true });
+    assert.equal(r.ok, true, JSON.stringify(r.errors));
+    const page = template(r.html, 't-page-troubleshooting');
+    assert.match(page, /공개된 증상/);
+    assert.doesNotMatch(page, /숨은 증상/);
+    assert.doesNotMatch(page, /ts-fb/);
+    assert.equal(embeddedData(r.html).pages.find((p) => p.id === 'troubleshooting').meta, '증상 1가지와 해결 방법');
+    // 공개 목록이 없는 보통 빌드는 둘 다 있다
+    const all = await build({ contentDir: content });
+    assert.match(template(all.html, 't-page-troubleshooting'), /숨은 증상/);
+    assert.equal(embeddedData(all.html).pages.find((p) => p.id === 'troubleshooting').meta, '증상 2가지와 해결 방법');
+  });
+});
+
 test('a published day without a file is E_PUBLISHED_MISSING, even with allowMissing', async () => {
   await withContentCopy(async ({ content }) => {
     await writePublished(content, { fa: [1, 3] });

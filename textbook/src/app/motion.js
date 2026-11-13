@@ -359,3 +359,13 @@ export function linkHover(source, target, cls = 'is-linked') {
     off();
   };
 }
+
+/** Accordion 등장(160ms, DESIGN.md Motion)이 끝난 뒤 표시 클래스를 뗀다 */
+export const ACCORDION_CLEAR_MS = 400;
+
+/** 사용자가 펼친 Accordion 에만 is-animating 을 잠깐 붙인다 (페이지를 열 때 이미 펼쳐진 것은 그대로). 움직임 줄이기면 붙이지 않는다 */
+export function accordionOpened(details, env = motionEnv()) {
+  if (env.reduce) return;
+  details.classList.add('is-animating');
+  setTimeout(() => details.classList.remove('is-animating'), ACCORDION_CLEAR_MS);
+}

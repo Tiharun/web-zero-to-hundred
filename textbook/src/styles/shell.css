@@ -280,7 +280,8 @@
 }
 /* 사용자가 펼칠 때만 내용이 올라온다. 160ms 는 DESIGN.md Motion 표 "Accordion" 값 */
 .world.is-animating[open] > .rows,
-.world.is-animating[open] > .world-lock {
+.world.is-animating[open] > .world-lock,
+.ts-entry.is-animating[open] > .ts-body {
   animation: acc-in 160ms var(--ease-out);
 }
 @keyframes acc-in {

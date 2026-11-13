@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build as esbuild } from 'esbuild';
 import { fillMeta, loadCurriculum } from './lib/curriculum.mjs';
-import { parseGlossary, parseTroubleshooting, renderGlossaryPage, renderTroubleshootingPage } from './lib/glossary.mjs';
+import { filterPublished, parseGlossary, parseTroubleshooting, renderGlossaryPage, renderTroubleshootingPage } from './lib/glossary.mjs';
 import { assemble } from './lib/assemble.mjs';
 import { faviconDataUri, fillIcons, headTags, listRoutes } from './lib/site.mjs';
 import { readStyles, lintStyles } from './lib/styles.mjs';
@@ -153,6 +153,8 @@ export async function build({
   const glossary = parseGlossary(await readMarkdownDir(path.join(contentDir, 'glossary')));
   const trouble = parseTroubleshooting(await readMarkdownDir(path.join(contentDir, 'troubleshooting')));
   errors.push(...glossary.errors, ...trouble.errors);
+  // 공개 범위 밖 Day 의 증상은 빼고 그리고 센다 (관련 Day 가 없는 증상은 남는다)
+  const troubleGroups = filterPublished(trouble.groups, published);
   const terms = new Map(glossary.entries.map((e) => [e.term, e.slug]));
 
   // 3. 링크로 갈 수 있는 화면 (항상 전체 커리큘럼 기준)
@@ -183,7 +185,7 @@ export async function build({
     if (page.generated === 'glossary') {
       r = renderGlossaryPage(glossary.entries, { terms, routes });
     } else if (page.generated === 'troubleshooting') {
-      r = renderTroubleshootingPage(trouble.groups, curriculum.projects, { terms, routes });
+      r = renderTroubleshootingPage(troubleGroups, curriculum.projects, { terms, routes, pageId: page.id });
     } else {
       if (page.missing) continue; // 파일이 없다는 오류는 이미 담겨 있다
       r = renderMarkdown(await readFile(page.file, 'utf8'), { idPrefix: page.id, terms, routes });
@@ -201,7 +203,7 @@ export async function build({
     ...curriculum.pages.map((pg) => ({ id: `t-page-${pg.id}`, html: pageResults.get(pg.id).html })),
   ];
   // 홈 "막혔을 때" 설명의 {n}: 용어 사전은 용어 항목 수, 문제 해결은 증상 항목 수
-  const symptoms = trouble.groups.reduce((n, g) => n + g.entries.length, 0);
+  const symptoms = troubleGroups.reduce((n, g) => n + g.entries.length, 0);
   const metaCount = (pg) => (pg.generated === 'glossary' ? glossary.entries.length : pg.generated === 'troubleshooting' ? symptoms : 0);
   const data = {
     title: curriculum.title,

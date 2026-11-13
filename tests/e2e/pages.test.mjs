@@ -3,7 +3,7 @@
 // 픽스처를 복사해 고친다: fa-d02 는 파일을 지워 "준비 중"으로 만들고, 용어 사전에 라틴 글자 용어(API)를 더한다.
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { appendFile, cp, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { appendFile, cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
@@ -26,6 +26,20 @@ let browser;
 async function prepareContent(content) {
   await rm(path.join(content, 'fa', 'day-02.md'));
   await appendFile(path.join(content, 'glossary', 'fixture.md'), '\n### API\n- 처음 등장: [Day 1](#/day/fa-d01)\n\n프로그램끼리 주고받는 약속이에요.\n');
+  // 문제 해결 페이지: Day 1·Day 2 증상 하나씩(Day 2 는 아주 긴 제목), 관련 줄 없는 증상 하나
+  const file = path.join(content, 'curriculum.json');
+  const cur = JSON.parse(await readFile(file, 'utf8'));
+  cur.pages.push({ id: 'troubleshooting', title: '문제 해결 모음', meta: '증상 {n}가지와 해결 방법', generated: 'troubleshooting' });
+  await writeFile(file, JSON.stringify(cur));
+  await mkdir(path.join(content, 'troubleshooting'));
+  await writeFile(
+    path.join(content, 'troubleshooting', 'fa.md'),
+    [
+      '### 화면이 하얘요\n- 관련: [Day 1](#/day/fa-d01)\n\n저장했는지 확인해요.\n',
+      '### `npm` 이 안 돼요: 터미널에 명령을 입력했는데 아무 반응이 없거나 알 수 없는 명령이라는 오류가 나와요 (아주 긴 제목)\n- 관련: [Day 2](#/day/fa-d02)\n\n터미널을 새로 열어요.\n',
+      '### 그 밖의 증상 하나\n관련 Day 가 없는 증상이에요.\n',
+    ].join('\n'),
+  );
 }
 
 before(async () => {
@@ -222,4 +236,107 @@ test('the glossary index jumps to a group and a term link lands on the term', TI
     },
     { reducedMotion: 'reduce' },
   );
+});
+
+// ───────── 문제 해결 목차·증상 Accordion ─────────
+
+test('troubleshooting shows a toc and symptoms open one by one', TIMEOUT, async () => {
+  await withPage('#/page/troubleshooting', async (page) => {
+    const toc = page.locator('.ts-toc');
+    assert.equal(await toc.locator('.ts-toc-world > a').count(), 1);
+    assert.deepEqual(await toc.locator('li a').allInnerTexts(), ['Day 1', 'Day 2', '그 밖의 증상']);
+    const entries = page.locator('.ts-entry');
+    assert.equal(await entries.count(), 3);
+    assert.equal(await page.locator('.ts-entry[open]').count(), 0);
+    const first = entries.first();
+    await first.locator('summary').click();
+    assert.equal(await first.evaluate((el) => el.open), true);
+    assert.equal(await first.locator('.ts-body').isVisible(), true);
+    await first.locator('summary').click();
+    assert.equal(await first.evaluate((el) => el.open), false);
+    const second = entries.nth(1);
+    await second.locator('summary').focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await second.evaluate((el) => el.open), true);
+  });
+});
+
+test('expand all opens every symptom and the label follows', TIMEOUT, async () => {
+  await withPage('#/page/troubleshooting', async (page) => {
+    const btn = page.locator('.page-head [data-expand-all]');
+    assert.equal(await btn.innerText(), '모두 펼치기');
+    await btn.click();
+    assert.equal(await page.locator('.ts-entry[open]').count(), 3);
+    await eventually(async () => assert.equal(await btn.innerText(), '모두 접기'));
+    await btn.click();
+    assert.equal(await page.locator('.ts-entry[open]').count(), 0);
+    await eventually(async () => assert.equal(await btn.innerText(), '모두 펼치기'));
+    await btn.click();
+    await page.locator('.ts-entry').first().locator('summary').click();
+    await eventually(async () => assert.equal(await btn.innerText(), '모두 펼치기'));
+  });
+});
+
+test('a deep link opens and scrolls to that symptom', TIMEOUT, async () => {
+  await withPage('#/page/troubleshooting/ts-fa-d02-1', async (page) => {
+    const entry = page.locator('#ts-fa-d02-1');
+    assert.equal(await entry.evaluate((el) => el.open), true);
+    assert.equal(await entry.evaluate((el) => el.classList.contains('is-target')), true);
+    const bar = await page.locator('.topbar').boundingBox();
+    await eventually(async () => {
+      const box = await entry.boundingBox();
+      assert.ok(box.y >= bar.y + bar.height && box.y < 800, `증상이 상단 바 아래 화면 안에 있어요 (${box.y})`);
+    });
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.locator('.ts-toc li a', { hasText: 'Day 2' }).click();
+    await page.waitForURL(/#\/page\/troubleshooting\/ts-fa-d02$/);
+    await eventually(async () => {
+      const box = await page.locator('#ts-fa-d02').boundingBox();
+      assert.ok(box.y >= bar.y + bar.height && box.y < 800, `Day 묶음이 화면 안에 있어요 (${box.y})`);
+    });
+  });
+});
+
+test('an unknown anchor opens the page at the top with everything closed', TIMEOUT, async () => {
+  for (const hash of ['#/page/troubleshooting/nope', '#/page/troubleshooting/main']) {
+    await withPage(hash, async (page) => {
+      await page.locator('.ts-entry').first().waitFor();
+      assert.equal(await page.evaluate(() => window.scrollY), 0, hash);
+      assert.equal(await page.locator('.ts-entry[open]').count(), 0, hash);
+      assert.equal(await page.locator('.is-target').count(), 0, hash);
+    });
+  }
+});
+
+test('reduced motion: a symptom opens with no animation', TIMEOUT, async () => {
+  await withPage(
+    '#/page/troubleshooting',
+    async (page) => {
+      const entry = page.locator('.ts-entry').first();
+      await entry.locator('summary').click();
+      assert.equal(await entry.evaluate((el) => el.open), true);
+      const running = await entry.locator('.ts-body').evaluate((el) => el.getAnimations().filter((a) => a.playState === 'running').length);
+      assert.equal(running, 0);
+    },
+    { reducedMotion: 'reduce' },
+  );
+});
+
+test('world and appendix pages have no sideways scroll from 320px up', TIMEOUT, async () => {
+  for (const width of [320, 375, 768, 1280]) {
+    for (const hash of ['#/project/fa', '#/page/start', '#/page/glossary', '#/page/troubleshooting']) {
+      await withPage(
+        hash,
+        async (page) => {
+          if (hash.endsWith('troubleshooting')) {
+            await page.locator('.page-head [data-expand-all]').click();
+            assert.equal(await page.locator('.ts-entry[open]').count(), 3);
+          }
+          const { sw, cw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
+          assert.ok(sw <= cw, `${hash} @${width}px: scrollWidth ${sw} > ${cw}`);
+        },
+        { viewport: { width, height: 800 } },
+      );
+    }
+  }
 });

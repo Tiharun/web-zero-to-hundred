@@ -546,6 +546,7 @@ components:
 - **목차 카드(용어 색인·문제 해결 목차):** 기본 카드, 안쪽 `var(--space-md)`, Label 머리. 색인·Day 링크 칸: 최소 40×40px(`pointer: coarse`에서 44px), 15px 800 `ink`, 모서리 6px, 1px `rule` 테두리, hover `track`, 칸 사이 `var(--space-2xs)`, 줄바꿈 허용.
 - **용어 묶음:** 묶음 제목(Title small) 아래 용어 항목. 항목 사이 1px `rule` 선, 위아래 `var(--space-md)`.
 - **찾아온 항목:** 주소로 찾아온 용어·증상은 `track` 바탕(사방 `var(--space-xs)` 같은 색 띠)으로 표시하고 2.4초 뒤 사라진다(분홍을 쓰지 않는다).
+- **증상 Accordion:** `<details>` 한 줄. 요약 줄 최소 48px, 17px 800 줄간격 1.5, 왼쪽에 선 꺾쇠(열리면 180° 회전, 사이드바와 같다), 증상 사이 1px `rule` 선. 펼친 내용은 Body, 아래 `var(--space-md)`. 월드 제목(h2)과 Day 묶음 제목(h3, "Day n · 제목")이 heading이고 요약 줄 안에는 heading을 넣지 않는다. 머리 오른쪽에 "모두 펼치기" 글자 버튼(모두 펼쳐져 있으면 "모두 접기").
 
 ### Board Tiles (signature)
 보드게임 칸. 둥근 네모(모서리 6px)에 2px 테두리와 같은 색 턱. 테두리·턱 색은 `--tile-edge` 하나로 묶는다.
@@ -685,7 +686,7 @@ components:
 | Magnetic | 주 버튼 | 최대 6px(Buttons 참고) |
 | Shake | 잠긴 월드 카드 | 300ms, 좌우 4px(`transform: translateX(-4px)` ↔ 4px, 네 번). 이유 문장을 반드시 같이 보여 준다 |
 | Wiggle | 월드 카드 hover 때 문장 칸 | 420ms `--ease-bounce`, `transform: rotate(-8deg) scale(1.08)` → `transform: rotate(6deg) scale(1.08)` |
-| Accordion | 사용자가 연 월드의 내용 | 160ms, `transform: translateY(4px)`에서 투명도와 함께. 페이지를 열 때 이미 펼쳐진 월드는 움직이지 않는다 |
+| Accordion | 사용자가 연 월드의 내용, 사용자가 연 증상 | 160ms, `transform: translateY(4px)`에서 투명도와 함께. 페이지를 열 때 이미 펼쳐진 월드는 움직이지 않는다 |
 | 메뉴 | 테마 메뉴 열림 | `pop-in`(`from { opacity: 0; transform: translateY(-4px) scale(0.98); }`) 200ms |
 | 검색 | 열림 / 닫힘 | `pop-in` 280ms / 페이드 180ms. 닫힘 애니메이션이 끝나지 않으면 `setTimeout(done, 260)`으로 닫는다 |
 | Skeleton | 검색 결과 자리 | 200ms 뒤에 보임, 최소 300ms, 투명도 1 → 0.5 → 1 `var(--dur-skeleton) ease-in-out infinite` |
