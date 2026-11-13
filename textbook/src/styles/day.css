@@ -45,40 +45,6 @@
   overflow-wrap: anywhere;
 }
 
-.day-outline {
-  margin: 0 0 40px;
-  padding: 12px 18px 14px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-}
-.outline-title {
-  margin: 0 0 4px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--muted);
-}
-.day-outline ol {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px 18px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.day-outline button {
-  padding: 4px 0;
-  border: 0;
-  background: none;
-  color: var(--link);
-  font: inherit;
-  font-size: 0.95rem;
-  text-align: left;
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
-  cursor: pointer;
-}
-
 .page-body {
   max-width: var(--measure);
 }
@@ -134,7 +100,6 @@
   font-weight: 800;
   line-height: 1.2;
   letter-spacing: -0.02em;
-  scroll-margin-top: calc(var(--topbar-h) + var(--space-lg));
 }
 .lesson-body h3 {
   margin: var(--space-xl) 0 var(--space-xs);
@@ -668,6 +633,109 @@ li.task input[type="checkbox"] {
   display: flex;
   justify-content: flex-end;
   margin: 0 0 var(--space-xs);
+}
+
+/* ───────── 퀘스트 로그 (DESIGN.md "Day 부품" 퀘스트 로그): 좁으면 본문 위 접힘 카드, 80rem 이상이면 오른쪽 열 ───────── */
+
+.quest-log {
+  display: none;
+}
+.quest-head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-xs);
+  margin: 0 0 var(--space-xs);
+}
+.quest-step {
+  color: var(--color-ink-2);
+  font-size: var(--text-ui);
+  line-height: 1.4;
+}
+.quest-list {
+  display: grid;
+  gap: var(--space-3xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.quest-item {
+  width: 100%;
+  min-height: 36px;
+  padding: var(--space-2xs) var(--space-sm);
+  border: 0;
+  border-left: 3px solid transparent;
+  border-radius: 0 var(--radius-btn) var(--radius-btn) 0;
+  background: none;
+  color: var(--color-ink-2);
+  font: inherit;
+  font-size: var(--text-ui);
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+}
+.quest-item:hover {
+  background: var(--color-track);
+  color: var(--color-ink);
+}
+.quest-item[aria-current="step"] {
+  border-left-color: var(--color-ink);
+  color: var(--color-ink);
+  font-weight: 800;
+}
+.quest-mini {
+  margin: 0 0 var(--space-xl);
+  border: 2px solid var(--color-rule);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+}
+.quest-mini > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  min-height: 44px;
+  padding: var(--space-xs) var(--space-md);
+  list-style: none;
+  cursor: pointer;
+}
+.quest-mini > summary::-webkit-details-marker {
+  display: none;
+}
+.quest-chev {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--color-ink-2);
+  transition: transform var(--dur-short) var(--ease-out);
+}
+.quest-mini[open] .quest-chev {
+  transform: rotate(180deg);
+}
+.quest-mini .quest-list {
+  padding: 0 var(--space-xs) var(--space-sm);
+}
+
+@media (min-width: 80rem) {
+  .lesson.has-aside {
+    display: grid;
+    grid-template-columns: minmax(0, var(--lesson-max)) var(--aside-w);
+    column-gap: var(--space-xl);
+    justify-content: start;
+    max-width: none;
+  }
+  .lesson.has-aside > * {
+    grid-column: 1;
+  }
+  /* 자식 다섯(빵부스러기, 머리, 접힘 카드, 본문, 아래쪽) 높이에 걸친 오른쪽 열 */
+  .lesson.has-aside > .quest-log {
+    display: block;
+    grid-column: 2;
+    grid-row: 1 / span 5;
+    align-self: start;
+    position: sticky;
+    top: calc(var(--topbar-h) + var(--space-lg));
+  }
+  .quest-mini {
+    display: none;
+  }
 }
 
 /* ───────── 읽기 위치 바 (DESIGN.md "Day 부품" 읽기 위치 바) ───────── */

@@ -170,7 +170,7 @@ test('day body follows DESIGN.md rhythm', TIMEOUT, async () => {
         h2Size: css('.lesson-body h2', 'fontSize'),
         h2Top: getComputedStyle(h2s[1]).marginTop,
         h2Border: getComputedStyle(h2s[1]).borderTopStyle,
-        lessonMax: css('.lesson', 'maxWidth'),
+        lessonCols: css('.lesson', 'gridTemplateColumns'), // 1280px: 글 열(최대 --lesson-max) + 퀘스트 로그 열
         th: css('.lesson-body th', 'backgroundColor'),
         thWeight: css('.lesson-body th', 'fontWeight'),
         tableSize: css('.lesson-body table', 'fontSize'),
@@ -190,7 +190,8 @@ test('day body follows DESIGN.md rhythm', TIMEOUT, async () => {
     assert.equal(s.h2Size, '26px');
     assert.equal(s.h2Top, '64px');
     assert.equal(s.h2Border, 'none');
-    assert.equal(s.lessonMax, '720px');
+    const cols = s.lessonCols.match(/^([\d.]+)px 220px$/);
+    assert.ok(cols && Number(cols[1]) <= 720, `글 열 ${s.lessonCols}`);
     assert.equal(s.th, track);
     assert.equal(s.thWeight, '800');
     assert.equal(s.tableSize, '15px');
@@ -449,4 +450,97 @@ test('day symptoms work from the keyboard', TIMEOUT, async () => {
     },
     { viewport: PHONE },
   );
+});
+
+// ───────── 퀘스트 로그 (M10) ─────────
+
+const frames = (page) => page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+const sectionCount = (page) => page.locator('.lesson-body > h2[id]').count();
+const currentIndex = (scope) => scope.locator('button.quest-item').evaluateAll((els) => els.findIndex((el) => el.getAttribute('aria-current') === 'step'));
+
+test('quest log marks the section being read at 1280px', TIMEOUT, async () => {
+  await withPage('#/day/fa-d01', async (page) => {
+    const log = page.locator('.quest-log');
+    assert.equal(await log.isVisible(), true);
+    assert.equal(await page.locator('.quest-mini').evaluate((el) => getComputedStyle(el).display), 'none');
+    const [logLeft, bodyRight] = await page.evaluate(() => [
+      document.querySelector('.quest-log').getBoundingClientRect().left,
+      document.querySelector('.lesson-body').getBoundingClientRect().right,
+    ]);
+    assert.ok(logLeft > bodyRight, `오른쪽 열 (${logLeft} <= ${bodyRight})`);
+    const n = await sectionCount(page);
+    assert.ok(n >= 7, `섹션 ${n}개`);
+    assert.equal(await log.locator('.quest-step').innerText(), `단계 1/${n}`);
+    assert.equal(await currentIndex(log), 0);
+    assert.equal(await log.locator('[aria-current="step"]').count(), 1);
+
+    await page.locator('.lesson-body > h2[id]').nth(3).evaluate((el) => el.scrollIntoView());
+    await eventually(async () => assert.equal(await currentIndex(log), 3));
+    assert.equal(await log.locator('.quest-step').innerText(), `단계 4/${n}`);
+    const top = await log.evaluate((el) => el.getBoundingClientRect().top);
+    assert.ok(Math.abs(top - 80) <= 2, `sticky top ${top}`);
+
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await eventually(async () => assert.equal(await currentIndex(log), n - 1));
+  });
+});
+
+test('quest log button scrolls to the heading and focuses it', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      await page.locator('.quest-log button.quest-item').nth(4).click();
+      await frames(page);
+      const r = await page.evaluate(() => {
+        const h2 = document.querySelectorAll('.lesson-body > h2[id]')[4];
+        return { focused: document.activeElement === h2, top: h2.getBoundingClientRect().top };
+      });
+      assert.equal(r.focused, true, '제목에 포커스');
+      assert.ok(Math.abs(r.top - 80) <= 4, `제목 위치 ${r.top}`);
+    },
+    { reducedMotion: 'reduce' },
+  );
+});
+
+test('narrow screens get the quest log as a details card above the body', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      assert.equal(await page.locator('.quest-log').isVisible(), false);
+      const mini = page.locator('.quest-mini');
+      assert.equal(await mini.evaluate((el) => el.nextElementSibling?.classList.contains('lesson-body')), true);
+      const n = await sectionCount(page);
+      assert.match(await mini.locator('summary').innerText(), new RegExp(`퀘스트 로그 · 단계 1/${n}`));
+      await mini.locator('summary').focus();
+      await page.keyboard.press('Enter');
+      assert.equal(await mini.evaluate((d) => d.open), true);
+      for (let i = 0; i < 3; i++) await page.keyboard.press('Tab');
+      assert.equal(await page.evaluate(() => document.activeElement === document.querySelectorAll('.quest-mini button.quest-item')[2]), true);
+      await page.keyboard.press('Enter');
+      await eventually(async () =>
+        assert.equal(await page.evaluate(() => document.activeElement === document.querySelectorAll('.lesson-body > h2[id]')[2]), true),
+      );
+    },
+    { viewport: PHONE, reducedMotion: 'reduce' },
+  );
+});
+
+test('quest log leaves with the day', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      assert.equal(await page.locator('.quest-log').count(), 1);
+      await goHash(page, '#/');
+      assert.equal(await page.locator('.quest-log, .quest-mini').count(), 0, '홈에는 없다');
+      await goHash(page, '#/day/fa-d02');
+      assert.equal(await page.locator('.quest-log, .quest-mini').count(), 0, '준비 중 Day 에는 없다');
+    },
+    { viewport: PHONE },
+  );
+});
+
+test('old day outline is gone', TIMEOUT, async () => {
+  await withPage('#/day/fa-d01', async (page) => {
+    assert.equal(await page.locator('.day-outline').count(), 0);
+  });
 });

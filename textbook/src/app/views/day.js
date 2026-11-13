@@ -3,6 +3,7 @@ import { reveal } from '../motion.js';
 import { canComplete, canUncomplete, completeDay, dayState, isProjectComplete, newlyUnlocked, toggleCheck, uncompleteDay } from '../progress.js';
 import { symptomAccordions } from './accordion.js';
 import { breadcrumb, chips, findDay, getPage, getProject, h, isDone, lockScreen, minutesText, textLink } from './common.js';
+import { mountQuestLog } from './questlog.js';
 import { mountReadBar } from './readbar.js';
 
 const COPY_RESET_MS = 2000;
@@ -155,40 +156,6 @@ function bindChecklist(ctx, dayId, body, onChange) {
   return { checked: () => boxes.filter((b) => b.checked).length, total: boxes.length };
 }
 
-// ───────── 목차 ─────────
-
-function outline(body) {
-  const headings = [...body.querySelectorAll('h2[id]')];
-  if (headings.length < 2) return null;
-  return h(
-    'nav',
-    { class: 'day-outline', 'aria-label': '이 Day의 순서' },
-    h('p', { class: 'outline-title' }, '이 Day의 순서'),
-    h(
-      'ol',
-      null,
-      headings.map((heading) =>
-        h(
-          'li',
-          null,
-          h(
-            'button',
-            {
-              type: 'button',
-              onclick: () => {
-                heading.scrollIntoView();
-                heading.tabIndex = -1;
-                heading.focus({ preventScroll: true });
-              },
-            },
-            heading.textContent,
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
 /** 아직 쓰지 않은 Day: 안내와 복습 링크(앞 Day가 있을 때) 또는 홈 링크. DESIGN.md Cards "준비 중 Day 칸" */
 function comingSoon(previous) {
   return h(
@@ -312,16 +279,20 @@ export function renderDay(ctx, dayId, root) {
     document.querySelector('[data-testid="complete-button"]')?.focus({ preventScroll: true });
   }
 
-  const toc = outline(body);
   renderFooter();
+  // 퀘스트 로그(DESIGN.md "Day 부품"): 좁으면 본문 위 접힘 카드, 1280px 이상이면 오른쪽 열. 섹션이 없는(준비 중) Day 에는 없다
+  const quest = mountQuestLog([...body.querySelectorAll(':scope > h2[id]')]);
+  if (quest) ctx.onCleanup(quest.dispose);
   root.append(
     h(
       'article',
-      { class: 'lesson', dataset: { dayId } },
+      { class: quest ? 'lesson has-aside' : 'lesson', dataset: { dayId } },
       breadcrumb({ text: '홈', href: '#/' }, { text: project.title, href: `#/project/${project.id}` }, { text: `Day ${day.num}` }),
-      dayHead(project, day, statusChip, toc),
+      dayHead(project, day, statusChip),
+      quest?.mini,
       body,
       footer,
+      quest?.log,
     ),
   );
   ctx.onCleanup(reveal(body.querySelectorAll('h2[id]'))); // 개편 설계서 6.3: Day 섹션 제목은 보일 때 올라온다
@@ -332,7 +303,7 @@ export function renderDay(ctx, dayId, root) {
  * Day 머리 (DESIGN.md "Day 부품" Day 머리): 큰 번호(장식) → 제목 → 메타 칩(예상 시간, 작업 폴더, 월드 이름, 상태).
  * 화면 낭독기는 h1 안의 숨긴 "Day n · " 로 번호를 읽는다. statusChip 의 글자는 renderFooter 가 바꾼다.
  */
-function dayHead(project, day, statusChip, toc) {
+function dayHead(project, day, statusChip) {
   const meta = chips([minutesText(day.minutes), project.folder, project.title], Infinity);
   meta.classList.add('lesson-chips');
   meta.children[1]?.classList.add('is-code');
@@ -343,7 +314,6 @@ function dayHead(project, day, statusChip, toc) {
     h('p', { class: 'lesson-num', 'aria-hidden': 'true' }, h('span', { class: 'label' }, 'Day'), h('span', { class: 'num' }, String(day.num))),
     h('h1', null, h('span', { class: 'sr-only' }, `Day ${day.num} · `), day.title),
     meta,
-    toc,
   );
 }
 
