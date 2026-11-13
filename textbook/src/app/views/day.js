@@ -1,5 +1,5 @@
 // Day 화면: 본문 템플릿을 붙이고, 체크박스·정답 게이트·코드 복사·완료 버튼을 연결한다.
-import { reveal } from '../motion.js';
+import { reveal, shake } from '../motion.js';
 import { canComplete, canUncomplete, completeDay, dayState, isProjectComplete, newlyUnlocked, toggleCheck, uncompleteDay } from '../progress.js';
 import { symptomAccordions } from './accordion.js';
 import { breadcrumb, chips, findDay, getPage, getProject, h, isDone, lockScreen, minutesText, textLink } from './common.js';
@@ -237,7 +237,7 @@ export function renderDay(ctx, dayId, root) {
           h(
             'div',
             { class: 'completion-actions' },
-            h('button', { class: 'btn btn-primary', type: 'button', 'data-testid': 'complete-button', disabled: !allowed, 'aria-describedby': allowed ? null : reasonId, onclick: complete }, 'Day 완료'),
+            h('button', { class: 'btn btn-primary', type: 'button', 'data-testid': 'complete-button', 'aria-disabled': allowed ? null : 'true', 'aria-describedby': allowed ? null : reasonId, onclick: complete }, 'Day 완료'),
           ),
           allowed
             ? h('p', { class: 'reason' }, '준비가 됐을 때 눌러 주세요. 잘못 눌러도 완료를 취소할 수 있어요.')
@@ -250,7 +250,19 @@ export function renderDay(ctx, dayId, root) {
     footer.replaceChildren(...parts);
   }
 
-  function complete() {
+  function complete(event) {
+    // 조건이 안 되면(aria-disabled: 포커스는 받는다) 진도는 그대로 두고, 버튼을 흔들고 이유를 강조해 알린다 (DESIGN.md "Day 완료 카드")
+    if (!canComplete(cur, ctx.prog, dayId)) {
+      const reason = document.getElementById('complete-reason');
+      if (!reason) {
+        renderFooter(); // 그 사이에 상태가 바뀐 경우: 버튼과 이유를 다시 그려 맞춘다
+        return;
+      }
+      shake(event.currentTarget);
+      reason.classList.add('is-alert');
+      ctx.announce(reason.textContent);
+      return;
+    }
     const before = ctx.prog;
     let after;
     try {

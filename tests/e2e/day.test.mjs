@@ -544,3 +544,109 @@ test('old day outline is gone', TIMEOUT, async () => {
     assert.equal(await page.locator('.day-outline').count(), 0);
   });
 });
+
+// ───────── Day 완료 조건 (M10, 완료 기준 ②③) ─────────
+
+/** 이전 Day(fa-d01)를 안 끝낸 Day. 이 파일에서는 준비 중이지만 완료 카드는 그대로 있다 */
+const BLOCKED = '#/day/fa-d02';
+const liveText = (page) => page.locator('#live').innerText();
+const storedDone = (page, id) => page.evaluate(([key, d]) => Boolean(JSON.parse(localStorage.getItem(key) ?? '{}').completed?.[d]), [STORAGE_KEY, id]);
+
+test('pressing a blocked Day complete shakes and explains', TIMEOUT, async () => {
+  await withPage(
+    BLOCKED,
+    async (page) => {
+      const btn = page.getByTestId('complete-button');
+      await btn.scrollIntoViewIfNeeded();
+      await btn.click({ force: true }); // Playwright 는 aria-disabled 버튼을 기다리므로 실제 사용자처럼 바로 누른다
+      assert.equal(await btn.evaluate((el) => el.getAnimations().some((a) => a.id === 'shake')), true, '흔들린다');
+      const reason = page.locator('#complete-reason');
+      assert.match(await reason.getAttribute('class'), /is-alert/);
+      assert.equal(await reason.evaluate((el) => getComputedStyle(el).fontWeight), '800');
+      const text = await reason.innerText();
+      await eventually(async () => assert.equal(await liveText(page), text));
+      assert.equal(await storedDone(page, 'fa-d02'), false);
+    },
+    { viewport: PHONE },
+  );
+});
+
+test('blocked Day complete from the keyboard, pressed again and again', TIMEOUT, async () => {
+  await withPage(
+    BLOCKED,
+    async (page) => {
+      const btn = page.getByTestId('complete-button');
+      await btn.focus();
+      assert.equal(await btn.evaluate((el) => el === document.activeElement), true, '포커스를 받는다');
+      for (let i = 0; i < 3; i++) await page.keyboard.press('Enter');
+      assert.equal(await page.locator('.completion .reason').count(), 1);
+      assert.equal(await btn.evaluate((el) => el === document.activeElement), true, '포커스는 버튼에 남는다');
+      assert.match(await page.locator('#complete-reason').getAttribute('class'), /is-alert/);
+      assert.equal(await storedDone(page, 'fa-d02'), false);
+    },
+    { viewport: PHONE },
+  );
+});
+
+test('reduced motion: blocked Day complete does not shake but still explains', TIMEOUT, async () => {
+  await withPage(
+    BLOCKED,
+    async (page) => {
+      const btn = page.getByTestId('complete-button');
+      await btn.scrollIntoViewIfNeeded();
+      await btn.click({ force: true }); // Playwright 는 aria-disabled 버튼을 기다리므로 실제 사용자처럼 바로 누른다
+      assert.equal(await btn.evaluate((el) => el.getAnimations().filter((a) => a.id === 'shake').length), 0);
+      assert.match(await page.locator('#complete-reason').getAttribute('class'), /is-alert/);
+      const text = await page.locator('#complete-reason').innerText();
+      await eventually(async () => assert.equal(await liveText(page), text));
+    },
+    { viewport: PHONE, reducedMotion: 'reduce' },
+  );
+});
+
+test('checklist keeps partial checks after reload and toggles with Space', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      const boxes = page.locator('.lesson-body input[type="checkbox"][data-check]');
+      const n = await boxes.count();
+      await boxes.nth(1).focus();
+      await page.keyboard.press('Space');
+      await page.reload();
+      await boxes.first().waitFor();
+      assert.deepEqual(await boxes.evaluateAll((els) => els.map((b) => b.checked)), Array.from({ length: n }, (_, i) => i === 1));
+      assert.equal(await page.locator('#completion-status').innerText(), `체크리스트 1 / ${n}`);
+    },
+    { viewport: PHONE },
+  );
+});
+
+test('day controls are reachable by Tab in order', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      const want = await page.evaluate(() => {
+        const mark = (el, name) => el && el.setAttribute('data-tab-probe', name);
+        mark(document.querySelector('.quest-mini > summary'), 'quest');
+        mark(document.querySelector('details.answer > summary'), 'answer');
+        mark(document.querySelector('.lesson-body [data-expand-all]'), 'expand');
+        mark(document.querySelector('.lesson-body details.ts-entry > summary'), 'symptom');
+        document.querySelectorAll('.lesson-body input[data-check]').forEach((b, i) => mark(b, `check${i}`));
+        mark(document.querySelector('[data-testid="complete-button"]'), 'complete');
+        mark(document.querySelector('.nav-card.nav-prev'), 'prev');
+        mark(document.querySelector('.nav-card.nav-next'), 'next');
+        return [...document.querySelectorAll('[data-tab-probe]')].map((el) => el.getAttribute('data-tab-probe'));
+      });
+      assert.ok(want.length >= 9, want.join(','));
+      await page.locator('main h1').focus();
+      const seen = [];
+      for (let i = 0; i < 200 && seen.length < want.length; i++) {
+        await page.keyboard.press('Tab');
+        const probe = await page.evaluate(() => document.activeElement?.getAttribute('data-tab-probe'));
+        if (probe && !seen.includes(probe)) seen.push(probe);
+      }
+      assert.deepEqual(seen, want);
+    },
+    { viewport: PHONE },
+  );
+});

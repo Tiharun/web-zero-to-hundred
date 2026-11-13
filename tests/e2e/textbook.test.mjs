@@ -216,12 +216,13 @@ test('complete flow unlocks next project', TIMEOUT, async () => {
   });
 });
 
-test('complete disabled until previous done', TIMEOUT, async () => {
+test('complete is aria-disabled until previous done', TIMEOUT, async () => {
   await withPage(async (page, app) => {
     await visit(page, app, '#/day/fa-d02');
     const button = page.getByTestId('complete-button');
     await button.waitFor();
-    assert.equal(await button.isDisabled(), true);
+    assert.equal(await button.getAttribute('aria-disabled'), 'true');
+    assert.equal(await button.evaluate((el) => el.disabled), false, '포커스를 받도록 disabled 는 쓰지 않는다');
     const reasonId = await button.getAttribute('aria-describedby');
     assert.ok(reasonId, '버튼이 이유 문구와 연결돼 있어야 해요');
     const reason = await page.locator(`#${reasonId}`).innerText();

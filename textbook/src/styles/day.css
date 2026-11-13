@@ -550,6 +550,11 @@ li.task input[type="checkbox"] {
   font-size: 0.93rem;
   color: var(--muted);
 }
+/* 조건이 안 된 "Day 완료"를 누르면 이유 문장을 강조한다 (DESIGN.md "Day 완료 카드") */
+.completion .reason.is-alert {
+  color: var(--color-ink);
+  font-weight: 800;
+}
 .celebrate {
   color: var(--ok);
   font-weight: 700;

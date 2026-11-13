@@ -324,7 +324,7 @@ test('magnetic follows the Day complete button after the footer redraws, and ski
       await page.mouse.move(5, 5);
       await page.mouse.move(box.x + box.width + 14, box.y + box.height / 2, { steps: 4 });
       await afterFrames(page);
-      return { disabled: await btn.isDisabled(), mx: await mx(btn) };
+      return { disabled: (await btn.getAttribute('aria-disabled')) === 'true', mx: await mx(btn) };
     };
     // 체크박스를 눌러 푸터를 다시 그리게 한다 (버튼이 새로 만들어진다)
     const box = page.locator('.lesson-body input[type="checkbox"]').first();
