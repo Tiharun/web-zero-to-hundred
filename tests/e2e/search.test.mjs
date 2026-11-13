@@ -15,6 +15,7 @@ import { startStaticServer } from '../helpers/static-server.mjs';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 const FIXTURE = path.join(ROOT, 'tests', 'fixtures', 'content');
+const REAL = path.join(ROOT, 'textbook', 'content'); // 느린 기기 Skeleton 은 실제 교재 크기로 잰다
 const TIMEOUT = { timeout: 90_000 };
 const SECRET = '비밀단어zz';
 const SHORTCUTS = ['fa-d01', 'start', 'secret', 'glossary'];
@@ -29,6 +30,9 @@ before(async () => {
   const r = await build({ contentDir: FIXTURE });
   assert.equal(r.ok, true, JSON.stringify(r.errors));
   await writeFile(path.join(tmp, 'index.html'), r.html);
+  const real = await build({ contentDir: REAL, allowMissing: true });
+  assert.equal(real.ok, true, JSON.stringify(real.errors));
+  await writeFile(path.join(tmp, 'real.html'), real.html);
   server = await startStaticServer(tmp);
   browser = await launch();
 });
@@ -52,7 +56,7 @@ async function eventually(check, timeout = 5000) {
 }
 
 /** 새 컨텍스트(깨끗한 저장소)로 hash 를 열어 fn(page, context) 에 넘기고, 끝에서 콘솔 오류 0 을 확인한다 */
-async function withPage(hash, fn, { reducedMotion = 'no-preference', viewport = { width: 1280, height: 800 }, progress = null } = {}) {
+async function withPage(hash, fn, { reducedMotion = 'no-preference', viewport = { width: 1280, height: 800 }, progress = null, file = 'index.html' } = {}) {
   const context = await browser.newContext({ viewport, reducedMotion, locale: 'ko-KR' });
   try {
     if (progress) {
@@ -67,7 +71,7 @@ async function withPage(hash, fn, { reducedMotion = 'no-preference', viewport = 
     }
     const page = await context.newPage();
     const errors = collectConsoleErrors(page);
-    await page.goto(`${server.url}index.html${hash}`);
+    await page.goto(`${server.url}${file}${hash}`);
     await page.locator('main h1').first().waitFor();
     await fn(page, context);
     assert.deepEqual(errors, []);
@@ -374,4 +378,87 @@ test('the modal fits 320px with no horizontal scroll', TIMEOUT, async () => {
     },
     { viewport: { width: 320, height: 640 } },
   );
+});
+
+// ───────── 느린 기기의 Skeleton (실제 교재) ─────────
+
+/** #search-results 에 Skeleton 행이 붙은 시각·떨어진 시각과 그때의 aria-busy 를 window.__sk 에 적는다 */
+const watchSkeleton = (page) =>
+  page.evaluate(() => {
+    const list = document.getElementById('search-results');
+    const sk = { shown: null, hidden: null, busy: null };
+    window.__sk = sk;
+    new MutationObserver(() => {
+      const has = list.querySelector('.skeleton-row') !== null;
+      if (has && sk.shown === null) {
+        sk.shown = performance.now();
+        sk.busy = list.getAttribute('aria-busy');
+      } else if (!has && sk.shown !== null && sk.hidden === null) {
+        sk.hidden = performance.now();
+      }
+    }).observe(list, { childList: true });
+  });
+
+test('a slow first search shows the skeleton for at least 300ms', TIMEOUT, async () => {
+  await withPage(
+    '#/',
+    async (page, context) => {
+      await watchSkeleton(page);
+      const cdp = await context.newCDPSession(page);
+      await cdp.send('Emulation.setCPUThrottlingRate', { rate: 30 });
+      try {
+        await openModal(page);
+        await modalInput(page).fill('html');
+        await page.waitForFunction(() => window.__sk.shown !== null, null, { timeout: 60_000 });
+      } finally {
+        // Skeleton 이 뜬 뒤에는 감속을 푼다. 감속한 채로는 다른 테스트 파일과 같이 돌 때 검색이 몇십 초 걸린다.
+        // 최소 표시 시간(300ms)은 Skeleton 이 뜬 시각부터 재므로 그대로 확인된다
+        await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
+      }
+      await page.waitForFunction(() => window.__sk.hidden !== null, null, { timeout: 30_000 });
+      const sk = await page.evaluate(() => window.__sk);
+      assert.equal(sk.busy, 'true', 'Skeleton 이 보이는 동안 목록은 aria-busy');
+      assert.ok(sk.hidden - sk.shown >= 290, `보인 시간 ${sk.hidden - sk.shown}ms`);
+      assert.ok((await opts(page).count()) > 0, '끝나면 결과가 그려진다');
+      assert.equal(await modalInput(page).getAttribute('aria-expanded'), 'true');
+    },
+    { file: 'real.html' },
+  );
+});
+
+test('a fast search never flashes the skeleton', TIMEOUT, async () => {
+  await withPage(
+    '#/',
+    async (page) => {
+      await openModal(page);
+      await typeQuery(page, 'html'); // 첫 검색이 접은 글자 캐시를 채운다
+      await watchSkeleton(page);
+      await modalInput(page).fill('css');
+      // 'css' 결과가 그려질 때까지(앞 검색어의 결과가 아니라)
+      await eventually(async () => assert.equal((await modal(page).locator('.results mark').first().innerText()).toLowerCase(), 'css'));
+      assert.ok((await opts(page).count()) > 0);
+      assert.equal(await page.evaluate(() => window.__sk.shown), null);
+    },
+    { file: 'real.html' },
+  );
+});
+
+test('Ctrl+K right after Esc (while the modal is still closing) keeps it open', TIMEOUT, async () => {
+  await withPage('#/', async (page) => {
+    await page.locator('#search-open').click();
+    await page.locator('#search-dialog[open]').waitFor();
+    await modalInput(page).fill('Day');
+    // 닫힘 애니메이션(180ms)이 끝나기 전에 다시 연다
+    await page.keyboard.press('Escape');
+    assert.equal(await page.locator('#search-dialog').evaluate((d) => d.classList.contains('is-closing')), true);
+    await page.keyboard.press('Control+k');
+    await sleep(400);
+    assert.equal(await isOpen(page), true, '다시 연 Modal 이 닫히지 않는다');
+    assert.equal(await page.locator('#search-dialog').evaluate((d) => d.classList.contains('is-closing')), false);
+    assert.equal(await activeTestId(page), 'search-modal-input');
+    // 처음 연 버튼으로 돌아가는 것은 그대로다
+    await page.keyboard.press('Escape');
+    await eventually(async () => assert.equal(await isOpen(page), false));
+    assert.equal(await activeId(page), 'search-open');
+  });
 });

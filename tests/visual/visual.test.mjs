@@ -36,7 +36,7 @@ const ALL_DONE = (() => {
 
 /**
  * 찍을 장면. 장면을 늘릴 때는 여기에 한 줄을 더한다.
- * widths: 이 폭에서만 찍는다(없으면 WIDTHS), open: 찍기 전에 누를 선택자(누른 뒤 서랍이 열리기를 기다린다),
+ * widths: 이 폭에서만 찍는다(없으면 WIDTHS), open: 찍기 전에 누를 선택자, waitFor: 누른 뒤 나타나기를 기다릴 선택자,
  * fullPage: 화면 아래까지 전체를 찍는다(없으면 첫 화면만)
  */
 export const SCENES = [
@@ -44,7 +44,9 @@ export const SCENES = [
   { id: 'day', hash: '#/day/p1-d01', progress: P1_FIRST_THREE },
   { id: 'settings', hash: '#/settings', progress: null },
   { id: 'notfound', hash: '#/nope', progress: null },
-  { id: 'drawer', hash: '#/', progress: P1_FIRST_THREE, widths: [375, 768], open: '#menu-toggle' },
+  { id: 'drawer', hash: '#/', progress: P1_FIRST_THREE, widths: [375, 768], open: '#menu-toggle', waitFor: '#drawer[open]' },
+  { id: 'search', hash: '#/', progress: P1_FIRST_THREE, open: '#search-open', waitFor: '#search-dialog[open]' },
+  { id: 'search-page', hash: '#/search', progress: P1_FIRST_THREE },
   { id: 'home-first', hash: '#/', progress: null, widths: [375, 1280], fullPage: true },
   { id: 'home-clear', hash: '#/', progress: P1_CLEAR, widths: [375, 1280], fullPage: true },
   { id: 'home-done', hash: '#/', progress: ALL_DONE, widths: [375, 1280], fullPage: true },
@@ -98,7 +100,7 @@ async function shoot(scene, width, theme) {
     await page.locator('main h1').first().waitFor();
     if (scene.open) {
       await page.locator(scene.open).click();
-      await page.locator('#drawer[open]').waitFor();
+      await page.locator(scene.waitFor).waitFor();
     }
     await page.evaluate(() => document.fonts.ready.then(() => true));
     // 설정 화면의 빌드 날짜는 빌드할 때마다 바뀌므로 가린다
