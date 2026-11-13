@@ -17,7 +17,7 @@ test('STYLE_ORDER starts with tokens and legacy', () => {
 test('lintStyles flags raw colours and font names outside tokens and legacy', () => {
   const issues = lintStyles([
     { name: 'tokens', file: 't.css', src: ':root{--color-ink:#312E81;--font-body:"A",sans-serif}' },
-    { name: 'legacy', file: 'l.css', src: ':root{--tip-bg:#fff7d6}' },
+    { name: 'legacy', file: 'l.css', src: ':root{--warn-bg:#fff7d6}' },
     { name: 'base', file: 'b.css', src: 'a{color:#fff}\n/* #000 주석 */\nb{background:rgb(0 0 0 / .5)}\nc{font-family:Arial}\nd{font-family:var(--font-body)}\ne{color:var(--color-ink)}' },
   ]);
   assert.deepEqual(issues.map((i) => [i.code, i.line]), [['E_CSS_RAW_COLOR', 1], ['E_CSS_RAW_COLOR', 3], ['E_CSS_RAW_FONT', 4]]);

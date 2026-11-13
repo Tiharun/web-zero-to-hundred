@@ -50,6 +50,12 @@ export const SCENES = [
   // M9: 본문 아래쪽 부품. scrollTo 의 첫 요소를 상단 바 바로 아래로 옮겨 찍는다
   { id: 'day-code', hash: '#/day/p1-d01', progress: P1_FIRST_THREE, scrollTo: 'figure.code' },
   { id: 'day-table', hash: '#/day/p1-d01', progress: P1_FIRST_THREE, scrollTo: '.lesson-body table' },
+  { id: 'day-answer', hash: '#/day/p1-d01', progress: P1_FIRST_THREE, scrollTo: 'details.answer' },
+  { id: 'day-trouble', hash: '#/day/p1-d01', progress: P1_FIRST_THREE, open: '.lesson-body .ts-entry > summary', waitFor: '.lesson-body .ts-entry[open]', scrollTo: '.lesson-body .ts-entry' },
+  { id: 'day-foot', hash: '#/day/p1-d01', progress: P1_FIRST_THREE, scrollTo: '.lesson-foot' },
+  { id: 'day-check', hash: '#/day/p1-d04', progress: P1_FIRST_THREE, open: '.lesson-body li.task input[data-check]', waitFor: '.lesson-body li.task.is-checked', scrollTo: '.lesson-body li.task' },
+  { id: 'day-goal', hash: '#/day/p1-d04', progress: P1_FIRST_THREE, open: '.lesson-body li.task input[data-check]', waitFor: '.lesson-body li.task.is-checked', scrollTo: '.lesson-foot' },
+  { id: 'day-quest', hash: '#/day/p1-d01', progress: P1_FIRST_THREE, widths: [375, 768], open: '.quest-mini > summary', waitFor: '.quest-mini[open]' },
   { id: 'settings', hash: '#/settings', progress: null },
   { id: 'notfound', hash: '#/nope', progress: null },
   { id: 'confirm', hash: '#/settings', progress: null, open: '[data-testid="reset-button"]', waitFor: '#confirm-dialog[open]' },
@@ -123,6 +129,8 @@ async function shoot(scene, width, theme) {
         el.scrollIntoView({ block: 'start' });
         // 고정된 상단 바에 가리지 않게 바 높이 + 16px 만큼 되돌린다
         window.scrollBy(0, -((document.querySelector('.topbar')?.offsetHeight ?? 0) + 16));
+        // 프로그램 스크롤의 scroll 이벤트가 늦게 올 때가 있어, 퀘스트 로그가 옮긴 위치로 다시 재게 직접 한 번 보낸다
+        window.dispatchEvent(new Event('scroll'));
         await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       });
     }

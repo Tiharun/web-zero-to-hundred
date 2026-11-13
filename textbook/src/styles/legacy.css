@@ -2,30 +2,23 @@
    아직 개편하지 않은 화면(홈 본문, Day 본문, 검색, 설정)이 새 팔레트로 보이게 잇는 다리다.
    뒤 마일스톤이 화면을 개편할 때마다 여기서 이름을 지운다. 새 이름은 더하지 않는다(빌드가 막는다).
    알림·코드·위험 색도 이제 DESIGN.md 토큰을 가리킨다(M8). 테마는 새 토큰이 맡으므로 여기엔 다크 블록이 없다.
-   M9: Day 본문·코드 블록이 새 토큰을 직접 써서 코드·토큰 색과 쓰지 않게 된 알림 이름을 지웠다. */
+   M9: Day 본문·코드 블록이 새 토큰을 직접 써서 코드·토큰 색과 쓰지 않게 된 알림 이름을 지웠다.
+   M10: Day 아래쪽(정답·체크리스트·완료·이전/다음)이 새 토큰을 직접 써서 면·선·완료 색과 꿀팁 이름을 지웠다. */
 
 :root {
   --bg: var(--color-paper);
-  --surface: var(--color-card);
-  --surface-2: var(--color-track);
-  --ok-soft: var(--color-track);
   --text: var(--color-ink);
   --link: var(--color-ink);
   --muted: var(--color-ink-2);
-  --border: var(--color-rule);
-  --border-strong: var(--color-line);
   /* One Pink Rule: 옛 화면에서 분홍 면이 퍼지지 않게 남색으로 둔다 */
   --accent: var(--color-ink);
   --on-accent: var(--color-card);
-  --ok: var(--color-xp);
   --shadow: none;
   --font-mono: var(--font-code);
   --radius: var(--radius-card);
   --radius-sm: var(--radius-btn);
   --measure: 72ch;
 
-  --tip-bg: var(--color-tip-bg);
-  --tip-line: var(--color-tip-line);
   --warn-bg: var(--color-warn-bg);
   --warn-line: var(--color-warn-line);
 }
