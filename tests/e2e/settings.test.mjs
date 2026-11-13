@@ -180,3 +180,172 @@ test('reduced motion: the confirm modal opens and closes at once', TIMEOUT, asyn
     { reducedMotion: 'reduce' },
   );
 });
+
+// ───────── 진도 백업: 불러오기 · Shake · 왕복 ─────────
+
+/** Element.animate 를 감싸 id 가 있는 애니메이션을 window.__anims 에 쌓는다 (300ms 짜리 Shake 를 놓치지 않는다) */
+function recordAnimations() {
+  window.__anims = [];
+  const original = Element.prototype.animate;
+  Element.prototype.animate = function (keyframes, options) {
+    if (options && typeof options === 'object' && options.id) window.__anims.push({ id: options.id, cls: String(this.className) });
+    return original.call(this, keyframes, options);
+  };
+}
+const shakesOn = (page, cls) => page.evaluate((c) => window.__anims.filter((a) => a.id === 'shake' && a.cls.split(/\s+/).includes(c)).length, cls);
+
+/** fa-d01 을 끝낸 백업 파일 내용 (completed 에 더할 Day 를 넣을 수 있다) */
+function backupText(extra = []) {
+  const completed = Object.fromEntries(['fa-d01', ...extra].map((id) => [id, '2026-11-13T00:00:00.000Z']));
+  return JSON.stringify({ app: 'web-zero-to-hundred', schema: 1, exportedAt: '2026-11-13T00:00:00.000Z', progress: { version: 1, completed, checks: {}, lastDay: null, theme: 'system' } });
+}
+const jsonFile = (name, text) => ({ name, mimeType: 'application/json', buffer: Buffer.from(text) });
+
+/** 홈에서 진도가 같은지 견줄 값들 */
+async function homeSnapshot(page) {
+  await page.getByTestId('level-panel').waitFor();
+  return {
+    days: await stat(page, 'days'),
+    xp: await stat(page, 'xp'),
+    next: await page.getByTestId('continue-button').getAttribute('href'),
+    fb: await sidebarState(page, 'fb-d01'),
+  };
+}
+
+test('a backup round-trips into a fresh browser with the same home', TIMEOUT, async () => {
+  const a = await newContext({ progress: ['fa-d01', 'fa-d02'] });
+  const b = await newContext();
+  try {
+    const { page: pa, errors: ea } = await openPage(a, '#/');
+    const expected = await homeSnapshot(pa);
+    await pa.locator('#settings-link').click();
+    await waitRoute(pa, '#/settings');
+    const [download] = await Promise.all([pa.waitForEvent('download'), pa.getByTestId('export-button').click()]);
+    assert.match(download.suggestedFilename(), /^web-zero-to-hundred-progress-\d{4}-\d{2}-\d{2}\.json$/);
+    const file = await download.path();
+
+    const { page: pb, errors: eb } = await openPage(b, '#/settings');
+    await pb.getByTestId('import-input').setInputFiles(file);
+    await pb.getByTestId('confirm-modal').waitFor();
+    assert.equal(await pb.locator('#confirm-title').innerText(), '지금 진도를 백업 파일의 진도로 바꿀까요?');
+    const ok = pb.getByTestId('confirm-ok');
+    assert.equal(await ok.innerText(), '백업으로 바꾸기');
+    assert.match(await ok.getAttribute('class'), /\bbtn-primary\b/);
+    await ok.click();
+    await eventually(async () => assert.match(await pb.getByTestId('import-message').innerText(), /완료한 Day 2개/));
+    await pb.locator('.brand').first().click();
+    await waitRoute(pb, '#/');
+    assert.deepEqual(await homeSnapshot(pb), expected, '다른 브라우저의 홈도 진도가 같다');
+    await pb.reload();
+    assert.deepEqual(await homeSnapshot(pb), expected, '불러온 진도는 저장된다');
+    assert.deepEqual([...ea, ...eb], []);
+  } finally {
+    await a.close();
+    await b.close();
+  }
+});
+
+test('cancelling the import modal keeps progress and says so', TIMEOUT, async () => {
+  await withPage(
+    '#/settings',
+    async (page) => {
+      await page.getByTestId('import-input').setInputFiles(jsonFile('backup.json', backupText(['fa-d02'])));
+      await page.getByTestId('confirm-modal').waitFor();
+      await page.getByTestId('confirm-cancel').click();
+      await eventually(async () => assert.equal(await page.getByTestId('import-message').innerText(), '가져오기를 취소했어요. 지금 진도는 그대로예요.'));
+      assert.equal(await sidebarState(page, 'fa-d02'), 'today');
+      await eventually(async () => assert.equal(await activeTestId(page), 'import-input', '진도 불러오기 칸으로 돌아온다'));
+    },
+    { progress: ['fa-d01'] },
+  );
+});
+
+test('unknown days are skipped after confirming and counted', TIMEOUT, async () => {
+  await withPage(
+    '#/settings',
+    async (page) => {
+      await page.getByTestId('import-input').setInputFiles(jsonFile('backup.json', backupText(['fa-d02', 'zz-d99'])));
+      await page.getByTestId('confirm-modal').waitFor();
+      assert.match(await page.locator('#confirm-body').innerText(), /이 교재에 없는 Day 1개는 건너뛰어요\./);
+      await page.getByTestId('confirm-ok').click();
+      await eventually(async () => assert.match(await page.getByTestId('import-message').innerText(), /이 교재에 없는 Day 1개는 건너뛰었어요\./));
+      assert.equal(await sidebarState(page, 'fa-d02'), 'done');
+    },
+    { progress: ['fa-d01'] },
+  );
+});
+
+test('a broken or foreign file shakes the import button and explains without touching progress', TIMEOUT, async () => {
+  await withPage(
+    '#/settings',
+    async (page) => {
+      const message = page.getByTestId('import-message');
+      const cases = [
+        ['other.json', '{"app":"other"}', '이 교재의 백업 파일이 아니에요. 이 교재에서 내보낸 백업 파일을 골라 주세요.'],
+        ['broken.json', 'not json', 'JSON 파일이 아니에요. 이 교재에서 내보낸 백업 파일(.json)을 골라 주세요.'],
+      ];
+      for (const [i, [name, text, reason]] of cases.entries()) {
+        await page.getByTestId('import-input').setInputFiles(jsonFile(name, text));
+        await eventually(async () => assert.equal(await message.innerText(), reason));
+        assert.equal(await message.getAttribute('data-kind'), 'error');
+        assert.equal(await message.getAttribute('role'), 'status');
+        assert.equal(await shakesOn(page, 'file-btn'), i + 1, `${name}: 불러오기 버튼이 흔들린다`);
+        assert.equal(await page.getByTestId('confirm-modal').isVisible(), false, '확인 Modal 은 열리지 않는다');
+        assert.equal(await sidebarState(page, 'fa-d01'), 'done');
+      }
+    },
+    { progress: ['fa-d01'], init: recordAnimations },
+  );
+});
+
+test('an empty file shakes and explains without touching progress', TIMEOUT, async () => {
+  await withPage(
+    '#/settings',
+    async (page) => {
+      const message = page.getByTestId('import-message');
+      await page.getByTestId('import-input').setInputFiles(jsonFile('empty.json', ''));
+      await eventually(async () => assert.notEqual(await message.innerText(), ''));
+      assert.equal(await message.getAttribute('data-kind'), 'error');
+      assert.equal(await shakesOn(page, 'file-btn'), 1);
+      assert.equal(await sidebarState(page, 'fa-d01'), 'done');
+    },
+    { progress: ['fa-d01'], init: recordAnimations },
+  );
+});
+
+test('reduced motion: a failed import explains without shaking', TIMEOUT, async () => {
+  await withPage(
+    '#/settings',
+    async (page) => {
+      const message = page.getByTestId('import-message');
+      await page.getByTestId('import-input').setInputFiles(jsonFile('other.json', '{"app":"other"}'));
+      await eventually(async () => assert.match(await message.innerText(), /백업 파일이 아니에요/));
+      assert.equal(await shakesOn(page, 'file-btn'), 0);
+    },
+    { reducedMotion: 'reduce', init: recordAnimations },
+  );
+});
+
+test('import works in memory when storage is blocked', TIMEOUT, async () => {
+  await withPage(
+    '#/settings',
+    async (page) => {
+      assert.match(await page.locator('.settings .notice').innerText(), /저장할 수 없어요/);
+      assert.equal(await page.locator('.settings .notice').getAttribute('role'), 'status');
+      await page.getByTestId('import-input').setInputFiles(jsonFile('backup.json', backupText(['fa-d02'])));
+      await page.getByTestId('confirm-ok').click();
+      await eventually(async () => assert.equal(await sidebarState(page, 'fa-d02'), 'done'));
+      assert.equal(await page.getByTestId('storage-banner').isVisible(), true);
+    },
+    {
+      init: () => {
+        Object.defineProperty(window, 'localStorage', {
+          configurable: true,
+          get() {
+            throw new DOMException('access denied', 'SecurityError');
+          },
+        });
+      },
+    },
+  );
+});

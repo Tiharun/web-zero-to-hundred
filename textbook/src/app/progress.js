@@ -234,6 +234,13 @@ export function percent(cur, prog, track) {
 
 // ───────── 백업 ─────────
 
+const pad2 = (n) => String(n).padStart(2, '0');
+
+/** 내보내기 파일 이름: 백업 식별자 + 그 기기의 날짜 (예: web-zero-to-hundred-progress-2026-01-05.json) */
+export function backupFilename(date) {
+  return `${BACKUP_APP}-progress-${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}.json`;
+}
+
 export function exportBackup(prog, nowIso) {
   return JSON.stringify({ app: BACKUP_APP, schema: BACKUP_SCHEMA, exportedAt: nowIso, progress: prog }, null, 2);
 }

@@ -281,39 +281,6 @@ test('storage unavailable banner', TIMEOUT, async () => {
   );
 });
 
-test('corrupt backup keeps progress', TIMEOUT, async () => {
-  await withPage(async (page, app) => {
-    let dialogs = 0;
-    page.on('dialog', (dialog) => {
-      dialogs++;
-      return dialog.dismiss();
-    });
-    await visit(page, app, '#/day/fa-d01');
-    await completeDay(page, 'fa-d01');
-
-    await page.locator('#settings-link').click();
-    await waitRoute(page, '#/settings');
-    await page.getByTestId('import-input').setInputFiles({
-      name: 'other.json',
-      mimeType: 'application/json',
-      buffer: Buffer.from('{"app":"other"}'),
-    });
-    const message = page.getByTestId('import-message');
-    await message.waitFor({ state: 'visible' });
-    assert.match(await message.innerText(), /백업 파일이 아니에요/);
-    assert.equal(dialogs, 0, '오류인 파일은 덮어쓸지 묻지도 않아요');
-
-    // JSON 이 아닌 파일도 같은 방식으로 거절한다
-    await page.getByTestId('import-input').setInputFiles({ name: 'broken.json', mimeType: 'application/json', buffer: Buffer.from('{oops') });
-    await eventually(async () => assert.match(await message.innerText(), /JSON 파일이 아니에요/));
-
-    assert.equal(await sidebarState(page, 'fa-d01'), 'done');
-    await page.reload();
-    await waitRoute(page, '#/settings');
-    assert.equal(await sidebarState(page, 'fa-d01'), 'done', '새로고침 뒤에도 진도가 남아 있어요');
-  });
-});
-
 test('answer gate', TIMEOUT, async () => {
   await withPage(async (page, app) => {
     await visit(page, app, '#/day/fa-d01');
@@ -572,50 +539,6 @@ test('keyboard reachable', TIMEOUT, async () => {
 });
 
 // ───────────────────────── 더 확인하는 것들 ─────────────────────────
-
-test('valid backup imports only after confirmation and reports skipped days', TIMEOUT, async () => {
-  await withPage(async (page, app) => {
-    const asked = [];
-    let accept = false;
-    page.on('dialog', (dialog) => {
-      asked.push(dialog.message());
-      return accept ? dialog.accept() : dialog.dismiss();
-    });
-    await visit(page, app, '#/day/fa-d01');
-    await completeDay(page, 'fa-d01');
-    await visit(page, app, '#/settings');
-
-    // 내보내기: 이 교재의 백업 파일이 내려받아진다
-    const [download] = await Promise.all([page.waitForEvent('download'), page.getByTestId('export-button').click()]);
-    assert.match(download.suggestedFilename(), /^web-zero-to-hundred-.*\.json$/);
-    const exported = JSON.parse(await readFile(await download.path(), 'utf8'));
-    assert.equal(exported.app, 'web-zero-to-hundred');
-    assert.deepEqual(Object.keys(exported.progress.completed), ['fa-d01']);
-
-    // fa-d02 도 끝낸 백업 + 이 교재에 없는 Day 하나
-    const backup = structuredClone(exported);
-    backup.progress.completed['fa-d02'] = '2026-11-01T01:00:00.000Z';
-    backup.progress.completed['zz-d99'] = '2026-11-01T01:00:00.000Z';
-    const file = { name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) };
-    const message = page.getByTestId('import-message');
-
-    await page.getByTestId('import-input').setInputFiles(file); // 취소
-    await eventually(async () => assert.equal(asked.length, 1));
-    assert.match(asked[0], /바꿀까요|덮어/);
-    await eventually(async () => assert.match(await message.innerText(), /취소/));
-    assert.equal(await sidebarState(page, 'fa-d02'), 'today', '취소하면 진도가 그대로예요');
-
-    accept = true;
-    await page.getByTestId('import-input').setInputFiles(file);
-    await eventually(async () => assert.match(await message.innerText(), /1개/));
-    assert.match(await message.innerText(), /건너뛰/);
-    assert.equal(await sidebarState(page, 'fa-d02'), 'done');
-    assert.equal(await sidebarState(page, 'fb-d01'), 'today');
-    await page.reload();
-    await waitRoute(page, '#/settings');
-    assert.equal(await sidebarState(page, 'fb-d01'), 'today', '가져온 진도는 저장돼요');
-  });
-});
 
 test('mobile drawer opens as a dialog and closes by Escape, backdrop, button and link', TIMEOUT, async () => {
   await withPage(
@@ -1513,9 +1436,9 @@ test('help row: fixed order, real counts, and it opens the page', TIMEOUT, async
 
 test('home order: notice, top row, world map, other worlds, help', TIMEOUT, async () => {
   await withPage(async (page, app) => {
-    page.on('dialog', (dialog) => dialog.accept());
     await visit(page, app, '#/settings');
-    await page.getByTestId('reset-button').click(); // 초기화 안내가 홈 맨 위 .notice 로 한 번 뜬다
+    await page.getByTestId('reset-button').click();
+    await page.getByTestId('confirm-ok').click(); // 초기화 안내가 홈 맨 위 .notice 로 한 번 뜬다
     await waitRoute(page, '#/');
     await page.getByTestId('help-row').waitFor();
     const order = await page.locator('main .home > :not(h1)').evaluateAll((els) =>

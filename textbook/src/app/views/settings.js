@@ -1,15 +1,13 @@
 // 설정: 테마, 진도 백업(내보내기·불러오기), 진도 초기화, 교재 정보.
-import { emptyProgress, exportBackup, importBackup } from '../progress.js';
-import { h } from './common.js';
+import { shake } from '../motion.js';
+import { backupFilename, emptyProgress, exportBackup, importBackup } from '../progress.js';
+import { h, notice } from './common.js';
 
 const THEME_OPTIONS = [
   ['system', '기기 설정 따르기'],
   ['light', '밝게'],
   ['dark', '어둡게'],
 ];
-
-const pad = (n) => String(n).padStart(2, '0');
-const localDate = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 
 /** 글자를 파일로 내려받게 한다 */
 function download(filename, text) {
@@ -30,6 +28,12 @@ export function renderSettings(ctx, root) {
     message.dataset.kind = kind;
   };
 
+  /** 불러오기 실패: 이유 문장을 보이고 불러오기 버튼을 흔든다 (동작 줄이기면 문장만) */
+  const refuse = (input, text) => {
+    showMessage(text, 'error');
+    shake(input.closest('.file-btn'));
+  };
+
   async function onImport(event) {
     const input = event.target;
     const file = input.files?.[0];
@@ -38,18 +42,23 @@ export function renderSettings(ctx, root) {
     try {
       text = await file.text();
     } catch {
-      showMessage('파일을 읽지 못했어요. 다른 파일로 다시 해 보세요.', 'error');
       input.value = '';
+      refuse(input, '파일을 읽지 못했어요. 다른 파일로 다시 해 보세요.');
       return;
     }
     input.value = ''; // 같은 파일을 다시 골라도 change 가 일어나게 비운다
     const result = importBackup(text, cur);
     if (!result.ok) {
-      showMessage(result.error, 'error');
+      refuse(input, result.error);
       return;
     }
     const days = Object.keys(result.progress.completed).length;
-    if (!window.confirm(`지금 진도를 백업 파일의 진도로 바꿀까요?\n\n백업 파일에는 완료한 Day가 ${days}개 있어요. 지금 진도는 사라지고 되돌릴 수 없어요.`)) {
+    const skip = result.dropped > 0 ? ` 이 교재에 없는 Day ${result.dropped}개는 건너뛰어요.` : '';
+    const ok = await ctx.confirm(
+      { title: '지금 진도를 백업 파일의 진도로 바꿀까요?', body: `백업 파일에는 완료한 Day가 ${days}개 있어요. 지금 진도는 사라지고 되돌릴 수 없어요.${skip}`, ok: '백업으로 바꾸기' },
+      input,
+    );
+    if (!ok) {
       showMessage('가져오기를 취소했어요. 지금 진도는 그대로예요.', 'info');
       return;
     }
@@ -98,11 +107,13 @@ export function renderSettings(ctx, root) {
         'section',
         { class: 'panel' },
         h('h2', null, '진도 백업'),
-        h('p', { class: saved ? 'muted' : 'warn-text' }, saved ? '진도는 이 브라우저 안에 저장돼요. 브라우저 기록을 지우거나 다른 컴퓨터로 옮길 때는 백업 파일이 필요해요.' : '이 브라우저에서는 진도를 저장할 수 없어요. 이 창을 닫기 전에 꼭 백업 파일을 내보내 두세요.'),
+        saved
+          ? h('p', { class: 'muted' }, '진도는 이 브라우저 안에 저장돼요. 브라우저 기록을 지우거나 다른 컴퓨터로 옮길 때는 백업 파일이 필요해요.')
+          : notice('이 브라우저에서는 진도를 저장할 수 없어요. 이 창을 닫기 전에 꼭 백업 파일을 내보내 두세요.'),
         h(
           'div',
           { class: 'button-row' },
-          h('button', { class: 'btn', type: 'button', 'data-testid': 'export-button', onclick: () => download(`web-zero-to-hundred-progress-${localDate(new Date())}.json`, exportBackup(ctx.prog, ctx.now())) }, '진도 내보내기'),
+          h('button', { class: 'btn', type: 'button', 'data-testid': 'export-button', onclick: () => download(backupFilename(new Date()), exportBackup(ctx.prog, ctx.now())) }, '진도 내보내기'),
           h('label', { class: 'btn file-btn' }, '진도 불러오기', h('input', { class: 'sr-only', type: 'file', accept: '.json,application/json', 'data-testid': 'import-input', onchange: onImport })),
         ),
         message,

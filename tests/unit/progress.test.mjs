@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   STORAGE_KEY,
+  backupFilename,
   emptyProgress,
   normalizeProgress,
   isProjectComplete,
@@ -447,4 +448,8 @@ test('questState: pending wins and offers the last finished day', () => {
 test('questState: done when every day is finished', () => {
   assert.deepEqual(questState(makeCur(), withDone(['fa-d01', 'fa-d02', 'fb-d01'])), { kind: 'done', dayId: null, clearedId: null, reviewId: null, worldId: 'fb' });
   assert.equal(questState(makeCur(), withDone(['fa-d01', 'fa-d02', 'fb-d01'], null)).worldId, 'fb', 'lastDay 가 없으면 마지막 프로젝트');
+});
+
+test('backupFilename uses the backup app id and the local date', () => {
+  assert.equal(backupFilename(new Date(2026, 0, 5, 23, 30)), 'web-zero-to-hundred-progress-2026-01-05.json');
 });
