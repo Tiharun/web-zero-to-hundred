@@ -1,13 +1,48 @@
 /* ───────── 글 (Day · 부록 본문) ───────── */
 
-.lesson,
 .page-article {
   max-width: calc(var(--measure) + 2rem);
   line-height: 1.75; /* DESIGN.md Hierarchy "Body long" */
 }
-.lesson-meta {
-  margin: 0 0 24px;
-  color: var(--muted);
+/* DESIGN.md "Day 부품" Day 본문: 머리·본문·아래쪽을 담는 글 열 */
+.lesson {
+  max-width: var(--lesson-max);
+  line-height: 1.75;
+}
+
+/* ───────── Day 머리: 큰 번호 하나 + Headline 제목 + 메타 칩 ───────── */
+
+.lesson-head {
+  margin-bottom: var(--space-xl);
+}
+.lesson-num {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+  margin: var(--space-md) 0 var(--space-xs);
+  color: var(--color-ink);
+  font-size: var(--text-display);
+  font-weight: 800;
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+.lesson-num .label {
+  letter-spacing: 0; /* 모양은 공용 .label(Galmuri 12px). 큰 번호의 자간만 되돌린다 */
+}
+.lesson-head h1 {
+  max-width: 20ch;
+  margin: 0 0 var(--space-md);
+  font-size: var(--text-headline);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+.lesson-chips .is-code {
+  font-family: var(--font-code);
+  font-size: var(--text-code);
+  overflow-wrap: anywhere;
 }
 
 .day-outline {

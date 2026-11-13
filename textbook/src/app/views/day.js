@@ -1,7 +1,7 @@
 // Day 화면: 본문 템플릿을 붙이고, 체크박스·정답 게이트·코드 복사·완료 버튼을 연결한다.
 import { reveal } from '../motion.js';
 import { canComplete, canUncomplete, completeDay, dayState, isProjectComplete, newlyUnlocked, toggleCheck, uncompleteDay } from '../progress.js';
-import { breadcrumb, findDay, getPage, getProject, h, isDone, lockScreen, minutesText, textLink } from './common.js';
+import { breadcrumb, chips, findDay, getPage, getProject, h, isDone, lockScreen, minutesText, textLink } from './common.js';
 
 const COPY_RESET_MS = 2000;
 
@@ -210,7 +210,7 @@ export function renderDay(ctx, dayId, root) {
   if (day.ready === false) body.append(comingSoon(previous));
   else body.append(template.content.cloneNode(true));
 
-  const statusChip = h('span', { class: 'chip' });
+  const statusChip = h('li', { class: 'lesson-status' });
   const checklist = bindChecklist(ctx, dayId, body, () => renderFooter());
   bindAnswerGate(body);
   bindCopyButtons(ctx, body);
@@ -306,19 +306,32 @@ export function renderDay(ctx, dayId, root) {
       'article',
       { class: 'lesson', dataset: { dayId } },
       breadcrumb({ text: '홈', href: '#/' }, { text: project.title, href: `#/project/${project.id}` }, { text: `Day ${day.num}` }),
-      h(
-        'header',
-        { class: 'lesson-head' },
-        h('h1', null, `Day ${day.num} · ${day.title}`),
-        h('p', { class: 'lesson-meta' }, `${project.title} · ${index + 1} / ${project.days.length} · ${minutesText(day.minutes)}`, ' ', statusChip),
-        toc,
-      ),
+      dayHead(project, day, statusChip, toc),
       body,
       footer,
     ),
   );
   ctx.onCleanup(reveal(body.querySelectorAll('h2[id]'))); // 개편 설계서 6.3: Day 섹션 제목은 보일 때 올라온다
   return `Day ${day.num} · ${day.title}`;
+}
+
+/**
+ * Day 머리 (DESIGN.md "Day 부품" Day 머리): 큰 번호(장식) → 제목 → 메타 칩(예상 시간, 작업 폴더, 월드 이름, 상태).
+ * 화면 낭독기는 h1 안의 숨긴 "Day n · " 로 번호를 읽는다. statusChip 의 글자는 renderFooter 가 바꾼다.
+ */
+function dayHead(project, day, statusChip, toc) {
+  const meta = chips([minutesText(day.minutes), project.folder, project.title], Infinity);
+  meta.classList.add('lesson-chips');
+  meta.children[1]?.classList.add('is-code');
+  meta.append(statusChip);
+  return h(
+    'header',
+    { class: 'lesson-head' },
+    h('p', { class: 'lesson-num', 'aria-hidden': 'true' }, h('span', { class: 'label' }, 'Day'), h('span', { class: 'num' }, String(day.num))),
+    h('h1', null, h('span', { class: 'sr-only' }, `Day ${day.num} · `), day.title),
+    meta,
+    toc,
+  );
 }
 
 function uncompleteReason(cur, prog, project, index) {
