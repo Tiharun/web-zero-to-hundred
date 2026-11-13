@@ -124,8 +124,7 @@
 
 .lesson-body :not(pre) > code,
 .page-body :not(pre) > code,
-.lock-needs code,
-.facts code {
+.lock-needs code {
   padding: 0.12em 0.4em;
   background: var(--surface-2);
   border: 1px solid var(--border);

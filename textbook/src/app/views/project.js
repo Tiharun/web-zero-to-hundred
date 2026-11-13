@@ -1,9 +1,37 @@
-// 프로젝트 화면: 소개, 진도, Day 목록. 잠긴 프로젝트는 잠금 화면.
-import { dayState, projectState } from '../progress.js';
-import { breadcrumb, chips, doneCount, getProject, h, lockScreen, meter, minutesText } from './common.js';
+// 월드(프로젝트) 페이지 (DESIGN.md Cards "월드 페이지"·"월드 페이지 Day 행"): 머리, 결과물 카드, Day 목록.
+// 잠긴 월드는 잠금 화면이다. 분홍은 오늘 Day 번호 네모 하나뿐이고, 오늘이 다른 월드에 있으면 없다.
+import { continueTarget, navDayState, projectState } from '../progress.js';
+import { breadcrumb, chips, doneCount, getProject, h, lockScreen, meter, minutesText, worldLabel } from './common.js';
+import { px, worldEmblem } from './icons.js';
 
-const DAY_ICON = { locked: '🔒', done: '✅', next: '▶', open: '○' };
-const DAY_TEXT = { locked: '잠김', done: '완료', next: '다음 할 Day', open: '' };
+/** 화면 낭독기가 읽는 행 상태 (준비 중은 글자가 이미 보인다) */
+const STATE_TEXT = { done: '완료', today: '오늘', draft: '', open: '' };
+
+function dayRow(day, state) {
+  const mark = state === 'done' ? px('check') : state === 'draft' ? h('span', { class: 'row-draft' }, '준비 중') : null;
+  return h(
+    'li',
+    null,
+    h(
+      'a',
+      {
+        class: `world-day is-${state}`,
+        href: `#/day/${day.id}`,
+        'aria-current': state === 'today' ? 'step' : null,
+        dataset: { day: day.id, state },
+      },
+      h('span', { class: 'row-num' }, String(day.num)),
+      h('span', { class: 'world-day-body' }, h('span', { class: 'world-day-title' }, day.title), h('span', { class: 'world-day-summary' }, day.summary)),
+      h(
+        'span',
+        { class: 'world-day-meta' },
+        h('span', { class: 'label' }, minutesText(day.minutes)),
+        h('span', { class: 'row-mark' }, mark),
+        STATE_TEXT[state] && h('span', { class: 'sr-only' }, `, ${STATE_TEXT[state]}`),
+      ),
+    ),
+  );
+}
 
 export function renderProject(ctx, pid, root) {
   const { cur, prog } = ctx;
@@ -19,45 +47,41 @@ export function renderProject(ctx, pid, root) {
   const total = project.days.length;
   const done = doneCount(prog, project);
   const pct = Math.floor((done * 100) / Math.max(total, 1));
+  const todayId = continueTarget(cur, prog);
 
   root.append(
     h(
       'article',
-      { class: 'project', dataset: { project: project.id } },
+      { class: 'world-page', dataset: { project: project.id } },
       breadcrumb({ text: '홈', href: '#/' }, { text: project.title }),
       h(
         'header',
-        { class: 'project-head' },
+        { class: 'world-head' },
+        h('span', { class: 'badge' }, px(worldEmblem(project), { cls: 'emblem', scale: 3 })),
+        h('p', { class: 'label world-head-tag' }, worldLabel(project)),
         h('h1', null, project.title),
-        h('p', { class: 'lead' }, project.subtitle),
-        chips(project.stack ?? [], Infinity),
+        project.subtitle && h('p', { class: 'lead' }, project.subtitle),
+        project.summary && h('p', { class: 'world-summary' }, project.summary),
       ),
       h(
-        'dl',
-        { class: 'facts' },
-        h('div', null, h('dt', null, '이 프로젝트에서는'), h('dd', null, project.summary)),
-        h('div', null, h('dt', null, '끝나면 남는 결과물'), h('dd', null, project.outcome)),
-        h('div', null, h('dt', null, '작업 폴더'), h('dd', null, h('code', null, project.folder))),
+        'section',
+        { class: 'card world-outcome', 'aria-labelledby': 'world-outcome-h' },
+        h('h2', { class: 'label', id: 'world-outcome-h' }, '끝나면 남는 결과물'),
+        h('p', { class: 'world-outcome-text' }, project.outcome),
+        project.stack?.length > 0 && chips(project.stack, Infinity),
+        h(
+          'dl',
+          { class: 'world-facts' },
+          h('div', null, h('dt', null, '작업 폴더'), h('dd', null, h('code', null, project.folder))),
+          h('div', null, h('dt', null, '진도'), h('dd', null, h('span', { class: 'num' }, `${done} / ${total}`), ' Day 완료')),
+        ),
+        meter(pct, `${project.title} 진도`),
       ),
-      h('div', { class: 'project-progress' }, h('p', null, h('strong', null, `${done} / ${total} Day 완료`), ` (${pct}%)`), meter(pct, `${project.title} 진도`)),
-      h('h2', null, 'Day 목록'),
+      h('h2', { class: 'world-days-title', id: 'world-days-h' }, 'Day 목록'),
       h(
         'ol',
-        { class: 'day-list' },
-        project.days.map((day) => {
-          const state = dayState(cur, prog, day.id);
-          return h(
-            'li',
-            null,
-            h(
-              'a',
-              { class: 'day-row', href: `#/day/${day.id}`, dataset: { row: day.id, state } },
-              h('span', { class: 'mark', 'aria-hidden': 'true' }, DAY_ICON[state]),
-              h('span', { class: 'day-row-body' }, h('strong', null, `Day ${day.num} · ${day.title}`), h('span', { class: 'muted' }, day.summary)),
-              h('span', { class: 'day-row-meta' }, minutesText(day.minutes), DAY_TEXT[state] && h('span', { class: 'sr-only' }, ` (${DAY_TEXT[state]})`)),
-            ),
-          );
-        }),
+        { class: 'card world-days', 'aria-labelledby': 'world-days-h' },
+        project.days.map((day) => dayRow(day, navDayState(cur, prog, day.id, todayId))),
       ),
     ),
   );

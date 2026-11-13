@@ -347,16 +347,19 @@ button.row {
   align-items: center;
   color: var(--color-ink-2);
 }
-.row.is-done .row-mark {
+.row.is-done .row-mark,
+.world-day.is-done .row-mark {
   color: var(--color-progress);
 }
-.row.is-done .row-title {
+.row.is-done .row-title,
+.world-day.is-done .world-day-title {
   color: var(--color-ink-2);
 }
 .row.is-today {
   font-weight: 800;
 }
-.row.is-today .row-num {
+.row.is-today .row-num,
+.world-day.is-today .row-num {
   display: grid;
   place-items: center;
   width: 24px;

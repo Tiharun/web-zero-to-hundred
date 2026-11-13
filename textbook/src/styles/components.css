@@ -228,19 +228,17 @@ kbd {
   color: var(--color-ink-2);
 }
 
+/* 진도 막대 (DESIGN.md Cards "진도 막대"): 완료 비율만 초록. 폭은 움직이지 않는다 */
 .meter {
-  height: 12px;
-  border-radius: 999px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
+  height: var(--space-sm);
+  border-radius: var(--radius-btn);
+  background: var(--color-track);
   overflow: hidden;
 }
 .meter > span {
   display: block;
   height: 100%;
-  border-radius: inherit;
-  background: var(--ok-bar);
-  transition: width 0.4s ease;
+  background: var(--color-progress);
 }
 
 .breadcrumb ol {

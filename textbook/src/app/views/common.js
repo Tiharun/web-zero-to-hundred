@@ -58,7 +58,7 @@ export const minutesText = (minutes) => `약 ${minutes}분`;
 
 // ───────── 조각 ─────────
 
-/** 진도 막대. 값은 0..100 */
+/** 진도 막대 (DESIGN.md "진도 막대"). 값은 0..100, 완료 비율만 넣는다 */
 export function meter(percent, label) {
   return h(
     'div',
