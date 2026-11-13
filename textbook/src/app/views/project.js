@@ -8,7 +8,9 @@ import { px, worldEmblem } from './icons.js';
 const STATE_TEXT = { done: '완료', today: '오늘', draft: '', open: '' };
 
 function dayRow(day, state) {
-  const mark = state === 'done' ? px('check') : state === 'draft' ? h('span', { class: 'row-draft' }, '준비 중') : null;
+  const mark = state === 'draft' ? h('span', { class: 'row-draft' }, '준비 중') : null;
+  // 보드게임 칸(DESIGN.md Board Tiles): 완료는 초록 칸에 도트 체크, 오늘은 분홍 칸, 그 밖은 번호
+  const tile = h('span', { class: 'day-tile', 'aria-hidden': 'true' }, state === 'done' ? px('check') : String(day.num));
   return h(
     'li',
     null,
@@ -20,7 +22,8 @@ function dayRow(day, state) {
         'aria-current': state === 'today' ? 'step' : null,
         dataset: { day: day.id, state },
       },
-      h('span', { class: 'row-num' }, String(day.num)),
+      tile,
+      h('span', { class: 'sr-only' }, `Day ${day.num} `),
       h('span', { class: 'world-day-body' }, h('span', { class: 'world-day-title' }, day.title), h('span', { class: 'world-day-summary' }, day.summary)),
       h(
         'span',
@@ -46,8 +49,9 @@ export function renderProject(ctx, pid, root) {
 
   const total = project.days.length;
   const done = doneCount(prog, project);
-  const pct = Math.floor((done * 100) / Math.max(total, 1));
   const todayId = continueTarget(cur, prog);
+  // 보상 XP: 이 월드 Day 들의 예상 시간 합 (DESIGN.md HUD "XP 공식")
+  const reward = project.days.reduce((n, d) => n + d.minutes, 0);
 
   root.append(
     h(
@@ -66,16 +70,17 @@ export function renderProject(ctx, pid, root) {
       h(
         'section',
         { class: 'card world-outcome', 'aria-labelledby': 'world-outcome-h' },
-        h('h2', { class: 'label', id: 'world-outcome-h' }, '끝나면 남는 결과물'),
+        h('h2', { class: 'label world-outcome-head', id: 'world-outcome-h' }, px('trophy'), '클리어 보상'),
         h('p', { class: 'world-outcome-text' }, project.outcome),
         project.stack?.length > 0 && chips(project.stack, Infinity),
         h(
           'dl',
           { class: 'world-facts' },
           h('div', null, h('dt', null, '작업 폴더'), h('dd', null, h('code', null, project.folder))),
+          h('div', null, h('dt', null, '보상'), h('dd', { class: 'num world-xp' }, px('coin'), `+${reward} XP`)),
           h('div', null, h('dt', null, '진도'), h('dd', null, h('span', { class: 'num' }, `${done} / ${total}`), ' Day 완료')),
         ),
-        meter(pct, `${project.title} 진도`),
+        meter(done, total, `${project.title} 진도`),
       ),
       h('h2', { class: 'world-days-title', id: 'world-days-h' }, 'Day 목록'),
       h(

@@ -539,14 +539,14 @@ components:
 - **설정 카드:** 기본 카드, 안쪽 `var(--space-lg)`(640px 이하 `var(--space-md)`), 카드 사이 `var(--space-lg)`. 제목 Title small, 설명 Body `ink-2`. 결과 문장(백업 불러오기)은 알림 상자 모양이고 종류별 색은 알림 상자 색이 정해질 때(M8) 입힌다.
 - **상태 화면(404·잠김·오류):** 도트 아이콘 3배(404·오류 렌치, 잠김 자물쇠) → 제목 → lead → 주 버튼 하나 + 글자 링크. 셸(상단 바·사이드바)은 그대로 둔다.
 - **준비 중 Day 칸:** 점선 2px `line`(404·잠김 화면과 같다), 턱 없음, 바탕 `paper`, 모서리 12px, 글자 `ink-2`. "이 Day는 아직 준비 중이에요." + 복습 글자 링크(앞 Day가 있을 때) 또는 "홈으로".
-- **월드 페이지:** 빵부스러기 → 머리(월드 카드와 같은 40px 문장 칸 + 엠블럼 3배, 월드 태그 Label, 제목, lead, 설명 Body `ink-2`) → 결과물 카드(기본 카드, 안쪽 `var(--space-lg)`, 640px 이하 `var(--space-md)`, 세로 간격 `var(--space-sm)`: Label 머리 "끝나면 남는 결과물", 결과물 문장 Body `ink` 800, 기술 칩 전부, 사실 줄 작업 폴더·진도 `n / 전체 Day 완료`, 진도 막대) → 제목 "Day 목록" → Day 목록 카드(기본 카드, 안쪽 `var(--space-2xs)`). 주 버튼은 두지 않는다.
-- **월드 페이지 Day 행:** `grid-template-columns: 28px minmax(0, 1fr) auto`, 최소 48px, 안쪽 `var(--space-sm)`, 모서리 6px, 행 사이 1px `rule` 선, hover `track`, 누름 `rule`. 번호는 사이드바 Day 행과 같다(오늘은 24px 분홍 네모, `aria-current="step"`. 오늘 Day가 다른 월드에 있으면 분홍이 없다). 가운데는 제목(15px 800)과 요약(15px `ink-2`). 오른쪽은 예상 시간 Label과 상태 표시(완료 초록 도트 체크와 제목 `ink-2`, 준비 중 Galmuri "준비 중"). 640px 이하에서 오른쪽 칸은 가운데 칸 아래로 내려간다.
-- **진도 막대:** 높이 `var(--space-sm)`, 바탕 `track`, 모서리 `--radius-btn`, 채움 `progress`(완료 비율만). 폭은 움직이지 않는다.
-- **부록 머리:** 빵부스러기 → 도움말 도트 그림 3배(막혔을 때 칸과 같은 그림) → 제목 → lead(`ink-2`, 페이지 설명). 그림이 없는 페이지는 그림 없이 같다.
-- **목차 카드(용어 색인·문제 해결 목차):** 기본 카드, 안쪽 `var(--space-md)`, Label 머리. 색인·Day 링크 칸: 최소 40×40px(`pointer: coarse`에서 44px), 15px 800 `ink`, 모서리 6px, 1px `rule` 테두리, hover `track`, 칸 사이 `var(--space-2xs)`, 줄바꿈 허용.
-- **용어 묶음:** 묶음 제목(Title small) 아래 용어 항목. 항목 사이 1px `rule` 선, 위아래 `var(--space-md)`.
+- **월드 페이지:** 빵부스러기 → 머리(월드 카드와 같은 40px 문장 칸 + 엠블럼 3배, 월드 태그 Label, 제목, lead, 설명 Body `ink-2`) → 결과물 카드(기본 카드, 안쪽 `var(--space-lg)`, 640px 이하 `var(--space-md)`, 세로 간격 `var(--space-sm)`: Label 머리 트로피 도트 아이콘 + "클리어 보상", 결과물 문장 Body `ink` 800, 기술 칩 전부, 사실 줄 작업 폴더·보상(코인 도트 아이콘 + Galmuri "+n XP", n은 그 월드 Day 예상 시간의 합)·진도 `n / 전체 Day 완료`, 진도 막대) → 제목 "Day 목록" → Day 목록 카드(기본 카드, 안쪽 `var(--space-2xs)`). 주 버튼은 두지 않는다.
+- **월드 페이지 Day 행:** `grid-template-columns: 34px minmax(0, 1fr) auto`, 최소 48px, 안쪽 `var(--space-sm)`, 모서리 6px, 행 사이 1px `rule` 선, hover `track`, 누름 `rule`. 왼쪽은 **Day 칸**(Board Tiles와 같은 34px 칸: 남음 번호, 완료 초록 칸에 도트 체크, 오늘 분홍 칸에 Wanted Sans 800 번호와 `aria-current="step"`, 준비 중 점선·턱 없음). 행에 손을 올리면 칸이 3px 떠오르고(턱 6px) 누르면 2px 내려간다(턱 1px). 오늘 Day가 다른 월드에 있으면 분홍이 없다. 가운데는 제목(15px 800)과 요약(15px `ink-2`). 오른쪽은 예상 시간 Label과 준비 중 Galmuri "준비 중"(완료 행의 제목은 `ink-2`). 640px 이하에서 오른쪽 칸은 가운데 칸 아래로 내려간다.
+- **진도 막대:** XP 막대와 같은 겉(24px, 2px `rule` 테두리, 모서리 6px, 바탕 `card`, 안쪽 4px). 칸 수는 그 월드의 Day 수(`--n`), 칸 사이 2px, 빈 칸 `cell`, 채운 칸 `progress`를 끝낸 비율(`--p`)만큼 잘라 보인다. 폭은 움직이지 않는다. `role="progressbar"`, 읽는 값 "n / 전체 Day".
+- **부록 머리:** 빵부스러기 → 40px 문장 칸(월드 페이지와 같다) 안의 도움말 도트 그림 3배(막혔을 때 칸과 같은 그림) → 제목 → lead(`ink-2`, 페이지 설명). 그림이 없는 페이지는 그림 없이 같다.
+- **목차 카드(용어 색인·문제 해결 목차):** 기본 카드, 안쪽 `var(--space-md)`, Label 머리. 색인·Day 링크는 **목차 열쇠**: 최소 40×40px(`pointer: coarse`에서 44px), 15px 800 `ink`, 바탕 `card`, 모서리 6px, 2px `ink-2` 테두리와 같은 색 턱 3px(Board Tiles 남음과 같다). hover 3px 떠오름(턱 6px), 누름 2px 내려감(턱 1px), 움직임 줄이기에서는 움직이지 않는다. 칸 사이 `var(--space-xs)`, 줄바꿈 허용.
+- **용어 묶음:** 묶음 머리(첫 자음 제목 Title small을 40px 문장 칸 모양에 담고, 옆에 Label "용어 n개") 아래 용어 항목. 항목 사이 1px `rule` 선, 위아래 `var(--space-md)`.
 - **찾아온 항목:** 주소로 찾아온 용어·증상은 `track` 바탕(사방 `var(--space-xs)` 같은 색 띠)으로 표시하고 2.4초 뒤 사라진다(분홍을 쓰지 않는다).
-- **증상 Accordion:** `<details>` 한 줄. 요약 줄 최소 48px, 17px 800 줄간격 1.5, 왼쪽에 선 꺾쇠(열리면 180° 회전, 사이드바와 같다), 증상 사이 1px `rule` 선. 펼친 내용은 Body, 아래 `var(--space-md)`. 월드 제목(h2)과 Day 묶음 제목(h3, "Day n · 제목")이 heading이고 요약 줄 안에는 heading을 넣지 않는다. 머리 오른쪽에 "모두 펼치기" 글자 버튼(모두 펼쳐져 있으면 "모두 접기").
+- **증상 Accordion:** `<details>` 한 줄. 요약 줄 최소 48px, 17px 800 줄간격 1.5, 왼쪽에 선 꺾쇠(열리면 180° 회전, 사이드바와 같다), 증상 사이 1px `rule` 선. 펼친 내용은 Body, 아래 `var(--space-md)`. 월드 제목(h2, 앞에 40px 문장 칸과 엠블럼)과 Day 묶음 제목(h3, 앞에 Day 칸 번호, 화면 낭독기 이름 "Day n · 제목")이 heading이고 요약 줄 안에는 heading을 넣지 않는다. 머리 오른쪽에 "모두 펼치기" 글자 버튼(모두 펼쳐져 있으면 "모두 접기").
 
 ### Board Tiles (signature)
 보드게임 칸. 둥근 네모(모서리 6px)에 2px 테두리와 같은 색 턱. 테두리·턱 색은 `--tile-edge` 하나로 묶는다.

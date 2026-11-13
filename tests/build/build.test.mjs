@@ -337,7 +337,7 @@ test('troubleshooting page is generated from its fragments', async () => {
     assert.equal(r.status, 0, r.output);
     const html = await readFile(out, 'utf8');
     const page = template(html, 't-page-help');
-    assert.match(page, /<h2[^>]*>픽스처 프로젝트 A<\/h2>/);
+    assert.match(page, /<h2[^>]*><span class="badge">[^]*?<\/span>픽스처 프로젝트 A<\/h2>/);
     assert.match(page, /화면이 비어 있어요/);
     assert.match(embeddedData(html).search.find((s) => s.id === 'help').text, /저장했는지/);
   });

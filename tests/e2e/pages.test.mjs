@@ -131,6 +131,9 @@ test('world page shows the outcome sentence, every stack chip and the day list',
     assert.equal(await world.locator('.world-day[aria-current="step"]').getAttribute('data-day'), 'fa-d01');
     assert.match(await world.locator('.world-day.is-draft').innerText(), /준비 중/);
     assert.match(await world.locator('.world-facts').innerText(), /0 \/ 2 Day 완료/);
+    // 보상 XP 는 Day 예상 시간의 합(60 + 90), 머리 글자는 트로피 도트 아이콘과 함께
+    assert.equal(await world.locator('.world-xp').innerText(), '+150 XP');
+    assert.equal(await world.locator('.world-outcome-head .px').count(), 1);
   });
 });
 
@@ -140,12 +143,14 @@ test('a done day turns green and the meter shows the real ratio', TIMEOUT, async
     async (page) => {
       const done = page.locator('.world-day[data-day="fa-d01"]');
       assert.equal(await done.getAttribute('data-state'), 'done');
-      assert.equal(await done.locator('.row-mark .px').count(), 1);
+      assert.equal(await done.locator('.day-tile .px').count(), 1);
       assert.equal(await page.locator('.world-day[data-day="fa-d02"]').getAttribute('data-state'), 'today');
       const meter = page.locator('.world-outcome .meter');
       assert.equal(await meter.getAttribute('aria-valuenow'), '50');
       assert.match(await page.locator('.world-facts').innerText(), /1 \/ 2 Day 완료/);
-      assert.equal(await css(meter.locator('span'), 'backgroundColor'), await tokenColor(page, '--color-progress'));
+      // Day 한 칸씩 끊긴 막대: 채움 무늬는 progress 색, 칸 수는 Day 수
+      assert.ok((await css(meter.locator('.meter-fill'), 'backgroundImage')).includes(await tokenColor(page, '--color-progress')));
+      assert.equal(await meter.evaluate((el) => el.style.getPropertyValue('--n')), '2');
     },
     { progress: ['fa-d01'] },
   );
@@ -171,9 +176,12 @@ test('world page rows follow DESIGN.md', TIMEOUT, async () => {
     const list = page.locator('.world-days');
     assert.equal(await css(list, 'borderTopWidth'), '2px');
     assert.match(await css(list, 'boxShadow'), /\b4px\b/);
-    const num = page.locator('.world-day.is-today .row-num');
-    assert.equal(await css(num, 'backgroundColor'), await tokenColor(page, '--color-accent'));
-    assert.equal(await css(num, 'width'), '24px');
+    // Day 칸은 보드게임 칸과 같은 크기와 턱
+    const tile = page.locator('.world-day.is-today .day-tile');
+    assert.equal(await css(tile, 'backgroundColor'), await tokenColor(page, '--color-accent'));
+    assert.equal(await css(tile, 'width'), '34px');
+    assert.match(await css(tile, 'boxShadow'), /\b3px\b/);
+    assert.equal(await css(page.locator('.world-day.is-draft .day-tile'), 'borderTopStyle'), 'dashed');
     const meter = page.locator('.world-outcome .meter');
     assert.equal(await css(meter, 'borderTopLeftRadius'), '6px');
   });
@@ -184,7 +192,7 @@ test('world page rows follow DESIGN.md', TIMEOUT, async () => {
 test('appendix pages share one head: dot art, title and description', TIMEOUT, async () => {
   await withPage('#/page/start', async (page) => {
     const head = page.locator('.page-article .page-head');
-    assert.equal(await head.locator('.page-art').count(), 1);
+    assert.equal(await head.locator('.badge > .page-art').count(), 1, '그림은 월드 문장과 같은 칸 안에');
     assert.equal(await head.locator('h1').innerText(), '시작하기');
     assert.equal(await head.locator('.lead').innerText(), '교재 쓰는 법, 공부 원칙, 준비물');
   });
@@ -214,6 +222,10 @@ test('the glossary index jumps to a group and a term link lands on the term', TI
     async (page) => {
       const links = page.locator('.gl-index a');
       assert.deepEqual(await links.allInnerTexts(), ['ㄱ', 'ㅍ', 'A']);
+      // 색인 열쇠: 2px 테두리 + 3px 턱(보드게임 칸)
+      assert.equal(await css(links.first(), 'borderTopWidth'), '2px');
+      assert.match(await css(links.first(), 'boxShadow'), /\b3px\b/);
+      assert.equal(await page.locator('#gl-en-a .gl-head .label').innerText(), '용어 1개');
       await links.filter({ hasText: 'A' }).click();
       await page.waitForURL(/#\/page\/glossary\/gl-en-a$/);
       const bar = await page.locator('.topbar').boundingBox();
@@ -245,6 +257,12 @@ test('troubleshooting shows a toc and symptoms open one by one', TIMEOUT, async 
     const toc = page.locator('.ts-toc');
     assert.equal(await toc.locator('.ts-toc-world > a').count(), 1);
     assert.deepEqual(await toc.locator('li a').allInnerTexts(), ['Day 1', 'Day 2', '그 밖의 증상']);
+    // 월드 제목에는 문장 칸, Day 묶음 제목에는 Day 칸(번호). 화면 낭독기 이름은 "Day n · 제목"
+    assert.equal(await page.locator('.ts-group > h2 .badge .emblem').count(), 1);
+    const dayHead = page.locator('.ts-day > h3').first();
+    assert.equal(await dayHead.locator('.day-tile').innerText(), '1');
+    assert.match(await css(dayHead.locator('.day-tile'), 'boxShadow'), /\b3px\b/);
+    assert.match(await page.getByRole('heading', { level: 3, name: /^Day 1 · / }).innerText(), /첫 번째 Day/);
     const entries = page.locator('.ts-entry');
     assert.equal(await entries.count(), 3);
     assert.equal(await page.locator('.ts-entry[open]').count(), 0);

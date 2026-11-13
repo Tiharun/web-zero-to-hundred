@@ -126,6 +126,18 @@
 .world-outcome h2 {
   margin: 0;
 }
+.world-outcome-head,
+.world-xp {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+/* 보상 XP: 퀘스트 카드 "+n XP"와 같은 코인 + 픽셀 글자 */
+.world-xp {
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  font-weight: 400;
+}
 .world-outcome-text {
   margin: 0;
   font-size: var(--text-body);
@@ -171,7 +183,7 @@
 }
 .world-day {
   display: grid;
-  grid-template-columns: 28px minmax(0, 1fr) auto;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--space-2xs) var(--space-sm);
   min-height: 48px;
@@ -188,6 +200,44 @@
 }
 .world-day:active {
   background: var(--color-rule);
+}
+/* Day 칸(.day-tile, components.css): 행에 손을 올리면 튀어 오르고 누르면 눌린다 */
+.world-day:hover .day-tile {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 0 var(--tile-edge);
+}
+.world-day:active .day-tile {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--tile-edge);
+  transition-duration: 60ms;
+}
+.world-day.is-done .day-tile {
+  --tile-edge: var(--color-progress-deep);
+  background: var(--color-progress);
+  color: var(--color-progress-ink);
+}
+.world-day.is-today .day-tile {
+  --tile-edge: var(--color-accent-deep);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  font-weight: 800;
+}
+.world-day.is-draft .day-tile {
+  border-style: dashed;
+  box-shadow: none;
+}
+.world-day.is-draft:hover .day-tile,
+.world-day.is-draft:active .day-tile {
+  transform: none;
+  box-shadow: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-day:hover .day-tile,
+  .world-day:active .day-tile {
+    transform: none;
+  }
 }
 .world-day-body {
   display: grid;
@@ -213,7 +263,7 @@
     padding: var(--space-md);
   }
   .world-day {
-    grid-template-columns: 28px minmax(0, 1fr);
+    grid-template-columns: 34px minmax(0, 1fr);
   }
   .world-day-meta {
     grid-column: 2;
@@ -229,10 +279,13 @@
   gap: var(--space-2xs);
   margin-bottom: var(--space-lg);
 }
+/* 부록 그림은 월드 페이지 문장과 같은 40px 칸(.badge) 안에 */
+.page-head .badge {
+  margin-bottom: var(--space-2xs);
+}
 .page-art {
   --px-1: var(--color-ink);
   --px-2: var(--color-cell);
-  margin-bottom: var(--space-2xs);
 }
 .page-head h1 {
   margin: 0;
@@ -261,7 +314,7 @@
 .page-body .toc ol {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2xs);
+  gap: var(--space-xs); /* 턱(3px)과 손을 올렸을 때 떠오르는 높이를 담는 간격 */
   margin: 0;
   padding: 0;
   list-style: none;
@@ -269,22 +322,39 @@
 .page-body .toc li + li {
   margin-top: 0;
 }
+/* 목차 열쇠: 보드게임 칸과 같은 2px 테두리와 같은 색 턱 3px. 손을 올리면 튀어 오르고 누르면 눌린다 */
 .page-body .toc li a {
+  --tile-edge: var(--color-ink-2);
   display: inline-grid;
   place-items: center;
   min-width: 40px;
   min-height: 40px;
   padding: 0 var(--space-xs);
-  border: 1px solid var(--color-rule);
+  border: 2px solid var(--tile-edge);
   border-radius: var(--radius-btn);
+  background: var(--color-card);
   color: var(--color-ink);
   font-size: var(--text-ui);
   font-weight: 800;
   line-height: 1.3;
   text-decoration: none;
+  box-shadow: 0 3px 0 var(--tile-edge);
+  transition: transform var(--dur-short) var(--ease-bounce), box-shadow var(--dur-short) var(--ease-bounce);
 }
 .page-body .toc li a:hover {
-  background: var(--color-track);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 0 var(--tile-edge);
+}
+.page-body .toc li a:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--tile-edge);
+  transition-duration: 60ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-body .toc li a:hover,
+  .page-body .toc li a:active {
+    transform: none;
+  }
 }
 @media (pointer: coarse) {
   .page-body .toc li a {
@@ -297,13 +367,25 @@
 .gl-group + .gl-group {
   margin-top: var(--space-xl);
 }
-.page-body .gl-group > h2 {
+/* 묶음 머리: 첫 자음을 40px 칸(.badge 모양)에 담고, 옆에 용어 수 라벨 */
+.gl-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.page-body .gl-head > h2 {
+  display: inline-grid;
+  place-items: center;
+  min-width: 40px;
+  height: 40px;
   margin: 0;
-  padding: 0;
-  border: 0;
+  padding: 0 var(--space-xs);
+  border: 2px solid var(--color-rule);
+  border-radius: var(--radius-btn);
+  background: var(--color-paper);
   font-size: var(--text-h3);
   font-weight: 800;
-  line-height: 1.3;
+  line-height: 1;
 }
 .term-entry {
   padding: var(--space-md) 0;
@@ -348,7 +430,11 @@
 .ts-group + .ts-group {
   margin-top: var(--space-2xl);
 }
+/* 월드 제목: 월드 문장(.badge) + 제목 */
 .page-body .ts-group > h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
   margin: 0 0 var(--space-sm);
   padding: 0;
   border: 0;
@@ -356,8 +442,12 @@
 .ts-day + .ts-day {
   margin-top: var(--space-xl);
 }
+/* Day 묶음 제목: Day 칸(번호) + 제목 */
 .page-body .ts-day > h3 {
-  margin: 0 0 var(--space-2xs);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: 0 0 var(--space-xs);
   font-size: var(--text-h3);
   font-weight: 800;
   line-height: 1.3;
@@ -369,7 +459,7 @@
 }
 .ts-entry > summary {
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* 두 줄 제목에서도 꺾쇠는 첫 줄 옆 */
   gap: var(--space-xs);
   min-height: 48px;
   padding: var(--space-xs) 0;
@@ -384,6 +474,7 @@
 }
 .ts-chev {
   flex-shrink: 0;
+  margin-top: calc((1.5em - 16px) / 2); /* 첫 줄(줄간격 1.5) 가운데. 16px 는 선 아이콘 크기 */
   color: var(--color-ink-2);
   transition: transform var(--dur-short) var(--ease-out);
 }

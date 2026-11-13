@@ -230,16 +230,29 @@ kbd {
 }
 
 /* 진도 막대 (DESIGN.md Cards "진도 막대"): 완료 비율만 초록. 폭은 움직이지 않는다 */
+/* 진도 막대: XP 막대와 같은 칸 무늬, Day 하나가 한 칸(--n), 채움은 끝낸 비율(--p)만큼 */
 .meter {
-  height: var(--space-sm);
+  --cell: calc(100% / var(--n));
+  position: relative;
+  height: 24px;
+  border: 2px solid var(--color-rule);
   border-radius: var(--radius-btn);
-  background: var(--color-track);
-  overflow: hidden;
+  background: var(--color-card);
 }
-.meter > span {
+.meter::before,
+.meter-fill {
+  position: absolute;
+  inset: var(--space-2xs);
+  border-radius: var(--space-3xs);
+}
+.meter::before {
+  content: "";
+  background: repeating-linear-gradient(90deg, var(--color-cell) 0 calc(var(--cell) - 2px), transparent calc(var(--cell) - 2px) var(--cell));
+}
+.meter-fill {
   display: block;
-  height: 100%;
-  background: var(--color-progress);
+  clip-path: inset(0 calc((1 - var(--p)) * 100%) 0 0);
+  background: repeating-linear-gradient(90deg, var(--color-progress) 0 calc(var(--cell) - 2px), transparent calc(var(--cell) - 2px) var(--cell));
 }
 
 .breadcrumb ol {
@@ -551,4 +564,25 @@ mark {
   .skeleton-row {
     animation: none;
   }
+}
+
+/* Day 칸: 지도의 보드게임 칸과 같은 모양(34px, 2px 테두리와 같은 색 턱 3px, 픽셀 글자 번호). 월드 페이지 Day 행·문제 해결 Day 묶음 */
+.day-tile {
+  --tile-edge: var(--color-ink-2);
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border: 2px solid var(--tile-edge);
+  border-radius: var(--radius-btn);
+  background: var(--color-card);
+  color: var(--color-ink-2);
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  font-weight: 400;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 3px 0 var(--tile-edge);
+  transition: transform var(--dur-short) var(--ease-bounce), box-shadow var(--dur-short) var(--ease-bounce);
 }

@@ -2,7 +2,7 @@
 // 두 생성 페이지의 HTML을 만든다. 항목 본문은 하나씩 renderMarkdown 을 거친다
 // (용어 링크·escape 규칙이 Day 와 똑같고, 오류를 원본 파일·줄 번호로 되짚을 수 있다).
 import path from 'node:path';
-import { iconSvg } from '../src/app/views/icons.js';
+import { iconSvg, pxSvg, worldEmblem } from '../src/app/views/icons.js';
 import { fenceMask, normalizeSource, renderMarkdown, slugify } from './markdown.mjs';
 
 const buildError = (code, file, line, message) => ({ code, file, line, message });
@@ -185,7 +185,7 @@ export function renderGlossaryPage(entries, { terms, routes }) {
     const body = joinPage(items, '');
     return {
       ...body,
-      html: `<section class="gl-group" id="gl-${g.key}" aria-labelledby="glh-${g.key}">\n<h2 id="glh-${g.key}">${esc(g.label)}</h2>\n${body.html}</section>\n`,
+      html: `<section class="gl-group" id="gl-${g.key}" aria-labelledby="glh-${g.key}">\n<div class="gl-head">\n<h2 id="glh-${g.key}">${esc(g.label)}</h2>\n<span class="label">용어 ${g.entries.length}개</span>\n</div>\n${body.html}</section>\n`,
     };
   });
   const page = joinPage(parts, '<p>아직 등록된 용어가 없어요.</p>\n');
@@ -233,9 +233,9 @@ export function renderTroubleshootingPage(groups, projects, { terms, routes, pag
     const project = byProject.get(g.project);
     const title = project?.title ?? g.project;
     const buckets = new Map(
-      (project?.days ?? []).map((d) => [d.id, { key: d.id.slice(g.project.length + 1), name: `Day ${d.num}`, title: `Day ${d.num} · ${d.title}`, entries: [] }]),
+      (project?.days ?? []).map((d) => [d.id, { key: d.id.slice(g.project.length + 1), name: `Day ${d.num}`, num: d.num, title: d.title, entries: [] }]),
     );
-    const etc = { key: 'etc', name: '그 밖의 증상', title: '그 밖의 증상', entries: [] };
+    const etc = { key: 'etc', name: '그 밖의 증상', num: null, title: '그 밖의 증상', entries: [] };
     for (const e of g.entries) (buckets.get(e.day) ?? etc).entries.push(e);
     const used = [...buckets.values(), etc].filter((b) => b.entries.length > 0);
 
@@ -245,13 +245,16 @@ export function renderTroubleshootingPage(groups, projects, { terms, routes, pag
         b.entries.map((e, i) => renderSymptom(e, `${sid}-${i + 1}`, { terms, routes })),
         '',
       );
-      return { ...inner, html: `<section class="ts-day" id="${sid}" aria-labelledby="tsh-${sid}">\n<h3 id="tsh-${sid}">${esc(b.title)}</h3>\n${inner.html}</section>\n` };
+      // Day 묶음 제목: 보드게임 칸(번호) + 제목. 화면 낭독기는 "Day n · 제목"으로 읽는다
+      const head =
+        b.num == null ? esc(b.title) : `<span class="day-tile" aria-hidden="true">${b.num}</span><span class="sr-only">Day ${b.num} · </span>${esc(b.title)}`;
+      return { ...inner, html: `<section class="ts-day" id="${sid}" aria-labelledby="tsh-${sid}">\n<h3 id="tsh-${sid}">${head}</h3>\n${inner.html}</section>\n` };
     });
     const body = joinPage(sections, '');
     const links = used.map((b) => `<li><a href="${href(`ts-${gid}-${b.key}`)}" aria-label="${esc(b.name)}, 증상 ${b.entries.length}개">${esc(b.name)}</a></li>`).join('');
     return {
       ...body,
-      html: `<section class="ts-group" id="ts-${gid}">\n<h2 id="tsh-${gid}">${esc(title)}</h2>\n${body.html}</section>\n`,
+      html: `<section class="ts-group" id="ts-${gid}">\n<h2 id="tsh-${gid}"><span class="badge">${pxSvg(worldEmblem({ id: g.project }), { cls: 'emblem', scale: 3 })}</span>${esc(title)}</h2>\n${body.html}</section>\n`,
       text: `${title} ${body.text}`.trim(),
       toc: `<div class="ts-toc-world">\n<a href="${href(`ts-${gid}`)}">${esc(title)}</a> <span class="label">증상 ${g.entries.length}개</span>\n<ol>${links}</ol>\n</div>\n`,
     };

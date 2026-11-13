@@ -58,12 +58,23 @@ export const minutesText = (minutes) => `약 ${minutes}분`;
 
 // ───────── 조각 ─────────
 
-/** 진도 막대 (DESIGN.md "진도 막대"). 값은 0..100, 완료 비율만 넣는다 */
-export function meter(percent, label) {
+/** 진도 막대 (DESIGN.md "진도 막대"): Day 하나가 한 칸이고, 끝낸 Day 수만큼만 채운다 */
+export function meter(done, total, label) {
+  const n = Math.max(total, 1);
+  const percent = Math.floor((done * 100) / n);
   return h(
     'div',
-    { class: 'meter', role: 'progressbar', 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': percent, 'aria-label': label },
-    h('span', { style: `width:${percent}%` }),
+    {
+      class: 'meter',
+      role: 'progressbar',
+      'aria-valuemin': 0,
+      'aria-valuemax': 100,
+      'aria-valuenow': percent,
+      'aria-valuetext': `${done} / ${total} Day`,
+      'aria-label': label,
+      style: `--n:${n};--p:${done / n}`,
+    },
+    h('span', { class: 'meter-fill' }),
   );
 }
 

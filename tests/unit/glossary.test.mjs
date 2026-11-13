@@ -206,7 +206,10 @@ test('troubleshooting page groups by project title and keeps authored order', ()
   const page = renderTroubleshootingPage(groups, projects, { terms, routes });
   assert.deepEqual(page.errors, []);
   // 목차 머리("목차")를 빼고 월드 묶음의 h2 만 본다
-  const heads = [...page.html.matchAll(/<section class="ts-group"[^>]*>\n<h2[^>]*>(.*?)<\/h2>/g)].map((m) => m[1]);
+  const heads = [...page.html.matchAll(/<section class="ts-group"[^>]*>\n<h2[^>]*>(.*?)<\/h2>/g)].map((m) => m[1].replace(/<[^>]+>/g, ''));
+  // 월드 제목 앞에는 그 월드의 문장(도트 그림) 칸. 프로젝트가 아닌 접두어는 별
+  assert.match(page.html, /<h2 id="tsh-p1"><span class="badge"><svg class="px px-house emblem"/);
+  assert.match(page.html, /<h2 id="tsh-zz"><span class="badge"><svg class="px px-star emblem"/);
   // 프로젝트 순서(p1, sp) 다음에, 프로젝트가 아닌 접두어는 접두어 이름 그대로 맨 뒤에
   assert.deepEqual(heads, ['나의 크리에이터 홈페이지', '이미지 도네이션', 'zz']);
   assert.match(page.html, /<section class="ts-group" id="ts-p1">/);
@@ -263,7 +266,8 @@ test('glossary page has an index and groups in symbol, Hangul, Latin order', () 
   ]);
   const ids = [...page.html.matchAll(/<section class="term-entry" id="(term-[^"]+)"/g)].map((m) => m[1]);
   assert.deepEqual(ids, ['term-env', 'term-가나다', 'term-하나', 'term-api']);
-  assert.match(page.html, /<h2 id="glh-ko-1">ㄱ<\/h2>/);
+  // 묶음 머리: 첫 자음 제목 옆에 용어 수 라벨
+  assert.match(page.html, /<div class="gl-head">\n<h2 id="glh-ko-1">ㄱ<\/h2>\n<span class="label">용어 1개<\/span>\n<\/div>/);
   assert.match(page.html, /<h3[^>]*>API<\/h3>/);
 });
 
@@ -299,7 +303,12 @@ test('troubleshooting page has a toc and day groups of details with no heading i
   const routes2 = new Set([...routes, '#/day/p1-d01', '#/day/p1-d02', '#/day/p9-d01']);
   const page = renderTroubleshootingPage(groups, projects, { terms: new Map(), routes: routes2 });
   assert.deepEqual(page.errors, []);
-  const days = [...page.html.matchAll(/<section class="ts-day" id="([^"]+)"[^>]*>\n<h3[^>]*>([^<]+)<\/h3>/g)].map((m) => [m[1], m[2]]);
+  // 화면 낭독기가 읽는 제목(aria-hidden 칸을 뺀 글자)은 "Day n · 제목"
+  const spoken = (html) => html.replace(/<span[^>]*aria-hidden="true"[^>]*>[^<]*<\/span>/g, '').replace(/<[^>]+>/g, '');
+  const days = [...page.html.matchAll(/<section class="ts-day" id="([^"]+)"[^>]*>\n<h3[^>]*>(.*?)<\/h3>/g)].map((m) => [m[1], spoken(m[2])]);
+  // 눈에는 Day 칸(번호)과 제목이 보인다. 그 밖의 증상에는 칸이 없다
+  assert.match(page.html, /<h3 id="tsh-ts-p1-d01"><span class="day-tile" aria-hidden="true">1<\/span><span class="sr-only">Day 1 · <\/span>첫날<\/h3>/);
+  assert.match(page.html, /<h3 id="tsh-ts-p1-etc">그 밖의 증상<\/h3>/);
   assert.deepEqual(days, [
     ['ts-p1-d01', 'Day 1 · 첫날'],
     ['ts-p1-d02', 'Day 2 · 둘째날'],

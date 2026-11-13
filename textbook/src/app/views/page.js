@@ -35,7 +35,7 @@ export function renderPage(ctx, id, anchor, root) {
   const head = h(
     'header',
     { class: 'page-head' },
-    art && px(art, { cls: 'page-art', scale: 3 }),
+    art && h('span', { class: 'badge' }, px(art, { cls: 'page-art', scale: 3 })),
     h('h1', null, page.title),
     expandBtn ? h('div', { class: 'page-head-row' }, lead, expandBtn) : lead,
   );

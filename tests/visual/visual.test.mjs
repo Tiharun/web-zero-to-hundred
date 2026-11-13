@@ -41,7 +41,7 @@ const ALL_DONE = (() => {
 
 /**
  * 찍을 장면. 장면을 늘릴 때는 여기에 한 줄을 더한다.
- * widths: 이 폭에서만 찍는다(없으면 WIDTHS), open: 찍기 전에 누를 선택자, waitFor: 누른 뒤 나타나기를 기다릴 선택자,
+ * widths: 이 폭에서만 찍는다(없으면 WIDTHS), open: 찍기 전에 누를 선택자(첫 번째 일치만), waitFor: 누른 뒤 나타나기를 기다릴 선택자,
  * fullPage: 화면 아래까지 전체를 찍는다(없으면 첫 화면만)
  */
 export const SCENES = [
@@ -57,6 +57,10 @@ export const SCENES = [
   { id: 'home-first', hash: '#/', progress: null, widths: [375, 1280], fullPage: true },
   { id: 'home-clear', hash: '#/', progress: P1_CLEAR, widths: [375, 1280], fullPage: true },
   { id: 'home-done', hash: '#/', progress: ALL_DONE, widths: [375, 1280], fullPage: true },
+  { id: 'world', hash: '#/project/p1', progress: P1_FIRST_THREE },
+  { id: 'start', hash: '#/page/start', progress: null },
+  { id: 'glossary', hash: '#/page/glossary', progress: null },
+  { id: 'troubleshooting', hash: '#/page/troubleshooting', progress: null, open: '.ts-entry > summary', waitFor: '.ts-entry[open]' },
 ];
 const WIDTHS = [375, 768, 1280];
 const THEMES = ['light', 'dark'];
@@ -106,7 +110,7 @@ async function shoot(scene, width, theme) {
     await page.goto(`${server.url}index.html${scene.hash}`);
     await page.locator('main h1').first().waitFor();
     if (scene.open) {
-      await page.locator(scene.open).click();
+      await page.locator(scene.open).first().click();
       await page.locator(scene.waitFor).waitFor();
     }
     await page.evaluate(() => document.fonts.ready.then(() => true));
