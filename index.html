@@ -46,6 +46,19 @@
   --color-star: #B45309;
   --ledge: 4px;
 
+  /* 알림·코드·위험 (M8). 코드·구문 색은 두 테마가 같다("밤 코드")라 여기에만 둔다 */
+  --color-tip-bg: #FFFBEB; --color-tip-line: #D97706; --color-tip-ink: #92400E;
+  --color-warn-bg: #FEF2F2; --color-warn-line: #DC2626; --color-warn-ink: #991B1B;
+  --color-info-bg: #EFF6FF; --color-info-line: #2563EB; --color-info-ink: #1E40AF;
+  --color-path-bg: #F5F3FF; --color-path-line: #7C3AED; --color-path-ink: #5B21B6;
+  --color-success-bg: #F0FDFA; --color-success-line: #0D9488; --color-success-ink: #115E59;
+  --color-answer-bg: #F1F5F9; --color-answer-line: #64748B; --color-answer-ink: #334155;
+  --color-code-bg: #1E1B4B; --color-code-fg: #E0E7FF; --color-code-head: #2E2A6B; --color-code-border: #3F3A8A;
+  --color-tok-keyword: #C4B5FD; --color-tok-string: #FDE68A; --color-tok-number: #FDBA74; --color-tok-comment: #A5B4FC;
+  --color-tok-title: #7DD3FC; --color-tok-attr: #5EEAD4; --color-tok-variable: #FCA5A5; --color-tok-meta: #CBD5E1;
+  --color-tok-tag: #93C5FD; --color-tok-name: #93C5FD; --color-tok-deletion: #FCA5A5; --color-tok-addition: #5EEAD4;
+  --color-danger: #B91C1C; --color-danger-ink: #FFFFFF; --color-danger-deep: #7F1D1D;
+
   --font-body: "WZH Wanted Sans", "Malgun Gothic", system-ui, sans-serif;
   --font-label: "WZH Galmuri11", "WZH Wanted Sans", "Malgun Gothic", sans-serif;
   --font-code: "WZH Code", Consolas, monospace;
@@ -110,6 +123,13 @@
     --color-coin-deep: #FDE68A;
     --color-coin-hi: #FFFBEB;
     --color-star: #FBBF24;
+    --color-tip-bg: #2A2312; --color-tip-line: #F59E0B; --color-tip-ink: #FCD34D;
+    --color-warn-bg: #2D1618; --color-warn-line: #F87171; --color-warn-ink: #FCA5A5;
+    --color-info-bg: #14203D; --color-info-line: #60A5FA; --color-info-ink: #93C5FD;
+    --color-path-bg: #221A3D; --color-path-line: #A78BFA; --color-path-ink: #C4B5FD;
+    --color-success-bg: #0F2A2A; --color-success-line: #2DD4BF; --color-success-ink: #5EEAD4;
+    --color-answer-bg: #1E2240; --color-answer-line: #A3A9C9; --color-answer-ink: #E2E8F0;
+    --color-danger: #F87171; --color-danger-ink: #0D0F1F; --color-danger-deep: #B91C1C;
   }
 }
 :root[data-theme="dark"] {
@@ -138,13 +158,19 @@
   --color-coin-deep: #FDE68A;
   --color-coin-hi: #FFFBEB;
   --color-star: #FBBF24;
+  --color-tip-bg: #2A2312; --color-tip-line: #F59E0B; --color-tip-ink: #FCD34D;
+  --color-warn-bg: #2D1618; --color-warn-line: #F87171; --color-warn-ink: #FCA5A5;
+  --color-info-bg: #14203D; --color-info-line: #60A5FA; --color-info-ink: #93C5FD;
+  --color-path-bg: #221A3D; --color-path-line: #A78BFA; --color-path-ink: #C4B5FD;
+  --color-success-bg: #0F2A2A; --color-success-line: #2DD4BF; --color-success-ink: #5EEAD4;
+  --color-answer-bg: #1E2240; --color-answer-line: #A3A9C9; --color-answer-ink: #E2E8F0;
+  --color-danger: #F87171; --color-danger-ink: #0D0F1F; --color-danger-deep: #B91C1C;
 }
 
 /* 옛 변수 이름 → DESIGN.md 토큰.
    아직 개편하지 않은 화면(홈 본문, Day 본문, 검색, 설정)이 새 팔레트로 보이게 잇는 다리다.
    뒤 마일스톤이 화면을 개편할 때마다 여기서 이름을 지운다. 새 이름은 더하지 않는다(빌드가 막는다).
-   알림·코드·강조·위험 색은 DESIGN.md 에 아직 없어(M8에서 정한다) 옛 값을 그대로 둔다.
-   다크 값은 두 곳(시스템 설정 / 수동 선택)에 똑같이 있어야 한다 (e2e 가 확인한다). */
+   알림·코드·위험 색도 이제 DESIGN.md 토큰을 가리킨다(M8). 테마는 새 토큰이 맡으므로 여기엔 다크 블록이 없다. */
 
 :root {
   --bg: var(--color-paper);
@@ -171,121 +197,39 @@
   --radius-sm: var(--radius-btn);
   --measure: 72ch;
 
-  --danger: #a4262c;
-  --on-danger: #ffffff;
+  --code-bg: var(--color-code-bg);
+  --code-fg: var(--color-code-fg);
+  --code-head: var(--color-code-head);
+  --code-border: var(--color-code-border);
 
-  --code-bg: #f4f2ed;
-  --code-fg: #24292f;
-  --code-head: #e9e6df;
-  --code-border: #d6d1c6;
+  --tip-bg: var(--color-tip-bg);
+  --tip-line: var(--color-tip-line);
+  --tip-ink: var(--color-tip-ink);
+  --warn-bg: var(--color-warn-bg);
+  --warn-line: var(--color-warn-line);
+  --warn-ink: var(--color-warn-ink);
+  --info-bg: var(--color-info-bg);
+  --info-line: var(--color-info-line);
+  --info-ink: var(--color-info-ink);
+  --path-bg: var(--color-path-bg);
+  --path-line: var(--color-path-line);
+  --path-ink: var(--color-path-ink);
+  --success-bg: var(--color-success-bg);
+  --success-line: var(--color-success-line);
+  --success-ink: var(--color-success-ink);
 
-  --tip-bg: #fff7d6;
-  --tip-line: #c28a00;
-  --tip-ink: #7a4e00;
-  --warn-bg: #fdecea;
-  --warn-line: #c0392b;
-  --warn-ink: #9b2315;
-  --info-bg: #e7f0fb;
-  --info-line: #2b6cb0;
-  --info-ink: #1d4f87;
-  --path-bg: #f0eafa;
-  --path-line: #7048b6;
-  --path-ink: #5a3596;
-  --success-bg: #e5f4ea;
-  --success-line: #2f855a;
-  --success-ink: #1b6b42;
-
-  --tok-keyword: #a3216c;
-  --tok-string: #1a6b2f;
-  --tok-number: #a8480f;
-  --tok-comment: #5a6270;
-  --tok-title: #1a4fb0;
-  --tok-attr: #0b6a70;
-  --tok-variable: #7a3fb0;
-  --tok-meta: #6b5200;
-  --tok-tag: #5a6270;
-  --tok-name: #1d5aa3;
-  --tok-deletion: #a4262c;
-  --tok-addition: #1a6b2f;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --danger: #ff9d92;
-    --on-danger: #1b0b09;
-
-    --code-bg: #101317;
-    --code-fg: #dfe3e8;
-    --code-head: #1d2127;
-    --code-border: #343a43;
-
-    --tip-bg: #2b2616;
-    --tip-line: #c9a227;
-    --tip-ink: #f0c868;
-    --warn-bg: #2e1a19;
-    --warn-line: #d8584a;
-    --warn-ink: #ff9d92;
-    --info-bg: #172433;
-    --info-line: #4a90d9;
-    --info-ink: #8fc0f5;
-    --path-bg: #241d33;
-    --path-line: #9a74e0;
-    --path-ink: #c3a6f5;
-    --success-bg: #16281d;
-    --success-line: #3f9c68;
-    --success-ink: #7fd59f;
-
-    --tok-keyword: #ff9ac6;
-    --tok-string: #a5e075;
-    --tok-number: #ffb26b;
-    --tok-comment: #8f9bab;
-    --tok-title: #82aaff;
-    --tok-attr: #7fdbca;
-    --tok-variable: #d4a8ff;
-    --tok-meta: #e6cf7a;
-    --tok-tag: #9fb0c3;
-    --tok-name: #ff8f8f;
-    --tok-deletion: #ff8a8a;
-    --tok-addition: #a5e075;
-  }
-}
-:root[data-theme="dark"] {
-  --danger: #ff9d92;
-  --on-danger: #1b0b09;
-
-  --code-bg: #101317;
-  --code-fg: #dfe3e8;
-  --code-head: #1d2127;
-  --code-border: #343a43;
-
-  --tip-bg: #2b2616;
-  --tip-line: #c9a227;
-  --tip-ink: #f0c868;
-  --warn-bg: #2e1a19;
-  --warn-line: #d8584a;
-  --warn-ink: #ff9d92;
-  --info-bg: #172433;
-  --info-line: #4a90d9;
-  --info-ink: #8fc0f5;
-  --path-bg: #241d33;
-  --path-line: #9a74e0;
-  --path-ink: #c3a6f5;
-  --success-bg: #16281d;
-  --success-line: #3f9c68;
-  --success-ink: #7fd59f;
-
-  --tok-keyword: #ff9ac6;
-  --tok-string: #a5e075;
-  --tok-number: #ffb26b;
-  --tok-comment: #8f9bab;
-  --tok-title: #82aaff;
-  --tok-attr: #7fdbca;
-  --tok-variable: #d4a8ff;
-  --tok-meta: #e6cf7a;
-  --tok-tag: #9fb0c3;
-  --tok-name: #ff8f8f;
-  --tok-deletion: #ff8a8a;
-  --tok-addition: #a5e075;
+  --tok-keyword: var(--color-tok-keyword);
+  --tok-string: var(--color-tok-string);
+  --tok-number: var(--color-tok-number);
+  --tok-comment: var(--color-tok-comment);
+  --tok-title: var(--color-tok-title);
+  --tok-attr: var(--color-tok-attr);
+  --tok-variable: var(--color-tok-variable);
+  --tok-meta: var(--color-tok-meta);
+  --tok-tag: var(--color-tok-tag);
+  --tok-name: var(--color-tok-name);
+  --tok-deletion: var(--color-tok-deletion);
+  --tok-addition: var(--color-tok-addition);
 }
 
 /* ───────── 바탕 ───────── */
@@ -1072,26 +1016,42 @@ button.row {
 
 /* ───────── 버튼 · 조각 ───────── */
 
+/* 보조 버튼 (DESIGN.md Buttons): 목차 열쇠와 같은 계열. 2px ink-2 테두리와 같은 색 3px 턱 */
 .btn {
+  --btn-edge: var(--color-ink-2);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5em;
   min-height: 44px;
-  padding: 0.55em 1.3em;
-  border: 1px solid var(--border-strong);
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--text);
+  margin-bottom: 3px;
+  padding: 0 var(--space-md);
+  border: 2px solid var(--btn-edge);
+  border-radius: var(--radius-btn);
+  background: var(--color-card);
+  color: var(--color-ink);
   font: inherit;
-  font-weight: 700;
+  font-size: var(--text-ui);
+  font-weight: 800;
   line-height: 1.3;
   text-align: center;
   text-decoration: none;
   cursor: pointer;
+  box-shadow: 0 3px 0 var(--btn-edge);
+  transition:
+    background-color var(--dur-micro) var(--ease-out),
+    transform var(--dur-short) var(--ease-bounce),
+    box-shadow var(--dur-short) var(--ease-bounce);
 }
 .btn:hover {
-  background: var(--surface-2);
+  background: var(--color-track);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 var(--btn-edge);
+}
+.btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--btn-edge);
+  transition-duration: 60ms;
 }
 /* 주 버튼 (DESIGN.md Buttons): 분홍 면 + 4px 턱. 누르면 턱 안으로 들어간다. 한 화면에 하나 */
 .btn-primary {
@@ -1220,13 +1180,25 @@ button.row {
 .text-btn:active {
   color: var(--color-accent-text);
 }
-.btn-danger {
-  border-color: var(--danger);
-  color: var(--danger);
+/* 위험 버튼 (DESIGN.md Buttons): 주 버튼과 같은 꼴에 위험 색. 되돌릴 수 없는 일에만 */
+.btn.btn-danger {
+  --btn-edge: var(--color-danger-deep);
+  min-height: 48px;
+  margin-bottom: var(--ledge);
+  padding: 0 var(--space-lg);
+  border: 0;
+  background: var(--color-danger);
+  color: var(--color-danger-ink);
+  font-size: var(--text-body);
+  box-shadow: 0 var(--ledge) 0 var(--btn-edge);
 }
-.btn-danger:hover {
-  background: var(--danger);
-  color: var(--on-danger);
+.btn.btn-danger:hover {
+  background: var(--color-danger);
+  box-shadow: 0 calc(var(--ledge) + 2px) 0 var(--btn-edge);
+}
+.btn.btn-danger:active {
+  transform: translateY(calc(var(--ledge) - 1px));
+  box-shadow: 0 1px 0 var(--btn-edge);
 }
 .btn-small {
   min-height: 36px;
@@ -1234,10 +1206,9 @@ button.row {
   font-size: 0.9rem;
 }
 .btn[disabled] {
-  background: var(--surface-2);
-  border-style: dashed;
-  border-color: var(--border-strong);
-  color: var(--muted);
+  opacity: 0.4;
+  transform: none;
+  box-shadow: 0 3px 0 var(--btn-edge);
   cursor: not-allowed;
 }
 .file-btn:focus-within {
@@ -1452,7 +1423,7 @@ kbd {
   transform: translateY(8px);
 }
 
-/* 토스트(임시 모양: 기존 카드 토큰만. M8 에서 확정) — 화면 아래 가운데 */
+/* 토스트 (DESIGN.md Day 부품 "토스트") — 화면 아래 가운데 */
 .toast-region {
   position: fixed;
   left: 50%;
@@ -1475,12 +1446,13 @@ kbd {
   padding: var(--space-sm) var(--space-md);
   background: var(--color-card);
   color: var(--color-ink);
-  border: 2px solid var(--color-rule);
+  max-width: min(100%, 28rem);
+  border: 2px solid var(--color-edge);
   border-radius: var(--radius-card);
-  box-shadow: 0 var(--ledge) 0 var(--color-rule);
+  box-shadow: 0 var(--ledge) 0 var(--color-edge);
   font-size: var(--text-ui);
   text-wrap: pretty;
-  animation: toast-in var(--dur-enter) var(--ease-out);
+  animation: toast-in var(--dur-short) var(--ease-bounce);
 }
 @keyframes toast-in {
   from {
@@ -1497,6 +1469,15 @@ kbd {
   .btn-primary:hover {
     transform: none;
     box-shadow: 0 var(--ledge) 0 var(--color-accent-deep);
+  }
+  .btn:hover,
+  .btn:active {
+    transform: none;
+    box-shadow: 0 3px 0 var(--btn-edge);
+  }
+  .btn.btn-danger:hover,
+  .btn.btn-danger:active {
+    box-shadow: 0 var(--ledge) 0 var(--btn-edge);
   }
   .reveal-pending {
     opacity: 1;
@@ -2690,7 +2671,7 @@ mark {
 .lesson,
 .page-article {
   max-width: calc(var(--measure) + 2rem);
-  line-height: 1.75; /* 긴 본문 줄간격: 미정 값(M8에서 정한다) */
+  line-height: 1.75; /* DESIGN.md Hierarchy "Body long" */
 }
 .lesson-meta {
   margin: 0 0 24px;
@@ -2874,8 +2855,8 @@ figure.code {
   grid-template-rows: minmax(38px, auto) auto;
   margin: 0 0 1.4em;
   background: var(--code-bg);
-  border: 1px solid var(--code-border);
-  border-radius: var(--radius);
+  border: 2px solid var(--color-edge); /* 밤 코드: 다크에서 카드와 바탕이 비슷해 edge 가 경계를 맡는다 */
+  border-radius: var(--radius-card);
   overflow: hidden;
 }
 figure.code::before,
@@ -2894,7 +2875,7 @@ figure.code figcaption {
   grid-row: 1;
   padding: 8px 14px;
   font: 600 0.85rem/1.5 var(--font-mono);
-  color: var(--muted);
+  color: var(--code-fg);
   overflow-wrap: anywhere;
 }
 figure.code .copy {
@@ -2907,18 +2888,18 @@ figure.code .copy {
   border-right: 0;
   border-bottom: 1px solid var(--code-border);
   border-left: 1px solid var(--code-border);
-  color: var(--text);
+  color: var(--code-fg);
   font: 700 0.85rem/1 var(--font-sans);
   cursor: pointer;
 }
 figure.code .copy:hover {
-  background: var(--surface-2);
+  background: var(--code-border);
 }
 figure.code .copy[data-copied="yes"] {
-  color: var(--ok);
+  color: var(--tok-string);
 }
 figure.code .copy[data-copied="no"] {
-  color: var(--danger);
+  color: var(--tok-deletion);
 }
 figure.code pre {
   grid-column: 1 / -1;
@@ -2929,7 +2910,7 @@ figure.code pre {
   overflow-x: auto; /* 긴 줄은 코드 블록 안에서만 가로로 스크롤한다 */
   background: var(--code-bg);
   color: var(--code-fg);
-  font-size: 0.9rem;
+  font-size: var(--text-code);
   line-height: 1.65;
   tab-size: 2;
   word-break: normal;
@@ -3024,23 +3005,25 @@ pre {
 /* ───────── 알림 상자 ───────── */
 
 .callout {
-  margin: 1.5em 0;
-  padding: 14px 20px 6px;
+  margin: var(--space-lg) 0;
+  padding: var(--space-sm) var(--space-md) var(--space-2xs);
   background: var(--callout-bg);
-  border: 1px solid var(--callout-line);
-  border-left-width: 6px;
-  border-radius: var(--radius);
+  border: 1px solid var(--color-rule);
+  border-left: 4px solid var(--callout-line);
+  border-radius: var(--radius-card);
 }
 .callout::before {
   display: block;
-  margin-bottom: 0.3em;
+  margin-bottom: var(--space-xs);
   color: var(--callout-ink);
-  font-size: 0.88rem;
-  font-weight: 800;
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  line-height: 1.4;
 }
 .lesson-body .callout-title,
 .page-body .callout-title {
   margin: 0 0 0.4em;
+  color: var(--color-ink);
   font-weight: 800;
 }
 .callout-body > :last-child {
@@ -3094,9 +3077,10 @@ pre {
 
 details.answer {
   margin: 1.2em 0;
-  background: var(--surface);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius);
+  background: var(--color-answer-bg);
+  border: 1px solid var(--color-rule);
+  border-left: 4px solid var(--color-answer-line);
+  border-radius: var(--radius-card);
 }
 details.answer > summary {
   padding: 12px 18px;
@@ -3110,7 +3094,7 @@ details.answer > summary::-webkit-details-marker {
 details.answer > summary::before {
   content: "▸ ";
   display: inline-block;
-  color: var(--accent);
+  color: var(--color-answer-ink);
   transition: transform 0.15s;
 }
 details.answer[open] > summary::before {
@@ -3118,16 +3102,16 @@ details.answer[open] > summary::before {
 }
 .answer-body {
   padding: 8px 20px 6px;
-  border-top: 1px dashed var(--border-strong);
+  border-top: 1px dashed var(--color-answer-line);
 }
 
 .answer-gate {
   margin: 1.2em 0 0;
   padding: 16px 20px;
   background: var(--tip-bg);
-  border: 1px solid var(--tip-line);
-  border-left-width: 6px;
-  border-radius: var(--radius);
+  border: 1px solid var(--color-rule);
+  border-left: 4px solid var(--tip-line);
+  border-radius: var(--radius-card);
 }
 .answer-gate p {
   margin: 0 0 12px;
@@ -3342,11 +3326,15 @@ li.task input[type="checkbox"] {
   border-color: var(--color-accent-text);
   background: radial-gradient(circle, var(--color-accent-text) 0 38%, var(--color-card) 42%);
 }
-/* 백업 불러오기 결과 문장: 알림 상자 모양. 종류별 색은 알림 상자 색이 정해지면(M8) 입힌다 */
+/* 백업 불러오기 결과 문장: 알림 상자와 같은 틀(1px rule + 왼쪽 4px 막대). 색은 data-kind 가 고른다 */
 .message {
+  --msg-bg: var(--color-card);
+  --msg-line: var(--color-ink-2);
   margin: var(--space-md) 0 0;
   padding: var(--space-sm) var(--space-md);
-  border: 1px solid var(--color-ink-2);
+  background: var(--msg-bg);
+  border: 1px solid var(--color-rule);
+  border-left: 4px solid var(--msg-line);
   border-radius: var(--radius-card);
   color: var(--color-ink);
   font-size: var(--text-ui);
@@ -3354,6 +3342,18 @@ li.task input[type="checkbox"] {
 }
 .message:empty {
   display: none;
+}
+.message[data-kind="ok"] {
+  --msg-bg: var(--color-success-bg);
+  --msg-line: var(--color-success-line);
+}
+.message[data-kind="error"] {
+  --msg-bg: var(--color-warn-bg);
+  --msg-line: var(--color-warn-line);
+}
+.message[data-kind="info"] {
+  --msg-bg: var(--color-info-bg);
+  --msg-line: var(--color-info-line);
 }
 
 /* ───────── 월드 페이지 (DESIGN.md Cards "월드 페이지"·"월드 페이지 Day 행"·"진도 막대") ───────── */
