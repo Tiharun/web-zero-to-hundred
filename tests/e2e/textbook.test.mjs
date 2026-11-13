@@ -65,7 +65,7 @@ before(async () => {
 
 after(async () => {
   await browser?.close();
-  await rm(tmp, { recursive: true, force: true });
+  if (tmp) await rm(tmp, { recursive: true, force: true }); // 이름 필터로 테스트가 하나도 안 걸리면 before 가 돌지 않는다
 });
 
 // ───────────────────────── 도우미 ─────────────────────────

@@ -434,7 +434,7 @@ components:
 | `(max-width: 22.5rem)` (360px) | 워드마크 15px |
 | `(min-width: 64rem)` (1024px) | 사이드바 280px 열이 생기고 메뉴 버튼이 사라진다. 서랍이 열려 있으면 닫는다 |
 | `(pointer: coarse)` | 사이드바 행 최소 높이 44px |
-| `(hover: hover) and (pointer: fine)` | 툴팁, Tilt, Magnetic을 켠다 |
+| `(hover: hover) and (pointer: fine)` | 툴팁(지도 폭 30rem 이상일 때), Tilt, Magnetic을 켠다 |
 | `(prefers-reduced-motion: reduce)` | 모션 끔(Components의 Motion 참고) |
 | `print` | 상단 바, 사이드바, 캐러셀 버튼, `dialog`를 숨긴다 |
 
@@ -630,7 +630,7 @@ components:
 - **푸터:** 본문 아래 전체 폭. 위 1px `rule`, 바탕 `card`, 안쪽 24px(640px 이하 16px), 턱 없음. 말 도트 아이콘 + 사이트 이름(15px 800 `ink`), 글자 링크 줄(시작하기, 막혔을 때, 설정 · 진도 백업), Label 한 줄(글꼴 라이선스). 작성·빌드 날짜는 두지 않는다. 짧은 화면에서도 화면 바닥에 붙는다. 인쇄에서는 숨긴다.
 
 ### Tooltip
-- 지도 칸에만 있고 `(hover: hover) and (pointer: fine)`에서만 보인다. 터치에서는 없다(칸의 `aria-label`이 같은 내용을 갖고, 툴팁은 `aria-hidden`).
+- 지도 칸에만 있고 `(hover: hover) and (pointer: fine)`이면서 지도 폭이 30rem 이상(배치 m·l)일 때만 보인다. 터치와 좁은 지도(배치 s, 한 줄 툴팁이 카드 밖으로 잘린다)에서는 없다(칸의 `aria-label`이 같은 내용을 갖고, 툴팁은 `aria-hidden`).
 - 칸 위 `bottom: calc(100% + var(--space-xs))`, 오늘 칸은 말을 피해 `bottom: calc(100% + var(--space-2xl))`. 칸이 줄의 왼쪽 절반이면 왼쪽, 오른쪽 절반이면 오른쪽 가장자리에 맞춘다(-8px).
 - `ink` 바탕, `paper` 글자 15px 800 줄간격 1.4, 안쪽 4·12px, 모서리 6px, 한 줄.
 - 나타남: 마우스는 800ms 기다린 뒤 200ms 페이드(`transition: opacity var(--dur-short) var(--ease-out) 800ms, visibility 0s linear 800ms`), 키보드 포커스는 바로. 사라짐 120ms.

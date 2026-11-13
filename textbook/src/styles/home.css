@@ -654,8 +654,9 @@
   }
 }
 @media (hover: hover) and (pointer: fine) {
+  /* 지도 폭 30rem 미만(배치 s)에서는 한 줄 툴팁이 카드 밖으로 잘리므로 띄우지 않는다. 칸의 aria-label 이 같은 내용이다 */
   .tip {
-    display: block;
+    display: none;
     position: absolute;
     bottom: calc(100% + var(--space-xs));
     z-index: var(--z-tooltip);
@@ -672,13 +673,10 @@
     visibility: hidden;
     transition: opacity var(--dur-micro) var(--ease-out), visibility 0s linear var(--dur-micro);
   }
-  .tip[data-s="start"] {
-    left: calc(var(--space-xs) * -1);
-  }
-  .tip[data-s="end"] {
-    right: calc(var(--space-xs) * -1);
-  }
   @container (min-width: 30rem) {
+    .tip {
+      display: block;
+    }
     .tip[data-m="start"] {
       left: calc(var(--space-xs) * -1);
       right: auto;

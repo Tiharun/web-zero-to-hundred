@@ -463,14 +463,19 @@ test('xp numbers keep their unit on the same line when the level panel is narrow
 // ───────── 홈 월드맵 (M4) ─────────
 
 test('world map: tooltip waits 800ms on hover, shows at once on focus, and stays inside the card', TIMEOUT, async () => {
-  const page = await open('#/', { width: 375, file: 'six.html' });
+  const narrow = await open('#/', { width: 375, file: 'six.html' });
+  assert.equal(await narrow.getByTestId('world-map').locator('.dir-s').count(), 1, '둘째 줄(6일차 하나)에는 화살표가 없다');
+  // 좁은 지도(배치 s)에서는 한 줄 툴팁이 잘리므로 띄우지 않는다(DESIGN.md Tooltip)
+  assert.equal(await narrow.locator('.node[data-day="fa-d05"] .tip').evaluate((el) => getComputedStyle(el).display), 'none');
+
+  // 배치 m(10열)의 가장 오른쪽 칸(6일차, 오른쪽 절반)은 툴팁을 오른쪽 가장자리에 맞춘다
+  const page = await open('#/', { width: 768, file: 'six.html' });
   const map = page.getByTestId('world-map');
-  assert.equal(await map.locator('.dir-s').count(), 1, '둘째 줄(6일차 하나)에는 화살표가 없다');
-  const fifth = map.locator('.node[data-day="fa-d05"]');
-  const tip = fifth.locator('.tip');
+  const edge = map.locator('.node[data-day="fa-d06"]');
+  const tip = edge.locator('.tip');
   const opacity = () => tip.evaluate((el) => getComputedStyle(el).opacity);
-  await fifth.locator('a').scrollIntoViewIfNeeded();
-  await fifth.locator('a').hover();
+  await edge.locator('a').scrollIntoViewIfNeeded();
+  await edge.locator('a').hover();
   await page.waitForTimeout(300);
   assert.equal(await opacity(), '0', '800ms 전에는 보이지 않는다');
   await page.waitForTimeout(900);

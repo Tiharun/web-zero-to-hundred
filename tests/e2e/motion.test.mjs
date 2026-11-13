@@ -595,3 +595,16 @@ test('phone: the done trail stays hidden below the fold and draws when scrolled 
     { viewport: { width: 375, height: 812 }, hasTouch: true, progress: CLEARED },
   );
 });
+
+test('narrow map: no tooltip even with a mouse, wide map keeps it', TIMEOUT, async () => {
+  const shown = (page) =>
+    page.locator('[data-testid="world-map"] .tip').evaluateAll((els) => els.map((el) => getComputedStyle(el).display));
+  await withPage('#/', async (page) => {
+    const tips = await shown(page);
+    assert.ok(tips.length > 0);
+    assert.ok(tips.every((d) => d === 'none'), `지도 폭 30rem 미만에서는 잘리므로 숨긴다: ${tips.join()}`);
+  }, { viewport: { width: 375, height: 800 } });
+  await withPage('#/', async (page) => {
+    assert.ok((await shown(page)).every((d) => d === 'block'));
+  });
+});
