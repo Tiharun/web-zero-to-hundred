@@ -25,6 +25,11 @@ const TIMEOUT = { timeout: 60_000 };
 const P1_FIRST_THREE = { completed: ['p1-d01', 'p1-d02', 'p1-d03'], lastDay: 'p1-d03' };
 /** P1 30 Day 를 모두 마친 직후: 홈 퀘스트 카드가 "월드 클리어" 상태다 */
 const P1_CLEAR = { completed: Array.from({ length: 30 }, (_, i) => `p1-d${String(i + 1).padStart(2, '0')}`), lastDay: 'p1-d30' };
+/** 잠긴 Day 하나: order 로 정렬한 두 번째 프로젝트의 첫 Day (진도가 없으면 잠금 화면이다) */
+const LOCKED_DAY = (() => {
+  const cur = JSON.parse(readFileSync(path.join(ROOT, 'textbook', 'content', 'curriculum.json'), 'utf8'));
+  return `${[...cur.projects].sort((a, b) => a.order - b.order)[1].id}-d01`;
+})();
 /** 실제 교재의 모든 Day 를 마친 상태: 퀘스트 카드 "모든 월드 클리어", lastDay 는 마지막 프로젝트의 마지막 Day */
 const ALL_DONE = (() => {
   const cur = JSON.parse(readFileSync(path.join(ROOT, 'textbook', 'content', 'curriculum.json'), 'utf8'));
@@ -44,6 +49,8 @@ export const SCENES = [
   { id: 'day', hash: '#/day/p1-d01', progress: P1_FIRST_THREE },
   { id: 'settings', hash: '#/settings', progress: null },
   { id: 'notfound', hash: '#/nope', progress: null },
+  { id: 'confirm', hash: '#/settings', progress: null, open: '[data-testid="reset-button"]', waitFor: '#confirm-dialog[open]' },
+  { id: 'locked', hash: `#/day/${LOCKED_DAY}`, progress: null, widths: [375, 1280] },
   { id: 'drawer', hash: '#/', progress: P1_FIRST_THREE, widths: [375, 768], open: '#menu-toggle', waitFor: '#drawer[open]' },
   { id: 'search', hash: '#/', progress: P1_FIRST_THREE, open: '#search-open', waitFor: '#search-dialog[open]' },
   { id: 'search-page', hash: '#/search', progress: P1_FIRST_THREE },

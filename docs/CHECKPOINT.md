@@ -1,15 +1,15 @@
 # 체크포인트 — 로컬 세션에서 여기서부터 이어서 하세요
 
-- 작성일: 2026-11-13 (M5 완료 시점)
-- 상태: **M5 완료, 다음은 M6**. 마일스톤 목록과 순서는 `docs/superpowers/specs/2026-11-12-unified-roadmap-design.md` 11장입니다.
+- 작성일: 2026-11-13 (M6 완료 시점)
+- 상태: **M6 완료, 다음은 M7**. 마일스톤 목록과 순서는 `docs/superpowers/specs/2026-11-12-unified-roadmap-design.md` 11장입니다.
 - 공개 주소: https://tiharun.github.io/web-zero-to-hundred/ (push하면 GitHub Actions가 테스트 → 빌드 → Pages 배포. 공개 범위는 `textbook/content/published.json`)
 - 저장소: `tiharun/web-zero-to-hundred` / 브랜치 **`claude/gifted-goldberg-u1f9c6`**. 이 브랜치에서만 작업하고 push합니다. PR은 아직 만들지 않았고, 사용자가 요청할 때만 만듭니다.
-- 기준선(M5 완료 시점에 직접 실행한 결과, `textbook/`에서)
-  - `npm test`: 278/278 통과
+- 기준선(M6 완료 시점에 직접 실행한 결과, `textbook/`에서)
+  - `npm test`: 279/279 통과
   - `npm run check -- --allow-missing`: "검사 통과: Day 155개, 페이지 4개"
-  - `npm run test:e2e`: 147/147 통과(이 PC 약 1분 20초. 느린 기기 Skeleton 2개는 실제 교재를 빌드해 CPU 30배 감속으로 잰다)
-  - `npm run test:visual`: 54/54 통과(기준 이미지 52장: 4장면 × 3폭 × 2테마 + 서랍 375·768 × 2테마 + 홈 처음·월드 클리어·모두 완료 375·1280 × 2테마 + 검색 Modal·검색 페이지 × 3폭 × 2테마, 비교 함수 2개. 홈 장면은 전체 페이지로 찍는다)
-  - `npm run check:site -- <주소>`: 320·375·768·1280px 각각 "방문 168개, 문제 0개"(M5는 `npm run build:site`로 만든 `_site`를 로컬 정적 서버로 띄워 확인, 이 PC 약 20초. 서버를 같은 Node 프로세스에서 띄울 때 `spawnSync`로 점검을 부르면 서버가 멈춰 끝나지 않으므로 비동기로 부른다)
+  - `npm run test:e2e`: 159/159 통과(이 PC 약 1분 15초. 느린 기기 Skeleton 2개는 실제 교재를 빌드해 CPU 30배 감속으로 잰다)
+  - `npm run test:visual`: 64/64 통과(기준 이미지 62장: 4장면 × 3폭 × 2테마 + 확인 Modal × 3폭 × 2테마 + 잠금 화면 375·1280 × 2테마 + 서랍 375·768 × 2테마 + 홈 처음·월드 클리어·모두 완료 375·1280 × 2테마 + 검색 Modal·검색 페이지 × 3폭 × 2테마, 비교 함수 2개. 홈 장면은 전체 페이지로 찍는다)
+  - `npm run check:site -- <주소>`: 320·375·768·1280px 각각 "방문 168개, 문제 0개"(M5·M6은 `npm run build:site`로 만든 `_site`를 로컬 정적 서버로 띄워 확인, 이 PC 약 20초. 서버를 같은 Node 프로세스에서 띄울 때 `spawnSync`로 점검을 부르면 서버가 멈춰 끝나지 않으므로 비동기로 부른다)
 - 이 문서는 새 세션이 **다른 파일보다 먼저** 읽는 문서입니다. 이전 판은 `docs/checkpoint/CHECKPOINT-2026-11-06.md`(Subagent 방식 시절 재개 절차 포함)와 `CHECKPOINT-2026-11-05.md`에 보관했습니다. 내용이 다르면 이 문서가 우선합니다.
 
 ---
@@ -35,6 +35,7 @@
    - **M3 홈 1행**: `level.js`(XP·레벨 계산), `questState`(퀘스트 상태 5종, 저장하지 않고 계산), `views/quest.js`(퀘스트 카드, Tilt 2°), `views/hud.js`(LV 배지·XP 막대·통계 3행·격려), `xpFill`(세션에 한 번), `worldEmblem`. 진도율 카드와 소개 문구를 뺐다
    - **M4 월드맵·다른 월드·막혔을 때**: `trail.js`(뱀 배치 3종 좌표·경로·방향 화살표), `views/worldmap.js`(칸 상태 5종, 말, 배포 깃발, 범례, 툴팁), `views/worlds.js`(캐러셀·4칸 격자, 졸업 카드, 잠긴 월드 Shake + 토스트, Tilt 4°·Reveal), `views/helprow.js`(페이지 `meta`의 `{n}`을 빌드가 센 실제 개수로 채움), 홈 모션(`drawPath`·`pawnHop`·`confetti`·`linkHover`, 세션에 한 번). 학습 경로와 부록 목록을 뺐다
    - **M5 검색 Modal**: `views/searchmodal.js`(Ctrl+K·검색 버튼, combobox + listbox, ↑↓ Enter Esc, 서랍에서 열기, 뒤로 가기에 닫힘, 닫히는 중 다시 열기), `views/results.js`(검색 Modal·검색 페이지가 같이 쓰는 행: 위치 | 제목 + 이유 | 태그, 잠긴 결과는 여는 조건만, 바로 가기), `searchAsync`(나눠 계산·멈춤), `views/skeleton.js`(200ms 뒤 보임·최소 300ms). 404 빌드의 검색은 사이트의 검색 화면으로 간다
+   - **M6 설정·상태 화면**: `views/confirm.js`(확인 Modal: `role="alertdialog"`, 처음 포커스 취소, ESC·바깥 클릭·뒤로 가기는 취소, `ctx.confirm(opts, opener)`), 설정 카드 4개, 진도 불러오기 확인 Modal과 실패 Shake + 이유 문장, `backupFilename`, 백업 왕복 e2e(새 브라우저 컨텍스트), 오류 화면(`errorScreen`: 홈 버튼 + 설정 링크, 셸 유지), 잠금 화면 도트 자물쇠, 준비 중 Day 칸(복습 링크). 새 e2e 파일 `tests/e2e/settings.test.mjs`
 4. **남은 것**: 통합 로드맵 11장 M1부터(기능 M1–M14, 콘텐츠 E1·C1–C35, 품질 Q1–Q5).
 5. **처음 할 일**: 1장 → 5장(환경) → 7장(재개 절차) 순서로 하면 됩니다.
 
