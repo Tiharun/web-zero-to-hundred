@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { closeDialog, comboKey, DIALOG_CLOSE_FALLBACK_MS, isOutside, menuIndex } from '../../textbook/src/app/views/overlay.js';
+import { closeDialog, comboKey, DIALOG_CLOSE_FALLBACK_MS, isOutside, menuIndex, openDialog } from '../../textbook/src/app/views/overlay.js';
 
 test('isOutside: edges count as inside', () => {
   const r = { left: 0, right: 280, top: 0, bottom: 740 };
@@ -52,6 +52,20 @@ test('a stale close fallback does not close a dialog that was opened again', asy
   dlg.open = true; // 곧바로 다시 연다
   await new Promise((resolve) => setTimeout(resolve, DIALOG_CLOSE_FALLBACK_MS + 40));
   assert.equal(dlg.open, true, '앞선 닫기의 대체 타이머가 새로 연 대화상자를 닫으면 안 된다');
+});
+
+test('opening a dialog again while it is closing stops the close and keeps it open', async () => {
+  const dlg = fakeDialog();
+  const opener = { isConnected: true };
+  dlg.ownerDocument = { activeElement: null };
+  dlg.contains = () => false;
+  dlg.showModal = () => { dlg.open = true; };
+  closeDialog(dlg, { env: { reduce: false } });
+  openDialog(dlg, opener); // 닫히는 180ms 사이에 다시 연다 (Ctrl+K, 메뉴 버튼)
+  assert.equal(dlg.classList.contains('is-closing'), false, '닫힘 애니메이션을 멈춘다');
+  dlg.dispatch('animationend');
+  await new Promise((resolve) => setTimeout(resolve, DIALOG_CLOSE_FALLBACK_MS + 40));
+  assert.equal(dlg.open, true, '앞선 닫기가 다시 연 대화상자를 닫으면 안 된다');
 });
 
 test('close fallback still closes when animationend never comes', async () => {

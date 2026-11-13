@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { emptyProgress } from '../../textbook/src/app/progress.js';
-import { emptyText, hintText, resultModel, shortcutModels } from '../../textbook/src/app/views/results.js';
+import { emptyText, highlight, hintText, resultModel, shortcutModels } from '../../textbook/src/app/views/results.js';
 
 const cur = {
   projects: [
@@ -58,4 +58,32 @@ test('hintText and emptyText', () => {
   assert.equal(hintText('a', 3), '찾은 곳 3개');
   assert.equal(hintText('a', 0), '');
   assert.equal(emptyText(' zz '), '‘zz’에 맞는 내용이 없어요. 다른 낱말로 찾아보세요.');
+});
+
+test('highlight: a decomposed (NFD) query still marks the composed text', () => {
+  // h() 가 쓰는 만큼만 흉내 낸 DOM
+  class FakeNode {
+    constructor(tag) {
+      this.tag = tag;
+      this.kids = [];
+    }
+    append(kid) {
+      this.kids.push(kid);
+    }
+    setAttribute() {}
+  }
+  const saved = { document: globalThis.document, Node: globalThis.Node };
+  globalThis.Node = FakeNode;
+  globalThis.document = { createElement: (tag) => new FakeNode(tag), createTextNode: (text) => text };
+  try {
+    const parts = highlight('검색 화면', ['검색'.normalize('NFD')]);
+    const marks = parts.filter((part) => part instanceof FakeNode && part.tag === 'mark');
+    assert.equal(marks.length, 1, '자모로 나뉜 검색어도 밑줄을 친다');
+    assert.equal(marks[0].kids[0], '검색');
+  } finally {
+    for (const [key, value] of Object.entries(saved)) {
+      if (value === undefined) delete globalThis[key];
+      else globalThis[key] = value;
+    }
+  }
 });

@@ -39,6 +39,7 @@ export function comboKey(key, { index, count, composing }) {
 // ───────── <dialog> ─────────
 
 const returnTo = new WeakMap(); // dialog → 닫힌 뒤 포커스를 돌려줄 요소
+const pendingClose = new WeakMap(); // dialog → 진행 중인 닫힘 애니메이션을 멈추는 함수
 
 /**
  * ESC·바깥 클릭·닫힘 뒤 포커스 복귀를 붙인다. 바깥 클릭은 closedby 를 아는 브라우저면 속성으로,
@@ -66,8 +67,18 @@ export function setupDialog(dlg, { proto = globalThis.HTMLDialogElement?.prototy
   });
 }
 
-/** showModal 로 연다. 닫히면 opener(없으면 지금 포커스)로 돌아간다 */
+/**
+ * showModal 로 연다. 닫히면 opener(없으면 지금 포커스)로 돌아간다.
+ * 닫히는 애니메이션 중이면 닫기를 멈추고 열린 채로 둔다(돌아갈 곳은 처음 연 곳을 지킨다).
+ */
 export function openDialog(dlg, opener) {
+  const cancelClose = pendingClose.get(dlg);
+  if (cancelClose) {
+    cancelClose();
+    const back = opener ?? dlg.ownerDocument.activeElement;
+    if (!returnTo.has(dlg) && back && !dlg.contains(back)) returnTo.set(dlg, back);
+    return;
+  }
   if (dlg.open) return;
   returnTo.set(dlg, opener ?? dlg.ownerDocument.activeElement);
   dlg.showModal();
@@ -81,10 +92,11 @@ export function closeDialog(dlg, { restoreFocus = true, immediate = false, env =
   if (!dlg.open) return;
   if (!restoreFocus) returnTo.delete(dlg);
   if (immediate || env.reduce) {
+    pendingClose.get(dlg)?.(); // 진행 중인 닫힘 애니메이션의 타이머가 뒤에 남지 않게
     dlg.close();
     return;
   }
-  if (dlg.classList.contains('is-closing')) return;
+  if (pendingClose.has(dlg)) return;
   dlg.classList.add('is-closing');
   // 애니메이션 끝과 대체 타이머 중 먼저 온 쪽이 닫고 다른 쪽을 지운다.
   // 남은 타이머가 그사이 다시 연 대화상자를 닫으면 안 된다
@@ -92,11 +104,17 @@ export function closeDialog(dlg, { restoreFocus = true, immediate = false, env =
   const onEnd = (event) => {
     if (event.target === dlg) done();
   };
-  function done() {
+  function stop() {
     clearTimeout(timer);
     dlg.removeEventListener('animationend', onEnd);
+    dlg.classList.remove('is-closing');
+    pendingClose.delete(dlg);
+  }
+  function done() {
+    stop();
     if (dlg.open) dlg.close();
   }
+  pendingClose.set(dlg, stop);
   dlg.addEventListener('animationend', onEnd);
   timer = setTimeout(done, DIALOG_CLOSE_FALLBACK_MS);
 }

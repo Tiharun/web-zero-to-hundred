@@ -84,13 +84,12 @@ export function createSearchModal(ctx, dlg) {
   list.addEventListener('mousedown', (event) => event.preventDefault());
 
   return {
+    /** 연다. 이미 열려 있으면(닫히는 중이어도) 쓰던 글자를 두고 입력칸으로만 돌아간다 */
     open(opener) {
-      if (dlg.open) {
-        input.focus();
-        return;
+      if (!dlg.open) {
+        input.value = '';
+        view.update('');
       }
-      input.value = '';
-      view.update('');
       openDialog(dlg, opener);
       input.focus();
     },

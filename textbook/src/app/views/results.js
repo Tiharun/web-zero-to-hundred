@@ -75,7 +75,8 @@ const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 /** 검색어와 일치하는 부분을 <mark> 로 감싼 노드 목록 (글자는 textContent 로만 넣는다) */
 export function highlight(text, terms) {
   if (terms.length === 0 || !text) return [text];
-  const pattern = new RegExp(`(${terms.map(escapeRegExp).join('|')})`, 'giu');
+  // 검색(search.js fold)과 같이 NFC 로 맞춘다: 자모로 나뉜 입력도 같은 글자에 밑줄을 친다
+  const pattern = new RegExp(`(${terms.map((term) => escapeRegExp(term.normalize('NFC'))).join('|')})`, 'giu');
   return text.split(pattern).map((part, i) => (i % 2 === 1 ? h('mark', null, part) : part));
 }
 
