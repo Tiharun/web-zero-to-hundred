@@ -4,6 +4,7 @@ import { continueTarget, normalizeProgress } from './progress.js';
 import { parseHash } from './router.js';
 import { createStore } from './storage.js';
 import { h, helpHref, notFoundScreen } from './views/common.js';
+import { createConfirm } from './views/confirm.js';
 import { renderDay } from './views/day.js';
 import { renderHome } from './views/home.js';
 import { anchorTarget, renderPage } from './views/page.js';
@@ -41,6 +42,7 @@ function start() {
   // 404 빌드(GitHub Pages 의 404.html): 빈 주소는 404 화면이고, 틀의 링크는 사이트 주소(cur.url)로 간다
   const notFoundBuild = document.documentElement.hasAttribute('data-notfound');
   const siteBase = notFoundBuild ? cur.url : '';
+  const confirmModal = createConfirm(document.getElementById('confirm-dialog'));
 
   const ctx = {
     cur,
@@ -75,6 +77,8 @@ function start() {
     },
     now: () => new Date().toISOString(),
     announce: (text) => shell.announce(text),
+    /** 되돌릴 수 없는 일 앞에서 확인 Modal 로 묻는다. 확인만 true (views/confirm.js) */
+    confirm: (opts, opener) => confirmModal.ask(opts, opener),
     /** 지금 할 수 있는 곳의 주소 (없으면 null) */
     continueHref() {
       const target = continueTarget(cur, prog);
@@ -111,6 +115,7 @@ function start() {
   function render({ focus, scroll }) {
     const emptyHash = location.hash === '' || location.hash === '#';
     const route = notFoundBuild && emptyHash ? { name: 'notfound' } : parseHash(location.hash);
+    confirmModal.dismiss(); // 화면이 바뀌면(뒤로 가기 등) 묻던 것은 취소다
     for (const fn of cleanups.splice(0)) {
       try {
         fn();

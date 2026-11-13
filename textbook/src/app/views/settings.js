@@ -59,8 +59,12 @@ export function renderSettings(ctx, root) {
     ctx.announce('진도를 가져왔어요.');
   }
 
-  function onReset() {
-    if (!window.confirm('모든 진도를 지울까요?\n\n완료한 Day와 체크리스트 기록이 모두 사라지고 되돌릴 수 없어요. 먼저 백업 파일을 내보내 두면 안전해요.')) return;
+  async function onReset(event) {
+    const ok = await ctx.confirm(
+      { title: '모든 진도를 지울까요?', body: '완료한 Day와 체크리스트 기록이 모두 사라지고 되돌릴 수 없어요. 먼저 백업 파일을 내보내 두면 안전해요.', ok: '모두 지우기', danger: true },
+      event.currentTarget,
+    );
+    if (!ok) return;
     ctx.commit({ ...emptyProgress(), theme: ctx.prog.theme });
     ctx.setNotice('진도를 모두 지웠어요. 처음부터 천천히 다시 시작해 봐요.');
     ctx.go('#/');

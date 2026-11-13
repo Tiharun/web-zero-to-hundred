@@ -63,6 +63,14 @@
   </div>
   <p class="search-foot"><span><kbd>↑</kbd> <kbd>↓</kbd> 고르기</span><span><kbd>Enter</kbd> 열기</span><span><kbd>Esc</kbd> 닫기</span></p>
 </dialog>
+<dialog id="confirm-dialog" class="confirm" role="alertdialog" aria-labelledby="confirm-title" aria-describedby="confirm-body" data-testid="confirm-modal">
+  <h2 id="confirm-title" class="confirm-title"></h2>
+  <p id="confirm-body" class="confirm-body"></p>
+  <div class="confirm-actions">
+    <button type="button" class="btn" data-testid="confirm-cancel" autofocus>취소</button>
+    <button type="button" class="btn-primary" data-testid="confirm-ok"></button>
+  </div>
+</dialog>
 <div id="storage-banner" data-testid="storage-banner" role="status" hidden></div>
 <div id="live" class="sr-only" role="status" aria-live="polite"></div>
 <!--WZH:DATA-->

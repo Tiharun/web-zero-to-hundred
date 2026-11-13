@@ -548,33 +548,48 @@ button.row {
     display: none;
   }
 }
-/* 검색 Modal (DESIGN.md Navigation "검색 Modal"). 입력 줄·결과 행은 components.css 의 공용 규칙을 쓴다 */
-.search {
-  margin: 10dvh auto auto;
-  width: min(40rem, calc(100% - var(--space-xl)));
+/* Modal 표면: 검색 Modal 과 확인 Modal 이 같이 쓴다 (DESIGN.md Navigation "검색 Modal"·"확인 Modal") */
+.search,
+.confirm {
   max-width: none;
-  max-height: 76dvh;
-  padding: 0;
   border: 1px solid var(--color-rule);
   border-radius: var(--radius-card);
   background: var(--color-card);
   color: var(--color-ink);
+}
+.search[open],
+.confirm[open] {
+  animation: pop-in var(--dur-enter) var(--ease-out);
+}
+.search::backdrop,
+.confirm::backdrop {
+  background: var(--color-scrim);
+}
+.search[open]::backdrop,
+.confirm[open]::backdrop {
+  animation: fade-in var(--dur-enter) var(--ease-out);
+}
+.search.is-closing,
+.search.is-closing::backdrop,
+.confirm.is-closing,
+.confirm.is-closing::backdrop {
+  animation: fade-out var(--dur-exit) var(--ease-in) forwards;
+}
+:root:has(.search[open]),
+:root:has(.confirm[open]) {
+  overflow: hidden;
+}
+/* 검색 Modal. 입력 줄·결과 행은 components.css 의 공용 규칙을 쓴다 */
+.search {
+  margin: 10dvh auto auto;
+  width: min(40rem, calc(100% - var(--space-xl)));
+  max-height: 76dvh;
+  padding: 0;
   overflow: hidden;
 }
 .search[open] {
   display: flex;
   flex-direction: column;
-  animation: pop-in var(--dur-enter) var(--ease-out);
-}
-.search::backdrop {
-  background: var(--color-scrim);
-}
-.search[open]::backdrop {
-  animation: fade-in var(--dur-enter) var(--ease-out);
-}
-.search.is-closing,
-.search.is-closing::backdrop {
-  animation: fade-out var(--dur-exit) var(--ease-in) forwards;
 }
 .search .search-field {
   flex-shrink: 0;
@@ -596,8 +611,30 @@ button.row {
   color: var(--color-ink-2);
   font-size: var(--text-ui);
 }
-:root:has(.search[open]) {
-  overflow: hidden;
+/* 확인 Modal: 가운데, 제목·설명·버튼 줄 (취소 | 확인) */
+.confirm {
+  margin: auto;
+  width: min(28rem, calc(100% - var(--space-xl)));
+  padding: var(--space-lg);
+}
+.confirm-title {
+  margin: 0 0 var(--space-xs);
+  font-size: var(--text-h3);
+  font-weight: 800;
+  line-height: 1.3;
+}
+.confirm-body {
+  margin: 0;
+  color: var(--color-ink-2);
+  font-size: var(--text-body);
+  line-height: 1.65;
+}
+.confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
 }
 @keyframes drawer-in {
   from {
@@ -621,6 +658,9 @@ button.row {
 }
 
 @media (max-width: 40rem) {
+  .confirm {
+    padding: var(--space-md);
+  }
   .main {
     padding: var(--space-md) var(--space-md) var(--space-2xl);
   }

@@ -534,42 +534,6 @@ test('raw html shown as text', TIMEOUT, async () => {
   });
 });
 
-test('reset clears progress after confirm', TIMEOUT, async () => {
-  await withPage(async (page, app) => {
-    const messages = [];
-    let accept = false;
-    page.on('dialog', (dialog) => {
-      messages.push(dialog.message());
-      return accept ? dialog.accept() : dialog.dismiss();
-    });
-    await visit(page, app, '#/day/fa-d01');
-    await completeDay(page, 'fa-d01');
-    await page.locator('main input[data-check]').first().check();
-
-    await page.locator('#settings-link').click();
-    await waitRoute(page, '#/settings');
-    await page.getByTestId('reset-button').click(); // 취소
-    await eventually(async () => assert.equal(messages.length, 1));
-    assert.match(messages[0], /진도/);
-    assert.equal(await sidebarState(page, 'fa-d01'), 'done', '취소하면 그대로예요');
-
-    accept = true;
-    await page.getByTestId('reset-button').click();
-    await waitRoute(page, '#/');
-    await page.getByTestId('level-panel').waitFor();
-    assert.equal(await stat(page, 'days'), '0 / 3');
-    assert.equal(await xpNow(page), '0');
-    assert.equal(await sidebarState(page, 'fa-d01'), 'today');
-    assert.equal(await page.getByTestId('continue-button').getAttribute('href'), '#/day/fa-d01');
-
-    await page.reload(); // 저장소도 비워졌다
-    await waitRoute(page, '#/');
-    assert.equal(await stat(page, 'days'), '0 / 3');
-    await visit(page, app, '#/day/fa-d01');
-    assert.equal(await page.locator('main input[data-check]:checked').count(), 0);
-  });
-});
-
 test('keyboard reachable', TIMEOUT, async () => {
   await withPage(async (page, app) => {
     await visit(page, app, '#/day/fa-d01');

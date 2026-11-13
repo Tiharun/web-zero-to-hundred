@@ -536,6 +536,9 @@ components:
 - **잠긴 월드 카드:** 점선 테두리, 턱 없음, 바탕 `paper`, 제목·설명 `ink-2`, 엠블럼은 `ink-2` 윤곽만. 누르면 카드가 흔들리고 발판 문장이 `ink` 800으로 강조되며 이유가 `role="status"`로 읽힌다.
 - **막혔을 때 칸:** 안쪽 16px, 도트 아이콘 24px + 제목(15px 800, hover 밑줄) + 설명(15px `ink-2`). 2px `rule` 테두리와 턱.
 - **알림 상자:** 1px `ink-2` 테두리, 모서리 12px, 15px, 줄간격 1.5, 선 아이콘 alert, `role="status"`. 저장소를 못 쓸 때 홈 맨 위에 한 줄.
+- **설정 카드:** 기본 카드, 안쪽 `var(--space-lg)`(640px 이하 `var(--space-md)`), 카드 사이 `var(--space-lg)`. 제목 Title small, 설명 Body `ink-2`. 결과 문장(백업 불러오기)은 알림 상자 모양이고 종류별 색은 알림 상자 색이 정해질 때(M8) 입힌다.
+- **상태 화면(404·잠김·오류):** 도트 아이콘 3배(404·오류 렌치, 잠김 자물쇠) → 제목 → lead → 주 버튼 하나 + 글자 링크. 셸(상단 바·사이드바)은 그대로 둔다.
+- **준비 중 Day 칸:** 점선 2px `rule`, 턱 없음, 바탕 `paper`, 모서리 12px, 글자 `ink-2`. "이 Day는 아직 준비 중이에요." + 복습 글자 링크(앞 Day가 있을 때) 또는 "홈으로".
 
 ### Board Tiles (signature)
 보드게임 칸. 둥근 네모(모서리 6px)에 2px 테두리와 같은 색 턱. 테두리·턱 색은 `--tile-edge` 하나로 묶는다.
@@ -627,6 +630,7 @@ components:
 - **서랍(Drawer):** `<dialog>`를 `showModal()`로 연다. 왼쪽에 붙고 높이 100dvh, 폭 `min(var(--sidebar-w), calc(100% - var(--space-2xl)))`, 오른쪽 1px `rule`, 백드롭 `scrim`. 머리 56px(제목 17px 800 + 닫기). 열면 오늘 Day로 포커스·스크롤하고 월드 요약 줄이 stagger로 나타난다. 닫힘: ESC, 백드롭 클릭(`closedby="any"`, 미지원 브라우저는 백드롭 클릭 좌표 감지로 대신), 닫기 버튼, 안의 링크 클릭, 창이 1024px 이상이 될 때. 닫히면 연 버튼으로 포커스가 돌아간다. 열려 있는 동안 문서 스크롤을 잠근다(`:root:has(.drawer[open]) { overflow: hidden; }`). 사이드바와 서랍은 같은 목록 한 벌을 옮겨 쓴다.
 - **테마 Dropdown:** 메뉴 버튼 패턴(`menuitemradio` 3개: 시스템·라이트·다크). 메뉴는 최소 160px, 안쪽 4px, `card` 바탕, 1px `rule`, 모서리 12px, 그림자 없음. 항목 40px, 15px, 모서리 6px, hover·포커스 `track`, 고른 항목은 800과 선 체크(`accent-text`). ↓·↑로 열기, 화살표 순환, Home·End, ESC·Tab·바깥 클릭으로 닫기, Enter 적용 뒤 버튼으로 포커스 복귀. 고른 테마는 저장한다.
 - **검색 Modal:** `<dialog>`, `margin: 10dvh auto auto`, 폭 `min(40rem, calc(100% - var(--space-xl)))`, 최대 높이 76dvh, 1px `rule`, 모서리 12px, 그림자 없음. 입력 줄: 선 검색 아이콘, 40px 높이 17px 입력칸(외곽선 없음), 포커스는 입력 줄 밑의 `box-shadow: inset 0 -2px 0 var(--color-focus)`. 결과 행: 최소 48px, 모서리 6px, 위치(Label) | 제목(15px 800) + 이유(15px `ink-2`, 한 줄 말줄임) | 태그(Label). 고른 행은 `track` 바탕과 `box-shadow: inset 2px 0 0 var(--color-accent)`. 일치 글자는 바탕 없이 분홍 2px 밑줄. 아래에 `kbd` 안내(↑ ↓ 고르기, Enter 열기, Esc 닫기). Ctrl+K로 열고, 빈 검색어에는 바로 가기(오늘의 퀘스트 + 부록), ESC 한 번에 닫힌다. combobox + listbox, `aria-activedescendant`. 위치 칸은 최소 72px이다. 잠긴 결과는 이유 자리에 여는 조건 문장을 두고 태그를 "잠김"으로 한다. 본문 조각은 보이지 않는다. 결과가 없으면 목록 자리에 "‘검색어’에 맞는 내용이 없어요. 다른 낱말로 찾아보세요."(15px `ink-2`)가 나온다. 검색 페이지(`#/search`)도 같은 입력 줄과 결과 행을 카드 안에 쓴다(행은 링크).
+- **확인 Modal:** 되돌릴 수 없는 일(진도 복원 덮어쓰기, 진도 초기화) 앞에서만 쓴다. `<dialog role="alertdialog">`를 `showModal()`로 연다. 가운데(`margin: auto`), 폭 `min(28rem, calc(100% - var(--space-xl)))`, 안쪽 `var(--space-lg)`(640px 이하 `var(--space-md)`), `card` 바탕, 1px `rule`, 모서리 12px, 그림자 없음, 백드롭 `scrim`. 제목 Title small(800, `--text-h3`), 설명 Body(`ink-2`). 버튼 줄은 오른쪽 정렬·`var(--space-sm)` 간격·줄바꿈 허용: "취소"(`btn`) | 확인(복원은 주 버튼, 초기화는 위험 버튼). 처음 포커스는 "취소". ESC·바깥 클릭·"취소"는 모두 취소이고 아무것도 바뀌지 않는다. 열림·닫힘 모션은 검색 Modal과 같다. 닫히면 연 버튼으로 포커스가 돌아간다. 열려 있는 동안 Ctrl+K는 듣지 않고, 화면이 바뀌면 취소로 바로 닫힌다.
 - **푸터:** 본문 아래 전체 폭. 위 1px `rule`, 바탕 `card`, 안쪽 24px(640px 이하 16px), 턱 없음. 말 도트 아이콘 + 사이트 이름(15px 800 `ink`), 글자 링크 줄(시작하기, 막혔을 때, 설정 · 진도 백업), Label 한 줄(글꼴 라이선스). 작성·빌드 날짜는 두지 않는다. 짧은 화면에서도 화면 바닥에 붙는다. 인쇄에서는 숨긴다.
 
 ### Skeleton
@@ -690,7 +694,7 @@ components:
 - **건너뛰기 링크:** "본문으로 건너뛰기"가 포커스를 받을 때만 내려온다.
 - **대상 크기:** 주 버튼 48px, 아이콘 버튼 40px, 사이드바 행 36px(터치 44px), 칸 클릭 영역 46px(34px + 사방 6px), 오늘 칸 58px.
 - **이름과 상태:** 지도 칸은 `aria-label="Day n 제목, 상태[, 배포 Day]"`, 오늘은 `aria-current="step"`. 사이드바 상태는 `visually-hidden` 글자. 진도는 `role="progressbar"`. 테마 변경, 잠김 이유, 검색 선택은 `role="status"`로 알린다.
-- **키보드:** 서랍과 검색은 `showModal`로 바깥을 inert로 만들고 포커스를 가둔다. 캐러셀은 ←→, 검색은 ↑↓ Enter Esc, 메뉴는 화살표·Home·End·Esc.
+- **키보드:** 서랍과 검색은 `showModal`로 바깥을 inert로 만들고 포커스를 가둔다. 캐러셀은 ←→, 검색은 ↑↓ Enter Esc, 메뉴는 화살표·Home·End·Esc. 확인 Modal도 `showModal`로 포커스를 가두고 처음 포커스는 취소다.
 - **JS 없이:** 빌드가 기본 상태를 미리 그려 둔다. 숨긴 채 시작하는 상태를 CSS로 만들지 않는다.
 
 ## Do's and Don'ts
