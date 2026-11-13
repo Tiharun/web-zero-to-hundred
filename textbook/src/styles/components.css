@@ -189,13 +189,16 @@
   padding: 0.3em 1em;
   font-size: 0.9rem;
 }
-/* 비활성: 모든 .btn 은 투명도 0.4·떠오름 없음. 바탕과 턱은 보조 버튼만(주 버튼은 .btn-primary:disabled 가 턱을 없앤다) */
-.btn[disabled] {
+/* 비활성: 모든 .btn 은 투명도 0.4·떠오름 없음. 바탕과 턱은 보조 버튼만(주 버튼은 .btn-primary:disabled 가 턱을 없앤다).
+   aria-disabled(포커스는 받고 누르면 이유를 알리는 버튼)도 같은 모양이다 */
+.btn[disabled],
+.btn[aria-disabled="true"] {
   opacity: 0.4;
   transform: none;
   cursor: not-allowed;
 }
-.btn:not(.btn-primary, .btn-danger)[disabled] {
+.btn:not(.btn-primary, .btn-danger)[disabled],
+.btn:not(.btn-primary, .btn-danger)[aria-disabled="true"] {
   background: var(--color-card);
   box-shadow: 0 3px 0 var(--btn-edge);
 }

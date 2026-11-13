@@ -552,6 +552,17 @@ const BLOCKED = '#/day/fa-d02';
 const liveText = (page) => page.locator('#live').innerText();
 const storedDone = (page, id) => page.evaluate(([key, d]) => Boolean(JSON.parse(localStorage.getItem(key) ?? '{}').completed?.[d]), [STORAGE_KEY, id]);
 
+test('blocked Day complete looks off: opacity 0.4, no ledge, still focusable', TIMEOUT, async () => {
+  await withPage(BLOCKED, async (page) => {
+    const btn = page.getByTestId('complete-button');
+    const look = await btn.evaluate((el) => ({ opacity: getComputedStyle(el).opacity, shadow: getComputedStyle(el).boxShadow }));
+    assert.equal(look.opacity, '0.4', 'DESIGN.md "Day 완료 카드": aria-disabled 는 투명도 0.4');
+    assert.equal(look.shadow, 'none', '턱 없음');
+    await btn.focus();
+    assert.equal(await btn.evaluate((el) => document.activeElement === el), true, '포커스는 받는다');
+  });
+});
+
 test('pressing a blocked Day complete shakes and explains', TIMEOUT, async () => {
   await withPage(
     BLOCKED,
