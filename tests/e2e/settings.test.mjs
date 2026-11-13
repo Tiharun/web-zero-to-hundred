@@ -546,6 +546,35 @@ test('danger and secondary buttons follow DESIGN.md', TIMEOUT, async () => {
   });
 });
 
+test('a disabled secondary button does not react to hover', TIMEOUT, async () => {
+  await withPage('#/settings', async (page) => {
+    const btn = page.getByTestId('export-button');
+    await btn.evaluate((el) => { el.disabled = true; });
+    await btn.hover({ force: true });
+    await sleep(400); // 전환(--dur-short)이 끝난 뒤의 값을 본다
+    const s = await styleOf(btn);
+    assert.equal(s.bg, await cssColor(page, '--color-card'), '비활성 버튼은 hover 바탕이 바뀌지 않는다');
+    assert.equal(await btn.evaluate((el) => getComputedStyle(el).transform), 'none');
+  });
+});
+
+test('a disabled primary button keeps its pink face without the secondary ledge', TIMEOUT, async () => {
+  await withPage('#/settings', async (page) => {
+    const s = await page.evaluate(() => {
+      const b = document.createElement('button');
+      b.className = 'btn btn-primary';
+      b.disabled = true;
+      b.textContent = 'Day 완료';
+      document.querySelector('main').append(b);
+      const cs = getComputedStyle(b);
+      return { bg: cs.backgroundColor, shadow: cs.boxShadow, opacity: cs.opacity };
+    });
+    assert.equal(s.bg, await cssColor(page, '--color-accent'), '주 버튼 면은 분홍 그대로');
+    assert.equal(s.shadow, 'none', '비활성 주 버튼은 턱이 없다(.btn-primary:disabled)');
+    assert.equal(s.opacity, '0.4');
+  });
+});
+
 test('toast and settings message wrap at 320px without sideways scroll', TIMEOUT, async () => {
   const sideways = (page) => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   await withPage(

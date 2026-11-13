@@ -189,11 +189,15 @@
   padding: 0.3em 1em;
   font-size: 0.9rem;
 }
+/* 비활성: 모든 .btn 은 투명도 0.4·떠오름 없음. 바탕과 턱은 보조 버튼만(주 버튼은 .btn-primary:disabled 가 턱을 없앤다) */
 .btn[disabled] {
   opacity: 0.4;
   transform: none;
-  box-shadow: 0 3px 0 var(--btn-edge);
   cursor: not-allowed;
+}
+.btn:not(.btn-primary, .btn-danger)[disabled] {
+  background: var(--color-card);
+  box-shadow: 0 3px 0 var(--btn-edge);
 }
 .file-btn:focus-within {
   outline: 2px solid var(--color-focus);

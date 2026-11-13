@@ -656,7 +656,7 @@ components:
 ## Components
 
 ### Buttons
-- **Primary(주 버튼):** 분홍 면, 흰(다크는 밤색) 글자 17px 800, `min-height: 48px`, 좌우 24px, 모서리 6px, 분홍 턱 4px. 한 화면에 하나. 문구는 상태별: "이어서 하기", "첫 Day 시작하기", "다음 월드 시작하기", "Day n 복습하기", "졸업 로드맵 보기".
+- **Primary(주 버튼):** 분홍 면, 흰(다크는 밤색) 글자 17px 800, `min-height: 48px`, 좌우 24px, 모서리 6px, 분홍 턱 4px. 비활성은 투명도 0.4에 턱 없음. 한 화면에 하나. 문구는 상태별: "이어서 하기", "첫 Day 시작하기", "다음 월드 시작하기", "Day n 복습하기", "졸업 로드맵 보기".
 - **Hover / Active:** hover는 `accent-hover` 면과 2px 떠오름, 누르면 턱 안으로 내려간다(Elevation 표). 전환: 바탕 120ms `--ease-out`, 위치·턱 200ms `--ease-bounce`.
 - **Magnetic:** 마우스가 버튼 둘레 32px 안에 오면 최대 6px 끌린다(`PULL = 6`, `REACH = 32`, `translate: var(--mx, 0px) var(--my, 0px)`). 주 버튼에만.
 - **아이콘·도구 버튼:** 최소 40×40px, 투명 바탕, 1px 투명 테두리, 모서리 6px. hover `track`, active `rule`, 비활성은 투명도 0.4. 검색 버튼만 1px `rule` 테두리와 `ink-2` 글자, 640px 이하에서 아이콘만.
