@@ -252,6 +252,9 @@ components:
   drawer:
     backgroundColor: "{colors.card}"
     width: "min(280px, calc(100% - 48px))"
+  term-drawer:
+    backgroundColor: "{colors.card}"
+    width: "min(28rem, calc(100% - 48px))"
   callout:
     backgroundColor: "{colors.tip-bg}"
     textColor: "{colors.ink}"
@@ -786,6 +789,7 @@ components:
 - **테마 Dropdown:** 메뉴 버튼 패턴(`menuitemradio` 3개: 시스템·라이트·다크). 메뉴는 최소 160px, 안쪽 4px, `card` 바탕, 1px `rule`, 모서리 12px, 그림자 없음. 항목 40px, 15px, 모서리 6px, hover·포커스 `track`, 고른 항목은 800과 선 체크(`accent-text`). ↓·↑로 열기, 화살표 순환, Home·End, ESC·Tab·바깥 클릭으로 닫기, Enter 적용 뒤 버튼으로 포커스 복귀. 고른 테마는 저장한다.
 - **검색 Modal:** `<dialog>`, `margin: 10dvh auto auto`, 폭 `min(40rem, calc(100% - var(--space-xl)))`, 최대 높이 76dvh, 1px `rule`, 모서리 12px, 그림자 없음. 입력 줄: 선 검색 아이콘, 40px 높이 17px 입력칸(외곽선 없음), 포커스는 입력 줄 밑의 `box-shadow: inset 0 -2px 0 var(--color-focus)`. 결과 행: 최소 48px, 모서리 6px, 위치(Label) | 제목(15px 800) + 이유(15px `ink-2`, 한 줄 말줄임) | 태그(Label). 고른 행은 `track` 바탕과 `box-shadow: inset 2px 0 0 var(--color-accent)`. 일치 글자는 바탕 없이 분홍 2px 밑줄. 아래에 `kbd` 안내(↑ ↓ 고르기, Enter 열기, Esc 닫기). Ctrl+K로 열고, 빈 검색어에는 바로 가기(오늘의 퀘스트 + 부록), ESC 한 번에 닫힌다. combobox + listbox, `aria-activedescendant`. 위치 칸은 최소 72px이다. 잠긴 결과는 이유 자리에 여는 조건 문장을 두고 태그를 "잠김"으로 한다. 본문 조각은 보이지 않는다. 결과가 없으면 목록 자리에 "‘검색어’에 맞는 내용이 없어요. 다른 낱말로 찾아보세요."(15px `ink-2`)가 나온다. 검색 페이지(`#/search`)도 같은 입력 줄과 결과 행을 카드 안에 쓴다(행은 링크).
 - **확인 Modal:** 되돌릴 수 없는 일(진도 복원 덮어쓰기, 진도 초기화) 앞에서만 쓴다. `<dialog role="alertdialog">`를 `showModal()`로 연다. 가운데(`margin: auto`), 폭 `min(28rem, calc(100% - var(--space-xl)))`, 안쪽 `var(--space-lg)`(640px 이하 `var(--space-md)`), `card` 바탕, 1px `rule`, 모서리 12px, 그림자 없음, 백드롭 `scrim`. 제목 Title small(800, `--text-h3`), 설명 Body(`ink-2`). 버튼 줄은 오른쪽 정렬·`var(--space-sm)` 간격·줄바꿈 허용: "취소"(`btn`) | 확인(복원은 주 버튼, 초기화는 위험 버튼). 처음 포커스는 "취소". ESC·바깥 클릭·"취소"는 모두 취소이고 아무것도 바뀌지 않는다. 열림·닫힘 모션은 검색 Modal과 같다. 닫히면 연 버튼으로 포커스가 돌아간다. 열려 있는 동안 Ctrl+K는 듣지 않고, 화면이 바뀌면 취소로 바로 닫힌다.
+- **용어 서랍:** 본문의 용어 링크(`a.term`)를 그냥 누르면 연다. 모든 폭에서 오른쪽에 붙는 `<dialog>`(`showModal`), 높이 100dvh, 폭 `min(28rem, calc(100% - var(--space-2xl)))`, 왼쪽 1px `rule`, `card` 바탕, 백드롭 `scrim`, 그림자 없음. 머리 56px: 책 도트(2배 16px) + 용어 이름(17px 800, 열면 여기로 포커스) + 닫기 아이콘 버튼("용어 설명 닫기"). 몸통은 용어 사전 항목의 정의(Body, 안쪽 `var(--space-lg) var(--space-md)`, 세로 스크롤은 몸통 안에서만). 정의 안의 용어 링크를 누르면 서랍 안에서 그 용어로 바뀐다. 아래 줄(위 1px `rule`, 안쪽 `var(--space-sm) var(--space-md)`)에 글자 링크 "용어 사전에서 보기 →". 닫힘: ESC, 백드롭 클릭, 닫기 버튼, 화면 이동. 닫히면 누른 용어 링크로 포커스가 돌아간다. 열려 있는 동안 문서 스크롤을 잠근다. 수정 키·가운데 버튼 클릭, 용어 사전 페이지 안의 링크, 사전에 없는 항목은 지금처럼 이동한다.
 - **푸터:** 본문 아래 전체 폭. 위 1px `rule`, 바탕 `card`, 안쪽 24px(640px 이하 16px), 턱 없음. 말 도트 아이콘 + 사이트 이름(15px 800 `ink`), 글자 링크 줄(시작하기, 막혔을 때, 설정 · 진도 백업), Label 한 줄(글꼴 라이선스). 작성·빌드 날짜는 두지 않는다. 짧은 화면에서도 화면 바닥에 붙는다. 인쇄에서는 숨긴다.
 
 ### Skeleton
@@ -827,7 +831,8 @@ components:
 - **이전·다음:** `nav` 2칸 격자(640px 이하 1칸), 사이 `var(--space-sm)`. 칸은 누르는 링크 카드(`card` 바탕, 2px `rule` 테두리, 모서리 `--radius-card`, 안쪽 `var(--space-sm) var(--space-md)`, `rule` 턱 `--ledge`, hover `track` 바탕, 누르면 Press: `translateY(calc(var(--ledge) - 1px))`·턱 1px, 60ms, 격자 아래 `var(--ledge)` 자리를 비워 턱이 다음 것을 밀지 않게 한다): 위 Label("← 이전", "다음 →", `ink-2`), 아래 제목 15px 800 `ink`. 다음 칸은 오른쪽 정렬(1칸일 때 왼쪽). `rel="prev"`·`rel="next"`.
 - **부록 목차 열:** 목차 카드가 있는 부록 페이지는 1280px 이상에서 `minmax(0, var(--lesson-max))`와 `var(--aside-w)` 두 열(사이 `var(--space-xl)`)로 나뉜다. 목차 카드는 오른쪽 열에서 `position: sticky`(상단 바 + `var(--space-lg)`)이고, 높이는 `calc(100dvh - var(--topbar-h) - 2 * var(--space-lg))`까지이며, 넘치면 카드 안에서 세로로 스크롤한다.
 - **토스트:** `card` 면, 2px `edge` 테두리, `--ledge` `edge` 턱, 모서리 `--radius-card`, 15px `ink`, `max-width: min(100%, 28rem)`. 왼쪽 도트 아이콘은 부르는 쪽이 정한다(없으면 생략). 들어옴은 아래 8px에서 `--dur-short` `--ease-bounce`, 나감은 투명도 `--dur-exit` `--ease-in`. `role="status"`, 4초, hover·포커스 중에는 멈춘다.
-- **레벨업 Modal:** `<dialog>`(`setupDialog`), `card` 면, 2px `edge` 테두리와 턱, 안쪽 `var(--space-xl)`, 가운데 정렬, `max-width: 24rem`. 순서: Label "레벨 업" → LV 배지(HUD와 같은 모양, 숫자 32px) → 제목 "레벨이 올랐어요"(Title small) → "다음 레벨까지 XP m"(`ink-2`) → 주 버튼 "계속하기"(처음 포커스). 열림 `pop-in` `--dur-enter`. M11에서 화면에 넣는다.
+- **보상 Modal(레벨업·월드 클리어):** `<dialog>`(`setupDialog`, `showModal`), 가운데(`margin: auto`), `card` 면, 2px `edge` 테두리와 `--ledge` `edge` 턱, 모서리 `--radius-card`, 안쪽 `var(--space-xl)`(640px 이하 `var(--space-lg)`), 가운데 정렬, 폭 `min(24rem, calc(100% - var(--space-xl)))`, 백드롭 `scrim`, 부품 사이 `var(--space-sm)`. 레벨업: Label "레벨 업" → LV 배지(HUD와 같은 모양, 숫자 32px) → 제목 "레벨이 올랐어요"(Title small) → "다음 레벨까지 XP m"(`ink-2`, m은 800 고정폭) → 주 버튼 "계속하기"(처음 포커스). 월드 클리어: Label "월드 클리어" → 엠블럼 배지(월드 페이지 머리와 같은 모양, 엠블럼 3배) → 제목 "‘월드 이름’ 클리어!"(Title small) → 결과물 문장(`ink-2`) → 같은 완료로 레벨도 올랐으면 "LV n 달성"(`ink` 800) → 주 버튼 "계속하기". 한 번의 완료에 둘이 같이 나면 월드 클리어 하나만 띄운다. 사건마다 세션에 한 번이다(레벨업 `levelup:n`, 월드 클리어 `celebrate:<월드 id>`, 홈 축하와 같은 키). 닫힘: "계속하기", ESC, 백드롭 클릭, 화면 이동. 닫히면 Day 완료 카드 상태 줄로 포커스가 돌아가고 그다음 업적 토스트가 뜬다. 이름은 제목(`aria-labelledby`). 월드 클리어는 열릴 때 엠블럼에서 축하 조각이 튄다.
+- **업적 토스트:** 토스트 틀 그대로, 왼쪽에 트로피 도트(2배 16px, 글자와 사이 `var(--space-xs)`). 문장은 "Day n 완료! 보상 +m XP"(분이 숫자가 아니면 "Day n 완료!")이고, 새로 열린 곳이 있으면 " · 새로 열린 곳이 있어요"를 붙인다. Day를 완료할 때마다 뜨며, 이 문장이 완료 알림이다.
 - **설정 결과 문장(`.message[data-kind]`):** 알림 상자와 같은 틀(1px `rule` 테두리, 왼쪽 4px 막대, 모서리 `--radius-card`), 15px `ink`, 줄간격 1.5. 색은 종류로 고른다: `ok` → `success`, `error` → `warn`, `info` → `info`의 바탕과 막대.
 - **그림 틀:** `figure.figure`, `card` 면, 2px `rule` 테두리, 모서리 `--radius-card`. 무대는 `paper` 바탕, 안쪽 `var(--space-lg) var(--space-md)`, 높이는 그림이 정한다(그림 폭 최대 30rem). 아래 줄은 Label "그림 n" + 캡션 15px `ink`, 오른쪽에 보조 버튼 "▶ 다음 단계"(마지막 단계에서 "↺ 처음부터", 단계 그림만). 대체 설명은 `role="img"` 무대의 `aria-label`. M12에서 화면에 넣는다.
 
@@ -851,7 +856,7 @@ components:
 | XP 채움 | XP 막대 | 왼쪽 끝에서 실제 비율까지 `clip-path`, `duration: 600, delay: 240`. 이번 레벨 XP가 0이면 생략 |
 | Path Drawing | 완료 경로선 | `stroke-dashoffset` 1→0, `duration: 900, delay: 200`, 지도가 40% 보일 때(`threshold: 0.4`) |
 | 말 점프 | 오늘 칸의 말 | 첫 표시 때 8px 3번(`duration: 480, delay: 700, iterations: 3`). 퀘스트 카드와 연결된 동안은 `animation: hop 520ms var(--ease-out) infinite`, 7px |
-| 축하 조각 | 월드 클리어·모두 클리어 상태의 큰 Day 번호 | 8px 도트 조각 18개, 색 `accent`·`progress`·`coin`·`edge` 순환, 위로 부채꼴로 튀었다 떨어지며 사라짐. `duration: 1100, delay: 500 + (i % 6) * 30`, `easing: 'cubic-bezier(0.2, 0.7, 0.4, 1)'` |
+| 축하 조각 | 월드 클리어·모두 클리어 상태의 큰 Day 번호, 월드 클리어 Modal의 엠블럼 | 8px 도트 조각 18개, 색 `accent`·`progress`·`coin`·`edge` 순환, 위로 부채꼴로 튀었다 떨어지며 사라짐. `duration: 1100, delay: 500 + (i % 6) * 30`, `easing: 'cubic-bezier(0.2, 0.7, 0.4, 1)'` |
 | Tilt | 퀘스트 카드 2°(`tilt(el, 2)`), 월드 카드 4°(`tilt(el, 4)`) | `perspective(1000px)`, 마우스·정밀 포인터만, 나가면 200ms로 복귀 |
 | Magnetic | 주 버튼 | 최대 6px(Buttons 참고) |
 | Shake | 잠긴 월드 카드, 조건이 안 된 "Day 완료" 버튼 | 300ms, 좌우 4px(`transform: translateX(-4px)` ↔ 4px, 네 번). 이유 문장을 반드시 같이 보여 준다 |
@@ -861,11 +866,14 @@ components:
 | 검색 | 열림 / 닫힘 | `pop-in` 280ms / 페이드 180ms. 닫힘 애니메이션이 끝나지 않으면 `setTimeout(done, 260)`으로 닫는다 |
 | Skeleton | 검색 결과 자리 | 200ms 뒤에 보임, 최소 300ms, 투명도 1 → 0.5 → 1 `var(--dur-skeleton) ease-in-out infinite` |
 | 서랍 | 열림 / 닫힘 | `transform: translateX(-100%)`에서 280ms `--ease-out` / 180ms `--ease-in`, 백드롭은 투명도만 |
+| 보상 Modal | 열림 / 닫힘 | `pop-in` 280ms `--ease-out` / 페이드 180ms `--ease-in`(검색과 같음) |
+| 용어 서랍 | 열림 / 닫힘 | `transform: translateX(100%)`에서 280ms `--ease-out` / 180ms `--ease-in`, 백드롭은 투명도만 |
+| 화면 전환 | 퀘스트 카드 큰 Day 번호 ↔ Day 머리 번호, 월드 카드 엠블럼 ↔ 월드 페이지 머리 엠블럼 | `document.startViewTransition`. 이동하는 곳과 짝인 요소가 지금 화면에 있을 때만 두 요소에 `view-transition-name: wzh-shared`를 잠깐 붙인다. 묶음 이동 280ms `--ease-out`, 화면 나머지는 바로 바뀐다(root 애니메이션 없음), 짝 없는 그림은 애니메이션 없음, 전환 중 클릭은 문서로 간다(`::view-transition { pointer-events: none }`). 미지원이면 바로 바꾼다 |
 | 테마 아이콘 | 테마 바꿈 | 120ms `transform: rotate(-45deg) scale(0.6)`로 사라졌다가 새 아이콘 |
 
-- **한 번만:** Stagger, XP 채움, Path Drawing, 첫 말 점프, 축하 조각은 세션에서 처음 볼 때 한 번만 돈다(시안은 상태별 `sessionStorage` 키). 다시 열면 최종 상태로 보인다.
+- **한 번만:** Stagger, XP 채움, Path Drawing, 첫 말 점프, 축하 조각, 보상 Modal은 세션에서 처음 볼 때 한 번만 돈다(시안은 상태별 `sessionStorage` 키). 다시 열면 최종 상태로 보인다.
 - **움직이는 속성:** `transform`, `translate`, `opacity`, `box-shadow`(턱), `clip-path`(XP), `stroke-dashoffset`(경로), 색. 레이아웃 속성(폭·높이·위치)은 움직이지 않는다.
-- **동작 줄이기:** `(prefers-reduced-motion: reduce)`이면 모든 애니메이션과 전환을 사실상 0으로 만든다(`animation-duration: 0.01ms !important`, 반복 1회, `transition-delay: 0s !important`, `scroll-behavior: auto !important`). 주 버튼의 끌림과 hover 떠오름, 칸의 hover·연결 떠오름, Tilt를 없애고 축하 조각을 숨긴다. JS도 Stagger·XP 채움·Path Drawing·말 점프·축하·Tilt·Magnetic·Shake를 건너뛰고 서랍·검색은 바로 닫는다. 정보와 기능은 하나도 빠지지 않는다(Shake 대신 이유 문장 강조와 알림은 그대로).
+- **동작 줄이기:** `(prefers-reduced-motion: reduce)`이면 모든 애니메이션과 전환을 사실상 0으로 만든다(`animation-duration: 0.01ms !important`, 반복 1회, `transition-delay: 0s !important`, `scroll-behavior: auto !important`). 주 버튼의 끌림과 hover 떠오름, 칸의 hover·연결 떠오름, Tilt를 없애고 축하 조각을 숨긴다. JS도 Stagger·XP 채움·Path Drawing·말 점프·축하·Tilt·Magnetic·Shake·화면 전환을 건너뛰고 서랍·검색·보상 Modal·용어 서랍은 바로 열고 닫는다. 정보와 기능은 하나도 빠지지 않는다(Shake 대신 이유 문장 강조와 알림은 그대로).
 
 ### Accessibility
 - **포커스:** `:focus-visible`에만 `outline: 2px solid var(--color-focus)`, `outline-offset: 2px`. 메뉴 항목과 월드 캐러셀처럼 잘리는 곳은 `outline-offset: -2px`. 검색 입력은 입력 줄 밑 2px 선. 월드 카드는 안의 클릭 레이어가 포커스를 받으면 카드 전체에 링을 그린다(`:has(.card-hit:focus-visible)`).
