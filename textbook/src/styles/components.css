@@ -425,6 +425,110 @@ kbd {
   }
 }
 
+/* ───────── 검색 입력 줄과 결과 행 (DESIGN.md Navigation "검색 Modal"): Modal 과 검색 페이지가 같이 쓴다 ───────── */
+
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--color-rule);
+  color: var(--color-ink-2);
+}
+.search-field input {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-ink);
+  font: inherit;
+  font-size: var(--text-body);
+  outline: none;
+}
+.search-field:has(input:focus-visible) {
+  box-shadow: inset 0 -2px 0 var(--color-focus);
+}
+.search-field input::placeholder {
+  color: var(--color-ink-2);
+  opacity: 1;
+}
+.search-body {
+  padding: var(--space-xs);
+}
+.search-hint {
+  margin: 0;
+  padding: var(--space-xs) var(--space-sm) var(--space-2xs);
+}
+.search-hint:empty {
+  display: none;
+}
+.results {
+  display: grid;
+  gap: var(--space-3xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.result {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: var(--space-sm);
+  min-height: 48px;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-btn);
+  color: var(--color-ink);
+  text-decoration: none;
+  cursor: pointer;
+}
+.result:hover {
+  background: var(--color-track);
+}
+.result[aria-selected="true"],
+a.result:focus-visible {
+  background: var(--color-track);
+  box-shadow: inset 2px 0 0 var(--color-accent);
+}
+a.result:focus-visible {
+  outline-offset: -2px;
+}
+.result-where {
+  min-width: 72px;
+}
+.result-body {
+  min-width: 0;
+}
+.result-title {
+  display: block;
+  font-size: var(--text-ui);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+.result-why {
+  display: block;
+  overflow: hidden;
+  color: var(--color-ink-2);
+  font-size: var(--text-ui);
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.search-empty {
+  margin: 0;
+  padding: var(--space-lg) var(--space-sm);
+  color: var(--color-ink-2);
+  font-size: var(--text-ui);
+}
+/* 일치 글자: 바탕 없이 분홍 2px 밑줄 (DESIGN.md Typography "밑줄") */
+mark {
+  background: none;
+  color: inherit;
+  text-decoration: underline 2px var(--color-accent);
+  text-underline-offset: 0.18em;
+}
+
 /* ───────── Skeleton (DESIGN.md Skeleton): 늦게 준비되는 결과 자리. 결과 행과 같은 48px ───────── */
 
 .skeleton-row {

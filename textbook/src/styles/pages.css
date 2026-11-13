@@ -1,39 +1,10 @@
 /* ───────── 검색 · 설정 ───────── */
 
-.results {
-  display: grid;
-  gap: 12px;
-  margin: 20px 0 0;
-  padding: 0;
-  list-style: none;
-}
-.result {
-  display: grid;
-  gap: 2px;
-  padding: 14px 18px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-}
-.result a {
-  font-size: 1.05rem;
-}
-.result-where {
-  color: var(--muted);
-  font-size: 0.85rem;
-}
-.result p {
-  margin: 4px 0 0;
-}
-.result[data-locked="true"] {
-  background: var(--surface-2);
-  border-style: dashed;
-}
-mark {
-  background: var(--tip-bg);
-  color: inherit;
-  border-radius: 3px;
-  box-shadow: 0 0 0 1px var(--tip-line);
+/* 검색 페이지: 입력 줄과 결과 행(components.css)을 카드 안에 둔다 */
+.search-card {
+  max-width: 40rem;
+  margin-top: var(--space-md);
+  overflow: hidden;
 }
 
 .settings {

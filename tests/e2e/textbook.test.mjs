@@ -374,7 +374,7 @@ test('search hides locked snippet', TIMEOUT, async () => {
     const locked = page.locator('[data-testid="search-result"][data-id="fb-d01"]');
     await locked.waitFor();
     assert.equal(await locked.getAttribute('data-locked'), 'true');
-    assert.equal(await locked.locator('.snippet').count(), 0, '잠긴 결과는 제목만 보여 줘요');
+    assert.equal(await locked.locator('.result-why').innerText(), '‘픽스처 프로젝트 A’ 프로젝트를 끝내면 열려요.', '잠긴 결과는 제목과 여는 조건만 보여 줘요');
     assert.ok(!(await locked.innerText()).includes(SECRET));
     assert.match(await locked.innerText(), /비밀 Day/);
     assert.equal(await page.getByTestId('search-result').count(), 1);
@@ -384,7 +384,7 @@ test('search hides locked snippet', TIMEOUT, async () => {
     await waitRoute(page, `#/search?q=${encodeURIComponent('비밀페이지zz')}`);
     const secretPage = page.locator('[data-testid="search-result"][data-id="secret"]');
     await secretPage.waitFor();
-    assert.equal(await secretPage.locator('.snippet').count(), 0);
+    assert.equal(await secretPage.locator('.result-why').innerText(), '‘픽스처 프로젝트 B’ 프로젝트를 끝내면 열려요.');
     assert.ok(!(await secretPage.innerText()).includes('비밀페이지zz'));
 
     // 열린 프로젝트(fa)의 결과에는 본문 조각이 있다
@@ -393,7 +393,7 @@ test('search hides locked snippet', TIMEOUT, async () => {
     const open = page.locator('[data-testid="search-result"][data-id="fa-d02"]');
     await open.waitFor();
     assert.equal(await open.getAttribute('data-locked'), 'false');
-    assert.match(await open.locator('.snippet').innerText(), /복습/);
+    assert.match(await open.locator('.result-why').innerText(), /복습/);
     assert.equal(await open.locator('mark').first().innerText(), '복습');
 
     // 결과를 누르면 그 Day 로 간다
@@ -412,7 +412,7 @@ test('search hides locked snippet', TIMEOUT, async () => {
     const unlocked = page.locator('[data-testid="search-result"][data-id="fb-d01"]');
     await unlocked.waitFor();
     assert.equal(await unlocked.getAttribute('data-locked'), 'false');
-    assert.match(await unlocked.locator('.snippet').innerText(), new RegExp(SECRET));
+    assert.match(await unlocked.locator('.result-why').innerText(), new RegExp(SECRET));
   });
 });
 
@@ -452,9 +452,9 @@ test('no horizontal page scroll at 360px', TIMEOUT, async () => {
         page.evaluate(() => ({
           scrollWidth: document.documentElement.scrollWidth,
           innerWidth: window.innerWidth,
-          // 코드 블록·다른 월드 캐러셀(제 안에서만 넘친다) 안쪽을 빼고, 화면 오른쪽 밖으로 나간 요소
+          // 코드 블록·다른 월드 캐러셀(제 안에서만 넘친다)·검색 이유 한 줄(말줄임으로 잘린다) 안쪽을 빼고, 화면 오른쪽 밖으로 나간 요소
           escaped: [...document.querySelectorAll('main *, .topbar *')]
-            .filter((el) => !el.closest('pre, .worlds') && el.getBoundingClientRect().right > window.innerWidth + 0.5)
+            .filter((el) => !el.closest('pre, .worlds, .result-why') && el.getBoundingClientRect().right > window.innerWidth + 0.5)
             .map((el) => el.tagName.toLowerCase() + '.' + el.className),
         }));
 
