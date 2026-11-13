@@ -215,7 +215,7 @@ export function renderDay(ctx, dayId, root) {
       parts.push(
         h(
           'section',
-          { class: 'completion is-done', 'aria-label': 'Day 완료' },
+          { class: 'completion card is-done', 'aria-label': 'Day 완료' },
           h('p', { class: 'completion-status', id: 'completion-status', tabindex: '-1' }, `✅ Day ${day.num} 완료! 오늘도 한 걸음 나아갔어요.`),
           isProjectComplete(cur, prog, project.id) && h('p', { class: 'celebrate' }, `🎉 프로젝트 ‘${project.title}’를 모두 마쳤어요. 정말 대단해요!`),
           h(
@@ -232,7 +232,7 @@ export function renderDay(ctx, dayId, root) {
       parts.push(
         h(
           'section',
-          { class: 'completion', 'aria-label': 'Day 완료' },
+          { class: 'completion card', 'aria-label': 'Day 완료' },
           h('p', { class: 'completion-status', id: 'completion-status', tabindex: '-1' }, checks ?? '오늘 할 일을 마쳤나요?'),
           h(
             'div',
@@ -346,11 +346,11 @@ function unlockBanner(ctx, ids) {
       return page ? h('li', null, '부록 ', h('a', { href: `#/page/${page.id}` }, page.title)) : null;
     })
     .filter(Boolean);
-  return h('div', { class: 'unlock-banner', 'data-testid': 'unlock-banner', role: 'status' }, h('p', null, h('strong', null, '🎉 새로 열렸어요!')), h('ul', null, items));
+  return h('div', { class: 'unlock-banner', 'data-testid': 'unlock-banner', role: 'status' }, h('p', { class: 'label' }, '🎉 새로 열렸어요'), h('ul', null, items));
 }
 
 function dayNav(project, previous, next, projectDone) {
-  const card = (rel, label, href, title) => h('a', { class: `nav-card nav-${rel}`, rel, href }, h('span', { class: 'nav-label' }, label), h('strong', null, title));
+  const card = (rel, label, href, title) => h('a', { class: `nav-card nav-${rel}`, rel, href }, h('span', { class: 'label' }, label), h('strong', null, title));
   return h(
     'nav',
     { class: 'day-nav', 'aria-label': 'Day 이동' },

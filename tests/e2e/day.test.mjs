@@ -650,3 +650,81 @@ test('day controls are reachable by Tab in order', TIMEOUT, async () => {
     { viewport: PHONE },
   );
 });
+
+// ───────── Day 아래쪽·정답·체크리스트 모양 (M10, DESIGN.md "Day 부품") ─────────
+
+/** CSS 변수의 계산된 색 (probe 요소 바탕색으로 읽는다) */
+const tokenColor = (page, name) =>
+  page.evaluate((n) => {
+    const probe = document.createElement('i');
+    probe.style.backgroundColor = `var(${n})`;
+    document.body.append(probe);
+    const v = getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    return v;
+  }, name);
+
+test('day foot follows DESIGN tokens', TIMEOUT, async () => {
+  for (const viewport of [PHONE, { width: 1280, height: 800 }]) {
+    await withPage(
+      '#/day/fa-d01',
+      async (page) => {
+        const rule = await tokenColor(page, '--color-rule');
+        const s = await page.evaluate(() => {
+          const cs = (sel) => getComputedStyle(document.querySelector(sel));
+          const cards = [...document.querySelectorAll('.nav-card')].map((el) => el.getBoundingClientRect());
+          return {
+            footLine: cs('.lesson-foot').borderTopWidth,
+            footColor: cs('.lesson-foot').borderTopColor,
+            cardBorder: cs('.completion').borderTopWidth,
+            cardRadius: cs('.completion').borderTopLeftRadius,
+            navBorder: cs('.nav-card').borderTopWidth,
+            sameColumn: Math.abs(cards[0].left - cards[1].left) < 1,
+            task: Math.min(...[...document.querySelectorAll('.lesson-body li.task')].map((el) => el.getBoundingClientRect().height)),
+          };
+        });
+        assert.equal(s.footLine, '1px');
+        assert.equal(s.footColor, rule);
+        assert.equal(s.cardBorder, '2px');
+        assert.equal(s.cardRadius, '12px');
+        assert.equal(s.navBorder, '2px');
+        assert.equal(s.sameColumn, viewport.width < 640, `이전·다음 칸 (${viewport.width}px)`);
+        assert.ok(s.task >= 44, `체크리스트 행 ${s.task}px`);
+      },
+      { viewport },
+    );
+  }
+});
+
+test('answer summary rotates its chevron when open', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      const summary = page.locator('details.answer > summary').first();
+      assert.ok((await summary.boundingBox()).height >= 48);
+      await summary.click();
+      await page.getByTestId('answer-gate-confirm').click();
+      await eventually(async () => {
+        const t = await page.locator('details.answer .answer-chev').first().evaluate((el) => getComputedStyle(el).transform);
+        const [a, b] = t.match(/matrix\(([^)]+)\)/)[1].split(',').map(Number);
+        assert.ok(Math.abs(a + 1) < 0.01 && Math.abs(b) < 0.01, `180° 회전 ${t}`);
+      });
+    },
+    { viewport: PHONE },
+  );
+});
+
+test('completed day card uses success colors', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      const ok = await tokenColor(page, '--color-success-bg');
+      const btn = page.getByTestId('complete-button');
+      await btn.scrollIntoViewIfNeeded();
+      await btn.click();
+      const bg = await page.locator('.completion.is-done').evaluate((el) => getComputedStyle(el).backgroundColor);
+      assert.equal(bg, ok);
+    },
+    { viewport: PHONE },
+  );
+});
