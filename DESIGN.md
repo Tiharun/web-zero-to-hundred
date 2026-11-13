@@ -522,7 +522,7 @@ components:
 ### Named Rules
 **The Label-Only Pixel Rule.** Galmuri11은 12px 라벨과 작은 번호에만 쓴다. 제목·본문·버튼 문장·큰 숫자(LV 숫자, 오늘 칸 숫자, 큰 Day 번호)에는 Wanted Sans 800을 쓴다. Galmuri를 크게 키우면 획이 가늘어 보인다.
 
-**The One Big Number Rule.** Display(80px)는 한 화면에 하나만 둔다. 홈에서는 퀘스트 카드의 Day 번호다.
+**The One Big Number Rule.** Display(80px)는 한 화면에 하나만 둔다. 홈에서는 퀘스트 카드의 Day 번호다. Day 화면에서는 머리의 Day 번호다.
 
 **The Section Title Rule.** 홈의 구역 제목("다른 월드", "막혔을 때")은 모두 Title small(20px, 800)로 같게 쓴다. 카드 안의 작은 머리말("오늘의 퀘스트", "레벨")만 Label이다.
 
@@ -560,6 +560,7 @@ components:
 | `--topbar-h` | `56px` | 같음 | 상단 바, 서랍 머리 |
 | `--sidebar-w` | `280px` | 같음 | 사이드바, 서랍 폭 상한 |
 | `--content-max` | `1120px` | 같음 | 홈 열 최대 폭 |
+| `--lesson-max` | `720px` | 같음 | Day 글 열 최대 폭 |
 
 ### 브레이크포인트 (미디어 쿼리)
 
@@ -571,7 +572,7 @@ components:
 | `(pointer: coarse)` | 사이드바 행 최소 높이 44px |
 | `(hover: hover) and (pointer: fine)` | 툴팁(지도 폭 30rem 이상일 때), Tilt, Magnetic을 켠다 |
 | `(prefers-reduced-motion: reduce)` | 모션 끔(Components의 Motion 참고) |
-| `print` | 상단 바, 사이드바, 캐러셀 버튼, `dialog`를 숨긴다 |
+| `print` | 상단 바, 사이드바, 캐러셀 버튼, `dialog`, 읽기 위치 바를 숨긴다 |
 
 ### 컨테이너 쿼리
 
@@ -630,7 +631,7 @@ components:
 |---|---|---|---|
 | `--z-raised` | `10` | 같음 | 월드 카드 전체 클릭 영역, 축하 조각 |
 | `--z-dropdown` | `100` | 같음 | 테마 메뉴 |
-| `--z-sticky` | `200` | 같음 | 예약(홈에서 안 씀) |
+| `--z-sticky` | `200` | 같음 | 읽기 위치 바 |
 | `--z-sticky-nav` | `300` | 같음 | 상단 바 |
 | `--z-modal` | `400` | 같음 | 예약. 서랍·검색은 `<dialog>` top layer라 z-index가 필요 없다 |
 | `--z-tooltip` | `600` | 같음 | 툴팁, 툴팁을 띄운 노드, 건너뛰기 링크 |
@@ -799,9 +800,14 @@ components:
 - 기술 칩: `track` 바탕, 모서리 6px, 안쪽 2·8px, 15px, 줄간격 1.5. 최대 4개, 넘으면 바탕 없는 `ink-2` "외 n개".
 
 ### Day 부품
+- **Day 머리:** 빵부스러기 → 큰 Day 번호 → 제목 → 메타 칩 줄. 머리 아래 `var(--space-xl)`. 큰 번호는 Display(800, 80px, 줄간격 0.85, `letter-spacing: -0.04em`, 고정폭 숫자, `ink`)이고, 앞에 Galmuri "Day" 라벨(`ink-2`)을 글자 바닥선에 맞춰 붙인다(사이 `var(--space-xs)`, 위 `var(--space-md)`, 아래 `var(--space-xs)`). 큰 번호는 `aria-hidden`이고, h1 안 앞쪽에 `sr-only` "Day n · "를 둔다(읽는 이름 "Day n · 제목"). 제목 h1은 Headline(800, 38px, 줄간격 1.15, `letter-spacing: -0.025em`, `max-width: 20ch`, `text-wrap: balance`), 아래 `var(--space-md)`. 메타 칩은 기술 칩 모양으로 예상 시간, 작업 폴더(WZH Code `--text-code`), 월드 이름 순서다. 그 뒤에 상태 칩 "✅ 완료" 또는 "▶ 다음 할 Day"를 있을 때만 붙인다. 칩 개수 상한은 없다.
+- **Day 본문:** 머리·본문·아래쪽을 담는 `.lesson`은 `max-width: var(--lesson-max)`(720px). 글은 Body long(17px, 줄간격 1.75). 섹션 제목 h2는 Title(800, 26px, 줄간격 1.2, `letter-spacing: -0.02em`), 위 `var(--space-3xl)`·아래 `var(--space-md)`, 선이나 카드 상자를 두지 않는다. 첫 h2는 위 0. `scroll-margin-top: calc(var(--topbar-h) + var(--space-lg))`. 단계 제목 h3는 Title small(800, 20px, 줄간격 1.3), 위 `var(--space-xl)`·아래 `var(--space-xs)`. h4는 800 17px, 위 `var(--space-lg)`·아래 `var(--space-2xs)`. 단락·목록 아래 `var(--space-md)`, 목록 항목 사이 `var(--space-2xs)`.
+- **인라인 코드:** `track` 바탕, 1px `rule` 테두리, 모서리 `var(--space-2xs)`(`kbd`와 같다), 안쪽 `0 var(--space-2xs)`, WZH Code `--text-code`. 긴 경로는 아무 데서나 줄을 바꾼다(`overflow-wrap: anywhere`). 표 안의 코드만 줄을 바꾸지 않고 표 안에서 스크롤한다.
+- **경로 상자:** `path` 알림 상자다("📍 경로", `path` 색). 제목 줄(예: "📂 시작 상태") 아래에 폴더·파일 경로를 목록으로 둔다. 따로 만든 모양은 없고, 경로는 인라인 코드 규칙에 따라 상자 안에서 줄을 바꾼다.
+- **표:** 15px(`--text-ui`), 줄간격 1.5, 위아래 `var(--space-lg)`. 칸 안쪽 `var(--space-xs) var(--space-sm)`, 1px `rule` 선, 왼쪽 위 정렬. 머리 행은 `track` 바탕에 800. 모서리 없음. 글 열보다 넓으면 표 안에서만 가로로 스크롤한다(`display: block; overflow-x: auto`).
 - **알림 상자:** 종류 색 바탕(`*-bg`), 1px `rule` 테두리, 왼쪽 4px `*-line` 막대, 모서리 `--radius-card`, 안쪽 `var(--space-sm) var(--space-md) var(--space-2xs)`, 위아래 `var(--space-lg)`. 머리는 이모지 + Galmuri 12px 라벨(`*-ink`): "💡 꿀팁", "⚠️ 주의", "ℹ️ 알아두기", "📍 경로", "✅ 이렇게 보이면 성공". 제목 줄은 `ink` 800, 본문은 `ink`. 정답 상자는 같은 틀에 `answer` 색, 정답 게이트는 같은 틀에 `tip` 색.
-- **코드 블록(밤 코드):** `code-bg` 바탕, 2px `edge` 테두리, 모서리 `--radius-card`. 윗줄은 `code-head`에 파일 이름(`code-fg`)과 "복사" 버튼, 구분선은 `code-border`. 글자 14px(`--text-code`), 줄간격 1.65, 긴 줄은 블록 안에서만 가로 스크롤. 복사 결과 글자는 성공 `tok-string`, 실패 `tok-deletion`.
-- **읽기 위치 바:** 상단 바 바로 아래 3px, `z-sticky`. 채움 `ink`, 빈 곳 투명, `transform: scaleX(var(--read))`, `transform-origin: left`. `animation-timeline: scroll(root)`을 지원하면 그것을 쓰고, 아니면 rAF로 `--read`를 쓴다. 장식이라 `role="progressbar"`를 두지 않는다(위치는 퀘스트 로그가 글자로 알린다). M9에서 화면에 넣는다.
+- **코드 블록(밤 코드):** `code-bg` 바탕, 2px `edge` 테두리, 모서리 `--radius-card`. 윗줄은 `code-head`에 파일 이름(`code-fg`)과 "복사" 버튼, 구분선은 `code-border`. 글자 14px(`--text-code`), 줄간격 1.65, 긴 줄은 블록 안에서만 가로 스크롤. 복사 결과 글자는 성공 `tok-string`, 실패 `tok-deletion`. 윗줄 최소 40px, 파일 이름은 WZH Code `--text-code`, 안쪽 `var(--space-xs) var(--space-md)`, 긴 이름은 줄을 바꾼다. 복사 버튼은 윗줄 오른쪽, 최소 72×40px, 15px 800 `code-fg`, 왼쪽 1px `code-border` 선, hover `code-border` 바탕. 누르면 "복사됨"이 2초 보이고 "복사"로 돌아온다. 실패하면 코드를 선택해 두고 "직접 복사해 주세요"를 보인다. 결과는 `role="status"`로도 읽힌다. 코드 안쪽 `var(--space-md)`, 블록 위아래 `var(--space-lg)`.
+- **읽기 위치 바:** 상단 바 바로 아래(`position: fixed; top: var(--topbar-h)`, 좌우 끝까지) 3px, `z-sticky`. 채움 `ink`, 빈 곳 투명, `transform: scaleX(var(--read))`, `transform-origin: left`. `animation-timeline: scroll(root)`을 지원하면 그것을 쓰고(`animation` 줄임 속성 뒤에 적는다), 아니면 rAF로 `--read`를 쓴다. 본문을 그린 Day 화면(준비 중 포함)에만 있고 다른 화면으로 가면 없앤다. 스크롤할 수 없으면 0이다. 위치 값이라 동작 줄이기에서도 그대로 따라간다. 장식이라 `aria-hidden`이고 `role="progressbar"`를 두지 않는다(위치는 퀘스트 로그가 글자로 알린다). 인쇄에서 숨긴다.
 - **퀘스트 로그:** 1280px 이상은 본문 오른쪽 220px 열, `position: sticky`(상단 바 + `var(--space-lg)`). 머리는 Label "퀘스트 로그"와 "단계 n/8", 목록은 섹션 제목 버튼(15px `ink-2`, 최소 36px), 지금 단계는 `ink` 800 + 왼쪽 3px `ink` 막대 + `aria-current="step"`. 그보다 좁으면 본문 위 `<details>` 카드(2px `rule` 테두리, summary 최소 44px "퀘스트 로그 · 단계 n/8" + 오른쪽 `chevron` 아이콘, 열면 180° 회전). 누르면 그 제목으로 smooth scroll(동작 줄이기면 `auto`)하고 제목에 포커스. M10에서 화면에 넣는다.
 - **토스트:** `card` 면, 2px `edge` 테두리, `--ledge` `edge` 턱, 모서리 `--radius-card`, 15px `ink`, `max-width: min(100%, 28rem)`. 왼쪽 도트 아이콘은 부르는 쪽이 정한다(없으면 생략). 들어옴은 아래 8px에서 `--dur-short` `--ease-bounce`, 나감은 투명도 `--dur-exit` `--ease-in`. `role="status"`, 4초, hover·포커스 중에는 멈춘다.
 - **레벨업 Modal:** `<dialog>`(`setupDialog`), `card` 면, 2px `edge` 테두리와 턱, 안쪽 `var(--space-xl)`, 가운데 정렬, `max-width: 24rem`. 순서: Label "레벨 업" → LV 배지(HUD와 같은 모양, 숫자 32px) → 제목 "레벨이 올랐어요"(Title small) → "다음 레벨까지 XP m"(`ink-2`) → 주 버튼 "계속하기"(처음 포커스). 열림 `pop-in` `--dur-enter`. M11에서 화면에 넣는다.
@@ -950,6 +956,7 @@ components:
   --topbar-h: 56px;
   --sidebar-w: 280px;
   --content-max: 1120px;
+  --lesson-max: 720px;
 
   --dur-micro: 120ms;
   --dur-short: 200ms;
