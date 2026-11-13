@@ -5,7 +5,7 @@
 - 공개 주소: https://tiharun.github.io/web-zero-to-hundred/ (push하면 GitHub Actions가 테스트 → 빌드 → Pages 배포. 공개 범위는 `textbook/content/published.json`)
 - 저장소: `tiharun/web-zero-to-hundred` / 브랜치 **`claude/gifted-goldberg-u1f9c6`**. 이 브랜치에서만 작업하고 push합니다. PR은 아직 만들지 않았고, 사용자가 요청할 때만 만듭니다.
 - 기준선(M5 완료 시점에 직접 실행한 결과, `textbook/`에서)
-  - `npm test`: 277/277 통과
+  - `npm test`: 278/278 통과
   - `npm run check -- --allow-missing`: "검사 통과: Day 155개, 페이지 4개"
   - `npm run test:e2e`: 147/147 통과(이 PC 약 1분 20초. 느린 기기 Skeleton 2개는 실제 교재를 빌드해 CPU 30배 감속으로 잰다)
   - `npm run test:visual`: 54/54 통과(기준 이미지 52장: 4장면 × 3폭 × 2테마 + 서랍 375·768 × 2테마 + 홈 처음·월드 클리어·모두 완료 375·1280 × 2테마 + 검색 Modal·검색 페이지 × 3폭 × 2테마, 비교 함수 2개. 홈 장면은 전체 페이지로 찍는다)

@@ -20,8 +20,8 @@ export function skeletonGate({ show, hide }, { delay = SKELETON_DELAY, min = SKE
   let settled = false;
   let timer = clock.setTimeout(() => {
     timer = null;
-    shownAt = clock.now();
     show();
+    shownAt = clock.now(); // 최소 시간은 행이 화면에 붙은 뒤부터 잰다 (느린 기기에서는 붙이는 데도 시간이 든다)
   }, delay);
 
   function stop() {

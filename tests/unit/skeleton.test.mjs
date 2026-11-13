@@ -18,6 +18,10 @@ function fakeClock() {
     clearTimeout(id) {
       timers.delete(id);
     },
+    /** 그 자리에서 시간을 쓴다(느린 기기에서 DOM 을 그리는 시간). 타이머는 부르지 않는다 */
+    spend(ms) {
+      t += ms;
+    },
     advance(ms) {
       const end = t + ms;
       for (;;) {
@@ -76,4 +80,23 @@ test('skeletonGate: cancel hides without applying, and later calls do nothing', 
   gate.cancel();
   clock.advance(1000);
   assert.deepEqual(log, [['show', 200], ['hide', 250]]);
+});
+
+test('skeletonGate: the 300ms minimum counts from when the rows are on screen, even if drawing them was slow', () => {
+  const clock = fakeClock();
+  const log = [];
+  const gate = skeletonGate(
+    {
+      show: () => {
+        clock.spend(20); // 느린 기기: 자리표시 행을 붙이는 데 20ms
+        log.push(['shown', clock.now()]);
+      },
+      hide: () => log.push(['hide', clock.now()]),
+    },
+    { clock },
+  );
+  clock.advance(250);
+  gate.finish(() => log.push(['apply', clock.now()]));
+  clock.advance(1000);
+  assert.deepEqual(log, [['shown', 220], ['hide', 520], ['apply', 520]]);
 });
