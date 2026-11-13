@@ -561,6 +561,7 @@ components:
 | `--sidebar-w` | `280px` | 같음 | 사이드바, 서랍 폭 상한 |
 | `--content-max` | `1120px` | 같음 | 홈 열 최대 폭 |
 | `--lesson-max` | `720px` | 같음 | Day 글 열 최대 폭 |
+| `--aside-w` | `220px` | 같음 | 1280px 이상 오른쪽 열(퀘스트 로그, 부록 목차) |
 
 ### 브레이크포인트 (미디어 쿼리)
 
@@ -569,6 +570,7 @@ components:
 | `(max-width: 40rem)` (640px) | 본문·퀘스트·월드맵 카드 여백을 줄인다. 검색 버튼이 아이콘만 남는다 |
 | `(max-width: 22.5rem)` (360px) | 워드마크 15px |
 | `(min-width: 64rem)` (1024px) | 사이드바 280px 열이 생기고 메뉴 버튼이 사라진다. 서랍이 열려 있으면 닫는다 |
+| `(min-width: 80rem)` (1280px) | Day는 본문 오른쪽에 퀘스트 로그 열이 생기고 본문 위 접힘 카드가 사라진다. 목차가 있는 부록 페이지는 목차 카드가 오른쪽 열로 간다 |
 | `(pointer: coarse)` | 사이드바 행 최소 높이 44px |
 | `(hover: hover) and (pointer: fine)` | 툴팁(지도 폭 30rem 이상일 때), Tilt, Magnetic을 켠다 |
 | `(prefers-reduced-motion: reduce)` | 모션 끔(Components의 Motion 참고) |
@@ -808,7 +810,15 @@ components:
 - **알림 상자:** 종류 색 바탕(`*-bg`), 1px `rule` 테두리, 왼쪽 4px `*-line` 막대, 모서리 `--radius-card`, 안쪽 `var(--space-sm) var(--space-md) var(--space-2xs)`, 위아래 `var(--space-lg)`. 머리는 이모지 + Galmuri 12px 라벨(`*-ink`): "💡 꿀팁", "⚠️ 주의", "ℹ️ 알아두기", "📍 경로", "✅ 이렇게 보이면 성공". 제목 줄은 `ink` 800, 본문은 `ink`. 정답 상자는 같은 틀에 `answer` 색, 정답 게이트는 같은 틀에 `tip` 색.
 - **코드 블록(밤 코드):** `code-bg` 바탕, 2px `edge` 테두리, 모서리 `--radius-card`. 윗줄은 `code-head`에 파일 이름(`code-fg`)과 "복사" 버튼, 구분선은 `code-border`. 글자 14px(`--text-code`), 줄간격 1.65, 긴 줄은 블록 안에서만 가로 스크롤. 복사 결과 글자는 성공 `tok-string`, 실패 `tok-deletion`. 윗줄 최소 40px, 파일 이름은 WZH Code `--text-code`, 안쪽 `var(--space-xs) var(--space-md)`, 긴 이름은 줄을 바꾼다. 복사 버튼은 윗줄 오른쪽, 최소 72×40px, 15px 800 `code-fg`, 왼쪽 1px `code-border` 선, hover `code-border` 바탕. 누르면 "복사됨"이 2초 보이고 "복사"로 돌아온다. 실패하면 코드를 선택해 두고 "직접 복사해 주세요"를 보인다. 결과는 `role="status"`로도 읽힌다. 코드 안쪽 `var(--space-md)`, 블록 위아래 `var(--space-lg)`.
 - **읽기 위치 바:** 상단 바 바로 아래(`position: fixed; top: var(--topbar-h)`, 좌우 끝까지) 3px, `z-sticky`. 채움 `ink`, 빈 곳 투명, `transform: scaleX(var(--read))`, `transform-origin: left`. `animation-timeline: scroll(root)`을 지원하면 그것을 쓰고(`animation` 줄임 속성 뒤에 적는다), 아니면 rAF로 `--read`를 쓴다. 본문을 그린 Day 화면(준비 중 포함)에만 있고 다른 화면으로 가면 없앤다. 스크롤할 수 없으면 0이다. 위치 값이라 동작 줄이기에서도 그대로 따라간다. 장식이라 `aria-hidden`이고 `role="progressbar"`를 두지 않는다(위치는 퀘스트 로그가 글자로 알린다). 인쇄에서 숨긴다.
-- **퀘스트 로그:** 1280px 이상은 본문 오른쪽 220px 열, `position: sticky`(상단 바 + `var(--space-lg)`). 머리는 Label "퀘스트 로그"와 "단계 n/8", 목록은 섹션 제목 버튼(15px `ink-2`, 최소 36px), 지금 단계는 `ink` 800 + 왼쪽 3px `ink` 막대 + `aria-current="step"`. 그보다 좁으면 본문 위 `<details>` 카드(2px `rule` 테두리, summary 최소 44px "퀘스트 로그 · 단계 n/8" + 오른쪽 `chevron` 아이콘, 열면 180° 회전). 누르면 그 제목으로 smooth scroll(동작 줄이기면 `auto`)하고 제목에 포커스. M10에서 화면에 넣는다.
+- **퀘스트 로그:** 1280px 이상은 본문 오른쪽 `var(--aside-w)` 열(사이 `var(--space-xl)`), `position: sticky`(상단 바 + `var(--space-lg)`). 머리는 Label "퀘스트 로그"와 "단계 n/전체"(전체는 섹션 h2 수, 보통 7~8), 목록은 섹션 제목 버튼(15px `ink-2`, 줄간격 1.35, 최소 36px, 안쪽 `var(--space-2xs) var(--space-sm)`, 왼쪽 3px 투명 막대, hover `track`), 지금 단계는 `ink` 800 + 왼쪽 3px `ink` 막대 + `aria-current="step"`. 그보다 좁으면 본문 위 `<details>` 카드(`card` 바탕, 2px `rule` 테두리, 모서리 `--radius-card`, 아래 `var(--space-xl)`, summary 최소 44px·안쪽 `var(--space-xs) var(--space-md)` "퀘스트 로그 · 단계 n/전체" + 오른쪽 `chevron` 아이콘, 열면 180° 회전). 지금 단계는 상단 바 아래 96px 선을 지난 마지막 섹션이고, 페이지 맨 아래에 닿으면 마지막 섹션이다. 누르면 그 제목으로 smooth scroll(동작 줄이기면 `auto`)하고 제목에 포커스. 섹션이 없는 Day(준비 중)에는 두지 않는다.
+- **정답 상자:** 알림 상자 틀에 `answer` 색. 요약 줄 최소 48px, 안쪽 `var(--space-xs) var(--space-md)`, 17px 800 `ink`, 앞에 선 꺾쇠(`answer-ink`, 열리면 180° 회전). 펼친 내용 위에 1px 점선 `answer-line`, 안쪽 `var(--space-sm) var(--space-md) var(--space-2xs)`. 처음 펼칠 때는 바로 위에 정답 게이트(알림 상자 틀에 `tip` 색, Body, 보조 버튼 "그래도 정답 볼래요"·"조금 더 풀어 볼게요", 버튼 사이 `var(--space-xs)`)를 보인다. 확인한 정답은 새로 고칠 때까지 다시 묻지 않는다.
+- **Day 증상 Accordion:** "🧯 자주 막히는 곳" 안의 h3 하나가 증상 하나다(빌드가 만든다). 모양과 모션은 Cards "증상 Accordion"과 같고, 증상 제목은 heading이 아니다. 첫 증상 앞의 안내 글은 그대로 둔다. 섹션 제목 바로 아래 줄 오른쪽 끝에 "모두 펼치기" 글자 버튼(모두 펼쳐져 있으면 "모두 접기").
+- **체크리스트:** 항목 행 최소 44px, 안쪽 `var(--space-2xs) var(--space-xs)`, 모서리 `--radius-btn`, hover `track`. 체크박스는 1.25em, 글자와 사이 `var(--space-xs)`. 글자를 눌러도 체크된다. 체크한 항목은 `ink-2`(줄 긋기 없음). 누르는 즉시 저장되고 새로 고쳐도 남는다.
+- **Day 아래쪽:** 위 1px `rule` 선(선 위 `var(--space-3xl)`, 선 아래 `var(--space-xl)`), 부품 사이 `var(--space-lg)`. 순서는 새로 열림 알림(있을 때) → Day 완료 카드 → 이전·다음.
+- **Day 완료 카드:** 기본 카드, 안쪽 `var(--space-lg)`(640px 이하 `var(--space-md)`). 상태 줄 17px 800 `ink`("체크리스트 n / 전체" 또는 "오늘 할 일을 마쳤나요?"), 아래 `var(--space-sm)`. 주 버튼 "Day 완료". 이유 문장 15px `ink-2`, 위 `var(--space-sm)`. 이전 Day를 안 끝냈으면 버튼은 `aria-disabled="true"`(투명도 0.4, 턱 없음, 포커스는 받는다)이고 `aria-describedby`로 이유 문장과 잇는다. 누르면 버튼이 Shake하고, 이유 문장이 `ink` 800으로 바뀌고, 같은 문장을 `role="status"`로 알린다(동작 줄이기에서는 흔들림만 없다). 완료한 뒤에는 `success-bg` 바탕, 2px `success-line` 테두리와 같은 색 턱, 상태 줄 "✅ Day n 완료!", 보조 버튼 "완료 취소". 월드를 다 마치면 `success-ink` 800 축하 문장을 더한다.
+- **새로 열림 알림:** `success` 알림 상자(머리 "🎉 새로 열렸어요"), `role="status"`, 목록에 새로 열린 월드·부록 링크.
+- **이전·다음:** `nav` 2칸 격자(640px 이하 1칸), 사이 `var(--space-sm)`. 칸은 링크 카드(`card` 바탕, 2px `rule` 테두리, 모서리 `--radius-card`, 안쪽 `var(--space-sm) var(--space-md)`, hover `track` 바탕): 위 Label("← 이전", "다음 →", `ink-2`), 아래 제목 15px 800 `ink`. 다음 칸은 오른쪽 정렬(1칸일 때 왼쪽). `rel="prev"`·`rel="next"`.
+- **부록 목차 열:** 목차 카드가 있는 부록 페이지는 1280px 이상에서 `minmax(0, var(--lesson-max))`와 `var(--aside-w)` 두 열(사이 `var(--space-xl)`)로 나뉜다. 목차 카드는 오른쪽 열에서 `position: sticky`(상단 바 + `var(--space-lg)`)이고, 높이는 `calc(100dvh - var(--topbar-h) - 2 * var(--space-lg))`까지이며, 넘치면 카드 안에서 세로로 스크롤한다.
 - **토스트:** `card` 면, 2px `edge` 테두리, `--ledge` `edge` 턱, 모서리 `--radius-card`, 15px `ink`, `max-width: min(100%, 28rem)`. 왼쪽 도트 아이콘은 부르는 쪽이 정한다(없으면 생략). 들어옴은 아래 8px에서 `--dur-short` `--ease-bounce`, 나감은 투명도 `--dur-exit` `--ease-in`. `role="status"`, 4초, hover·포커스 중에는 멈춘다.
 - **레벨업 Modal:** `<dialog>`(`setupDialog`), `card` 면, 2px `edge` 테두리와 턱, 안쪽 `var(--space-xl)`, 가운데 정렬, `max-width: 24rem`. 순서: Label "레벨 업" → LV 배지(HUD와 같은 모양, 숫자 32px) → 제목 "레벨이 올랐어요"(Title small) → "다음 레벨까지 XP m"(`ink-2`) → 주 버튼 "계속하기"(처음 포커스). 열림 `pop-in` `--dur-enter`. M11에서 화면에 넣는다.
 - **설정 결과 문장(`.message[data-kind]`):** 알림 상자와 같은 틀(1px `rule` 테두리, 왼쪽 4px 막대, 모서리 `--radius-card`), 15px `ink`, 줄간격 1.5. 색은 종류로 고른다: `ok` → `success`, `error` → `warn`, `info` → `info`의 바탕과 막대.
@@ -837,7 +847,7 @@ components:
 | 축하 조각 | 월드 클리어·모두 클리어 상태의 큰 Day 번호 | 8px 도트 조각 18개, 색 `accent`·`progress`·`coin`·`edge` 순환, 위로 부채꼴로 튀었다 떨어지며 사라짐. `duration: 1100, delay: 500 + (i % 6) * 30`, `easing: 'cubic-bezier(0.2, 0.7, 0.4, 1)'` |
 | Tilt | 퀘스트 카드 2°(`tilt(el, 2)`), 월드 카드 4°(`tilt(el, 4)`) | `perspective(1000px)`, 마우스·정밀 포인터만, 나가면 200ms로 복귀 |
 | Magnetic | 주 버튼 | 최대 6px(Buttons 참고) |
-| Shake | 잠긴 월드 카드 | 300ms, 좌우 4px(`transform: translateX(-4px)` ↔ 4px, 네 번). 이유 문장을 반드시 같이 보여 준다 |
+| Shake | 잠긴 월드 카드, 조건이 안 된 "Day 완료" 버튼 | 300ms, 좌우 4px(`transform: translateX(-4px)` ↔ 4px, 네 번). 이유 문장을 반드시 같이 보여 준다 |
 | Wiggle | 월드 카드 hover 때 문장 칸 | 420ms `--ease-bounce`, `transform: rotate(-8deg) scale(1.08)` → `transform: rotate(6deg) scale(1.08)` |
 | Accordion | 사용자가 연 월드의 내용, 사용자가 연 증상 | 160ms, `transform: translateY(4px)`에서 투명도와 함께. 페이지를 열 때 이미 펼쳐진 월드는 움직이지 않는다 |
 | 메뉴 | 테마 메뉴 열림 | `pop-in`(`from { opacity: 0; transform: translateY(-4px) scale(0.98); }`) 200ms |
@@ -957,6 +967,7 @@ components:
   --sidebar-w: 280px;
   --content-max: 1120px;
   --lesson-max: 720px;
+  --aside-w: 220px;
 
   --dur-micro: 120ms;
   --dur-short: 200ms;
