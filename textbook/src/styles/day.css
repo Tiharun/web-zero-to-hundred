@@ -79,7 +79,6 @@
   cursor: pointer;
 }
 
-.lesson-body,
 .page-body {
   max-width: var(--measure);
 }
@@ -87,57 +86,94 @@
 .page-body > :first-child {
   margin-top: 0;
 }
-.lesson-body h2,
+/* 부록 본문의 제목·간격(부록은 M9 범위 밖이라 값은 그대로, 이름만 토큰) */
 .page-body h2 {
   margin: 2.5em 0 0.8em;
   padding-top: 1em;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--color-rule);
   font-size: 1.45rem;
   line-height: 1.4;
 }
-.lesson-body h2:first-child,
 .page-body h2:first-child {
   padding-top: 0;
   border-top: 0;
 }
-.lesson-body h3,
 .page-body h3 {
   margin: 2em 0 0.6em;
   font-size: 1.2rem;
   line-height: 1.45;
 }
-.lesson-body h4,
 .page-body h4 {
   margin: 1.6em 0 0.5em;
   font-size: 1.05rem;
 }
-
-.lesson-body p,
 .page-body p {
   margin: 0 0 1.15em;
 }
-.lesson-body ul,
-.lesson-body ol,
 .page-body ul,
 .page-body ol {
   margin: 0 0 1.3em;
   padding-left: 1.5em;
 }
-.lesson-body li + li,
 .page-body li + li {
   margin-top: 0.45em;
 }
-.lesson-body li::marker,
-.page-body li::marker {
-  color: var(--accent);
-  font-weight: 700;
-}
-.lesson-body li > ul,
-.lesson-body li > ol,
 .page-body li > ul,
 .page-body li > ol {
   margin-top: 0.45em;
   margin-bottom: 0;
+}
+
+/* Day 본문 (DESIGN.md "Day 부품" Day 본문): 섹션 64 / 단계 32 / 단락 16, 선·상자 없음 */
+.lesson-body {
+  font-size: var(--text-body);
+}
+.lesson-body h2 {
+  margin: var(--space-3xl) 0 var(--space-md);
+  font-size: var(--text-h2);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  scroll-margin-top: calc(var(--topbar-h) + var(--space-lg));
+}
+.lesson-body h3 {
+  margin: var(--space-xl) 0 var(--space-xs);
+  font-size: var(--text-h3);
+  font-weight: 800;
+  line-height: 1.3;
+}
+.lesson-body h4 {
+  margin: var(--space-lg) 0 var(--space-2xs);
+  font-size: var(--text-body);
+  font-weight: 800;
+}
+.lesson-body h2:first-child,
+.lesson-body h3:first-child,
+.lesson-body h4:first-child {
+  margin-top: 0;
+}
+.lesson-body p {
+  margin: 0 0 var(--space-md);
+}
+.lesson-body ul,
+.lesson-body ol {
+  margin: 0 0 var(--space-md);
+  padding-left: 1.5em;
+}
+.lesson-body li + li {
+  margin-top: var(--space-2xs);
+}
+.lesson-body li > ul,
+.lesson-body li > ol {
+  margin-top: var(--space-2xs);
+  margin-bottom: 0;
+}
+
+/* 글 공통 (Day · 부록) */
+.lesson-body li::marker,
+.page-body li::marker {
+  color: var(--color-ink);
+  font-weight: 800;
 }
 .lesson-body strong,
 .page-body strong {
@@ -145,26 +181,28 @@
 }
 .lesson-body hr,
 .page-body hr {
-  margin: 2em 0;
+  margin: var(--space-xl) 0;
   border: 0;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--color-rule);
 }
 .lesson-body blockquote,
 .page-body blockquote {
-  margin: 0 0 1.2em;
-  padding: 0.2em 1.1em;
-  border-left: 4px solid var(--border-strong);
-  color: var(--muted);
+  margin: 0 0 var(--space-md);
+  padding: var(--space-2xs) var(--space-md);
+  border-left: 4px solid var(--color-line);
+  color: var(--color-ink-2);
 }
 
+/* 인라인 코드 (DESIGN.md "Day 부품" 인라인 코드): 긴 경로는 아무 데서나 줄을 바꾼다 */
 .lesson-body :not(pre) > code,
 .page-body :not(pre) > code,
 .lock-needs code {
-  padding: 0.12em 0.4em;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  font-size: 0.88em;
+  padding: 0 var(--space-2xs);
+  background: var(--color-track);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--space-2xs);
+  font-family: var(--font-code);
+  font-size: var(--text-code);
   overflow-wrap: anywhere;
 }
 
@@ -176,28 +214,31 @@
   white-space: nowrap; /* 표 안의 코드는 줄을 바꾸지 않고 표 안에서 스크롤한다 */
 }
 
+/* 표 (DESIGN.md "Day 부품" 표): 좁은 화면에서는 표 안에서만 가로로 스크롤한다 */
 .lesson-body table,
 .page-body table {
-  display: block; /* 좁은 화면에서는 표 안에서만 가로로 스크롤한다 */
+  display: block;
   max-width: 100%;
-  margin: 0 0 1.3em;
+  margin: var(--space-lg) 0;
   overflow-x: auto;
   border-collapse: collapse;
-  font-size: 0.95rem;
+  font-size: var(--text-ui);
+  line-height: 1.5;
 }
 .lesson-body th,
 .lesson-body td,
 .page-body th,
 .page-body td {
   overflow-wrap: break-word; /* anywhere 는 열을 글자 하나 폭까지 줄여 버린다 */
-  padding: 8px 12px;
-  border: 1px solid var(--border);
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--color-rule);
   text-align: left;
   vertical-align: top;
 }
 .lesson-body th,
 .page-body th {
-  background: var(--surface-2);
+  background: var(--color-track);
+  font-weight: 800;
 }
 
 /* 찾아온 항목 (DESIGN.md Cards "찾아온 항목"): track 바탕과 같은 색 띠, 분홍을 쓰지 않는다 */
@@ -397,44 +438,44 @@ pre {
   margin-bottom: 0.6em;
 }
 .callout a {
-  color: var(--link);
+  color: var(--color-ink);
 }
 .callout-tip {
-  --callout-bg: var(--tip-bg);
-  --callout-line: var(--tip-line);
-  --callout-ink: var(--tip-ink);
+  --callout-bg: var(--color-tip-bg);
+  --callout-line: var(--color-tip-line);
+  --callout-ink: var(--color-tip-ink);
 }
 .callout-tip::before {
   content: "💡 꿀팁";
 }
 .callout-warn {
-  --callout-bg: var(--warn-bg);
-  --callout-line: var(--warn-line);
-  --callout-ink: var(--warn-ink);
+  --callout-bg: var(--color-warn-bg);
+  --callout-line: var(--color-warn-line);
+  --callout-ink: var(--color-warn-ink);
 }
 .callout-warn::before {
   content: "⚠️ 주의";
 }
 .callout-info {
-  --callout-bg: var(--info-bg);
-  --callout-line: var(--info-line);
-  --callout-ink: var(--info-ink);
+  --callout-bg: var(--color-info-bg);
+  --callout-line: var(--color-info-line);
+  --callout-ink: var(--color-info-ink);
 }
 .callout-info::before {
   content: "ℹ️ 알아두기";
 }
 .callout-path {
-  --callout-bg: var(--path-bg);
-  --callout-line: var(--path-line);
-  --callout-ink: var(--path-ink);
+  --callout-bg: var(--color-path-bg);
+  --callout-line: var(--color-path-line);
+  --callout-ink: var(--color-path-ink);
 }
 .callout-path::before {
   content: "📍 경로";
 }
 .callout-success {
-  --callout-bg: var(--success-bg);
-  --callout-line: var(--success-line);
-  --callout-ink: var(--success-ink);
+  --callout-bg: var(--color-success-bg);
+  --callout-line: var(--color-success-line);
+  --callout-ink: var(--color-success-ink);
 }
 .callout-success::before {
   content: "✅ 이렇게 보이면 성공";

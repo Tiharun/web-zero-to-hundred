@@ -146,3 +146,88 @@ test('day head status chip reads 완료 when the day is done', TIMEOUT, async ()
     { progress: ['fa-d01'] },
   );
 });
+
+// ───────── 본문 ─────────
+
+/** 토큰 색을 계산값(rgb)으로 읽는다 */
+const tokenRgb = (page, name) =>
+  page.evaluate((n) => {
+    const probe = document.createElement('div');
+    probe.style.color = `var(${n})`;
+    document.body.append(probe);
+    const value = getComputedStyle(probe).color;
+    probe.remove();
+    return value;
+  }, name);
+
+test('day body follows DESIGN.md rhythm', TIMEOUT, async () => {
+  await withPage('#/day/fa-d01', async (page) => {
+    const s = await page.evaluate(() => {
+      const css = (q, p) => getComputedStyle(document.querySelector(q))[p];
+      const h2s = document.querySelectorAll('.lesson-body h2');
+      return {
+        bodyLine: css('.lesson-body p', 'lineHeight'),
+        h2Size: css('.lesson-body h2', 'fontSize'),
+        h2Top: getComputedStyle(h2s[1]).marginTop,
+        h2Border: getComputedStyle(h2s[1]).borderTopStyle,
+        lessonMax: css('.lesson', 'maxWidth'),
+        th: css('.lesson-body th', 'backgroundColor'),
+        thWeight: css('.lesson-body th', 'fontWeight'),
+        tableSize: css('.lesson-body table', 'fontSize'),
+        codeFont: css('.lesson-body :not(pre) > code', 'fontSize'),
+        codeBg: css('.lesson-body :not(pre) > code', 'backgroundColor'),
+      };
+    });
+    const track = await page.evaluate(() => {
+      const probe = document.createElement('div');
+      probe.style.backgroundColor = 'var(--color-track)';
+      document.body.append(probe);
+      const v = getComputedStyle(probe).backgroundColor;
+      probe.remove();
+      return v;
+    });
+    assert.equal(s.bodyLine, '29.75px');
+    assert.equal(s.h2Size, '26px');
+    assert.equal(s.h2Top, '64px');
+    assert.equal(s.h2Border, 'none');
+    assert.equal(s.lessonMax, '720px');
+    assert.equal(s.th, track);
+    assert.equal(s.thWeight, '800');
+    assert.equal(s.tableSize, '15px');
+    assert.equal(s.codeFont, '14px');
+    assert.equal(s.codeBg, track);
+  });
+});
+
+test('day page has no horizontal scroll at 320px', TIMEOUT, async () => {
+  await withPage(
+    '#/day/fa-d01',
+    async (page) => {
+      await page.locator('.lesson-body table').waitFor();
+      const r = await page.evaluate(() => ({
+        scrollWidth: document.documentElement.scrollWidth,
+        clientWidth: document.documentElement.clientWidth,
+        // 코드·표(제 안에서만 넘친다) 안쪽을 빼고, 화면 오른쪽 밖으로 나간 요소
+        escaped: [...document.querySelectorAll('main *')]
+          .filter((el) => !el.closest('pre, table') && el.getBoundingClientRect().right > window.innerWidth + 0.5)
+          .map((el) => el.tagName.toLowerCase() + '.' + el.className),
+      }));
+      assert.ok(r.scrollWidth <= r.clientWidth, `가로 스크롤 ${r.scrollWidth} > ${r.clientWidth}`);
+      assert.deepEqual(r.escaped, []);
+
+      const table = await page.locator('.lesson-body table').evaluate((el) => ({ sw: el.scrollWidth, cw: el.clientWidth, ox: getComputedStyle(el).overflowX }));
+      assert.ok(table.sw > table.cw, '넓은 표는 표 안에서 스크롤돼야 해요');
+      assert.equal(table.ox, 'auto');
+
+      const box = await page.evaluate(() => {
+        const body = document.querySelector('.lesson-body').getBoundingClientRect();
+        const path = [...document.querySelectorAll('.callout-path')].at(-1).getBoundingClientRect();
+        const h1 = document.querySelector('.lesson-head h1').getBoundingClientRect();
+        return { bodyRight: body.right, pathRight: path.right, h1Right: h1.right, vw: window.innerWidth };
+      });
+      assert.ok(box.pathRight <= box.bodyRight + 0.5, JSON.stringify(box));
+      assert.ok(box.h1Right <= box.vw, JSON.stringify(box));
+    },
+    { viewport: { width: 320, height: 640 } },
+  );
+});
