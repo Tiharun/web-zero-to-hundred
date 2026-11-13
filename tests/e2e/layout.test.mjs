@@ -288,9 +288,7 @@ test('footer: links work, sits at the bottom on a short page, shows no personal 
 });
 
 test('search page carries its own input that searches as you type', TIMEOUT, async () => {
-  const page = await open('#/', { width: 1280 });
-  await page.locator('#search-open').click();
-  await page.waitForFunction(() => document.getElementById('main').dataset.hash === '#/search');
+  const page = await open('#/search', { width: 1280 }); // 검색 버튼은 Modal 을 연다(M5). 페이지는 주소로 온다
   const input = page.getByTestId('search-input');
   assert.equal(await input.getAttribute('aria-label'), '교재 검색');
   const before = await page.evaluate(() => history.length);
@@ -353,6 +351,22 @@ test('the notfound build shows 404 at an empty hash and links home by the config
   const sideHrefs = await page.locator('#sidebar a[href]').evaluateAll((els) => els.map((a) => a.getAttribute('href')));
   assert.ok(sideHrefs.length > 0 && sideHrefs.every((href) => href.startsWith('https://example.test/fixture/#/')), sideHrefs.join(' '));
   assert.match(await page.title(), /^찾을 수 없어요 · /);
+});
+
+test('in the notfound build the search button and Ctrl+K lead to the site search page, not the modal', TIMEOUT, async () => {
+  const page = await open('', { width: 1280, file: '404.html' });
+  assert.equal(await page.locator('#search-open').getAttribute('href'), 'https://example.test/fixture/#/search');
+  const prevented = await page.evaluate(() => {
+    let seen = null;
+    document.addEventListener('click', (event) => { seen = event.defaultPrevented; event.preventDefault(); }, { once: true });
+    document.getElementById('search-open').dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    return seen;
+  });
+  assert.equal(prevented, false, '링크 그대로 사이트의 검색 화면으로 간다');
+  assert.equal(await page.locator('#search-dialog').evaluate((d) => d.open), false);
+  // Ctrl+K 도 Modal 을 열지 않고 사이트의 검색 화면으로 간다 (밖으로 나가는 요청은 여기서 받아 멈춘다)
+  await page.route('https://example.test/**', (route) => route.fulfill({ status: 200, contentType: 'text/html', body: '<title>site</title>' }));
+  await Promise.all([page.waitForURL('https://example.test/fixture/#/search'), page.keyboard.press('Control+k')]);
 });
 
 test('the normal build has no notfound flag', TIMEOUT, async () => {
@@ -419,10 +433,14 @@ test('search button shows the Ctrl K hint on wide screens only', TIMEOUT, async 
 test('Ctrl+K opens search from any screen and focuses the input', TIMEOUT, async () => {
   const page = await open('#/settings', { width: 1280 });
   await page.keyboard.press('Control+k');
+  await page.locator('#search-dialog[open]').waitFor();
+  assert.equal(await page.evaluate(() => document.activeElement?.dataset.testid), 'search-modal-input');
+  assert.equal(await page.evaluate(() => location.hash), '#/settings');
+  // 검색 화면에서는 Modal 대신 그 화면의 입력칸으로 간다
+  await page.keyboard.press('Escape');
+  await page.evaluate(() => { location.hash = '#/search'; });
   await page.locator('main[data-hash="#/search"]').waitFor();
-  assert.equal(await page.evaluate(() => document.activeElement?.dataset.testid), 'search-input');
-  // 검색 화면에서 다시 눌러도 입력칸으로 돌아온다
-  await page.locator('main h1').focus();
+  await page.locator('#main').focus();
   await page.keyboard.press('Control+k');
   assert.equal(await page.evaluate(() => document.activeElement?.dataset.testid), 'search-input');
 });

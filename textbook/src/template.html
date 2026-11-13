@@ -49,6 +49,20 @@
   </div>
   <div class="drawer-body"></div>
 </dialog>
+
+<dialog id="search-dialog" class="search" data-testid="search-modal" aria-label="검색">
+  <div class="search-field">
+    {{ICON:search}}
+    <input type="search" data-testid="search-modal-input" role="combobox" aria-expanded="false" aria-controls="search-results" aria-autocomplete="list" aria-label="교재 검색" placeholder="Day 제목이나 낱말로 찾기" autocomplete="off" spellcheck="false" enterkeyhint="go">
+    <button id="search-close" class="icon-btn" type="button" aria-label="검색 닫기">{{ICON:close}}</button>
+  </div>
+  <div class="search-body">
+    <p id="search-hint" class="search-hint label" role="status"></p>
+    <ul id="search-results" class="results" role="listbox" aria-labelledby="search-hint"></ul>
+    <p class="search-empty" hidden></p>
+  </div>
+  <p class="search-foot"><span><kbd>↑</kbd> <kbd>↓</kbd> 고르기</span><span><kbd>Enter</kbd> 열기</span><span><kbd>Esc</kbd> 닫기</span></p>
+</dialog>
 <div id="storage-banner" data-testid="storage-banner" role="status" hidden></div>
 <div id="live" class="sr-only" role="status" aria-live="polite"></div>
 <!--WZH:DATA-->

@@ -364,9 +364,7 @@ test('answer gate', TIMEOUT, async () => {
 
 test('search hides locked snippet', TIMEOUT, async () => {
   await withPage(async (page, app) => {
-    await visit(page, app, '#/');
-    await page.locator('#search-open').click(); // 검색칸은 검색 화면에 있다
-    await waitRoute(page, '#/search');
+    await visit(page, app, '#/search'); // 검색칸은 검색 화면에 있다(검색 버튼은 Modal 을 연다)
     const input = page.getByTestId('search-input');
 
     await input.fill(SECRET);
@@ -405,8 +403,7 @@ test('search hides locked snippet', TIMEOUT, async () => {
     await completeDay(page, 'fa-d01');
     await visit(page, app, '#/day/fa-d02');
     await completeDay(page, 'fa-d02');
-    await page.locator('#search-open').click();
-    await waitRoute(page, '#/search');
+    await visit(page, app, '#/search');
     await input.fill(SECRET);
     await waitRoute(page, `#/search?q=${encodeURIComponent(SECRET)}`);
     const unlocked = page.locator('[data-testid="search-result"][data-id="fb-d01"]');
@@ -748,20 +745,6 @@ test('drawer closes on a link to the current screen and keeps Tab inside', TIMEO
       }
       await page.locator('#drawer a.side-home').click(); // 지금 화면(홈)
       await until(async () => !(await page.locator('#drawer').evaluate((d) => d.open)));
-    },
-    { viewport: { width: 375, height: 740 } },
-  );
-});
-
-test('Ctrl+K from the open drawer goes to search', TIMEOUT, async () => {
-  await withPage(
-    async (page, app) => {
-      await visit(page, app, '#/');
-      await page.locator('#menu-toggle').click();
-      await until(() => page.locator('#drawer').evaluate((d) => d.open));
-      await page.keyboard.press('Control+k');
-      await waitRoute(page, '#/search');
-      assert.equal(await page.locator('#drawer').evaluate((d) => d.open), false);
     },
     { viewport: { width: 375, height: 740 } },
   );

@@ -548,6 +548,57 @@ button.row {
     display: none;
   }
 }
+/* 검색 Modal (DESIGN.md Navigation "검색 Modal"). 입력 줄·결과 행은 components.css 의 공용 규칙을 쓴다 */
+.search {
+  margin: 10dvh auto auto;
+  width: min(40rem, calc(100% - var(--space-xl)));
+  max-width: none;
+  max-height: 76dvh;
+  padding: 0;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+  color: var(--color-ink);
+  overflow: hidden;
+}
+.search[open] {
+  display: flex;
+  flex-direction: column;
+  animation: pop-in var(--dur-enter) var(--ease-out);
+}
+.search::backdrop {
+  background: var(--color-scrim);
+}
+.search[open]::backdrop {
+  animation: fade-in var(--dur-enter) var(--ease-out);
+}
+.search.is-closing,
+.search.is-closing::backdrop {
+  animation: fade-out var(--dur-exit) var(--ease-in) forwards;
+}
+.search .search-field {
+  flex-shrink: 0;
+}
+.search .search-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.search-foot {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin: 0;
+  padding: var(--space-xs) var(--space-md);
+  border-top: 1px solid var(--color-rule);
+  color: var(--color-ink-2);
+  font-size: var(--text-ui);
+}
+:root:has(.search[open]) {
+  overflow: hidden;
+}
 @keyframes drawer-in {
   from {
     transform: translateX(-100%);

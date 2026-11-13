@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { closeDialog, DIALOG_CLOSE_FALLBACK_MS, isOutside, menuIndex } from '../../textbook/src/app/views/overlay.js';
+import { closeDialog, comboKey, DIALOG_CLOSE_FALLBACK_MS, isOutside, menuIndex } from '../../textbook/src/app/views/overlay.js';
 
 test('isOutside: edges count as inside', () => {
   const r = { left: 0, right: 280, top: 0, bottom: 740 };
@@ -59,4 +59,31 @@ test('close fallback still closes when animationend never comes', async () => {
   closeDialog(dlg, { env: { reduce: false } });
   await new Promise((resolve) => setTimeout(resolve, DIALOG_CLOSE_FALLBACK_MS + 40));
   assert.equal(dlg.open, false);
+});
+
+// ───────── 검색 combobox 키 (M5) ─────────
+
+test('comboKey: arrows wrap, Enter chooses the active option, Escape closes', () => {
+  const at = (index, count = 3) => ({ index, count, composing: false });
+  assert.deepEqual(comboKey('ArrowDown', at(2)), { type: 'move', index: 0 });
+  assert.deepEqual(comboKey('ArrowDown', at(-1)), { type: 'move', index: 0 });
+  assert.deepEqual(comboKey('ArrowUp', at(0)), { type: 'move', index: 2 });
+  assert.deepEqual(comboKey('ArrowUp', at(-1)), { type: 'move', index: 2 });
+  assert.deepEqual(comboKey('ArrowUp', at(2)), { type: 'move', index: 1 });
+  assert.deepEqual(comboKey('Enter', at(1)), { type: 'choose' });
+  assert.deepEqual(comboKey('Escape', at(-1, 0)), { type: 'close' });
+  assert.equal(comboKey('Tab', at(0)), null);
+  assert.equal(comboKey('Enter', at(-1)), null);
+});
+
+test('comboKey: no results means arrows and Enter do nothing', () => {
+  const none = { index: -1, count: 0, composing: false };
+  assert.equal(comboKey('ArrowDown', none), null);
+  assert.equal(comboKey('ArrowUp', none), null);
+  assert.equal(comboKey('Enter', none), null);
+});
+
+test('comboKey: keys during IME composition do nothing', () => {
+  const composing = { index: 0, count: 3, composing: true };
+  for (const key of ['ArrowDown', 'ArrowUp', 'Enter', 'Escape']) assert.equal(comboKey(key, composing), null, key);
 });

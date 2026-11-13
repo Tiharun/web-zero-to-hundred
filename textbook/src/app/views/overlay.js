@@ -21,6 +21,21 @@ export function menuIndex(key, index, count) {
   return null;
 }
 
+/**
+ * 검색 combobox 의 키 → 할 일. ↑↓는 끝에서 돌고, Enter 는 고른 행이 있을 때만, Esc 는 닫기.
+ * 한글 조합 중(composing)에는 아무것도 하지 않는다(조합을 끝내는 Enter 가 결과를 고르면 안 된다).
+ * @returns {{ type: 'move', index: number } | { type: 'choose' } | { type: 'close' } | null}
+ */
+export function comboKey(key, { index, count, composing }) {
+  if (composing) return null;
+  if (key === 'Escape') return { type: 'close' };
+  if (count <= 0) return null;
+  if (key === 'ArrowDown') return { type: 'move', index: (index + 1) % count };
+  if (key === 'ArrowUp') return { type: 'move', index: index <= 0 ? count - 1 : index - 1 };
+  if (key === 'Enter' && index >= 0) return { type: 'choose' };
+  return null;
+}
+
 // ───────── <dialog> ─────────
 
 const returnTo = new WeakMap(); // dialog → 닫힌 뒤 포커스를 돌려줄 요소

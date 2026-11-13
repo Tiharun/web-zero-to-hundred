@@ -4,6 +4,7 @@ import { stagger } from '../motion.js';
 import { h } from './common.js';
 import { icon } from './icons.js';
 import { closeDialog, menuButton, openDialog, setupDialog } from './overlay.js';
+import { createSearchModal } from './searchmodal.js';
 import { createSidebar } from './sidebar.js';
 
 const WIDE = '(min-width: 64rem)'; // 이 폭부터 사이드바가 보이고 서랍은 쓰지 않는다 (shell.css 와 같은 값)
@@ -125,18 +126,41 @@ export function createShell(ctx) {
     closeDrawer({ focus: side.nav.contains(active) ? active : null, immediate: true });
   });
 
-  document.addEventListener('keydown', (event) => {
-    // Ctrl+K(맥은 ⌘K): 검색 화면으로 가서 입력칸에 포커스. M5 에서 검색 Modal 로 바뀐다
-    if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === 'k' && !event.isComposing) {
-      event.preventDefault();
-      closeDrawer({ focus: null, immediate: true });
-      const focusInput = () => document.querySelector('[data-testid="search-input"]')?.focus();
-      if (location.hash.startsWith('#/search')) focusInput();
-      else {
-        window.addEventListener('hashchange', () => queueMicrotask(focusInput), { once: true }); // 화면이 다 그려지고 본문 포커스를 옮긴 뒤
-        location.hash = '#/search';
-      }
+  // ───────── 검색 Modal (DESIGN.md Navigation "검색 Modal": Ctrl+K·검색 버튼) ─────────
+
+  const searchOpen = $('search-open');
+  const searchModal = createSearchModal(ctx, $('search-dialog'));
+
+  /**
+   * 검색을 연다. 검색 화면에서는 그 화면의 입력칸으로, 그 밖에서는 Modal 로.
+   * 서랍이 열려 있으면 바로 닫고 Modal 이 닫힌 뒤에는 메뉴 버튼으로 돌아간다. 404 빌드는 사이트의 검색 화면으로 간다.
+   */
+  function openSearch(opener) {
+    if (ctx.siteBase) {
+      location.assign(`${ctx.siteBase}#/search`);
+      return;
     }
+    themeMenuCtl.close(false);
+    if (drawer.open) {
+      closeDrawer({ focus: null, immediate: true });
+      opener = menuToggle;
+    }
+    if (currentRoute.name === 'search') document.querySelector('[data-testid="search-input"]')?.focus();
+    else searchModal.open(opener);
+  }
+
+  document.addEventListener('keydown', (event) => {
+    // Ctrl+K(맥은 ⌘K). 누르고 있어 반복되는 키는 무시한다
+    if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === 'k' && !event.isComposing && !event.repeat) {
+      event.preventDefault();
+      openSearch(document.activeElement);
+    }
+  });
+  // 그냥 누른 클릭만 Modal 로. 수정 키·가운데 버튼은 링크(#/search) 그대로 둔다(새 탭 등). 404 빌드는 링크가 사이트 주소다
+  searchOpen.addEventListener('click', (event) => {
+    if (ctx.siteBase || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    openSearch(event.currentTarget);
   });
 
   // ───────── 테마 메뉴 (DESIGN.md Navigation "테마 Dropdown", 메뉴 버튼 패턴) ─────────
@@ -218,10 +242,11 @@ export function createShell(ctx) {
       currentRoute = route;
       const link = side.markCurrent(route, { open: true });
       closeDrawer({ focus: main }); // 뒤로 가기 등으로 화면이 바뀌어도 닫는다. 닫힌 뒤 본문으로
+      searchModal.close({ restoreFocus: false, immediate: true });
       themeMenuCtl.close(false);
       revealInSidebar(link);
-      if (route.name === 'search') $('search-open').setAttribute('aria-current', 'page');
-      else $('search-open').removeAttribute('aria-current');
+      if (route.name === 'search') searchOpen.setAttribute('aria-current', 'page');
+      else searchOpen.removeAttribute('aria-current');
     },
     announce,
   };
