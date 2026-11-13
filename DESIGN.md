@@ -626,8 +626,13 @@ components:
 - **Day 행:** `grid-template-columns: 28px minmax(0, 1fr) auto`, 최소 36px(터치 44px), 15px, 모서리 6px, hover `track`, 누름 `rule`. 번호는 Galmuri 12px `ink-2` 고정폭. 완료: 초록 도트 체크, 제목 `ink-2`. 오늘: 800, 번호를 24px 분홍 네모(턱 2px)에 넣고 `aria-current="step"`. 잠김: 링크 없음, `ink-2`, 자물쇠. 준비 중: Galmuri "준비 중". 지금 보고 있는 화면의 행은 `track` 바탕과 `aria-current="page"`(오늘 행이 지금 화면이면 `page`가 우선하고 분홍 네모는 그대로). 잠긴 행은 `<button>`이고 누르면 행이 흔들리며 이유가 토스트로 나온다.
 - **서랍(Drawer):** `<dialog>`를 `showModal()`로 연다. 왼쪽에 붙고 높이 100dvh, 폭 `min(var(--sidebar-w), calc(100% - var(--space-2xl)))`, 오른쪽 1px `rule`, 백드롭 `scrim`. 머리 56px(제목 17px 800 + 닫기). 열면 오늘 Day로 포커스·스크롤하고 월드 요약 줄이 stagger로 나타난다. 닫힘: ESC, 백드롭 클릭(`closedby="any"`, 미지원 브라우저는 백드롭 클릭 좌표 감지로 대신), 닫기 버튼, 안의 링크 클릭, 창이 1024px 이상이 될 때. 닫히면 연 버튼으로 포커스가 돌아간다. 열려 있는 동안 문서 스크롤을 잠근다(`:root:has(.drawer[open]) { overflow: hidden; }`). 사이드바와 서랍은 같은 목록 한 벌을 옮겨 쓴다.
 - **테마 Dropdown:** 메뉴 버튼 패턴(`menuitemradio` 3개: 시스템·라이트·다크). 메뉴는 최소 160px, 안쪽 4px, `card` 바탕, 1px `rule`, 모서리 12px, 그림자 없음. 항목 40px, 15px, 모서리 6px, hover·포커스 `track`, 고른 항목은 800과 선 체크(`accent-text`). ↓·↑로 열기, 화살표 순환, Home·End, ESC·Tab·바깥 클릭으로 닫기, Enter 적용 뒤 버튼으로 포커스 복귀. 고른 테마는 저장한다.
-- **검색 Modal:** `<dialog>`, `margin: 10dvh auto auto`, 폭 `min(40rem, calc(100% - var(--space-xl)))`, 최대 높이 76dvh, 1px `rule`, 모서리 12px, 그림자 없음. 입력 줄: 선 검색 아이콘, 40px 높이 17px 입력칸(외곽선 없음), 포커스는 입력 줄 밑의 `box-shadow: inset 0 -2px 0 var(--color-focus)`. 결과 행: 최소 48px, 모서리 6px, 위치(Label) | 제목(15px 800) + 이유(15px `ink-2`, 한 줄 말줄임) | 태그(Label). 고른 행은 `track` 바탕과 `box-shadow: inset 2px 0 0 var(--color-accent)`. 일치 글자는 바탕 없이 분홍 2px 밑줄. 아래에 `kbd` 안내(↑ ↓ 고르기, Enter 열기, Esc 닫기). Ctrl+K로 열고, 빈 검색어에는 바로 가기(오늘의 퀘스트 + 부록), ESC 한 번에 닫힌다. combobox + listbox, `aria-activedescendant`.
+- **검색 Modal:** `<dialog>`, `margin: 10dvh auto auto`, 폭 `min(40rem, calc(100% - var(--space-xl)))`, 최대 높이 76dvh, 1px `rule`, 모서리 12px, 그림자 없음. 입력 줄: 선 검색 아이콘, 40px 높이 17px 입력칸(외곽선 없음), 포커스는 입력 줄 밑의 `box-shadow: inset 0 -2px 0 var(--color-focus)`. 결과 행: 최소 48px, 모서리 6px, 위치(Label) | 제목(15px 800) + 이유(15px `ink-2`, 한 줄 말줄임) | 태그(Label). 고른 행은 `track` 바탕과 `box-shadow: inset 2px 0 0 var(--color-accent)`. 일치 글자는 바탕 없이 분홍 2px 밑줄. 아래에 `kbd` 안내(↑ ↓ 고르기, Enter 열기, Esc 닫기). Ctrl+K로 열고, 빈 검색어에는 바로 가기(오늘의 퀘스트 + 부록), ESC 한 번에 닫힌다. combobox + listbox, `aria-activedescendant`. 위치 칸은 최소 72px이다. 잠긴 결과는 이유 자리에 여는 조건 문장을 두고 태그를 "잠김"으로 한다. 본문 조각은 보이지 않는다. 결과가 없으면 목록 자리에 "‘검색어’에 맞는 내용이 없어요. 다른 낱말로 찾아보세요."(15px `ink-2`)가 나온다. 검색 페이지(`#/search`)도 같은 입력 줄과 결과 행을 카드 안에 쓴다(행은 링크).
 - **푸터:** 본문 아래 전체 폭. 위 1px `rule`, 바탕 `card`, 안쪽 24px(640px 이하 16px), 턱 없음. 말 도트 아이콘 + 사이트 이름(15px 800 `ink`), 글자 링크 줄(시작하기, 막혔을 때, 설정 · 진도 백업), Label 한 줄(글꼴 라이선스). 작성·빌드 날짜는 두지 않는다. 짧은 화면에서도 화면 바닥에 붙는다. 인쇄에서는 숨긴다.
+
+### Skeleton
+- 늦게 준비되는 곳(검색 결과의 첫 계산, 3D 그림)에만 쓴다. 시작 후 200ms 안에 준비되면 보이지 않고, 한 번 보이면 최소 300ms 보인다.
+- 실제 내용과 같은 크기의 자리표시다. 검색은 48px 행 3개이고, 각 행에 `track` 바 2개(위치 72px, 제목 60%)를 둔다. 바의 높이는 `--text-label`, 모서리는 `--radius-btn`이다.
+- 투명도 1 → 0.5 → 1을 `--dur-skeleton`으로 반복한다(동작 줄이기면 정지). 기다리는 목록에 `aria-busy="true"`를 두고, 자리표시는 `aria-hidden`이다.
 
 ### Tooltip
 - 지도 칸에만 있고 `(hover: hover) and (pointer: fine)`이면서 지도 폭이 30rem 이상(배치 m·l)일 때만 보인다. 터치와 좁은 지도(배치 s, 한 줄 툴팁이 카드 밖으로 잘린다)에서는 없다(칸의 `aria-label`이 같은 내용을 갖고, 툴팁은 `aria-hidden`).
@@ -652,6 +657,7 @@ components:
 | `--dur-enter` | `280ms` | 같음 | 서랍·검색 들어옴, 백드롭 |
 | `--dur-exit` | `180ms` | 같음 | 서랍·검색 나감 |
 | `--dur-celebrate` | `600ms` | 같음 | XP 채움 시간과 같은 값(JS는 600을 직접 쓴다) |
+| `--dur-skeleton` | `1200ms` | 같음 | Skeleton 반복 |
 | `--ease-out` | `cubic-bezier(0.2, 0.8, 0.2, 1)` | 같음 | 들어옴·기본 |
 | `--ease-in` | `cubic-bezier(0.4, 0, 1, 1)` | 같음 | 나감 |
 | `--ease-bounce` | `cubic-bezier(0.34, 1.56, 0.64, 1)` | 같음 | 주 버튼·보드게임 칸·막혔을 때 칸의 떠오름과 턱, 월드 문장 흔들림 |
@@ -671,6 +677,7 @@ components:
 | Accordion | 사용자가 연 월드의 내용 | 160ms, `transform: translateY(4px)`에서 투명도와 함께. 페이지를 열 때 이미 펼쳐진 월드는 움직이지 않는다 |
 | 메뉴 | 테마 메뉴 열림 | `pop-in`(`from { opacity: 0; transform: translateY(-4px) scale(0.98); }`) 200ms |
 | 검색 | 열림 / 닫힘 | `pop-in` 280ms / 페이드 180ms. 닫힘 애니메이션이 끝나지 않으면 `setTimeout(done, 260)`으로 닫는다 |
+| Skeleton | 검색 결과 자리 | 200ms 뒤에 보임, 최소 300ms, 투명도 1 → 0.5 → 1 `var(--dur-skeleton) ease-in-out infinite` |
 | 서랍 | 열림 / 닫힘 | `transform: translateX(-100%)`에서 280ms `--ease-out` / 180ms `--ease-in`, 백드롭은 투명도만 |
 | 테마 아이콘 | 테마 바꿈 | 120ms `transform: rotate(-45deg) scale(0.6)`로 사라졌다가 새 아이콘 |
 
@@ -780,6 +787,7 @@ components:
   --dur-enter: 280ms;
   --dur-exit: 180ms;
   --dur-celebrate: 600ms;
+  --dur-skeleton: 1200ms;
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
   --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);

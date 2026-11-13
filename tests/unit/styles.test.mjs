@@ -40,3 +40,11 @@ test('tokens.css equals the token block in DESIGN.md', async () => {
   const tokens = await readFile(path.join(ROOT, 'textbook/src/styles/tokens.css'), 'utf8');
   assert.equal(normalize(tokens), normalize(block));
 });
+
+test('skeleton rows pulse with --dur-skeleton (1200ms) and stop when motion is reduced', async () => {
+  const tokens = await readFile(path.join(ROOT, 'textbook/src/styles/tokens.css'), 'utf8');
+  assert.match(tokens, /--dur-skeleton:\s*1200ms;/);
+  const css = normalize(await readFile(path.join(ROOT, 'textbook/src/styles/components.css'), 'utf8'));
+  assert.match(css, /\.skeleton-row \{[^}]*animation: skeleton-pulse var\(--dur-skeleton\) ease-in-out infinite;/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{[^@]*\.skeleton-row \{ animation: none; \}/);
+});

@@ -424,3 +424,33 @@ kbd {
     transform: none;
   }
 }
+
+/* ───────── Skeleton (DESIGN.md Skeleton): 늦게 준비되는 결과 자리. 결과 행과 같은 48px ───────── */
+
+.skeleton-row {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--space-sm);
+  min-height: 48px;
+  padding: var(--space-xs) var(--space-sm);
+  animation: skeleton-pulse var(--dur-skeleton) ease-in-out infinite;
+}
+.skeleton-bar {
+  height: var(--text-label);
+  border-radius: var(--radius-btn);
+  background: var(--color-track);
+}
+.skeleton-bar + .skeleton-bar {
+  width: 60%;
+}
+@keyframes skeleton-pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-row {
+    animation: none;
+  }
+}
