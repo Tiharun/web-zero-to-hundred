@@ -23,6 +23,8 @@ const UPDATE = process.env.WZH_VISUAL_UPDATE === '1';
 const TIMEOUT = { timeout: 60_000 };
 
 const P1_FIRST_THREE = { completed: ['p1-d01', 'p1-d02', 'p1-d03'], lastDay: 'p1-d03' };
+/** P1 Day 1~10 을 마친 상태: 그림이 있는 Day 11 까지 열린다 */
+const P1_FIRST_TEN = { completed: Array.from({ length: 10 }, (_, i) => `p1-d${String(i + 1).padStart(2, '0')}`), lastDay: 'p1-d10' };
 /** P1 30 Day 를 모두 마친 직후: 홈 퀘스트 카드가 "월드 클리어" 상태다 */
 const P1_CLEAR = { completed: Array.from({ length: 30 }, (_, i) => `p1-d${String(i + 1).padStart(2, '0')}`), lastDay: 'p1-d30' };
 /** P1 마지막 Day 만 남은 상태: p1-d30 을 마치면 월드 클리어(와 레벨업) */
@@ -84,6 +86,12 @@ export const SCENES = [
   { id: 'wide-world', hash: '#/project/p1', progress: P1_FIRST_THREE, widths: [1440, 1920] },
   { id: 'wide-glossary', hash: '#/page/glossary', progress: null, widths: [1440, 1920] },
   { id: 'wide-settings', hash: '#/settings', progress: null, widths: [1440, 1920] },
+  // M12: Day 그림. 시각 테스트는 동작 줄이기가 켜져 있어 단계 그림은 마지막 단계, 값 고르기 그림은 기본값이다
+  { id: 'fig-request', hash: '#/day/p1-d01', progress: P1_FIRST_THREE, scrollTo: 'figure.figure' },
+  { id: 'fig-paths-site', hash: '#/day/p1-d04', progress: P1_FIRST_THREE, widths: [375, 1280], scrollTo: 'figure.figure' },
+  { id: 'fig-paths-dev', hash: '#/day/p1-d05', progress: P1_FIRST_TEN, scrollTo: 'figure.figure' },
+  { id: 'fig-git', hash: '#/day/p1-d07', progress: P1_FIRST_TEN, scrollTo: 'figure.figure' },
+  { id: 'fig-flex', hash: '#/day/p1-d11', progress: P1_FIRST_TEN, scrollTo: 'figure.figure' },
 ];
 const WIDTHS = [375, 768, 1280];
 const THEMES = ['light', 'dark'];
