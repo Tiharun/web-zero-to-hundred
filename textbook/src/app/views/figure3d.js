@@ -285,7 +285,7 @@ export function layerFigure(fig, { layers, reducedMotion = false, load = loadThr
       if (!gl) return toStatic();
       canvas.addEventListener('webglcontextlost', onLost);
       const T = await load(doc);
-      if (disposed) return;
+      if (disposed || !canvas) return; // 기다리는 동안 정리됐거나(컨텍스트를 잃어) 이미 정적 그림이다
       if (!T) return toStatic();
       gate.poll(); // 엔진 실행이 길어 지연 타이머가 못 돌았으면 지금 자리표시를 보인다
       await nextFrame(win);
