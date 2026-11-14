@@ -148,6 +148,57 @@
   border-radius: var(--space-2xs);
 }
 
+/* Flexbox 그림(Day 11): 실제 flex 부모. 가로 축 글자는 부모 위, 세로 축 글자는 부모 옆.
+   부모는 그림 안 상자(card + 1px rule), 자식은 고른 값이 움직이는 것이라 강조(track + ink 2px).
+   자식마다 안쪽 여백을 달리해 크기를 다르게 한다(align-items 차이가 보이게) */
+.flex-figure {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) min-content;
+  grid-template-areas:
+    "across ."
+    "demo down";
+  gap: var(--space-2xs) var(--space-xs);
+  color: var(--color-ink);
+  font-size: var(--text-ui);
+  line-height: 1.5;
+}
+.flex-axis {
+  margin: 0;
+  color: var(--color-ink-2);
+  font-weight: 800;
+}
+.flex-axis.is-across {
+  grid-area: across;
+}
+.flex-axis.is-down {
+  grid-area: down;
+  align-self: center;
+}
+.flex-demo {
+  grid-area: demo;
+  display: flex;
+  gap: var(--space-xs);
+  height: 12rem;
+  padding: var(--space-xs);
+  background: var(--color-card);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--space-2xs);
+}
+.flex-item {
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--color-track);
+  border: 2px solid var(--color-ink);
+  border-radius: var(--space-2xs);
+  font-weight: 800;
+  white-space: nowrap;
+}
+.flex-item:nth-child(1) {
+  padding: var(--space-md) var(--space-lg);
+}
+.flex-item:nth-child(3) {
+  padding: var(--space-2xs) var(--space-xs);
+}
+
 /* 그림 안 (DESIGN.md "그림 틀" 그림 안): 상자 card + 1px rule, 글자 ink, 선 ink 2px, 강조 track + ink 800.
    SVG viewBox 폭 320 기준으로 글자 15 */
 .figure-art text {

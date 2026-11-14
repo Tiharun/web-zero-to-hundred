@@ -2,6 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { choiceName, mountFigures, stepView } from '../../textbook/src/app/views/figure.js';
+import { flexAxes, flexCss } from '../../textbook/src/figures/flex-axes.js';
 
 test('stepView labels, button text and next step', () => {
   assert.deepEqual(stepView(1, 4), { label: '단계 1/4', button: '▶ 다음 단계', next: 2 });
@@ -72,4 +73,16 @@ test('winPath', async () => {
   const { winPath } = await import('../../textbook/src/figures/paths.js');
   assert.equal(winPath('C:\\dev\\my-creator-site', 'about.html'), 'C:\\dev\\my-creator-site\\about.html');
   assert.equal(winPath('C:\\dev', 'my-creator-site/images/profile.svg'), 'C:\\dev\\my-creator-site\\images\\profile.svg');
+});
+
+test('flexAxes swaps with the direction', () => {
+  assert.deepEqual(flexAxes('row'), { main: '가로', cross: '세로' });
+  assert.deepEqual(flexAxes('column'), { main: '세로', cross: '가로' });
+});
+
+test('flexCss writes the parent rule', () => {
+  assert.equal(
+    flexCss({ direction: 'row', justify: 'flex-start', align: 'stretch' }),
+    'display: flex; flex-direction: row; justify-content: flex-start; align-items: stretch;',
+  );
 });

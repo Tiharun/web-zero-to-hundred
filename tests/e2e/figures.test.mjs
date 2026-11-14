@@ -17,12 +17,12 @@ import { startStaticServer } from '../helpers/static-server.mjs';
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 const TIMEOUT = { timeout: 90_000 };
 const DONE = '2026-01-01T00:00:00.000Z';
-/** P1 Day 1~6 을 마친 진도: Day 7 까지 열린다 */
+/** P1 Day 1~10 을 마친 진도: Day 11 까지 열린다 */
 const PROGRESS = {
   version: 1,
-  completed: Object.fromEntries(['p1-d01', 'p1-d02', 'p1-d03', 'p1-d04', 'p1-d05', 'p1-d06'].map((id) => [id, DONE])),
+  completed: Object.fromEntries(Array.from({ length: 10 }, (_, i) => [`p1-d${String(i + 1).padStart(2, '0')}`, DONE])),
   checks: {},
-  lastDay: 'p1-d06',
+  lastDay: 'p1-d10',
   theme: 'light',
 };
 
@@ -218,6 +218,7 @@ test('figures fit 320px', TIMEOUT, async () => {
     ['#/day/p1-d05', 'paths-dev', '.figure-out'],
     ['#/day/p1-d01', 'request-response', '.figure-art svg'],
     ['#/day/p1-d07', 'git-flow', '.figure-art svg'],
+    ['#/day/p1-d11', 'flex-axes', '.flex-demo'],
   ];
   for (const [hash, id, ready] of cases) {
     const { context, page, fig, errors } = await openFigure(hash, id, { width: 320, ready });
@@ -235,5 +236,55 @@ test('figures fit 320px', TIMEOUT, async () => {
     } finally {
       await context.close();
     }
+  }
+});
+
+/** 부모 상자 안쪽(테두리·안쪽 여백 뺀)과 자식 셋의 위치 */
+const flexBoxes = (page) =>
+  page.evaluate(() => {
+    const demo = document.querySelector('.flex-demo');
+    const r = demo.getBoundingClientRect();
+    const cs = getComputedStyle(demo);
+    const inner = r.right - parseFloat(cs.borderRightWidth) - parseFloat(cs.paddingRight);
+    const items = [...demo.children].map((c) => c.getBoundingClientRect()).map((b) => ({ x: b.x, y: b.y, right: b.right }));
+    return { inner, items };
+  });
+
+test('day 11 flex figure moves the children when values change', TIMEOUT, async () => {
+  const { context, page, fig, errors } = await openFigure('#/day/p1-d11', 'flex-axes', { ready: '.flex-demo' });
+  try {
+    let b = await flexBoxes(page);
+    assert.ok(b.items[0].x < b.items[1].x && b.items[1].x < b.items[2].x, '처음은 가로로 늘어선다');
+    await pick(fig, 'justify-content', 'flex-end');
+    b = await flexBoxes(page);
+    assert.ok(Math.abs(b.items[2].right - b.inner) <= 1, `마지막 자식 ${b.items[2].right} ≠ 안쪽 끝 ${b.inner}`);
+    await pick(fig, 'flex-direction', 'column');
+    b = await flexBoxes(page);
+    assert.ok(b.items[0].y < b.items[1].y && b.items[1].y < b.items[2].y, 'column 이면 세로로 늘어선다');
+    assert.equal(await fig.locator('.flex-axis.is-down').textContent(), '주축 (세로) ↓');
+    assert.equal(await fig.locator('.flex-axis.is-across').textContent(), '교차축 (가로) →');
+    assert.match(await outText(fig), /flex-direction: column;/);
+    assert.deepEqual(errors, []);
+  } finally {
+    await context.close();
+  }
+});
+
+test('keyboard changes flex values and keeps focus', TIMEOUT, async () => {
+  const { context, page, fig, errors } = await openFigure('#/day/p1-d11', 'flex-axes', { ready: '.flex-demo' });
+  try {
+    const group = fig.getByRole('group', { name: 'justify-content' });
+    await group.getByLabel('flex-start', { exact: true }).focus();
+    await page.keyboard.press('ArrowRight');
+    assert.equal(await group.getByLabel('center', { exact: true }).isChecked(), true);
+    assert.match(await outText(fig), /justify-content: center;/);
+    const focused = await page.evaluate(() => {
+      const el = document.activeElement;
+      return { value: el.value, legend: el.closest('fieldset')?.querySelector('legend')?.textContent };
+    });
+    assert.deepEqual(focused, { value: 'center', legend: 'justify-content' });
+    assert.deepEqual(errors, []);
+  } finally {
+    await context.close();
   }
 });
