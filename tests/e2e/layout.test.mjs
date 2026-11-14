@@ -386,11 +386,11 @@ test('checkSite visits every route plus two 404s and reports no problems on the 
   assert.equal(result.visited, listRoutes(curriculum).length + 2);
 });
 
-test('checkSiteWidths covers every responsive width: 320 reflow, 375, 768, 1280', TIMEOUT, async () => {
+test('checkSiteWidths covers every responsive width: 320 reflow, 375, 768, 1280, 1920', TIMEOUT, async () => {
   const { checkSiteWidths, SITE_WIDTHS } = await import('../helpers/site-check.mjs');
   const { loadCurriculum } = await import('../../textbook/lib/curriculum.mjs');
   const { listRoutes } = await import('../../textbook/lib/site.mjs');
-  assert.deepEqual(SITE_WIDTHS, [320, 375, 768, 1280]);
+  assert.deepEqual(SITE_WIDTHS, [320, 375, 768, 1280, 1920]);
   const { curriculum } = await loadCurriculum(FIXTURE);
   const result = await checkSiteWidths({ baseUrl: server.url, cur: curriculum, launch });
   assert.deepEqual(result.problems, []);

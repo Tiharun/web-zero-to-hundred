@@ -1,5 +1,10 @@
 /* ───────── 검색 · 설정 ───────── */
 
+/* 검색 페이지 묶음: 검색 카드와 같은 폭 (DESIGN.md Layout 화면 묶음) */
+.search-view {
+  max-width: 40rem;
+}
+
 /* 검색 페이지: 입력 줄과 결과 행(components.css)을 카드 안에 둔다 */
 .search-card {
   max-width: 40rem;
@@ -325,8 +330,8 @@
     display: grid;
     grid-template-columns: minmax(0, var(--lesson-max)) var(--aside-w);
     column-gap: var(--space-xl);
-    justify-content: start;
-    max-width: none;
+    /* 두 열 묶음 전체가 본문 가운데 (DESIGN.md Layout 화면 묶음) */
+    max-width: calc(var(--lesson-max) + var(--space-xl) + var(--aside-w));
   }
   .page-article.has-aside > * {
     grid-column: 1;

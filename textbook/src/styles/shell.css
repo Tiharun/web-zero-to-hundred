@@ -404,8 +404,10 @@ button.row {
   container-type: inline-size;
   padding: var(--space-xl) var(--space-lg) var(--space-3xl);
 }
+/* 화면 묶음: 자기 상한 폭 안에서 본문 가운데 (DESIGN.md Layout "화면 묶음"). 상한은 묶음마다 다시 정한다 */
 .main > * {
-  max-width: 62rem;
+  max-width: var(--content-max);
+  margin-inline: auto;
 }
 
 /* ───────── 푸터 ───────── */
@@ -413,7 +415,9 @@ button.row {
 .site-footer {
   display: grid;
   gap: var(--space-sm);
-  padding: var(--space-lg);
+  /* 안 내용은 홈 묶음과 같은 폭에 가운데 (DESIGN.md Layout 셸) */
+  padding-block: var(--space-lg);
+  padding-inline: max(var(--space-lg), (100% - var(--content-max)) / 2);
   background: var(--color-card);
   color: var(--color-ink-2);
   border-top: 1px solid var(--color-rule);
@@ -784,7 +788,8 @@ button.row {
     padding: var(--space-md) var(--space-md) var(--space-2xl);
   }
   .site-footer {
-    padding: var(--space-md);
+    padding-block: var(--space-md);
+    padding-inline: max(var(--space-md), (100% - var(--content-max)) / 2);
   }
 }
 

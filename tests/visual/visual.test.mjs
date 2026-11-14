@@ -1,4 +1,4 @@
-// 시각 테스트: 장면(SCENES)을 375·768·1280 × 라이트·다크로 찍어 baseline/ 의 기준 이미지와 비교한다.
+// 시각 테스트: 장면(SCENES)을 375·768·1280(넓은 화면 장면은 1440·1920) × 라이트·다크로 찍어 baseline/ 의 기준 이미지와 비교한다.
 // 실행: cd textbook && npm run test:visual   (기준 이미지 갱신: npm run test:visual:update, 사용자 승인 뒤에만)
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
@@ -78,6 +78,12 @@ export const SCENES = [
   { id: 'world-clear', hash: '#/day/p1-d30', progress: P1_ALMOST, widths: [375, 1280], open: '[data-testid="complete-button"]', waitFor: '#reward-dialog[open]' },
   { id: 'term', hash: '#/day/p1-d01', progress: P1_FIRST_THREE, open: '.lesson-body a.term', waitFor: '#term-drawer[open]' },
   { id: 'toast-reward', hash: '#/day/p1-d01', progress: null, widths: [375, 1280], open: '[data-testid="complete-button"]', waitFor: '.toast.has-icon' },
+  // M12 넓은 화면: 화면 묶음이 본문 가운데에 오는지(DESIGN.md Layout 화면 묶음)
+  { id: 'wide-home', hash: '#/', progress: P1_FIRST_THREE, widths: [1440, 1920], fullPage: true },
+  { id: 'wide-day', hash: '#/day/p1-d04', progress: P1_FIRST_THREE, widths: [1440, 1920] },
+  { id: 'wide-world', hash: '#/project/p1', progress: P1_FIRST_THREE, widths: [1440, 1920] },
+  { id: 'wide-glossary', hash: '#/page/glossary', progress: null, widths: [1440, 1920] },
+  { id: 'wide-settings', hash: '#/settings', progress: null, widths: [1440, 1920] },
 ];
 const WIDTHS = [375, 768, 1280];
 const THEMES = ['light', 'dark'];

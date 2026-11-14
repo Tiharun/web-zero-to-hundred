@@ -59,7 +59,7 @@ npm run build:site
 npm run check:site -- https://tiharun.github.io/web-zero-to-hundred/
 ```
 
-- 전 페이지 점검: 사이트맵의 모든 화면과 404 두 개를 320·375·768·1280px로 열어 렌더·가로 스크롤·콘솔 오류·외부 요청을 본다. 로컬 서버 주소도 된다.
+- 전 페이지 점검: 사이트맵의 모든 화면과 404 두 개를 320·375·768·1280·1920px로 열어 렌더·가로 스크롤·콘솔 오류·외부 요청을 본다. 로컬 서버 주소도 된다.
 - e2e·시각·전 페이지 점검 전에 `NODE_PATH`를 `npm root -g`의 출력 경로로 맞춘다(`docs/CHECKPOINT.md` 5.2).
 - 기준선: `npm test`, `check`, `test:e2e`, `test:visual`이 모두 통과해야 한다.
 
@@ -155,7 +155,7 @@ node design-system/web-zero-to-hundred/prototype/build-home.mjs
 
 - 모든 화면은 DESIGN.md Layout의 **The Fluid Rule**을 따른다. 320px(WCAG 1.4.10 Reflow)부터 넓은 화면까지 한 마크업으로 맞추고, 가로 스크롤은 0이다.
 - 폭은 고정 px 대신 `%`·`minmax()`·`max-width`·컨테이너 쿼리로 정한다. 바뀌는 지점은 DESIGN.md의 브레이크포인트·컨테이너 쿼리 표의 값만 쓴다.
-- 화면을 바꿨으면 3폭 × 2테마 시각 테스트와 4폭 전 페이지 점검(`check:site`)을 통과해야 완료다.
+- 화면을 바꿨으면 3폭 × 2테마 시각 테스트와 5폭 전 페이지 점검(`check:site`)을 통과해야 완료다.
 
 ### 7. 미루지 않는다
 

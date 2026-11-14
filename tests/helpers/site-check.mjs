@@ -10,8 +10,8 @@ import { listRoutes } from '../../textbook/lib/site.mjs';
 import { STORAGE_KEY } from '../../textbook/src/app/progress.js';
 
 const NOT_FOUND_ROUTES = ['#/day/zz-d99', '#/nope'];
-/** 전 페이지 점검 폭: 320 = WCAG 1.4.10 Reflow(1280px 를 400% 확대), 375·768·1280 = 시각 테스트 폭 (DESIGN.md Layout "The Fluid Rule") */
-export const SITE_WIDTHS = [320, 375, 768, 1280];
+/** 전 페이지 점검 폭: 320 = WCAG 1.4.10 Reflow(1280px 를 400% 확대), 375·768·1280 = 시각 테스트 폭 (DESIGN.md Layout "The Fluid Rule"), 1920 = 넓은 화면(DESIGN.md Layout 화면 묶음) */
+export const SITE_WIDTHS = [320, 375, 768, 1280, 1920];
 const TOPBAR_H = 56;
 
 const decode = (s) => {

@@ -874,8 +874,8 @@ li.task input:active + .task-check {
     display: grid;
     grid-template-columns: minmax(0, var(--lesson-max)) var(--aside-w);
     column-gap: var(--space-xl);
-    justify-content: start;
-    max-width: none;
+    /* 두 열 묶음 전체가 본문 가운데 (DESIGN.md Layout 화면 묶음) */
+    max-width: calc(var(--lesson-max) + var(--space-xl) + var(--aside-w));
   }
   .lesson.has-aside > * {
     grid-column: 1;
