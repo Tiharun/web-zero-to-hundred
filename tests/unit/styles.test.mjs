@@ -11,7 +11,7 @@ const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 const normalize = (css) => css.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').trim();
 
 test('STYLE_ORDER starts with tokens and legacy', () => {
-  assert.deepEqual(STYLE_ORDER, ['tokens', 'legacy', 'base', 'shell', 'components', 'home', 'day', 'pages', 'print']);
+  assert.deepEqual(STYLE_ORDER, ['tokens', 'legacy', 'base', 'shell', 'components', 'home', 'day', 'pages', 'figures', 'print']);
 });
 
 test('lintStyles flags raw colours and font names outside tokens and legacy', () => {

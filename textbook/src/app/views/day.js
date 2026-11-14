@@ -5,9 +5,11 @@ import { rewardEvents, rewardKey, rewardModal, rewardToast } from '../reward.js'
 import { symptomAccordions } from './accordion.js';
 import { breadcrumb, chips, findDay, getPage, getProject, h, isDone, lockScreen, minutesText, textLink } from './common.js';
 import { px } from './icons.js';
+import { mountFigures } from './figure.js';
 import { mountQuestLog } from './questlog.js';
 import { mountReadBar } from './readbar.js';
 import { showToast } from './toast.js';
+import { FIGURES } from '../../figures/index.js';
 
 const COPY_RESET_MS = 2000;
 
@@ -323,6 +325,9 @@ export function renderDay(ctx, dayId, root) {
     ),
   );
   ctx.onCleanup(reveal(body.querySelectorAll('h2[id]'))); // 개편 설계서 6.3: Day 섹션 제목은 보일 때 올라온다
+  // 그림(DESIGN.md "그림 틀"): 붙인 뒤 처음 보일 때 올라온다. 붙이다 실패한 그림은 대체 설명이 남는다
+  ctx.onCleanup(mountFigures(body, FIGURES));
+  ctx.onCleanup(reveal(body.querySelectorAll('figure.figure')));
   return `Day ${day.num} · ${day.title}`;
 }
 

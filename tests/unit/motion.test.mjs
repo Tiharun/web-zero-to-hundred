@@ -15,12 +15,14 @@ import {
   pawnHop,
   seenInSession,
   reveal,
+  rise,
   SHARED_NAME,
   sharedKey,
   sharedTransition,
   shake,
   stagger,
   staggerDelays,
+  strokeIn,
   tilt,
   tiltAngles,
   xpFill,
@@ -467,4 +469,21 @@ test('sharedTransition skips when the new screen has no pair', async () => {
   run();
   assert.equal(skipped, 1, '짝이 없으면 옛 그림이 남지 않게 전환을 건너뛴다');
   assert.equal(handled, true, '건너뛰면 거절되는 ready 를 받아 콘솔 오류가 나지 않는다');
+});
+
+// M12 그림 단계(DESIGN.md Motion "그림 단계")
+test('rise and strokeIn do nothing under reduced motion or without animate', () => {
+  assert.equal(rise({ animate: () => 'a' }, { reduce: true }), null);
+  assert.equal(strokeIn({}, { reduce: false }), null);
+  assert.equal(strokeIn({ animate: () => 'a' }, { reduce: false }), 'a');
+});
+
+test('rise and strokeIn use the enter duration and ease-out', () => {
+  const seen = [];
+  const el = { animate: (frames, opts) => (seen.push([frames, opts]), 'a') };
+  rise(el, { reduce: false });
+  strokeIn(el, { reduce: false });
+  assert.deepEqual(seen[0][0][0], { opacity: 0, transform: 'translateY(8px)' });
+  assert.deepEqual(seen[1][0], [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }]);
+  for (const [, opts] of seen) assert.deepEqual(opts, { duration: 280, easing: EASE_OUT, fill: 'backwards' });
 });

@@ -104,6 +104,18 @@ export function stagger(els, env = motionEnv()) {
     .filter(Boolean);
 }
 
+/** 하나를 아래 8px 에서 올린다 (DESIGN.md Motion "그림 단계") */
+export function rise(el, env = motionEnv()) {
+  if (env.reduce || !canAnimate(el)) return null;
+  return el.animate(RISE, { duration: ENTER_MS, easing: EASE_OUT, fill: 'backwards' });
+}
+
+/** 선을 처음부터 그린다. 선에는 pathLength="1" 과 CSS stroke-dasharray: 1 이 있어야 한다 (DESIGN.md Motion "그림 단계") */
+export function strokeIn(path, env = motionEnv()) {
+  if (env.reduce || !canAnimate(path)) return null;
+  return path.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: ENTER_MS, easing: EASE_OUT, fill: 'backwards' });
+}
+
 /** 좌우 4px 네 번 흔든다. 돌고 있으면 처음부터 다시 */
 export function shake(el, env = motionEnv()) {
   if (env.reduce || !canAnimate(el)) return null;

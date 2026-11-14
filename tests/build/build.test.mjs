@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build } from '../../textbook/build.mjs';
-import { readStyles, lintStyles } from '../../textbook/lib/styles.mjs';
+import { readStyles, lintStyles, RAW_COLOR } from '../../textbook/lib/styles.mjs';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 const FIXTURE = path.join(ROOT, 'tests', 'fixtures', 'content');
@@ -624,4 +624,14 @@ test('build stops when the figure registry cannot be read', async () => {
     assert.equal(r.ok, false);
     assert.deepEqual(r.errors.map((e) => e.code), ['E_FIGURE_REGISTRY']);
   });
+});
+
+// 그림 안 색은 CSS 토큰으로만 칠한다(DESIGN.md "그림 틀"): 그림 코드에 색 값을 직접 쓰지 않는다
+test('figure code has no raw colors', async () => {
+  const figDir = path.join(ROOT, 'textbook', 'src', 'figures');
+  const files = [path.join(ROOT, 'textbook', 'src', 'app', 'views', 'figure.js'), ...(await readdir(figDir)).filter((f) => f.endsWith('.js')).map((f) => path.join(figDir, f))];
+  for (const file of files) {
+    const hit = RAW_COLOR.exec(await readFile(file, 'utf8'));
+    assert.equal(hit, null, `${path.relative(ROOT, file)}: ${hit?.[0]}`);
+  }
 });

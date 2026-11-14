@@ -2,7 +2,9 @@
 import { symptomAccordions } from './accordion.js';
 import { isUnlocked } from '../progress.js';
 import { breadcrumb, getPage, h, lockScreen } from './common.js';
+import { mountFigures } from './figure.js';
 import { pageArt, px } from './icons.js';
+import { FIGURES } from '../../figures/index.js';
 
 /**
  * #/page/<id>/<anchor> 의 anchor 가 가리키는, 페이지 본문 안의 요소. 본문 밖의 id(#main, #sidebar …)나 없는 id 면 null.
@@ -51,6 +53,7 @@ export function renderPage(ctx, id, anchor, root) {
       body,
     ),
   );
+  ctx.onCleanup(mountFigures(body, FIGURES)); // 부록에 그림이 있으면 붙인다 (DESIGN.md "그림 틀")
 
   // 용어 사전 항목처럼 #/page/<id>/<anchor> 로 온 경우 그 자리로 간다. 닫힌 증상 안이면 먼저 연다.
   // 묶음(색인의 ㄱ, 목차의 월드·Day)은 자리만 옮긴다: 묶음 전체에 "찾아온 항목" 띠를 두르지 않는다

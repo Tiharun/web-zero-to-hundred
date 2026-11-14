@@ -3,7 +3,7 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
-export const STYLE_ORDER = ['tokens', 'legacy', 'base', 'shell', 'components', 'home', 'day', 'pages', 'print'];
+export const STYLE_ORDER = ['tokens', 'legacy', 'base', 'shell', 'components', 'home', 'day', 'pages', 'figures', 'print'];
 
 /** 검사하지 않는 파일: 토큰의 원천 두 곳 */
 const SOURCE_FILES = new Set(['tokens', 'legacy']);
@@ -16,7 +16,7 @@ export const LEGACY_VARS = new Set([
   ...['callout'].flatMap((k) => [`${k}-bg`, `${k}-line`, `${k}-ink`]), // day.css 의 지역 변수(알림 상자마다 바꿔 끼운다)
 ]);
 
-const RAW_COLOR = /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|oklch|color-mix)\(/i;
+export const RAW_COLOR = /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|oklch|color-mix)\(/i;
 // 선언 하나: 이름: 값; 또는 이름: 값} (선택자의 a:hover { 는 { 앞이라 걸리지 않는다)
 const DECLARATION = /(--[\w-]+|[a-z-]+)\s*:\s*([^;{}]*)(?=[;}])/gi;
 

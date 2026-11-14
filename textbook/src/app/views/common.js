@@ -21,6 +21,22 @@ export function h(tag, props, ...children) {
   return el;
 }
 
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+/**
+ * SVG 도우미. svg('path', { d: 'M0 0H10', class: 'fig-line' }, 자식…)
+ * 속성은 모두 setAttribute 로 넣는다(false/null/undefined 는 건너뛴다). 자식 규칙은 h 와 같다.
+ */
+export function svg(tag, attrs, ...children) {
+  const el = document.createElementNS(SVG_NS, tag);
+  for (const [key, value] of Object.entries(attrs ?? {})) {
+    if (value == null || value === false) continue;
+    el.setAttribute(key, value === true ? '' : String(value));
+  }
+  append(el, children);
+  return el;
+}
+
 function append(parent, children) {
   for (const child of children) {
     if (child == null || child === false) continue;

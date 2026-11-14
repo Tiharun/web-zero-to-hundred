@@ -1,0 +1,158 @@
+/* ───────── 그림 틀 (DESIGN.md Components "Day 부품" 그림 틀) ─────────
+   무대가 윗줄 전체, 아래 줄은 캡션(왼쪽) | 단계 버튼(오른쪽, 있을 때).
+   단계 버튼은 DOM 에서 figcaption 앞이다(figcaption 은 figure 의 마지막 자식). 보이는 자리는 격자 영역이 정한다 */
+.figure {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "stage stage"
+    "cap next";
+  align-items: center;
+  column-gap: var(--space-sm);
+  margin: var(--space-lg) 0;
+  background: var(--color-card);
+  border: 2px solid var(--color-rule);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+.figure-stage {
+  grid-area: stage;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-md);
+  padding: var(--space-lg) var(--space-md);
+  background: var(--color-paper);
+  border-bottom: 1px solid var(--color-rule);
+}
+.figure-art {
+  width: min(100%, 30rem);
+}
+.figure-art > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* 그림을 붙이기 전·실패했을 때 그림 자리에 보이는 대체 설명 */
+.figure-fallback {
+  margin: 0;
+  color: var(--color-ink-2);
+}
+.figure-cap {
+  grid-area: cap;
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-ink);
+  font-size: var(--text-ui);
+  line-height: 1.5;
+}
+.figure-cap .label {
+  margin-right: var(--space-2xs);
+}
+.figure:has(.figure-next) .figure-cap {
+  padding-right: 0;
+}
+.figure-next {
+  grid-area: next;
+  margin: var(--space-sm) var(--space-md) var(--space-sm) 0;
+}
+
+/* 단계 줄: Label "단계 n/전체" + 그 단계 문장 */
+.figure-step {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2xs) var(--space-xs);
+  width: min(100%, 30rem);
+  margin: 0;
+  color: var(--color-ink);
+  font-size: var(--text-ui);
+  line-height: 1.5;
+}
+
+/* 값 고르기: 선택 묶음과 결과 줄 */
+.figure-choice {
+  width: min(100%, 30rem);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.figure-choice legend {
+  margin-bottom: var(--space-2xs);
+  padding: 0;
+}
+.figure-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs) var(--space-md);
+}
+/* 값 글자는 WZH Code 이고 인라인 코드 상자는 두지 않는다(선택지가 칩처럼 보이지 않게) */
+.figure-choice .radio code {
+  padding: 0;
+  background: none;
+  border: 0;
+  font-family: var(--font-code);
+  font-size: var(--text-code);
+}
+.figure-out {
+  width: min(100%, 30rem);
+  margin: 0;
+  color: var(--color-ink);
+  font-size: var(--text-ui);
+  line-height: 1.5;
+}
+
+/* 그림 안 (DESIGN.md "그림 틀" 그림 안): 상자 card + 1px rule, 글자 ink, 선 ink 2px, 강조 track + ink 800.
+   SVG viewBox 폭 320 기준으로 글자 15 */
+.figure-art text {
+  fill: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: var(--text-ui);
+}
+.fig-box {
+  fill: var(--color-card);
+  stroke: var(--color-rule);
+  stroke-width: 1px;
+  rx: var(--space-2xs);
+}
+.fig-box.is-hot {
+  fill: var(--color-track);
+}
+.figure-art .fig-name,
+.figure-art .is-hot {
+  font-weight: 800;
+}
+.figure-art .fig-sub {
+  fill: var(--color-ink-2);
+}
+/* 선은 pathLength="1" 이어야 한다: 대시 하나가 선 전체를 덮고, strokeIn 이 dashoffset 1→0 으로 그린다 */
+.fig-line {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 2px;
+  stroke-dasharray: 1;
+}
+.fig-head {
+  fill: var(--color-ink);
+}
+.figure .is-off {
+  visibility: hidden;
+}
+
+@media (max-width: 40rem) {
+  .figure {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "stage"
+      "cap"
+      "next";
+  }
+  .figure:has(.figure-next) .figure-cap {
+    padding: var(--space-sm) var(--space-md) 0;
+  }
+  .figure-next {
+    justify-self: start;
+    margin: var(--space-sm) var(--space-md);
+  }
+}

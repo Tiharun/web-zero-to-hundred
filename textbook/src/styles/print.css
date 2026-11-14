@@ -17,6 +17,11 @@
     overflow: visible;
     flex-wrap: wrap;
   }
+  /* 그림: 단계 버튼·선택 묶음은 숨기고 지금 그림과 결과 줄을 찍는다 (DESIGN.md "그림 틀") */
+  .figure-next,
+  .figure-choice {
+    display: none;
+  }
   /* 스크롤하지 않은 섹션 제목도 인쇄에 나온다 */
   .reveal-pending {
     opacity: 1 !important;
