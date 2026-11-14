@@ -148,15 +148,17 @@
   border-radius: var(--space-2xs);
 }
 
-/* Flexbox 그림(Day 11): 실제 flex 부모. 가로 축 글자는 부모 위, 세로 축 글자는 부모 옆.
+/* Flexbox 그림(Day 11): 실제 flex 부모. 축 글자 둘은 부모 위 한 줄(가로 축 왼쪽, 세로 축 오른쪽).
+   옆에 두면 320px 에서 부모 폭이 모자라 justify-content 차이가 보이지 않는다.
    부모는 그림 안 상자(card + 1px rule), 자식은 고른 값이 움직이는 것이라 강조(track + ink 2px).
    자식마다 안쪽 여백을 달리해 크기를 다르게 한다(align-items 차이가 보이게) */
 .flex-figure {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) min-content;
+  grid-template-columns: auto auto;
   grid-template-areas:
-    "across ."
-    "demo down";
+    "across down"
+    "demo demo";
+  justify-content: space-between;
   gap: var(--space-2xs) var(--space-xs);
   color: var(--color-ink);
   font-size: var(--text-ui);
@@ -172,7 +174,6 @@
 }
 .flex-axis.is-down {
   grid-area: down;
-  align-self: center;
 }
 .flex-demo {
   grid-area: demo;
@@ -193,7 +194,7 @@
   white-space: nowrap;
 }
 .flex-item:nth-child(1) {
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--space-md);
 }
 .flex-item:nth-child(3) {
   padding: var(--space-2xs) var(--space-xs);

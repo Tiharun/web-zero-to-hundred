@@ -192,6 +192,9 @@ test('day 5 path figure computes the walk and updates on choice', TIMEOUT, async
     assert.match(await outText(fig), /src="\.\.\/hello\.html"/);
     await pick(fig, '지금 파일', 'index.html');
     assert.match(await outText(fig), /src="\.\.\/hello\/hello\.html"/);
+    // 캡션은 고른 값과 어긋나지 않게 특정 파일 이름을 쓰지 않는다
+    const caption = await fig.locator('figcaption').textContent();
+    assert.ok(!/back\.html|profile\.svg/.test(caption), caption);
     assert.deepEqual(errors, []);
   } finally {
     await context.close();
@@ -283,6 +286,20 @@ test('keyboard changes flex values and keeps focus', TIMEOUT, async () => {
       return { value: el.value, legend: el.closest('fieldset')?.querySelector('legend')?.textContent };
     });
     assert.deepEqual(focused, { value: 'center', legend: 'justify-content' });
+    assert.deepEqual(errors, []);
+  } finally {
+    await context.close();
+  }
+});
+
+test('320px flex figure leaves room so justify-content is visible', TIMEOUT, async () => {
+  const { context, page, fig, errors } = await openFigure('#/day/p1-d11', 'flex-axes', { width: 320, ready: '.flex-demo' });
+  try {
+    const start = (await flexBoxes(page)).items[2].right;
+    await pick(fig, 'justify-content', 'flex-end');
+    const end = await flexBoxes(page);
+    assert.ok(end.items[2].right - start >= 24, `flex-end 로 ${end.items[2].right - start}px 만 움직였다`);
+    assert.ok(Math.abs(end.items[2].right - end.inner) <= 1);
     assert.deepEqual(errors, []);
   } finally {
     await context.close();
