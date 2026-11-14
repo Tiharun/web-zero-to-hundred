@@ -55,3 +55,14 @@ test('box model layers nest content in padding in border in margin', async () =>
   assert.deepEqual(checkLayers(BOX_LAYERS), []);
   assert.deepEqual(BOX_LAYERS.map((l) => [l.id, l.depth, !!l.ghost]), [['margin', 0, true], ['border', 1, false], ['padding', 2, false], ['content', 3, false]]);
 });
+
+test('dom tree layers follow the day 6 and day 20 nesting', async () => {
+  const { SITE_LAYERS, CARD_LAYERS } = await import('../../textbook/src/figures/dom-tree-3d.js');
+  assert.deepEqual(checkLayers(SITE_LAYERS), []);
+  assert.deepEqual(checkLayers(CARD_LAYERS), []);
+  assert.deepEqual(SITE_LAYERS.filter((l) => l.depth === 1).map((l) => l.label), ['header', 'main', 'footer']);
+  assert.deepEqual(CARD_LAYERS.filter((l) => l.depth === 4).map((l) => [l.label, l.parent]), [['article.card', 'video-list'], ['article.card', 'video-list']]);
+  assert.equal(CARD_LAYERS.find((l) => l.label === 'head').ghost, true);
+  // 배열은 깊이 오름차순(이름표·e2e 가 이 순서를 쓴다)
+  for (const layers of [SITE_LAYERS, CARD_LAYERS]) assert.deepEqual(layers.map((l) => l.depth), [...layers.map((l) => l.depth)].sort((a, b) => a - b));
+});

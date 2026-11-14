@@ -175,8 +175,11 @@ test('slow start shows the skeleton for at least 300ms', TIMEOUT, async () => {
           }
         }).observe(document, { childList: true, subtree: true });
       });
-      const cdp = await ctx.newCDPSession(page);
-      await cdp.send('Emulation.setCPUThrottlingRate', { rate: 10 });
+      // 느린 기기: 프레임이 늦게 온다(250ms). CPU 를 늦추는 방식은 앞선 테스트가 엔진을 이미 컴파일해 두면(V8 캐시) 빨라져 흔들린다
+      await ctx.addInitScript(() => {
+        const raf = window.requestAnimationFrame.bind(window);
+        window.requestAnimationFrame = (cb) => setTimeout(() => raf(cb), 250);
+      });
     },
   });
   await fig.locator('.fig3d[data-state="ready"]').waitFor({ timeout: 90_000 });
@@ -260,4 +263,37 @@ test('pixel ratio is capped at 2', TIMEOUT, async () => {
   const [w, cw] = await fig.locator('canvas').evaluate((c) => [c.width, c.clientWidth]);
   assert.equal(w, Math.round(cw * 2));
   await context.close();
+});
+
+const SITE = { hash: '#/day/p1-d06', id: 'dom-tree-site' };
+const CARDS = { hash: '#/day/p1-d20', id: 'dom-tree-cards' };
+
+test('day 6 and day 20 DOM trees open and turn', TIMEOUT, async () => {
+  const expected = {
+    'dom-tree-site': ['body', 'header', 'main', 'footer', 'a', 'nav', 'section'],
+    'dom-tree-cards': ['html', 'head', 'body', 'header', 'main', 'h1', 'div#video-list', 'article.card', 'article.card'],
+  };
+  for (const where of [SITE, CARDS]) {
+    const { context, fig, errors } = await open3d(where, { reduce: true });
+    assert.deepEqual(await fig.locator('.fig3d-label').allTextContents(), expected[where.id]);
+    await fig.getByRole('button', { name: '오른쪽으로 →' }).click();
+    assert.deepEqual(await view(fig), { yaw: -65, pitch: 20 });
+    assert.deepEqual(errors, []);
+    await context.close();
+  }
+});
+
+test('3D figures fit 320px', TIMEOUT, async () => {
+  for (const where of [SITE, BOX, CARDS]) {
+    const { context, page, fig } = await open3d(where, { width: 320, height: 800 });
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, where.id);
+    const box = await fig.locator('.fig3d').boundingBox();
+    const column = await page.locator('.lesson-body').boundingBox();
+    assert.ok(box.x + box.width <= column.x + column.width + 0.5, `${where.id}: figure ${box.x + box.width} > column ${column.x + column.width}`);
+    assert.equal(await fig.locator('.fig3d').evaluate((el) => getComputedStyle(el).overflow), 'hidden');
+    for (const height of await fig.locator('.figure-views button').evaluateAll((els) => els.map((el) => el.getBoundingClientRect().height))) {
+      assert.ok(height >= 44, `${where.id}: button ${height}px`);
+    }
+    await context.close();
+  }
 });

@@ -45,6 +45,11 @@ html
          └─ article.card
 ```
 
+:::figure dom-tree-cards
+캡션: HTML 상자와 DOM 나무는 같은 구조예요
+대체 설명: html 아래에 head와 body가 있고, body 안에 header와 main이, main 안에 h1과 div#video-list가, div#video-list 안에 article.card 두 개가 있어요. 정면에서는 상자가 겹친 페이지로 보이고, 옆으로 돌리면 안쪽 요소일수록 한 층씩 높이 떠서 위 나무 그림과 같은 층이 보여요. head는 화면에 그려지지 않는 요소라 점선으로 그렸어요.
+:::
+
 ### 요소 찾기와 글자 바꾸기
 
 - **[[querySelector]]**(쿼리 셀렉터)는 CSS 선택자로 요소를 **하나** 찾아 주는 메서드예요. `document.querySelector('#video-list')`는 `id="video-list"`인 요소를, `'.card'`는 `class="card"`인 첫 요소를 찾아요. 없으면 `null`을 돌려줘요(Day 16에서 본 그 `null`이에요).

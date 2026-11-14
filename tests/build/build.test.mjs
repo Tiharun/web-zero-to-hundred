@@ -667,3 +667,14 @@ test('3D engine carries the three.js MIT notice', async () => {
   assert.ok(r.html.includes('Permission is hereby granted'), 'MIT permission notice');
   assert.ok(at < r.html.indexOf('id="three-src"'), 'notice comes before the engine block');
 });
+
+test('a document has at most one 3D figure', async () => {
+  const { THREE_D } = await import('../../textbook/src/figures/index.js');
+  const dir = path.join(ROOT, 'textbook', 'content');
+  const files = (await readdir(dir, { recursive: true })).filter((f) => f.endsWith('.md')).map((f) => path.join(dir, f));
+  for (const file of files) {
+    const ids = [...(await readFile(file, 'utf8')).matchAll(/^:::figure (\S+)/gm)].map((m) => m[1]).filter((id) => THREE_D.has(id));
+    assert.ok(ids.length <= 1, `${path.relative(ROOT, file)}: ${ids.join(', ')}`);
+  }
+  assert.deepEqual([...THREE_D].sort(), ['box-model-3d', 'dom-tree-cards', 'dom-tree-site']);
+});
