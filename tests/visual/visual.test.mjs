@@ -25,6 +25,8 @@ const TIMEOUT = { timeout: 60_000 };
 const P1_FIRST_THREE = { completed: ['p1-d01', 'p1-d02', 'p1-d03'], lastDay: 'p1-d03' };
 /** P1 30 Day 를 모두 마친 직후: 홈 퀘스트 카드가 "월드 클리어" 상태다 */
 const P1_CLEAR = { completed: Array.from({ length: 30 }, (_, i) => `p1-d${String(i + 1).padStart(2, '0')}`), lastDay: 'p1-d30' };
+/** P1 마지막 Day 만 남은 상태: p1-d30 을 마치면 월드 클리어(와 레벨업) */
+const P1_ALMOST = { completed: P1_CLEAR.completed.slice(0, 29), lastDay: 'p1-d29' };
 /** 잠긴 Day 하나: order 로 정렬한 두 번째 프로젝트의 첫 Day (진도가 없으면 잠금 화면이다) */
 const LOCKED_DAY = (() => {
   const cur = JSON.parse(readFileSync(path.join(ROOT, 'textbook', 'content', 'curriculum.json'), 'utf8'));
@@ -71,6 +73,11 @@ export const SCENES = [
   { id: 'glossary', hash: '#/page/glossary', progress: null },
   { id: 'troubleshooting', hash: '#/page/troubleshooting', progress: null, open: '.ts-entry > summary', waitFor: '.ts-entry[open]' },
   { id: 'toast', hash: '#/', progress: null, widths: [375, 1280], open: '.world-card.is-locked .card-hit', waitFor: '.toast' },
+  // M11 보상과 연결: P1 Day 1~3 = 280 XP, Day 4 완료로 LV 2 / P1 마지막 Day 완료로 월드 클리어 + LV 달성 줄
+  { id: 'levelup', hash: '#/day/p1-d04', progress: P1_FIRST_THREE, open: '[data-testid="complete-button"]', waitFor: '#reward-dialog[open]' },
+  { id: 'world-clear', hash: '#/day/p1-d30', progress: P1_ALMOST, widths: [375, 1280], open: '[data-testid="complete-button"]', waitFor: '#reward-dialog[open]' },
+  { id: 'term', hash: '#/day/p1-d01', progress: P1_FIRST_THREE, open: '.lesson-body a.term', waitFor: '#term-drawer[open]' },
+  { id: 'toast-reward', hash: '#/day/p1-d01', progress: null, widths: [375, 1280], open: '[data-testid="complete-button"]', waitFor: '.toast.has-icon' },
 ];
 const WIDTHS = [375, 768, 1280];
 const THEMES = ['light', 'dark'];
