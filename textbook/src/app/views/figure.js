@@ -3,7 +3,7 @@
 // 그림 모듈(src/figures/*)이 이 파일을 import 하므로 여기서는 등록표(src/figures/index.js)를 import 하지 않는다(순환 방지).
 // 빌드가 Node 에서 그림 모듈을 import 하므로 최상위에서 document·window 를 쓰지 않는다.
 import { motionEnv, rise, strokeIn } from '../motion.js';
-import { h } from './common.js';
+import { h, svg } from './common.js';
 
 /** 단계 줄의 Label, 단계 버튼 글자, 버튼을 누르면 갈 단계 */
 export function stepView(step, total) {
@@ -68,9 +68,7 @@ export function stepFigure(fig, { steps, reducedMotion }) {
       const on = isOn(el, n);
       const wasOff = el.classList.contains('is-off');
       el.classList.toggle('is-off', !on);
-      if (!forward || !on || !wasOff) continue;
-      const anim = el.classList.contains('fig-line') ? strokeIn(el, env) : rise(el, env);
-      if (anim) running.push(anim);
+      if (forward && on && wasOff) running.push(...enter(el, env));
     }
     const view = stepView(n, total);
     label.textContent = view.label;
@@ -88,6 +86,45 @@ export function stepFigure(fig, { steps, reducedMotion }) {
     button.removeEventListener('click', onClick);
     running.forEach((a) => a.cancel());
   };
+}
+
+/**
+ * 새로 보이는 요소의 움직임: 선(.fig-line)은 그리고, 선을 품은 묶음은 선을 그리며 나머지 자식을 올리고, 그 밖은 올린다
+ * @returns {Animation[]}
+ */
+function enter(el, env) {
+  if (el.classList.contains('fig-line')) return [strokeIn(el, env)].filter(Boolean);
+  const lines = [...el.querySelectorAll('.fig-line')];
+  if (!lines.length) return [rise(el, env)].filter(Boolean);
+  return [...lines.map((l) => strokeIn(l, env)), ...lineFree(el).map((c) => rise(c, env))].filter(Boolean);
+}
+
+/** 선이 없는 가장 큰 하위 묶음들 (화살표 머리, 글자 등): 겹쳐 두 번 움직이지 않게 */
+function lineFree(el) {
+  return [...el.children].flatMap((c) => {
+    if (c.classList.contains('fig-line')) return [];
+    return c.querySelector('.fig-line') ? lineFree(c) : [c];
+  });
+}
+
+const HEAD = 8;
+
+/**
+ * 화살표: (x1, y1) 에서 (x2, y2) 로 가는 직선과 끝의 삼각형 머리. 선은 머리 밑동에서 멈춘다.
+ * 선은 pathLength="1" 이라 strokeIn 으로 그릴 수 있다.
+ */
+export function arrow(x1, y1, x2, y2) {
+  const len = Math.hypot(x2 - x1, y2 - y1);
+  const [ux, uy] = [(x2 - x1) / len, (y2 - y1) / len];
+  const r = (n) => Math.round(n * 10) / 10;
+  const [bx, by] = [x2 - ux * HEAD, y2 - uy * HEAD];
+  const [px, py] = [-uy * (HEAD / 2), ux * (HEAD / 2)];
+  return svg(
+    'g',
+    { class: 'fig-arrow' },
+    svg('path', { class: 'fig-line', pathLength: 1, d: `M${r(x1)} ${r(y1)}L${r(bx)} ${r(by)}` }),
+    svg('path', { class: 'fig-head', d: `M${r(x2)} ${r(y2)}L${r(bx + px)} ${r(by + py)}L${r(bx - px)} ${r(by - py)}Z` }),
+  );
 }
 
 /**

@@ -118,6 +118,8 @@
 }
 .fig-box.is-hot {
   fill: var(--color-track);
+  stroke: var(--color-ink);
+  stroke-width: 2px;
 }
 .figure-art .fig-name,
 .figure-art .is-hot {
@@ -135,6 +137,24 @@
 }
 .fig-head {
   fill: var(--color-ink);
+}
+.figure-art .fig-code {
+  font-family: var(--font-code);
+  font-size: var(--text-code);
+}
+/* 주체마다 아래로 내려가는 줄기(요청·응답 그림) */
+.fig-life {
+  fill: none;
+  stroke: var(--color-rule);
+  stroke-width: 1px;
+  stroke-dasharray: 4 4;
+}
+/* 작은 페이지 안의 글 줄 */
+.fig-page {
+  fill: none;
+  stroke: var(--color-ink-2);
+  stroke-width: 2px;
+  stroke-linecap: round;
 }
 .figure .is-off {
   visibility: hidden;

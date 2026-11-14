@@ -851,7 +851,7 @@ components:
 - **설정 결과 문장(`.message[data-kind]`):** 알림 상자와 같은 틀(1px `rule` 테두리, 왼쪽 4px 막대, 모서리 `--radius-card`), 15px `ink`, 줄간격 1.5. 색은 종류로 고른다: `ok` → `success`, `error` → `warn`, `info` → `info`의 바탕과 막대.
 - **그림 틀:** `figure.figure`, `card` 면, 2px `rule` 테두리, 모서리 `--radius-card`, 위아래 `var(--space-lg)`. 2칸 격자: 무대가 윗줄 전체, 아래 줄은 캡션(왼쪽) | 단계 버튼(오른쪽, 있을 때). 아래 줄 안쪽 `var(--space-sm) var(--space-md)`, 위 1px `rule` 선, 칸 사이 `var(--space-sm)`, 좁으면 버튼이 캡션 아래로 감긴다.
   - 무대: `paper` 바탕, 안쪽 `var(--space-lg) var(--space-md)`, 부품 사이 `var(--space-md)`. 그림(`figure-art`)은 폭 `min(100%, 30rem)`, 가운데. 높이는 그림이 정한다. 대체 설명은 그림의 `role="img"` `aria-label`이고, 그림을 붙이기 전·실패했을 때는 같은 글이 그림 자리에 Body(`ink-2`)로 보인다.
-  - 그림 안: 상자는 `card` 면에 1px `rule` 테두리(모서리 `var(--space-2xs)`), 글자는 `ink`(이름 800), 선·화살표는 `ink` 2px, 보조 글자는 `ink-2`. 강조(지금 단계, 고른 경로·값)는 `track` 바탕과 `ink` 800이다. 초록·분홍·금색은 쓰지 않는다. 그림 글자는 15px 이상으로 보이게 그린다(SVG `viewBox` 폭 320 기준 글자 15).
+  - 그림 안: 상자는 `card` 면에 1px `rule` 테두리(모서리 `var(--space-2xs)`), 글자는 `ink`(이름 800), 선·화살표는 `ink` 2px, 보조 글자는 `ink-2`. 강조(지금 단계, 고른 경로·값)는 `track` 바탕에 `ink` 2px 테두리, 글자 `ink` 800이다. 초록·분홍·금색은 쓰지 않는다. 그림 글자는 15px 이상으로 보이게 그린다(SVG `viewBox` 폭 320 기준 글자 15).
   - 캡션: Label "그림 n"(`ink-2`) + 캡션 15px `ink`. n은 그 페이지 안의 순서다.
   - 단계 그림: 무대 아래에 단계 줄(Label "단계 n/전체" + 그 단계 문장 15px `ink`, `aria-live="polite"`). 단계 버튼은 보조 버튼 "▶ 다음 단계", 마지막 단계에서 "↺ 처음부터". 처음은 1단계, 동작 줄이기면 마지막 단계에서 시작한다.
   - 값 고르기 그림: 무대 아래에 선택 묶음(`fieldset`, 테두리 없음, legend는 Label `ink-2`, 라디오는 Forms 라디오, 선택지는 줄바꿈되는 가로 줄, 사이 `var(--space-2xs) var(--space-md)`, 값 글자는 WZH Code `--text-code`)과 결과 줄(15px `ink`, 코드는 인라인 코드 규칙, `aria-live="polite"`). 값을 바꾸면 그림과 결과 줄이 바로 바뀐다.
