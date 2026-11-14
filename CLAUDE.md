@@ -109,7 +109,7 @@ node design-system/web-zero-to-hundred/prototype/build-home.mjs
 ## 코드 위치
 
 - 빌드: `textbook/build.mjs`, `textbook/lib/`(조립·검증·Markdown·용어, `site.mjs` 사이트맵·아이콘 채우기·파비콘, `styles.mjs` 스타일 순서·토큰 검사, `fonts.mjs` 글꼴 서브셋)
-- 앱: `textbook/src/app/`(`main.js`, `router.js`, `progress.js`, `storage.js`, `search.js`, 모션 도우미 `motion.js`, `views/`, 아이콘 `views/icons.js`, 토스트 `views/toast.js`)
+- 앱: `textbook/src/app/`(`main.js`, `router.js`, `progress.js`, `storage.js`, `search.js`, 모션 도우미 `motion.js`, `views/`, 아이콘 `views/icons.js`, 토스트 `views/toast.js`, 보상 사건 계산 `reward.js`, 보상 Modal `views/rewardmodal.js`, 용어 서랍 `views/termdrawer.js`)
 - 스타일·틀: `textbook/src/styles/`(`tokens.css` → `legacy` → `base` → `shell` → `components` → `home` → `day` → `pages` → `print` 순서로 합친다), `textbook/src/template.html`
 - 테스트: `tests/unit/`, `tests/build/`, `tests/e2e/`, `tests/visual/`, `tests/reference/`, 도우미 `tests/helpers/`(정적 서버, 브라우저, `site-check.mjs`), 픽스처 `tests/fixtures/`
 - 배포: `.github/workflows/deploy.yml`, 공개 범위 `textbook/content/published.json`
