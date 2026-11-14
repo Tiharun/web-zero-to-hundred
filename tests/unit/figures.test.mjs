@@ -46,3 +46,30 @@ test('mountFigures mounts known figures and keeps the fallback when one throws',
   dispose();
   assert.equal(disposed, 1);
 });
+
+// 경로 그림(src/figures/paths.js): Day 4·5 상대 경로 계산
+test('relativePath', async () => {
+  const { relativePath } = await import('../../textbook/src/figures/paths.js');
+  assert.equal(relativePath('my-creator-site/index.html', 'my-creator-site/about.html'), 'about.html');
+  assert.equal(relativePath('my-creator-site/index.html', 'my-creator-site/images/profile.svg'), 'images/profile.svg');
+  assert.equal(relativePath('hello/pages/back.html', 'my-creator-site/images/profile.svg'), '../../my-creator-site/images/profile.svg');
+  assert.equal(relativePath('hello/pages/back.html', 'hello/hello.html'), '../hello.html');
+  assert.equal(relativePath('hello/hello.html', 'hello/hello.html'), 'hello.html');
+});
+
+test('routeSteps follows the day 5 walk', async () => {
+  const { routeSteps } = await import('../../textbook/src/figures/paths.js');
+  assert.deepEqual(routeSteps('C:\\dev', 'hello/pages/back.html', 'my-creator-site/images/profile.svg'), [
+    '시작: C:\\dev\\hello\\pages', '../ → C:\\dev\\hello', '../../ → C:\\dev', '내려가기: my-creator-site/images/', 'profile.svg',
+  ]);
+  assert.deepEqual(routeSteps('C:\\dev\\my-creator-site', 'index.html', 'about.html'), ['시작: C:\\dev\\my-creator-site', 'about.html']);
+  assert.deepEqual(routeSteps('C:\\dev', 'my-creator-site/index.html', 'my-creator-site/images/profile.svg'), [
+    '시작: C:\\dev\\my-creator-site', '내려가기: images/', 'profile.svg',
+  ]);
+});
+
+test('winPath', async () => {
+  const { winPath } = await import('../../textbook/src/figures/paths.js');
+  assert.equal(winPath('C:\\dev\\my-creator-site', 'about.html'), 'C:\\dev\\my-creator-site\\about.html');
+  assert.equal(winPath('C:\\dev', 'my-creator-site/images/profile.svg'), 'C:\\dev\\my-creator-site\\images\\profile.svg');
+});

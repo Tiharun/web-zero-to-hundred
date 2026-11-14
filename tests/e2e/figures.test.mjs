@@ -46,7 +46,7 @@ after(async () => {
 });
 
 /** Day(또는 부록)를 열고 그림 틀이 붙기를 기다린다 */
-async function openFigure(hash, id, { reduce = false, width = 1280 } = {}) {
+async function openFigure(hash, id, { reduce = false, width = 1280, ready = '.figure-art svg' } = {}) {
   const context = await browser.newContext({
     viewport: { width, height: 900 },
     reducedMotion: reduce ? 'reduce' : 'no-preference',
@@ -57,7 +57,7 @@ async function openFigure(hash, id, { reduce = false, width = 1280 } = {}) {
   const errors = collectConsoleErrors(page);
   await page.goto(`${server.url}index.html${hash}`);
   const fig = page.locator(`figure[data-figure="${id}"]`);
-  await fig.locator('.figure-art svg').waitFor();
+  await fig.locator(ready).waitFor();
   return { context, page, fig, errors };
 }
 
@@ -176,5 +176,64 @@ test('figure state resets after leaving the day', TIMEOUT, async () => {
     assert.deepEqual(errors, []);
   } finally {
     await context.close();
+  }
+});
+
+/** 값 고르기 그림에서 묶음(legend) 안의 선택지를 고른다 */
+const pick = (fig, legend, label) => fig.getByRole('group', { name: legend }).getByLabel(label, { exact: true }).check();
+const outText = (fig) => fig.locator('.figure-out').textContent();
+
+test('day 5 path figure computes the walk and updates on choice', TIMEOUT, async () => {
+  const { context, fig, errors } = await openFigure('#/day/p1-d05', 'paths-dev', { ready: '.figure-out' });
+  try {
+    assert.match(await outText(fig), /src="\.\.\/\.\.\/my-creator-site\/images\/profile\.svg"/);
+    assert.equal(await fig.locator('.fig-tree li.is-hot').count(), 2);
+    await pick(fig, '갈 파일', 'hello.html');
+    assert.match(await outText(fig), /src="\.\.\/hello\.html"/);
+    await pick(fig, '지금 파일', 'index.html');
+    assert.match(await outText(fig), /src="\.\.\/hello\/hello\.html"/);
+    assert.deepEqual(errors, []);
+  } finally {
+    await context.close();
+  }
+});
+
+test('day 4 path figure shows the file name and the local path not to use', TIMEOUT, async () => {
+  const { context, fig, errors } = await openFigure('#/day/p1-d04', 'paths-site', { ready: '.figure-out' });
+  try {
+    const text = await outText(fig);
+    assert.ok(text.includes('href="about.html"'), text);
+    assert.ok(text.includes('C:\\dev\\my-creator-site\\about.html'), text);
+    await pick(fig, '갈 파일', 'contact.html');
+    assert.ok((await outText(fig)).includes('href="contact.html"'));
+    assert.deepEqual(errors, []);
+  } finally {
+    await context.close();
+  }
+});
+
+test('figures fit 320px', TIMEOUT, async () => {
+  const cases = [
+    ['#/day/p1-d04', 'paths-site', '.figure-out'],
+    ['#/day/p1-d05', 'paths-dev', '.figure-out'],
+    ['#/day/p1-d01', 'request-response', '.figure-art svg'],
+    ['#/day/p1-d07', 'git-flow', '.figure-art svg'],
+  ];
+  for (const [hash, id, ready] of cases) {
+    const { context, page, fig, errors } = await openFigure(hash, id, { width: 320, ready });
+    try {
+      await fig.scrollIntoViewIfNeeded();
+      const m = await page.evaluate((sel) => {
+        const f = document.querySelector(sel).getBoundingClientRect();
+        const body = document.querySelector('.lesson-body').getBoundingClientRect();
+        const el = document.scrollingElement;
+        return { overflow: el.scrollWidth - el.clientWidth, right: f.right, bodyRight: body.right };
+      }, `figure[data-figure="${id}"]`);
+      assert.equal(m.overflow, 0, `${id} 가로 스크롤`);
+      assert.ok(m.right <= m.bodyRight + 0.5, `${id} 오른쪽 ${m.right} > ${m.bodyRight}`);
+      assert.deepEqual(errors, []);
+    } finally {
+      await context.close();
+    }
   }
 });

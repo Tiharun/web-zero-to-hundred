@@ -65,14 +65,12 @@ C:\dev\
       └─ profile.svg ← 도착
 ```
 
-```text
-시작: C:\dev\hello\pages
-../    → C:\dev\hello
-../../ → C:\dev
-내려가기:
-my-creator-site/images/
-profile.svg
-```
+시작 파일과 도착 파일을 바꿔 고르면 길이 다시 계산돼요.
+
+:::figure paths-dev
+캡션: back.html에서 profile.svg까지 가는 길
+대체 설명: 시작은 C:\dev\hello\pages 폴더의 back.html이에요. ../ 한 번이면 C:\dev\hello, ../../ 두 번이면 C:\dev에 도착해요. 거기서 my-creator-site/images/로 내려가 profile.svg를 찾아요. 그래서 경로는 ../../my-creator-site/images/profile.svg예요. 시작 파일과 도착 파일을 바꿔 고르면 다른 경로도 계산해 볼 수 있어요.
+:::
 
 그래서 `back.html`에서 곰 그림의 경로는 `../../my-creator-site/images/profile.svg`예요. 두 칸 올라가서(`../../`) `C:\dev`에 도착한 뒤, 아래로 내려가요.
 

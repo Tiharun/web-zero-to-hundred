@@ -48,14 +48,12 @@
 - **[[절대 경로]]**(absolute path)는 시작점부터 끝까지 전부 적어서, 어느 페이지에서 쓰든 같은 곳을 가리키는 주소예요. 웹에서는 `https://`부터 쓴 주소(예: `https://developer.mozilla.org/ko/`)가 절대 경로예요. 다른 사이트로 가는 링크에 써요.
 - **[[상대 경로]]**(relative path)는 지금 이 파일이 있는 폴더를 기준으로 갈 곳을 적는 주소예요. 같은 폴더의 파일이면 `about.html`이라고만 써요. 내 사이트 안의 파일끼리 이을 때 써요.
 
-```text
-my-creator-site\
-├─ index.html
-└─ about.html
+아래 그림에서 지금 파일과 갈 파일을 바꿔 골라 봐요.
 
-index.html에서 about.html로:
-href="about.html"
-```
+:::figure paths-site
+캡션: 같은 폴더의 파일은 파일 이름만 써요
+대체 설명: my-creator-site 폴더 안에 index.html, about.html, contents.html, schedule.html, contact.html이 나란히 있어요. 지금 파일과 갈 파일을 고르면 링크에 쓸 상대 경로가 나와요. 예를 들어 index.html에서 about.html로 가는 링크는 href="about.html"이에요. 내 컴퓨터의 전체 경로 C:\dev\my-creator-site\about.html은 링크에 쓰지 않아요.
+:::
 
 내 사이트 안의 링크를 `C:\dev\my-creator-site\about.html`처럼 쓰면 안 돼요. 이 주소는 내 컴퓨터에만 있는 경로라서, Day 14에 인터넷에 올리면 다른 사람에게는 열리지 않아요. 또 인터넷 주소에서는 폴더를 가르는 기호가 `\`가 아니라 `/`(슬래시)예요. 링크 안에 `\`를 쓰지 않아요.
 
