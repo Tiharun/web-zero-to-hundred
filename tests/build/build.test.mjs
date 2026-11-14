@@ -372,13 +372,13 @@ test('tokens without the favicon colours stop the build with E_CSS_TOKEN', async
   assert.match(r.errors[0].file, /tokens\.css$/);
 });
 
-/** src 폴더 복사본(template.html 은 실제 파일, 나머지는 테스트용)으로 in-process 빌드한다 */
+/** src 폴더 복사본(template.html 은 실제 파일, 그림 등록표는 빈 것, 나머지는 테스트용)으로 in-process 빌드한다 */
 async function buildWithSrc(files) {
   return withTmp(async (tmp) => {
     const srcDir = path.join(tmp, 'src');
     await mkdir(path.join(srcDir, 'app'), { recursive: true });
     await cp(path.join(ROOT, 'textbook', 'src', 'template.html'), path.join(srcDir, 'template.html'));
-    for (const [name, text] of Object.entries(files)) {
+    for (const [name, text] of Object.entries({ 'figures/index.js': 'export const FIGURES = {};', ...files })) {
       await mkdir(path.dirname(path.join(srcDir, name)), { recursive: true });
       await writeFile(path.join(srcDir, name), text);
     }
@@ -595,5 +595,33 @@ test('CLI --published builds only the reviewed days', async () => {
     const r = runBuild(['--content', content, '--out', out, '--published']);
     assert.equal(r.status, 0, r.output);
     assert.match(template(await readFile(out, 'utf8'), 't-day-fa-d02'), /coming-soon/);
+  });
+});
+
+// M12 그림 블록: 등록표(src/figures/index.js)에 없는 id 는 빌드를 멈춘다
+test('build stops on an unknown figure id', async () => {
+  await withContentCopy(async ({ content }) => {
+    const file = path.join(content, 'fa', 'day-01.md');
+    const src = await readFile(file, 'utf8');
+    await writeFile(file, src.replace('## 📖 개념 이해\n', '## 📖 개념 이해\n\n:::figure nope\n캡션: a\n대체 설명: b\n:::\n'));
+    const r = await build({ contentDir: content, allowMissing: true });
+    assert.equal(r.ok, false);
+    assert.ok(r.errors.some((e) => e.code === 'E_FIGURE_UNKNOWN' && e.file.endsWith('day-01.md')), JSON.stringify(r.errors));
+  });
+});
+
+test('figure registry ids are kebab-case functions', async () => {
+  const { FIGURES } = await import('../../textbook/src/figures/index.js');
+  for (const [id, mount] of Object.entries(FIGURES)) {
+    assert.match(id, /^[a-z0-9-]+$/);
+    assert.equal(typeof mount, 'function');
+  }
+});
+
+test('build stops when the figure registry cannot be read', async () => {
+  await withTmp(async (tmp) => {
+    const r = await build({ contentDir: FIXTURE, srcDir: tmp });
+    assert.equal(r.ok, false);
+    assert.deepEqual(r.errors.map((e) => e.code), ['E_FIGURE_REGISTRY']);
   });
 });

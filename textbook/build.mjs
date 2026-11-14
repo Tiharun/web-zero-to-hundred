@@ -12,6 +12,7 @@ import { faviconDataUri, fillIcons, headTags, listRoutes } from './lib/site.mjs'
 import { readStyles, lintStyles } from './lib/styles.mjs';
 import { collectGlyphs, embedFonts } from './lib/fonts.mjs';
 import { renderMarkdown } from './lib/markdown.mjs';
+import { loadFigureIds } from './lib/figures.mjs';
 import { validateDaySource } from './lib/validate.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -149,6 +150,15 @@ export async function build({
     published = r.ids;
   }
 
+  // 1-2. 그림 등록표: :::figure <id> 가 여기 있는 id 인지 본다
+  let figures;
+  try {
+    figures = await loadFigureIds(srcDir);
+  } catch (e) {
+    errors.push(issue('E_FIGURE_REGISTRY', `그림 등록표를 읽지 못했어요: ${e.message}`, { file: path.join(srcDir, 'figures', 'index.js') }));
+    return { ok: false, errors, warnings };
+  }
+
   // 2. 용어 사전·문제 해결 조각
   const glossary = parseGlossary(await readMarkdownDir(path.join(contentDir, 'glossary')));
   const trouble = parseTroubleshooting(await readMarkdownDir(path.join(contentDir, 'troubleshooting')));
@@ -171,7 +181,7 @@ export async function build({
       continue;
     }
     const src = await readFile(day.file, 'utf8');
-    const r = renderMarkdown(src, { idPrefix: day.id, terms, routes, symptoms: true });
+    const r = renderMarkdown(src, { idPrefix: day.id, terms, routes, figures, symptoms: true });
     const found = [...validateDaySource(src, { minChars }), ...r.errors].sort(byLine);
     errors.push(...found.map((e) => ({ ...e, file: day.file })));
     rendered.set(day.id, { html: r.html, text: r.text, checkCount: r.checkCount, ready: true });
@@ -188,7 +198,7 @@ export async function build({
       r = renderTroubleshootingPage(troubleGroups, curriculum.projects, { terms, routes, pageId: page.id });
     } else {
       if (page.missing) continue; // 파일이 없다는 오류는 이미 담겨 있다
-      r = renderMarkdown(await readFile(page.file, 'utf8'), { idPrefix: page.id, terms, routes });
+      r = renderMarkdown(await readFile(page.file, 'utf8'), { idPrefix: page.id, terms, routes, figures });
       r = { ...r, errors: r.errors.map((e) => ({ ...e, file: page.file })) };
     }
     errors.push(...r.errors);

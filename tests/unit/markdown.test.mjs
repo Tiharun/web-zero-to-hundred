@@ -439,10 +439,11 @@ test('stray ** gets a code-wrapping hint, broken pair gets the particle hint', (
 test('result has the documented shape', () => {
   const r = render('안녕');
   assert.deepEqual(Object.keys(r).sort(), [
-    'answerCount', 'checkCount', 'errors', 'headings', 'html', 'text',
+    'answerCount', 'checkCount', 'errors', 'figureCount', 'headings', 'html', 'text',
   ]);
   assert.equal(r.checkCount, 0);
   assert.equal(r.answerCount, 0);
+  assert.equal(r.figureCount, 0);
   assert.deepEqual(r.headings, []);
   assert.deepEqual(r.errors, []);
 });
@@ -512,4 +513,34 @@ test('a symptom section that ends the document closes its details', () => {
 test('answer summary carries a chevron icon', () => {
   const { html } = render(':::answer 과제 1 정답\n답이에요.\n:::');
   assert.match(html, /<summary><svg class="icon answer-chev"[^]*<\/svg><span>과제 1 정답<\/span><\/summary>/);
+});
+
+// M12 그림 블록(:::figure)
+const FIG = new Set(['demo']);
+const figSrc = (body) => `:::figure demo\n${body}\n:::\n`;
+
+test('figure block renders the frame with number, caption and alt', () => {
+  const r = renderMarkdown(figSrc('캡션: 요청과 응답\n대체 설명: 나 → 서버 "주세요"'), { idPrefix: 'p1-d01', figures: FIG });
+  assert.deepEqual(r.errors, []);
+  assert.equal(r.figureCount, 1);
+  assert.match(r.html, /<figure class="figure" id="p1-d01-fig1" data-figure="demo">/);
+  assert.match(r.html, /role="img" aria-label="나 → 서버 &quot;주세요&quot;"/);
+  assert.match(r.html, /<p class="figure-fallback">나 → 서버 &quot;주세요&quot;<\/p>/);
+  assert.match(r.html, /<figcaption class="figure-cap"><span class="label">그림 1<\/span> 요청과 응답<\/figcaption>/);
+  assert.match(r.text, /요청과 응답/); // 검색 색인
+});
+
+test('figures are numbered in document order', () => {
+  const r = renderMarkdown(figSrc('캡션: 가\n대체 설명: 나') + '\n' + figSrc('캡션: 다\n대체 설명: 라'), { idPrefix: 'x', figures: FIG });
+  assert.match(r.html, /id="x-fig2"[\s\S]*그림 2<\/span> 다/);
+});
+
+test('figure errors: unknown id, missing id, caption, alt, stray line', () => {
+  const figCodes = (s, figures = FIG) => renderMarkdown(s, { figures }).errors.map((e) => e.code);
+  assert.deepEqual(figCodes(':::figure nope\n캡션: a\n대체 설명: b\n:::\n'), ['E_FIGURE_UNKNOWN']);
+  assert.deepEqual(figCodes(':::figure\n캡션: a\n대체 설명: b\n:::\n'), ['E_FIGURE_ID']);
+  assert.deepEqual(figCodes(figSrc('대체 설명: b')), ['E_FIGURE_CAPTION']);
+  assert.deepEqual(figCodes(figSrc('캡션: a')), ['E_FIGURE_ALT']);
+  assert.deepEqual(figCodes(figSrc('캡션: a\n대체 설명: b\n그냥 글')), ['E_FIGURE_LINE']);
+  assert.deepEqual(figCodes(figSrc('캡션: a\n대체 설명: b'), new Set()), ['E_FIGURE_UNKNOWN']); // figures 를 안 주면 아무 id 도 없다
 });

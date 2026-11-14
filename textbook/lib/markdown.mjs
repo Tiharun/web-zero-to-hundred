@@ -35,7 +35,7 @@ export const LANG_MAP = Object.freeze({
   bash: 'bash',
 });
 
-const CONTAINER_KINDS = ['tip', 'warn', 'info', 'path', 'success', 'answer'];
+const CONTAINER_KINDS = ['tip', 'warn', 'info', 'path', 'success', 'answer', 'figure'];
 
 /** 제목 id용 문자열. 소문자, 공백→'-', [a-z0-9가-힣-] 밖의 글자 제거, '-' 정리 */
 export function slugify(s) {
@@ -466,13 +466,14 @@ function createMarked(state, { terms, routes, prefixed }) {
  * `text`는 검색용이며 `:::answer` 블록 안의 글자도 포함한다(코드 내용 포함, 복사 버튼 글자 제외).
  *
  * @param {string} src Markdown 원문
- * @param {{ idPrefix: string, terms: Map<string,string>, routes: Set<string> }} ctx
- * @returns {{ html: string, text: string, checkCount: number, answerCount: number,
+ * @param {{ idPrefix: string, terms: Map<string,string>, routes: Set<string>, figures?: Set<string> }} ctx
+ *   figures: 등록된 그림 id(src/figures/index.js). 없으면 어떤 :::figure 도 E_FIGURE_UNKNOWN 이다
+ * @returns {{ html: string, text: string, checkCount: number, answerCount: number, figureCount: number,
  *   headings: {level:number,text:string,id:string}[],
  *   errors: {code:string,line:number|null,message:string}[] }}
  */
 export function renderMarkdown(src, ctx = {}) {
-  const { idPrefix = '', terms = new Map(), routes = new Set() } = ctx;
+  const { idPrefix = '', terms = new Map(), routes = new Set(), figures = new Set() } = ctx;
   const prefixed = (name) => (idPrefix ? `${idPrefix}-${name}` : name);
 
   const errors = [];
@@ -483,6 +484,7 @@ export function renderMarkdown(src, ctx = {}) {
     captions: [],
     checkCount: 0,
     answerCount: 0,
+    figureCount: 0,
     taskLabel: '',
     symptoms: Boolean(ctx.symptoms),
     inTrouble: false,
@@ -502,7 +504,42 @@ export function renderMarkdown(src, ctx = {}) {
     return marked.parser(tokens);
   };
 
+  /** :::figure id — 몸통은 Markdown 이 아니라 "캡션:"·"대체 설명:" 두 줄이다. 그림은 앱이 data-figure 로 붙인다 */
+  const renderFigure = (box) => {
+    const id = box.title;
+    let caption = '';
+    let alt = '';
+    box.lines.forEach((line, i) => {
+      const t = line.trim();
+      if (!t) return;
+      const c = t.match(/^캡션:\s*(.+)$/);
+      const a = t.match(/^대체 설명:\s*(.+)$/);
+      if (c) caption = c[1].trim();
+      else if (a) alt = a[1].trim();
+      else state.error('E_FIGURE_LINE', box.bodyLine + i, '그림 블록 안에는 "캡션:"과 "대체 설명:" 줄만 쓸 수 있어요.');
+    });
+    if (!/^[a-z0-9-]+$/.test(id)) {
+      state.error('E_FIGURE_ID', box.line, ':::figure 뒤에 그림 id 를 써 주세요(영문 소문자·숫자·-). 예: :::figure request-response');
+    } else if (!figures.has(id)) {
+      state.error('E_FIGURE_UNKNOWN', box.line, `없는 그림 id 예요: "${id}" (src/figures/index.js 에 있는 id: ${[...figures].join(', ') || '없음'})`);
+    }
+    if (!caption) state.error('E_FIGURE_CAPTION', box.line, '그림에 "캡션: …" 줄이 없어요.');
+    if (!alt) state.error('E_FIGURE_ALT', box.line, '그림에 "대체 설명: …" 줄이 없어요. 그림을 못 보는 사람도 같은 내용을 알 수 있게 써 주세요.');
+    const n = ++state.figureCount;
+    return (
+      `<figure class="figure" id="${esc(prefixed(`fig${n}`))}" data-figure="${esc(id)}">
+` +
+      `<div class="figure-stage"><div class="figure-art" role="img" aria-label="${esc(alt)}"><p class="figure-fallback">${esc(alt)}</p></div></div>
+` +
+      `<figcaption class="figure-cap"><span class="label">그림 ${n}</span> ${esc(caption)}</figcaption>
+` +
+      `</figure>
+`
+    );
+  };
+
   const renderBox = (box) => {
+    if (box.kind === 'figure') return renderFigure(box);
     // 제목은 Markdown으로 처리하지 않고 글자 그대로 내므로 ** 가 보이게 된다
     if (CONTAINER_KINDS.includes(box.kind) && box.title.includes('**')) {
       state.error('E_BOLD_UNRENDERED', box.line, BOLD_TITLE_MESSAGE);
@@ -537,6 +574,7 @@ export function renderMarkdown(src, ctx = {}) {
     text: htmlToText(html),
     checkCount: state.checkCount,
     answerCount: state.answerCount,
+    figureCount: state.figureCount,
     headings: state.headings,
     errors,
   };
