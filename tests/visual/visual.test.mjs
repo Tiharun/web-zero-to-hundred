@@ -25,6 +25,8 @@ const TIMEOUT = { timeout: 60_000 };
 const P1_FIRST_THREE = { completed: ['p1-d01', 'p1-d02', 'p1-d03'], lastDay: 'p1-d03' };
 /** P1 Day 1~10 을 마친 상태: 그림이 있는 Day 11 까지 열린다 */
 const P1_FIRST_TEN = { completed: Array.from({ length: 10 }, (_, i) => `p1-d${String(i + 1).padStart(2, '0')}`), lastDay: 'p1-d10' };
+/** P1 Day 1~19 를 마친 상태: 3D DOM 트리 그림이 있는 Day 20 까지 열린다 */
+const P1_FIRST_NINETEEN = { completed: Array.from({ length: 19 }, (_, i) => `p1-d${String(i + 1).padStart(2, '0')}`), lastDay: 'p1-d19' };
 /** P1 30 Day 를 모두 마친 직후: 홈 퀘스트 카드가 "월드 클리어" 상태다 */
 const P1_CLEAR = { completed: Array.from({ length: 30 }, (_, i) => `p1-d${String(i + 1).padStart(2, '0')}`), lastDay: 'p1-d30' };
 /** P1 마지막 Day 만 남은 상태: p1-d30 을 마치면 월드 클리어(와 레벨업) */
@@ -46,7 +48,8 @@ const ALL_DONE = (() => {
 /**
  * 찍을 장면. 장면을 늘릴 때는 여기에 한 줄을 더한다.
  * widths: 이 폭에서만 찍는다(없으면 WIDTHS), open: 찍기 전에 누를 선택자(첫 번째 일치만), waitFor: 누른 뒤 나타나기를 기다릴 선택자,
- * fullPage: 화면 아래까지 전체를 찍는다(없으면 첫 화면만)
+ * fullPage: 화면 아래까지 전체를 찍는다(없으면 첫 화면만),
+ * ready: 스크롤한 뒤 찍기 전에 나타나기를 기다릴 선택자(3D 그림의 상태), webgl: false 면 WebGL 을 못 쓰는 브라우저처럼 만든다
  */
 export const SCENES = [
   { id: 'home', hash: '#/', progress: P1_FIRST_THREE, fullPage: true },
@@ -92,6 +95,11 @@ export const SCENES = [
   { id: 'fig-paths-dev', hash: '#/day/p1-d05', progress: P1_FIRST_TEN, scrollTo: 'figure.figure' },
   { id: 'fig-git', hash: '#/day/p1-d07', progress: P1_FIRST_TEN, scrollTo: 'figure.figure' },
   { id: 'fig-flex', hash: '#/day/p1-d11', progress: P1_FIRST_TEN, scrollTo: 'figure.figure' },
+  // M13: 3D 그림(처음 시점)과 WebGL 이 없을 때의 정적 그림
+  { id: 'fig-box-3d', hash: '#/day/p1-d10', progress: P1_FIRST_TEN, scrollTo: 'figure.figure', ready: '.fig3d[data-state="ready"]' },
+  { id: 'fig-box-static', hash: '#/day/p1-d10', progress: P1_FIRST_TEN, widths: [375, 1280], webgl: false, scrollTo: 'figure.figure', ready: '.fig3d[data-state="static"]' },
+  { id: 'fig-dom-site', hash: '#/day/p1-d06', progress: P1_FIRST_TEN, widths: [375, 1280], scrollTo: 'figure.figure', ready: '.fig3d[data-state="ready"]' },
+  { id: 'fig-dom-cards', hash: '#/day/p1-d20', progress: P1_FIRST_NINETEEN, widths: [1280], scrollTo: 'figure.figure', ready: '.fig3d[data-state="ready"]' },
 ];
 const WIDTHS = [375, 768, 1280];
 const THEMES = ['light', 'dark'];
@@ -136,6 +144,14 @@ async function shoot(scene, width, theme) {
       ({ key, value }) => localStorage.setItem(key, value),
       { key: STORAGE_KEY, value: JSON.stringify(storedProgress(scene.progress, theme)) },
     );
+    if (scene.webgl === false) {
+      await context.addInitScript(() => {
+        const original = HTMLCanvasElement.prototype.getContext;
+        HTMLCanvasElement.prototype.getContext = function (type, ...rest) {
+          return type === 'webgl2' || type === 'webgl' ? null : original.call(this, type, ...rest);
+        };
+      });
+    }
     const page = await context.newPage();
     await page.clock.setFixedTime(new Date(FIXED_TIME));
     await page.goto(`${server.url}index.html${scene.hash}`);
@@ -154,6 +170,10 @@ async function shoot(scene, width, theme) {
         window.dispatchEvent(new Event('scroll'));
         await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       });
+    }
+    if (scene.ready) {
+      await page.locator(scene.ready).first().waitFor({ timeout: 30_000 });
+      await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
     }
     // 설정 화면의 빌드 날짜는 빌드할 때마다 바뀌므로 가린다
     const mask = [page.locator('main p', { hasText: /빌드 \d{4}/ })];

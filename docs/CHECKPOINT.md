@@ -1,14 +1,14 @@
 # 체크포인트 — 로컬 세션에서 여기서부터 이어서 하세요
 
-- 작성일: 2026-11-14 (M12 완료 시점)
-- 상태: **M12 완료, 다음은 M13**. 마일스톤 목록과 순서는 `docs/superpowers/specs/2026-11-12-unified-roadmap-design.md` 11장입니다.
+- 작성일: 2026-11-14 (M13 완료 시점)
+- 상태: **M13 완료, 다음은 M14**. 마일스톤 목록과 순서는 `docs/superpowers/specs/2026-11-12-unified-roadmap-design.md` 11장입니다.
 - 공개 주소: https://tiharun.github.io/web-zero-to-hundred/ (push하면 GitHub Actions가 테스트 → 빌드 → Pages 배포. 공개 범위는 `textbook/content/published.json`)
 - 저장소: `tiharun/web-zero-to-hundred` / 브랜치 **`claude/gifted-goldberg-u1f9c6`**. 이 브랜치에서만 작업하고 push합니다. PR은 아직 만들지 않았고, 사용자가 요청할 때만 만듭니다.
-- 기준선(M12 완료 시점에 직접 실행한 결과, `textbook/`에서)
-  - `npm test`: 332/332 통과
+- 기준선(M13 완료 시점에 직접 실행한 결과, `textbook/`에서)
+  - `npm test`: 345/345 통과
   - `npm run check -- --allow-missing`: "검사 통과: Day 155개, 페이지 4개"
-  - `npm run test:e2e`: 252/252 통과(M12에서 `tests/e2e/wide.test.mjs` 넓은 화면 정렬, `tests/e2e/figures.test.mjs` 그림 11개 추가)(이 PC 약 2분. 보상·용어 서랍·화면 전환은 `tests/e2e/reward.test.mjs`가 픽스처 복사본 두 벌(분을 바꿔 레벨업·월드 클리어가 나게)로 본다. 느린 첫 검색 Skeleton은 `String.prototype.normalize`를 느리게 바꿔 결정적으로 잰다. 테스트 정적 서버는 브라우저가 막는 포트(Fetch bad port, 예: 4045)를 건너뛴다)
-  - `npm run test:visual`: 206/206 통과(기준 이미지 204장: M12에서 넓은 화면 5장면 × 1440·1920 × 2테마 20장, 그림 5장면 28장(경로 Day 4는 375·1280) 추가, 가운데 정렬과 Day 1·4 그림 삽입으로 바뀐 72장 갱신(모두 사용자 승인). M11까지 156장: M11에서 레벨업 Modal·용어 서랍 × 3폭 × 2테마, 월드 클리어 Modal·업적 토스트 375·1280 × 2테마 20장 추가(사용자 승인). M10에서 정답·증상·완료 카드·퀘스트 로그(375·768)·체크리스트·완료 조건 장면 추가와 퀘스트 로그 열·게임 틀에 따른 갱신(사용자 승인). 스크롤한 장면은 scroll 이벤트를 직접 한 번 보내 퀘스트 로그를 다시 재고 찍는다. M9에서 Day 머리·본문·코드 블록·표 장면 추가와 인라인 코드 공통 규칙에 따른 갱신(사용자 승인). M8에서 토스트 375·1280 × 2테마 4장 추가. M7에서 월드·시작하기·용어 사전·문제 해결(증상 하나 연 상태) × 3폭 × 2테마 24장 추가. 4장면 × 3폭 × 2테마 + 확인 Modal × 3폭 × 2테마 + 잠금 화면 375·1280 × 2테마 + 서랍 375·768 × 2테마 + 홈 처음·월드 클리어·모두 완료 375·1280 × 2테마 + 검색 Modal·검색 페이지 × 3폭 × 2테마, 비교 함수 2개. 홈 장면은 전체 페이지로 찍는다)
+  - `npm run test:e2e`: 267/267 통과(M13에서 `tests/e2e/figures3d.test.mjs` 3D 그림 15개 추가. 3D는 헤드리스 Chromium의 `--enable-unsafe-swiftshader`로 그린다. M12에서 `tests/e2e/wide.test.mjs` 넓은 화면 정렬, `tests/e2e/figures.test.mjs` 그림 11개 추가)(이 PC 약 2분. 보상·용어 서랍·화면 전환은 `tests/e2e/reward.test.mjs`가 픽스처 복사본 두 벌(분을 바꿔 레벨업·월드 클리어가 나게)로 본다. 느린 첫 검색 Skeleton은 `String.prototype.normalize`를 느리게 바꿔 결정적으로 잰다. 테스트 정적 서버는 브라우저가 막는 포트(Fetch bad port, 예: 4045)를 건너뛴다)
+  - `npm run test:visual`: 222/222 통과(기준 이미지 220장: M13에서 3D 그림 4장면 16장 추가(사용자 승인, 장면 옵션 `ready`·`webgl: false`). M12에서 넓은 화면 5장면 × 1440·1920 × 2테마 20장, 그림 5장면 28장(경로 Day 4는 375·1280) 추가, 가운데 정렬과 Day 1·4 그림 삽입으로 바뀐 72장 갱신(모두 사용자 승인). M11까지 156장: M11에서 레벨업 Modal·용어 서랍 × 3폭 × 2테마, 월드 클리어 Modal·업적 토스트 375·1280 × 2테마 20장 추가(사용자 승인). M10에서 정답·증상·완료 카드·퀘스트 로그(375·768)·체크리스트·완료 조건 장면 추가와 퀘스트 로그 열·게임 틀에 따른 갱신(사용자 승인). 스크롤한 장면은 scroll 이벤트를 직접 한 번 보내 퀘스트 로그를 다시 재고 찍는다. M9에서 Day 머리·본문·코드 블록·표 장면 추가와 인라인 코드 공통 규칙에 따른 갱신(사용자 승인). M8에서 토스트 375·1280 × 2테마 4장 추가. M7에서 월드·시작하기·용어 사전·문제 해결(증상 하나 연 상태) × 3폭 × 2테마 24장 추가. 4장면 × 3폭 × 2테마 + 확인 Modal × 3폭 × 2테마 + 잠금 화면 375·1280 × 2테마 + 서랍 375·768 × 2테마 + 홈 처음·월드 클리어·모두 완료 375·1280 × 2테마 + 검색 Modal·검색 페이지 × 3폭 × 2테마, 비교 함수 2개. 홈 장면은 전체 페이지로 찍는다)
   - `npm run check:site -- <주소>`: 320·375·768·1280·1920px 각각 "방문 168개, 문제 0개"(M12에서 1920 추가. M5~M12는 `npm run build:site`로 만든 `_site`를 로컬 정적 서버로 띄워 확인, 이 PC 약 20초. 서버를 같은 Node 프로세스에서 띄울 때 `spawnSync`로 점검을 부르면 서버가 멈춰 끝나지 않으므로 비동기로 부른다)
 - 이 문서는 새 세션이 **다른 파일보다 먼저** 읽는 문서입니다. 이전 판은 `docs/checkpoint/CHECKPOINT-2026-11-06.md`(Subagent 방식 시절 재개 절차 포함)와 `CHECKPOINT-2026-11-05.md`에 보관했습니다. 내용이 다르면 이 문서가 우선합니다.
 
@@ -40,9 +40,10 @@
    - **M9 Day 읽기 화면**: Day 머리(`day.js dayHead`: Display Day 번호·제목·칩(예상 시간·작업 폴더·월드 이름·상태)), 글 열 `--lesson-max`(720px)와 본문 리듬(`.lesson-body`, 표·인라인 코드), 밤 코드 블록 머리·복사 버튼(DESIGN.md 토큰, "복사됨"), `views/readbar.js` 읽기 위치 바(스크롤 타임라인 `scroll(root block)`, 미지원이면 rAF + ResizeObserver로 `--read`, 동작 줄이기에서도 따라감, 인쇄에서 숨김, Firefox용 1ms 자리값), `skeletonGate.poll()`(느린 검색이 쉬는 틈에 Skeleton을 보임). 시각 장면 `day-code`·`day-table`. 테스트 정리: 자석 테스트는 프레임(rAF 두 번)을 기다린 뒤 읽고, 정적 서버·`freePort`는 Fetch bad port를 건너뛴다
    - **M6 설정·상태 화면**: `views/confirm.js`(확인 Modal: `role="alertdialog"`, 처음 포커스 취소, ESC·바깥 클릭·뒤로 가기는 취소, `ctx.confirm(opts, opener)`), 설정 카드 4개, 진도 불러오기 확인 Modal과 실패 Shake + 이유 문장, `backupFilename`, 백업 왕복 e2e(새 브라우저 컨텍스트), 오류 화면(`errorScreen`: 홈 버튼 + 설정 링크, 셸 유지), 잠금 화면 도트 자물쇠, 준비 중 Day 칸(복습 링크). 새 e2e 파일 `tests/e2e/settings.test.mjs`
    - **M10 Day 조작 부품**: `views/questlog.js` 퀘스트 로그(80rem 이상 오른쪽 sticky 열, 좁으면 본문 위 접힘 카드, 지금 단계 `aria-current="step"`, 맨 아래면 마지막 단계, 누르면 그 제목으로 이동·포커스), 🧯 섹션 증상 Accordion(`lib/markdown.mjs` `symptoms`, `views/accordion.js` 모두 펼치기를 문제 해결 부록과 같이 씀), "Day 완료"는 `aria-disabled`(포커스 받음, 누르면 Shake + 이유 문장 강조 + 알림), 부록 목차 카드 80rem 오른쪽 열. 사용자 요청으로 **The Game Frame Rule**(DESIGN.md·로드맵 결정 10)을 정하고 Day 틀에 적용: 보상 칩, 퀘스트 로그 번호 칸·커서, 도트 체크 칸, 체크 칸 막대, "퀘스트 클리어!"·보상 줄, 정답 선물 도트, 이전·다음 턱. 옛 `.day-outline` 삭제
+   - **M13 3D 그림**: three 0.187.0을 따로 묶어 `<script type="text/plain" id="three-src">`로 넣고(MIT LICENSE 전문은 블록 앞 주석), 그림이 화면 근처에 오면 실행한다(`src/app/three.js`). 층 그림 틀 `views/figure3d.js`(끌기·시점 버튼·Skeleton·WebGL 2 없거나 컨텍스트를 잃으면 정적 SVG와 대체 설명, 인쇄도 정적), 순수 계산 `view3d.js`. 그림: Day 10 `box-model-3d`, Day 6 `dom-tree-site`, Day 20 `dom-tree-cards`. 한 문서에 3D 그림은 하나(빌드 테스트). `index.html` 증가 578,419B(한도 700,000B). 인쇄에서 셸을 한 칸으로 바꿔 넓은 종이에서 본문이 사이드바 칸에 갇히던 문제도 고쳤다.
    - **M12 그림 틀과 넓은 화면**: 넓은 화면 가운데 정렬(`.main > *`에 `max-width: var(--content-max)`·`margin-inline: auto`, 두 열 묶음 상한, 푸터 안쪽 맞춤, DESIGN.md Layout "화면 묶음"), `:::figure <id>` 문법(`캡션:`·`대체 설명:` 두 줄, 빌드가 `src/figures/index.js` 등록표로 id 검사, `lib/figures.mjs`), `views/figure.js`(`mountFigures` 실패 시 대체 설명, 단계 그림 `stepFigure`, 값 고르기 `choiceGroup`, 화살표 `arrow`), `styles/figures.css`, 모션 `rise`·`strokeIn`, P1 그림 5개: Day 1 요청·응답(4단계), Day 4·5 상대 경로(폴더 트리·경로 계산), Day 7 Git 흐름(4단계), Day 11 Flexbox(실제 flex 부모, 값 3묶음). 동작 줄이기면 단계 그림은 마지막 단계에서 시작한다. CONTENT-GUIDE 1.7 그림 절
    - **M11 보상과 연결**: `reward.js`(완료 전후 진도로 레벨업·월드 클리어·새로 열림 사건을 계산), `views/rewardmodal.js`(보상 Modal 하나에 레벨업·월드 클리어 두 종류, 같이 나면 월드 클리어 하나에 "LV n 달성", 세션에 한 번 `onceInSession`, 닫힌 뒤 업적 토스트), 업적 토스트(트로피 도트, 완료 알림 겸함), `views/termdrawer.js`(본문 용어 링크 → 오른쪽 용어 서랍, 서랍 안 용어 링크는 내용만 바꿈, 용어 사전 페이지·수정 키 클릭은 그대로 이동), 화면 전환(`motion.js sharedTransition`: 퀘스트 카드 번호 ↔ Day 머리, 월드 카드 엠블럼 ↔ 월드 머리. `:root { view-transition-name: none }`으로 나머지는 바로 바뀌고 전환 중 클릭이 문서로 감, 새 화면에 짝이 없으면 `skipTransition`). 인쇄에서 모든 `<dialog>` 숨김
-4. **남은 것**: 통합 로드맵 11장 M13부터(기능 M11–M14, 콘텐츠 E1·C1–C35, 품질 Q1–Q5).
+4. **남은 것**: 통합 로드맵 11장 M14부터(기능 M11–M14, 콘텐츠 E1·C1–C35, 품질 Q1–Q5).
 5. **처음 할 일**: 1장 → 5장(환경) → 7장(재개 절차) 순서로 하면 됩니다.
 
 ---
@@ -288,7 +289,7 @@ WS=.superpowers/sdd/2026-11-01-web-zero-to-hundred; { head -4 docs/checkpoint/wo
 
 통합 로드맵 설계서 `docs/superpowers/specs/2026-11-12-unified-roadmap-design.md` **10장(작업 방식)과 11장(마일스톤)**을 따릅니다.
 
-1. `CLAUDE.md` → 이 문서 → 설계서 11장에서 다음 마일스톤(지금은 **M13**)을 고릅니다. 행 끝의 `(Mn에서 넘김: …)`도 그 마일스톤의 범위입니다.
+1. `CLAUDE.md` → 이 문서 → 설계서 11장에서 다음 마일스톤(지금은 **M14**)을 고릅니다. 행 끝의 `(Mn에서 넘김: …)`도 그 마일스톤의 범위입니다.
 2. `writing-plans`로 그 마일스톤의 계획서를 `docs/superpowers/plans/`에 쓰고 사용자 승인을 받습니다.
 3. `executing-plans`로 같은 세션이 실행합니다. 마일스톤 끝에 완료 기준을 증거(테스트 출력, 스크린샷, 공개 주소)와 함께 보고합니다.
 4. `docs/checkpoint/workspace/progress.md`에 `Mn: complete` 줄을 남기고 이 문서 맨 위 상태를 고칩니다.
