@@ -127,14 +127,19 @@ test('reduced motion shows the final step and never animates', TIMEOUT, async ()
 test('stepping forward animates only what appears', TIMEOUT, async () => {
   const { context, fig } = await openFigure('#/day/p1-d01', 'request-response');
   try {
-    // 그림 안(.figure-art)만 센다: 그림 틀 Reveal 과 버튼의 CSS 전환은 다른 규칙이다
-    await fig.locator('.figure-next').click();
-    const targets = await fig.locator('.figure-art').evaluate((el) =>
-      el.getAnimations({ subtree: true }).map((a) => {
-        const owner = a.effect.target.closest('[data-step], [data-step-only]');
-        return owner?.dataset.step ?? owner?.dataset.stepOnly ?? null;
-      }),
-    );
+    // 그림 안(.figure-art)만 센다: 그림 틀 Reveal 과 버튼의 CSS 전환은 다른 규칙이다.
+    // 누르기와 세기를 한 작업 안에서 한다: 따로 하면 기계가 바쁠 때 280ms 움직임이 세기 전에 끝난다
+    await fig.locator('.figure-next').scrollIntoViewIfNeeded();
+    const targets = await fig.evaluate((f) => {
+      f.querySelector('.figure-next').click();
+      return f
+        .querySelector('.figure-art')
+        .getAnimations({ subtree: true })
+        .map((a) => {
+          const owner = a.effect.target.closest('[data-step], [data-step-only]');
+          return owner?.dataset.step ?? owner?.dataset.stepOnly ?? null;
+        });
+    });
     assert.ok(targets.length > 0, '앞으로 갈 때 움직임이 없다');
     assert.ok(targets.every((s) => s === '2'), JSON.stringify(targets));
   } finally {
