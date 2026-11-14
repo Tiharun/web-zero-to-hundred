@@ -277,6 +277,7 @@ components:
     width: "24rem"
   figure:
     backgroundColor: "{colors.card}"
+    borderColor: "{colors.rule}"
     rounded: "{rounded.card}"
 ---
 
@@ -594,7 +595,7 @@ components:
 | `(pointer: coarse)` | 사이드바 행 최소 높이 44px |
 | `(hover: hover) and (pointer: fine)` | 툴팁(지도 폭 30rem 이상일 때), Tilt, Magnetic을 켠다 |
 | `(prefers-reduced-motion: reduce)` | 모션 끔(Components의 Motion 참고) |
-| `print` | 상단 바, 사이드바, 캐러셀 버튼, `dialog`, 읽기 위치 바를 숨긴다 |
+| `print` | 상단 바, 사이드바, 캐러셀 버튼, `dialog`, 읽기 위치 바, 그림의 단계 버튼·선택 묶음을 숨긴다 |
 
 ### 컨테이너 쿼리
 
@@ -848,7 +849,13 @@ components:
 - **보상 Modal(레벨업·월드 클리어):** `<dialog>`(`setupDialog`, `showModal`), 가운데(`margin: auto`), `card` 면, 2px `edge` 테두리와 `--ledge` `edge` 턱, 모서리 `--radius-card`, 안쪽 `var(--space-xl)`(640px 이하 `var(--space-lg)`), 가운데 정렬, 폭 `min(24rem, calc(100% - var(--space-xl)))`, 백드롭 `scrim`, 부품 사이 `var(--space-sm)`. 레벨업: Label "레벨 업" → LV 배지(HUD와 같은 모양, 숫자 32px) → 제목 "레벨이 올랐어요"(Title small) → "다음 레벨까지 XP m"(`ink-2`, m은 800 고정폭) → 주 버튼 "계속하기"(처음 포커스). 월드 클리어: Label "월드 클리어" → 엠블럼 배지(월드 페이지 머리와 같은 모양, 엠블럼 3배) → 제목 "‘월드 이름’ 클리어!"(Title small) → 결과물 문장(`ink-2`) → 같은 완료로 레벨도 올랐으면 "LV n 달성"(`ink` 800) → 주 버튼 "계속하기". 한 번의 완료에 둘이 같이 나면 월드 클리어 하나만 띄운다. 사건마다 세션에 한 번이다(레벨업 `levelup:n`, 월드 클리어 `celebrate:<월드 id>`, 홈 축하와 같은 키). 닫힘: "계속하기", ESC, 백드롭 클릭, 화면 이동. 닫히면 Day 완료 카드 상태 줄로 포커스가 돌아가고 그다음 업적 토스트가 뜬다. 이름은 제목(`aria-labelledby`). 월드 클리어는 열릴 때 엠블럼에서 축하 조각이 튄다.
 - **업적 토스트:** 토스트 틀 그대로, 왼쪽에 트로피 도트(2배 16px, 글자와 사이 `var(--space-xs)`). 문장은 "Day n 완료! 보상 +m XP"(분이 숫자가 아니면 "Day n 완료!")이고, 새로 열린 곳이 있으면 " · 새로 열린 곳이 있어요"를 붙인다. Day를 완료할 때마다 뜨며, 이 문장이 완료 알림이다.
 - **설정 결과 문장(`.message[data-kind]`):** 알림 상자와 같은 틀(1px `rule` 테두리, 왼쪽 4px 막대, 모서리 `--radius-card`), 15px `ink`, 줄간격 1.5. 색은 종류로 고른다: `ok` → `success`, `error` → `warn`, `info` → `info`의 바탕과 막대.
-- **그림 틀:** `figure.figure`, `card` 면, 2px `rule` 테두리, 모서리 `--radius-card`. 무대는 `paper` 바탕, 안쪽 `var(--space-lg) var(--space-md)`, 높이는 그림이 정한다(그림 폭 최대 30rem). 아래 줄은 Label "그림 n" + 캡션 15px `ink`, 오른쪽에 보조 버튼 "▶ 다음 단계"(마지막 단계에서 "↺ 처음부터", 단계 그림만). 대체 설명은 `role="img"` 무대의 `aria-label`. M12에서 화면에 넣는다.
+- **그림 틀:** `figure.figure`, `card` 면, 2px `rule` 테두리, 모서리 `--radius-card`, 위아래 `var(--space-lg)`. 2칸 격자: 무대가 윗줄 전체, 아래 줄은 캡션(왼쪽) | 단계 버튼(오른쪽, 있을 때). 아래 줄 안쪽 `var(--space-sm) var(--space-md)`, 위 1px `rule` 선, 칸 사이 `var(--space-sm)`, 좁으면 버튼이 캡션 아래로 감긴다.
+  - 무대: `paper` 바탕, 안쪽 `var(--space-lg) var(--space-md)`, 부품 사이 `var(--space-md)`. 그림(`figure-art`)은 폭 `min(100%, 30rem)`, 가운데. 높이는 그림이 정한다. 대체 설명은 그림의 `role="img"` `aria-label`이고, 그림을 붙이기 전·실패했을 때는 같은 글이 그림 자리에 Body(`ink-2`)로 보인다.
+  - 그림 안: 상자는 `card` 면에 1px `rule` 테두리(모서리 `var(--space-2xs)`), 글자는 `ink`(이름 800), 선·화살표는 `ink` 2px, 보조 글자는 `ink-2`. 강조(지금 단계, 고른 경로·값)는 `track` 바탕과 `ink` 800이다. 초록·분홍·금색은 쓰지 않는다. 그림 글자는 15px 이상으로 보이게 그린다(SVG `viewBox` 폭 320 기준 글자 15).
+  - 캡션: Label "그림 n"(`ink-2`) + 캡션 15px `ink`. n은 그 페이지 안의 순서다.
+  - 단계 그림: 무대 아래에 단계 줄(Label "단계 n/전체" + 그 단계 문장 15px `ink`, `aria-live="polite"`). 단계 버튼은 보조 버튼 "▶ 다음 단계", 마지막 단계에서 "↺ 처음부터". 처음은 1단계, 동작 줄이기면 마지막 단계에서 시작한다.
+  - 값 고르기 그림: 무대 아래에 선택 묶음(`fieldset`, 테두리 없음, legend는 Label `ink-2`, 라디오는 Forms 라디오, 선택지는 줄바꿈되는 가로 줄, 사이 `var(--space-2xs) var(--space-md)`, 값 글자는 WZH Code `--text-code`)과 결과 줄(15px `ink`, 코드는 인라인 코드 규칙, `aria-live="polite"`). 값을 바꾸면 그림과 결과 줄이 바로 바뀐다.
+  - 인쇄: 단계 버튼과 선택 묶음을 숨기고 지금 그림과 결과 줄을 그대로 찍는다.
 
 ### Motion
 | 토큰 | 라이트 | 다크 | 쓰는 곳 |
@@ -876,6 +883,8 @@ components:
 | Shake | 잠긴 월드 카드, 조건이 안 된 "Day 완료" 버튼 | 300ms, 좌우 4px(`transform: translateX(-4px)` ↔ 4px, 네 번). 이유 문장을 반드시 같이 보여 준다 |
 | Wiggle | 월드 카드 hover 때 문장 칸 | 420ms `--ease-bounce`, `transform: rotate(-8deg) scale(1.08)` → `transform: rotate(6deg) scale(1.08)` |
 | Accordion | 사용자가 연 월드의 내용, 사용자가 연 증상 | 160ms, `transform: translateY(4px)`에서 투명도와 함께. 페이지를 열 때 이미 펼쳐진 월드는 움직이지 않는다 |
+| 그림 틀 Reveal | Day·부록의 그림 틀이 처음 화면에 들어올 때 | `reveal()`: 아래 8px에서 올라오며 투명도 0→1, 280ms `--ease-out`, 한 번 |
+| 그림 단계 | 단계 그림에서 앞으로 갈 때 새로 보이는 요소 | 선은 `stroke-dashoffset` 1→0(`strokeIn`), 그 밖은 아래 8px에서 올라옴(`rise`). 둘 다 280ms `--ease-out`. 뒤로(처음부터) 갈 때와 값 고르기 그림은 애니메이션 없음 |
 | 메뉴 | 테마 메뉴 열림 | `pop-in`(`from { opacity: 0; transform: translateY(-4px) scale(0.98); }`) 200ms |
 | 검색 | 열림 / 닫힘 | `pop-in` 280ms / 페이드 180ms. 닫힘 애니메이션이 끝나지 않으면 `setTimeout(done, 260)`으로 닫는다 |
 | Skeleton | 검색 결과 자리 | 200ms 뒤에 보임, 최소 300ms, 투명도 1 → 0.5 → 1 `var(--dur-skeleton) ease-in-out infinite` |
@@ -887,7 +896,7 @@ components:
 
 - **한 번만:** Stagger, XP 채움, Path Drawing, 첫 말 점프, 축하 조각, 보상 Modal은 세션에서 처음 볼 때 한 번만 돈다(시안은 상태별 `sessionStorage` 키). 다시 열면 최종 상태로 보인다.
 - **움직이는 속성:** `transform`, `translate`, `opacity`, `box-shadow`(턱), `clip-path`(XP), `stroke-dashoffset`(경로), 색. 레이아웃 속성(폭·높이·위치)은 움직이지 않는다.
-- **동작 줄이기:** `(prefers-reduced-motion: reduce)`이면 모든 애니메이션과 전환을 사실상 0으로 만든다(`animation-duration: 0.01ms !important`, 반복 1회, `transition-delay: 0s !important`, `scroll-behavior: auto !important`). 주 버튼의 끌림과 hover 떠오름, 칸의 hover·연결 떠오름, Tilt를 없애고 축하 조각을 숨긴다. JS도 Stagger·XP 채움·Path Drawing·말 점프·축하·Tilt·Magnetic·Shake·화면 전환을 건너뛰고 서랍·검색·보상 Modal·용어 서랍은 바로 열고 닫는다. 정보와 기능은 하나도 빠지지 않는다(Shake 대신 이유 문장 강조와 알림은 그대로).
+- **동작 줄이기:** `(prefers-reduced-motion: reduce)`이면 모든 애니메이션과 전환을 사실상 0으로 만든다(`animation-duration: 0.01ms !important`, 반복 1회, `transition-delay: 0s !important`, `scroll-behavior: auto !important`). 주 버튼의 끌림과 hover 떠오름, 칸의 hover·연결 떠오름, Tilt를 없애고 축하 조각을 숨긴다. JS도 Stagger·XP 채움·Path Drawing·말 점프·축하·Tilt·Magnetic·Shake·화면 전환·그림 단계를 건너뛰고 서랍·검색·보상 Modal·용어 서랍은 바로 열고 닫는다. 정보와 기능은 하나도 빠지지 않는다(Shake 대신 이유 문장 강조와 알림은 그대로). 그림은 마지막 단계(최종 상태)로 보인다.
 
 ### Accessibility
 - **포커스:** `:focus-visible`에만 `outline: 2px solid var(--color-focus)`, `outline-offset: 2px`. 메뉴 항목과 월드 캐러셀처럼 잘리는 곳은 `outline-offset: -2px`. 검색 입력은 입력 줄 밑 2px 선. 월드 카드는 안의 클릭 레이어가 포커스를 받으면 카드 전체에 링을 그린다(`:has(.card-hit:focus-visible)`).
