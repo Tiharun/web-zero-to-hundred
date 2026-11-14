@@ -47,6 +47,8 @@ test('skeleton rows pulse with --dur-skeleton (1200ms) and stop when motion is r
   const css = normalize(await readFile(path.join(ROOT, 'textbook/src/styles/components.css'), 'utf8'));
   assert.match(css, /\.skeleton-row \{[^}]*animation: skeleton-pulse var\(--dur-skeleton\) ease-in-out infinite;/);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{[^@]*\.skeleton-row \{ animation: none; \}/);
+  assert.match(css, /\.skeleton-block \{[^}]*animation: skeleton-pulse var\(--dur-skeleton\) ease-in-out infinite;/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{[^@]*\.skeleton-block \{ animation: none; \}/);
 });
 
 test('legacy.css has no raw colours left', async () => {

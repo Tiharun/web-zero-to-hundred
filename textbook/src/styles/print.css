@@ -5,6 +5,10 @@
   .site-footer {
     display: none;
   }
+  /* 넓은 종이에서도 사이드바 칸이 남지 않게 한 칸으로 (본문이 사이드바 폭에 갇히지 않는다) */
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
   /* 열린 대화상자(.reward[open]·.drawer[open] 등)의 display 보다 앞서야 해서 !important */
   dialog,
   .toast-region,
@@ -21,6 +25,16 @@
   .figure-next,
   .figure-choice {
     display: none;
+  }
+  /* 3D 그림은 정적 그림으로 찍는다 */
+  .figure-views,
+  .fig3d canvas,
+  .fig3d-labels,
+  .skeleton-block {
+    display: none !important;
+  }
+  .fig3d .fig3d-static {
+    display: block !important;
   }
   /* 스크롤하지 않은 섹션 제목도 인쇄에 나온다 */
   .reveal-pending {

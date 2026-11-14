@@ -257,6 +257,73 @@
   visibility: hidden;
 }
 
+/* 3D 그림(G4): 그림 자리는 4:3 으로 미리 잡는다. 캔버스·이름표·자리표시는 같은 자리에 겹친다.
+   정적 그림은 ready 가 아닐 때 보인다(불러오는 동안·실패·인쇄) */
+.fig3d {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--space-2xs);
+}
+.fig3d canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+  cursor: grab;
+}
+.fig3d.is-dragging canvas {
+  cursor: grabbing;
+}
+.fig3d:not([data-state="ready"]) canvas,
+.fig3d:not([data-state="ready"]) .fig3d-labels,
+.fig3d[data-state="ready"] .fig3d-static {
+  display: none;
+}
+.fig3d-static {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.fig3d-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.fig3d-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0 var(--space-2xs);
+  background: var(--color-card);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--space-2xs);
+  color: var(--color-ink);
+  font-size: var(--text-ui);
+  font-weight: 800;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.fig3d-code {
+  font-family: var(--font-code);
+  font-size: var(--text-code);
+}
+/* 화면에 그려지지 않는 층(margin, head): 면 없이 ink-2 점선 */
+.fig-ghost {
+  fill: none;
+  stroke: var(--color-ink-2);
+  stroke-width: 1px;
+  stroke-dasharray: 6 4;
+}
+.figure-views {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-xs);
+}
+
 @media (max-width: 40rem) {
   .figure {
     grid-template-columns: minmax(0, 1fr);

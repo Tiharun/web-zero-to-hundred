@@ -629,7 +629,9 @@ test('build stops when the figure registry cannot be read', async () => {
 // 그림 안 색은 CSS 토큰으로만 칠한다(DESIGN.md "그림 틀"): 그림 코드에 색 값을 직접 쓰지 않는다
 test('figure code has no raw colors', async () => {
   const figDir = path.join(ROOT, 'textbook', 'src', 'figures');
-  const files = [path.join(ROOT, 'textbook', 'src', 'app', 'views', 'figure.js'), ...(await readdir(figDir)).filter((f) => f.endsWith('.js')).map((f) => path.join(figDir, f))];
+  const app = path.join(ROOT, 'textbook', 'src', 'app');
+  const fixed = [path.join(app, 'views', 'figure.js'), path.join(app, 'views', 'figure3d.js'), path.join(app, 'view3d.js'), path.join(app, 'three.js')];
+  const files = [...fixed, ...(await readdir(figDir)).filter((f) => f.endsWith('.js')).map((f) => path.join(figDir, f))];
   for (const file of files) {
     const hit = RAW_COLOR.exec(await readFile(file, 'utf8'));
     assert.equal(hit, null, `${path.relative(ROOT, file)}: ${hit?.[0]}`);
@@ -649,7 +651,9 @@ test('3D engine is embedded as a lazy text block within budget', async () => {
   assert.match(m[1], /WZH_THREE/);
   const scripts = [...r.html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
   const appJs = scripts.at(-1)[1]; // 앱 번들은 마지막 <script>
-  assert.ok(!appJs.includes('WebGLRenderer'), 'three must not be in the app bundle');
+  // 앱은 엔진을 T.WebGLRenderer 로 부르기만 한다. 엔진 안에만 있는 오류 문구로 엔진 코드가 앱에 섞였는지 본다
+  assert.match(m[1], /THREE\.WebGLRenderer/);
+  assert.ok(!appJs.includes('THREE.WebGLRenderer'), 'three must not be in the app bundle');
   assert.ok(r.html.indexOf('id="three-src"') < r.html.lastIndexOf('<script>'), 'engine block comes before the app script');
 });
 

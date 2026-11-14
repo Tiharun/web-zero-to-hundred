@@ -608,6 +608,14 @@ mark {
 .skeleton-bar + .skeleton-bar {
   width: 60%;
 }
+/* 3D 그림 자리 전체를 덮는 자리표시 하나 */
+.skeleton-block {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-btn);
+  background: var(--color-track);
+  animation: skeleton-pulse var(--dur-skeleton) ease-in-out infinite;
+}
 @keyframes skeleton-pulse {
   50% {
     opacity: 0.5;
@@ -615,6 +623,9 @@ mark {
 }
 @media (prefers-reduced-motion: reduce) {
   .skeleton-row {
+    animation: none;
+  }
+  .skeleton-block {
     animation: none;
   }
 }

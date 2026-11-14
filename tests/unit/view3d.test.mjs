@@ -49,3 +49,9 @@ test('checkLayers finds broken nesting', () => {
   assert.equal(checkLayers([{ ...ok[0], w: 400 }]).length, 1); // 평면(320×240) 밖
   assert.equal(checkLayers([ok[1]]).length >= 1, true); // 뿌리 없음
 });
+
+test('box model layers nest content in padding in border in margin', async () => {
+  const { BOX_LAYERS } = await import('../../textbook/src/figures/box-model-3d.js');
+  assert.deepEqual(checkLayers(BOX_LAYERS), []);
+  assert.deepEqual(BOX_LAYERS.map((l) => [l.id, l.depth, !!l.ghost]), [['margin', 0, true], ['border', 1, false], ['padding', 2, false], ['content', 3, false]]);
+});

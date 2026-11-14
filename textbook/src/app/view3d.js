@@ -13,8 +13,8 @@ export const PITCH_LIMIT = 60;
 export const LAYER_GAP = 28;
 export const SLAB = 4;
 export const PLANE = Object.freeze({ w: 320, h: 240 });
-/** 정적 그림(G1)에서 깊이 1마다 미는 거리(오른쪽, 위) */
-export const OBLIQUE = Object.freeze({ dx: 14, dy: -10 });
+/** 정적 그림(G1)에서 깊이 1마다 미는 거리(오른쪽, 아래). 처음 시점(왼쪽 위에서 봄)의 3D 그림과 같은 쪽으로 민다 */
+export const OBLIQUE = Object.freeze({ dx: 14, dy: 10 });
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 const rad = (deg) => (deg * Math.PI) / 180;
