@@ -450,3 +450,21 @@ test('sharedTransition clears the name even when skipped', async () => {
   await Promise.resolve();
   assert.equal(newEl.style.viewTransitionName, '');
 });
+
+test('sharedTransition skips when the new screen has no pair', async () => {
+  const oldEl = vtEl('day-a');
+  let skipped = 0;
+  let run;
+  const doc = {
+    startViewTransition(cb) {
+      run = cb; // 실제 API 처럼 콜백은 나중에 부른다
+      return { finished: Promise.resolve(), ready: { catch: (fn) => (handled = typeof fn === 'function') }, skipTransition: () => skipped++ };
+    },
+  };
+  let handled = false;
+  const root = vtRoot([oldEl], doc);
+  sharedTransition(root, 'day-a', () => (root.els = [vtEl('world-p1')]), ENV);
+  run();
+  assert.equal(skipped, 1, '짝이 없으면 옛 그림이 남지 않게 전환을 건너뛴다');
+  assert.equal(handled, true, '건너뛰면 거절되는 ready 를 받아 콘솔 오류가 나지 않는다');
+});

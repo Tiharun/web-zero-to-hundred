@@ -401,10 +401,12 @@ export function sharedTransition(root, key, update, env = motionEnv(), doc = roo
     update();
     fresh = find();
     if (fresh) fresh.style.viewTransitionName = SHARED_NAME;
+    else vt?.skipTransition(); // 새 화면에 짝이 없으면 옛 그림이 한 프레임이라도 남지 않게 건너뛴다
   });
   const clear = () => {
     if (fresh) fresh.style.viewTransitionName = '';
   };
   vt.finished.then(clear, clear);
+  vt.ready?.catch(noop); // 건너뛴 전환은 ready 가 거절된다. 정상 흐름이라 콘솔 오류로 남기지 않는다
   return vt;
 }
