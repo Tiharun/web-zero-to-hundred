@@ -110,3 +110,14 @@ test('head is filled and {{WZH_TITLE}} is replaced everywhere, escaped', () => {
 test('a template without the HEAD placeholder throws', () => {
   assert.throws(() => assemble({ ...base(), templateHtml: TEMPLATE.replace('<!--WZH:HEAD-->', '') }), /WZH:HEAD/);
 });
+
+test('lazy scripts go before the app script as text blocks with a notice comment', () => {
+  const html = assemble({ ...base(), lazyScripts: [{ id: 'x', js: 'a="</script>";b="<!--"', notice: 'n--n' }] });
+  assert.ok(html.includes('<!--\nn- -n\n-->'), 'notice comment with -- broken');
+  assert.ok(html.includes('<script type="text/plain" id="x">a="<\\/script>";b="\\x3C!--"</script>'));
+  assert.ok(html.indexOf('id="x"') < html.indexOf('<script>(()=>{})();</script>'));
+});
+
+test('no lazy scripts leaves the output as before', () => {
+  assert.equal(assemble({ ...base(), lazyScripts: [] }), assemble(base()));
+});

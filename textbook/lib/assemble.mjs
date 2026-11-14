@@ -21,10 +21,16 @@ function styleBlock(css) {
   return `<style>${css}</style>`;
 }
 
-function scriptBlock(js) {
+function scriptBlock(js, attrs = '') {
   // 문자열·정규식 안의 </script 와 <!-- 는 같은 값을 내는 다른 표기로 바꾼다
   const safe = js.replace(/<\/(script)/gi, '<\\/$1').replace(/<!--/g, '\\x3C!--');
-  return `<script>${safe}</script>`;
+  return `<script${attrs}>${safe}</script>`;
+}
+
+/** 늦게 실행할 스크립트: 앱이 필요할 때 글을 꺼내 실행한다. 라이선스 문구는 바로 앞 HTML 주석으로 남긴다 */
+function lazyBlock({ id, js, notice }) {
+  const comment = notice ? `<!--\n${notice.trim().replace(/--/g, '- -')}\n-->\n` : '';
+  return `${comment}${scriptBlock(js, ` type="text/plain" id="${escapeHtml(id)}"`)}\n`;
 }
 
 function templateBlocks(templates) {
@@ -41,10 +47,10 @@ function templateBlocks(templates) {
 }
 
 /**
- * @param {{ templateHtml: string, css: string, js: string, data: object, templates: {id: string, html: string}[], head: string, title: string }} parts
+ * @param {{ templateHtml: string, css: string, js: string, data: object, templates: {id: string, html: string}[], head: string, title: string, lazyScripts?: {id: string, js: string, notice?: string}[] }} parts
  * @returns {string} 완성된 index.html
  */
-export function assemble({ templateHtml, css, js, data, templates, head, title }) {
+export function assemble({ templateHtml, css, js, data, templates, head, title, lazyScripts = [] }) {
   for (const name of PLACEHOLDERS) {
     const marker = `<!--WZH:${name}-->`;
     const count = templateHtml.split(marker).length - 1;
@@ -58,7 +64,7 @@ export function assemble({ templateHtml, css, js, data, templates, head, title }
     CSS: styleBlock(css),
     DATA: `<script id="wzh-data" type="application/json">${jsonForScript(data)}</script>`,
     TEMPLATES: templateBlocks(templates),
-    JS: scriptBlock(js),
+    JS: lazyScripts.map(lazyBlock).join('') + scriptBlock(js),
   };
   // 한 번에 바꾼다: 채워 넣은 내용 안의 글자는 다시 해석하지 않는다. 함수를 써서 $& 같은 패턴도 글자 그대로 넣는다
   return frame.replace(/<!--WZH:(HEAD|CSS|DATA|TEMPLATES|JS)-->/g, (_, name) => fill[name]);

@@ -1,6 +1,6 @@
 // content/ → index.html. 검증하고, 렌더하고, 단일 HTML 파일 하나로 조립한다.
 //   node build.mjs [--check] [--only id1,id2] [--allow-missing] [--notfound] [--published] [--content <dir>] [--out <file>]
-import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { access, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { parseArgs } from 'node:util';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -81,12 +81,13 @@ async function readMarkdownDir(dir) {
 }
 
 /** JS 번들. esbuild 오류는 빌드 오류 형식으로 바꾼다 */
-async function bundleJs(entry) {
+async function bundleJs(entry, { globalName } = {}) {
   try {
     const result = await esbuild({
       entryPoints: [entry],
       bundle: true,
       format: 'iife',
+      globalName,
       minify: true,
       target: 'es2020',
       write: false,
@@ -100,6 +101,30 @@ async function bundleJs(entry) {
     );
     return { js: '', errors };
   }
+}
+
+/**
+ * 3D 엔진(three.js). src/three/entry.js 가 쓰는 클래스만 따로 묶어 window.WZH_THREE 로 내보낸다.
+ * 앱 번들에 넣지 않고 type="text/plain" 블록으로 넣어, 3D 그림이 화면에 올 때 앱이 실행한다(첫 화면 비용 0).
+ * legalComments 를 지우므로 MIT 문구(LICENSE 전문)를 블록 앞 주석으로 남긴다. 입구 파일이 없는 src(테스트용)는 블록이 없다.
+ */
+async function bundleThree(srcDir) {
+  const entry = path.join(srcDir, 'three', 'entry.js');
+  try {
+    await access(entry);
+  } catch {
+    return { lazy: [], errors: [] };
+  }
+  const r = await bundleJs(entry, { globalName: 'WZH_THREE' });
+  if (r.errors.length) return { lazy: [], errors: r.errors };
+  const licenseFile = path.join(HERE, 'node_modules', 'three', 'LICENSE');
+  let notice;
+  try {
+    notice = `three.js — ${await readFile(licenseFile, 'utf8')}`;
+  } catch (e) {
+    return { lazy: [], errors: [issue('E_JS_BUNDLE', `three.js 라이선스 파일을 읽지 못했어요: ${e.message}`, { file: licenseFile })] };
+  }
+  return { lazy: [{ id: 'three-src', js: r.js, notice }], errors: [] };
 }
 
 /**
@@ -251,6 +276,8 @@ export async function build({
 
   const bundle = await bundleJs(path.join(srcDir, 'app', 'main.js'));
   if (bundle.errors.length) return { ok: false, errors: bundle.errors, warnings };
+  const three = await bundleThree(srcDir);
+  if (three.errors.length) return { ok: false, errors: three.errors, warnings };
 
   const styles = await readStyles(srcDir);
   if (styles.errors.length) return { ok: false, errors: styles.errors, warnings };
@@ -277,7 +304,7 @@ export async function build({
     return { ok: false, errors: [issue('E_CSS_TOKEN', e.message, { file: tokens.file })], warnings };
   }
   const head = headTags(site, favicon);
-  const html = assemble({ templateHtml, css, js: bundle.js, data, templates, head, title: site.title });
+  const html = assemble({ templateHtml, css, js: bundle.js, data, templates, head, title: site.title, lazyScripts: three.lazy });
   const bytes = Buffer.byteLength(html);
   if (bytes >= SIZE_LIMIT) {
     return { ok: false, errors: [issue('E_SIZE_LIMIT', `결과 파일이 너무 커요: ${mb(bytes)} (16 MB 미만이어야 해요)`)], warnings };

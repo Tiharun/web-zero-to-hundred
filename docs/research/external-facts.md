@@ -484,6 +484,15 @@
 | 액션 입력(2026-11-12 README·action.yml) | `setup-node`: `node-version`, `cache`, `cache-dependency-path` / `setup-python`: `python-version` / `configure-pages`: `token`, `enablement`(기본 false, 켜려면 `GITHUB_TOKEN`이 아닌 토큰 필요) / `upload-pages-artifact`: `path`, `name`, `retention-days`, `include-hidden-files` / `deploy-pages`: `token`, `timeout`, `artifact_name` 등. 모두 `node24` 또는 composite | `[원문]` `gh api repos/actions/<이름>/contents/action.yml`, `…/readme` |
 | 배포 job 최소 권한 | `pages: write`, `id-token: write` (deploy-pages README "must at minimum have") | `[원문]` https://github.com/actions/deploy-pages |
 
+### 14.2 3D 그림 엔진 (확인일 2026-11-14)
+
+| 항목 | 값 | 근거 |
+|---|---|---|
+| `three` | `0.187.0`(npm `latest`, 2026-10-30 게시), 라이선스 MIT, `exports["."].import = ./build/three.module.js` | `[레지스트리]` `npm view three version time license exports` |
+| WebGL 버전 | `WebGLRenderer`는 r163부터 WebGL 2만 쓴다(WebGL 1 지원 제거) | `[문서]` https://www.github.com/mrdoob/three.js/releases/tag/r163, https://threejs.org/docs/pages/WebGLRenderer.html |
+| 번들 크기(교재에서 쓰는 클래스만) | minify 539,877바이트, gzip 135,454바이트(esbuild 0.28.2) | `[측정]` 이 PC 임시 폴더 |
+| 헤드리스 Chromium WebGL | SwiftShader 자동 대체는 없어지는 중이고 `--enable-unsafe-swiftshader`로 켠다. 믿을 수 있는 내용(테스트)에만 쓴다 | `[문서]` https://chromium.googlesource.com/chromium/src/+/da170c2267b2201954efe1c8fa5d2d89ab09f7bf/docs/gpu/swiftshader.md, https://groups.google.com/a/chromium.org/g/blink-dev/c/yhFguWS_3pM |
+
 ---
 
 ## 부록 A. 미확인 항목과 대안 요약

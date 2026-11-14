@@ -635,3 +635,31 @@ test('figure code has no raw colors', async () => {
     assert.equal(hit, null, `${path.relative(ROOT, file)}: ${hit?.[0]}`);
   }
 });
+
+// M13 3D 엔진: 앱 번들과 따로 묶어 type="text/plain" 블록에 넣는다(그림이 화면에 올 때 실행한다)
+const THREE_BLOCK = /<script type="text\/plain" id="three-src">([\s\S]*?)<\/script>/;
+
+test('3D engine is embedded as a lazy text block within budget', async () => {
+  const r = await build({ contentDir: FIXTURE });
+  assert.equal(r.ok, true, JSON.stringify(r.errors?.slice(0, 3)));
+  const m = THREE_BLOCK.exec(r.html);
+  assert.ok(m, 'three-src block');
+  const bytes = Buffer.byteLength(m[1]);
+  assert.ok(bytes <= 640_000, `engine ${bytes} bytes`);
+  assert.match(m[1], /WZH_THREE/);
+  const scripts = [...r.html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
+  const appJs = scripts.at(-1)[1]; // 앱 번들은 마지막 <script>
+  assert.ok(!appJs.includes('WebGLRenderer'), 'three must not be in the app bundle');
+  assert.ok(r.html.indexOf('id="three-src"') < r.html.lastIndexOf('<script>'), 'engine block comes before the app script');
+});
+
+test('3D engine carries the three.js MIT notice', async () => {
+  const r = await build({ contentDir: FIXTURE });
+  const license = await readFile(path.join(ROOT, 'textbook', 'node_modules', 'three', 'LICENSE'), 'utf8');
+  const copyright = license.split(/\r?\n/).find((l) => l.includes('Copyright'));
+  assert.ok(copyright);
+  const at = r.html.indexOf(copyright);
+  assert.ok(at > 0, 'copyright line in html');
+  assert.ok(r.html.includes('Permission is hereby granted'), 'MIT permission notice');
+  assert.ok(at < r.html.indexOf('id="three-src"'), 'notice comes before the engine block');
+});
